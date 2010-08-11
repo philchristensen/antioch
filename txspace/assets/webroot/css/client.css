@@ -1,0 +1,115 @@
+body {
+	margin: 10px;
+	border: 0;
+	padding: 0;
+}
+
+#client {
+	position: relative;
+	text-align: left;
+	width: 100%;
+	height: 100%;
+}
+
+#client-wrapper {
+	position: relative;
+	text-align: left;
+	width: 100%;
+	height: 100%;
+}
+
+#top-pane {
+	height: 65%;
+}
+
+.name {
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.description {
+	background-color: #eee;
+	overflow: auto;
+	padding: 5px;
+	height: 100%;
+}
+
+.contents-area {
+	width: 300px;
+	float: right;
+	background-color: #ccc;
+	padding: 5px;
+	overflow: auto;
+	height: 100%;
+}
+
+.contents-area ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.contents-area li {
+	padding-left: 5px;
+	padding-top: 5px;
+	padding-bottom: 3px;
+	clear: both;
+}
+
+.contents-area li:hover {
+	background-color: #ddd;
+	cursor: pointer;
+}
+
+#players-list li {
+	height: 66px;
+}
+
+#players-list {
+	margin-bottom: 20px;
+}
+
+.player-name {
+	font-size: 18px;
+}
+
+.player-mood {
+	font-size: 10px;
+}
+
+.player-image {
+	margin-right: 10px;
+	width: 64px;
+	height: 64px;
+	float: left;
+	overflow: hidden;
+}
+
+.player-image img {
+	width: 64px;
+	height: auto;
+}
+
+.actions {
+	min-height: 100px;
+	max-height: 150px;
+	height: 100%;
+	clear: both;
+	background-color: black;
+	color: white;
+	font-family: Courier, Courier New;
+	padding: 5px;
+	overflow: auto;
+}
+
+.prompt-area input {
+	width: 100%;
+}
+
+.issued-command {
+	color: yellow;
+}
+
+.error-response {
+	color: red;
+}

@@ -1,0 +1,23 @@
+Special Verbs
+--------------
+on any object:
+    accept(obj)                        called when something wants to come in,
+                                      returns true if it is allowed
+    provide(obj)                      called when something wants to leave,
+                                      returns true if it is allowed
+    enter(obj)                        called when someone comes in
+    exit(obj)                         called when someone leaves
+    get_observations(client_code)     called when someone looks at me, returns
+                                      a dictionary of attributes specific to the
+                                      given client type
+    hear(speaker, speech, specific)   called by the default say command when someone
+                                      says something. called once for each item in the
+                                      room if said aloud (specific == False), or once
+                                      on the indirect object (specific == True)
+
+on the system object(#0):
+    get_observations(obj, client_code)  called when someone looks at an object
+                                        that doesn't define it's own method, and
+                                        returns a dictionary of attributes
+                                        specific to the given client type.
+

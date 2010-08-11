@@ -1,0 +1,15 @@
+<html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
+<head>
+	<title>txSpace Client</title>
+	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/css/acl-editor.css"/>
+	<script type="text/javascript" src="/assets/js/global.js"></script>
+	<script type="text/javascript" src="/assets/js/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="/assets/js/acl-editor.js"></script>
+</head>
+<body onLoad="loadACL();">
+	<textarea id="permissions-field"></textarea>
+	<input type="button" value="cancel" onClick="cancelACL();" />
+	<input type="button" value="save" onClick="saveACL();" />
+</body>
+</html>

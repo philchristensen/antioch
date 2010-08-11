@@ -1,0 +1,32 @@
+<html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
+<head>
+	<title>txSpace Client</title>
+	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/css/property-editor.css"/>
+	<script type="text/javascript" src="/assets/js/global.js"></script>
+	<script type="text/javascript" src="/assets/CodeMirror-0.63/js/codemirror.js"></script>
+	<script type="text/javascript" src="/assets/js/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="/assets/js/property-editor.js"></script>
+</head>
+<body>
+	<div class="editor">
+		<div class="controls">
+			<label id="name-label" for="name-field">Name:</label><input type="text" id="name-field" size="20"/>
+			<label id="owner-label" for="owner-field">Owner:</label><input type="text" id="owner-field" size="20"/>
+			<label id="type-label" for="type-field">Type:</label>
+			<select id="type-select">
+				<option value="0">string</option>
+				<option value="1">string (html)</option>
+				<option value="2">python</option>
+				<option value="3">dynamic python</option>
+			</select>
+			<input type="button" id="acl-button" value="Permissions..." />
+		</div>
+		<div>
+			<textarea id="prop_code" rows="33" cols="100"></textarea>
+		</div>
+	</div>
+	<input type="button" id="cancel-button" value="cancel" />
+	<input type="button" id="save-button" value="save" />
+</body>
+</html>

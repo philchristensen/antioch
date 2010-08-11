@@ -1,0 +1,63 @@
+ACL Permission List
+--------------------
+anything            can do anything
+
+
+On Entities:
+-------------
+get_children        can get a list of my children
+
+get_contents        can get a list of my contained items
+
+get_location        can get my location
+set_location        can change my location
+
+get_observers       can get a list of people looking at me
+
+get_owner           can get my owner
+set_owner           can set my owner
+
+get_parent          can get my parent
+set_parent          can change my parent
+
+get_observing       can see what i'm looking at
+set_observing       can change what i'm looking at
+get_observations    can get a dictionary of my observable attributes
+observe             can change the client's view
+
+write               can write to the client
+
+call_verb           can call a verb as a method
+
+get_verbs           can get a list of names of verbs on me
+get_verb_names      can get a list of other names for a verb on me
+set_verb_names      can change the list of other names for a verb
+get_verb_info       can get the information about a verb
+set_verb_info       can set the information about a verb
+edit_verb           can use the graphical editor on me
+add_verb            can add a verb to me
+set_verb            can set a predefined verb object on me
+remove_verb         can remove a verb from me
+
+get_name            can get my name
+set_name            can change my name
+
+set_property        can set a property
+get_property        can get a property
+get_properties      can get a list of property names
+
+get_ancestor_with   can get the ancestor that defines a verb or property
+
+fertilize           can use me as a parent for another object
+
+On Verbs:
+----------
+read
+write
+execute
+
+On Properties:
+---------------
+read
+write
+fertile

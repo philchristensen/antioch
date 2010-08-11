@@ -1,0 +1,11 @@
+.editor label {
+	font-size: 10px;
+}
+
+#verbs-props label {
+	display: block;
+}
+
+#verbs-props select {
+	width: 200px;
+}

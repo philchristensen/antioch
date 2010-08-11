@@ -1,0 +1,65 @@
+Getting Started With txSpace
+by Phil Christensen
+17 October 2005
+
+Introduction
+------------
+
+Documentation is like sex: when it is good, it is very, very good; and
+when it is bad, it is better than nothing.
+                -- Dick Brandon
+
+Thanks for downloading txSpace. This document aims to provide an overview of the
+framework, including the minimal set of predefined objects and verbs.
+
+I'm a programmer. So naturally, this document is aimed toward my peers, those who
+are interested in creating their own universe within which to create an online game.
+In time, I expect that either I or third parties will release more extensive core
+databases aimed at different genres or styles of gameplay, but for now, a certain
+amount of "DIY" attitude may be required ;-)...
+
+To begin with, there's a few sources that readers might want to refer to in order to
+get the most out of txSpace. I've chosen to omit any general discussions of MUD/
+MOO/MUCK/MUSH/etc. technology; if you're here, you probably have a clue.
+
+First of all, this framework borrows heavily from the ideas of the greatest (imo)
+frameworks of all time, LambdaMOO, or, more appropriately, MOO itself. That being
+so, it might be worth checking out the LambdaMOO Programmer's Manual. This is a
+document that seems to be constantly moving around the net, so I'll point you to the
+original TeX version of the document, at:
+
+http://cvs.sourceforge.net/viewcvs.py/lambdamoo/manual/
+
+A little Googling will lead you to other formats, I'm sure.
+
+Also, the networking layer of txSpace is provided by the Twisted python package,
+available at:
+
+http://www.twistedmatrix.com
+
+There's reams of information available there, should you feel like mucking around...
+
+
+Connecting to the Server
+------------------------
+
+For the moment, the instructions for starting the server and building the client 
+are contained in the INSTALL document. Once you have the server up and running,
+you'll want to launch Firefox, and connect to:
+
+Host:     http://localhost:8080
+User:     wizard
+Password: wizard
+
+Obviously, once in, it's a pretty good idea to change your password for the wizard
+account, which you can do by entering the command:
+
+@password me to <new password>
+
+If you'd like a more specific name for your administrator character, for the moment
+you can use:
+
+@exec caller.set_name("<new name>")
+
+
+
