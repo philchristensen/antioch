@@ -66,6 +66,8 @@ class MessageQueue(object):
 	
 	@defer.inlineCallbacks
 	def commit(self):
+		yield self.service.connect()
+		
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
 		yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)

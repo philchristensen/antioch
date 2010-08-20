@@ -103,8 +103,7 @@ def build_insert(table, data=None, **kwargs):
 	if not(isinstance(data, (list, tuple))):
 		data = [data]
 	
-	keys = data[0].keys()
-	keys.sort()
+	keys = sorted(data[0].keys())
 	
 	values = []
 	query = 'INSERT INTO %s (%s) VALUES ' % (table, ', '.join(keys))
@@ -318,7 +317,7 @@ def build_where(data=None, use_where=True, **kwargs):
 			else:
 				criteria.append('%s%s' % (key, value.value))
 		elif(value is None):
-			criteria.append('ISNULL(%s)' % key)
+			criteria.append('%s IS NULL' % key)
 		else:
 			criteria.append('%s = %%s' % key)
 			values.append(value)

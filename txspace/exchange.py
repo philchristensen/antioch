@@ -38,9 +38,12 @@ from twisted.python import util
 from txspace import sql, model, errors
 
 class ObjectExchange(object):
-	def __init__(self, pool, ctx=None):
+	def __init__(self, pool, queue=None, ctx=None):
 		self.cache = util.OrderedDict()
 		self.pool = pool
+		self.queue = queue
+		
+		self.default_permissions_precached = False
 		
 		if(isinstance(ctx, int)):
 			self.ctx = self.get_object(ctx)
@@ -50,12 +53,29 @@ class ObjectExchange(object):
 	def get_context(self):
 		return self.ctx
 	
+	def precache_default_permissions(self):
+		if(self.default_permissions_precached):
+			return
+		system = self.instantiate('object', default_permissions=False, id=1)
+		result = self.pool.runQuery(sql.interp(
+			"""SELECT v.*
+				 FROM verb_name vn
+				INNER JOIN verb v ON v.id = vn.verb_id
+				WHERE vn.name = 'set_default_permissions'
+				  AND v.origin_id = %s
+			""", system.get_id()))
+		
+		self.instantiate('verb', default_permissions=False, *result)
+		self.default_permissions_precached = True
+	
 	def instantiate(self, obj_type, record=None, *additions, **fields):
 		records = []
 		if(record):
 			records.append(record)
 		if(additions):
 			records.extend(additions)
+			
+		default_permissions = fields.pop('default_permissions', True)
 		if(fields):
 			records.append(fields)
 		
@@ -74,6 +94,18 @@ class ObjectExchange(object):
 					maker = getattr(self, '_mk%s' % obj_type, fail)
 					obj = maker(record)
 					self.save(obj)
+					
+					if(default_permissions):
+						try:
+							self.precache_default_permissions()
+							system = self.get_object(1)
+							set_default_permissions = system.set_default_permissions
+						except (errors.NoSuchObjectError, errors.NoSuchVerbError), e:
+							set_default_permissions = lambda *a: None
+						finally:
+							default_permissions = False
+					
+					set_default_permissions(obj)
 				else:
 					obj = self.load(obj_type, object_id)
 			
@@ -144,10 +176,12 @@ class ObjectExchange(object):
 		
 		return perm
 	
+	@defer.inlineCallbacks
 	def commit(self):
-		for id, obj in self.cache.items():
-			self.save(obj)
-			del self.cache[id]
+		self.cache.clear()
+		self.cache._order = []
+		if(self.queue):
+			yield self.queue.commit()
 	
 	def load(self, obj_type, obj_id):
 		obj_key = '%s-%s' % (obj_type, obj_id)
@@ -267,6 +301,7 @@ class ObjectExchange(object):
 				parent_ids.extend(ancestor_ids)
 			else:
 				recurse = False
+		
 		return self.instantiate('object', *parent_ids)
 	
 	def remove_parent(self, child_id, parent_id):
@@ -339,7 +374,7 @@ class ObjectExchange(object):
 		if not(v):
 			return None
 		
-		return self.instantiate('verb', v[0])
+		return self.instantiate('verb', v[0], default_permissions=(name != 'set_default_permissions'))
 	
 	def get_verb_names(self, verb_id):
 		result = self.pool.runQuery(sql.interp("SELECT name FROM verb_name WHERE verb_id = %s", verb_id))
@@ -393,6 +428,10 @@ class ObjectExchange(object):
 		result = self.pool.runQuery(sql.interp("SELECT id FROM player WHERE avatar_id = %s", object_id))
 		return bool(len(result))
 	
+	def is_wizard(self, object_id):
+		result = self.pool.runQuery(sql.interp("SELECT id FROM player WHERE wizard = 't' AND avatar_id = %s", object_id))
+		return bool(len(result))
+	
 	def is_connected_player(self, avatar_id):
 		result = self.pool.runQuery(sql.interp(
 			"""SELECT 1
@@ -402,12 +441,12 @@ class ObjectExchange(object):
 			""", avatar_id))
 		return bool(result)
 	
-	def set_player(self, object_id, is_player, passwd=None):
+	def set_player(self, object_id, is_player, is_wizard=False, passwd=None):
 		player_mode = self.is_player(object_id)
 		if(is_player and not(player_mode)):
 			salt = 've' # TODO: make this random
 			c = crypt.crypt(passwd, salt)
-			self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, crypt=c)))
+			self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, crypt=c, wizard=is_wizard)))
 		elif(not is_player and player_mode):
 			self.pool.runOperation(sql.build_delete('player', dict(avatar_id=object_id)))
 	
@@ -490,25 +529,74 @@ class ObjectExchange(object):
 		
 		return False
 	
-	def is_allowed(self, object_id, permission, subject_type, subject_id):
-		query = dict()
-		if(subject_type == 'object'):
-			query['object_id'] = subject_id
-		elif(subject_type == 'verb'):
-			query['verb_id'] = subject_id
-		elif(subject_type == 'property'):
-			query['property_id'] = subject_id
+	def is_allowed(self, accessor, permission, subject):
+		result = self.pool.runQuery(sql.build_select('permission', name=permission))
+		if(result):
+			permission_id = result[0]['id']
+		else:
+			return False
 		
-		query['__order_by'] = "rule"
+		result = self.pool.runQuery(sql.build_select('permission', name='anything'))
+		if(result):
+			anything_id = result[0]['id']
+		else:
+			anything_id = None
 		
-		access_query = sql.build_select('access', query)
-		return True
+		access_query = sql.build_select('access', dict(
+			object_id		= subject.get_id() if isinstance(subject, model.Object) else None,
+			verb_id			= subject.get_id() if isinstance(subject, model.Verb) else None,
+			property_id		= subject.get_id() if isinstance(subject, model.Property) else None,
+			permission_id	= (permission_id, anything_id),
+			__order_by		= 'weight DESC',
+		))
 		
-		# rule allow/deny
-		# permission_id
-		# 
-		# type accessor/group
-		# group
+		acl = self.pool.runQuery(access_query)
+		
+		result = False
+		for rule in acl:
+			rule_type = (rule['rule'] == 'allow')
+			if(rule['type'] == 'group'):
+				if(rule['group'] == 'owners' and accessor.owns(subject)):
+					result = rule_type
+				elif(rule['group'] == 'wizards' and self.is_wizard(accessor.get_id())):
+					result = rule_type
+				elif(rule['group'] == 'everyone'):
+					result = rule_type
+			elif(rule['type'] == 'accessor'):
+				if(rule['accessor_id'] == accessor.get_id()):
+					result = rule_type
+		return result
+	
+	def allow(self, subject, accessor, permission, create=False):
+		self._grant('allow', subject, accessor, permission, create)
+	
+	def deny(self, subject, accessor, permission, create=False):
+		self._grant('deny', subject, accessor, permission, create)
+	
+	def _grant(self, rule, subject, accessor, permission, create=False):
+		result = self.pool.runQuery(sql.build_select('permission', name=permission))
+		if(result):
+			permission_id = result[0]['id']
+		elif(create):
+			if(self.ctx):
+				self.ctx.check('grant', subject)
+			permission_id = self.pool.runQuery(sql.build_insert('permission', dict(
+				name	= permission
+			)) + ' RETURNING id')[0]['id']
+		else:
+			raise ValueError("No such permission %r" % permission)
+		
+		self.pool.runOperation(sql.build_insert('access', {
+			'object_id'		: subject.get_id() if isinstance(subject, model.Object) else None,
+			'verb_id'		: subject.get_id() if isinstance(subject, model.Verb) else None,
+			'property_id'	: subject.get_id() if isinstance(subject, model.Property) else None,
+			'rule'			: rule,
+			'permission_id'	: permission_id,
+			'type'			: 'accessor' if isinstance(accessor, (int, long)) else 'group',
+			'accessor_id'	: accessor if isinstance(accessor, (int, long)) else None,
+			'"group"'		: accessor if isinstance(accessor, str) else None,
+			'weight'		: 0,
+		}))
 	
 	def validate_password(self, object_id, password):
 		saved_crypt = self.pool.runQuery(sql.interp(

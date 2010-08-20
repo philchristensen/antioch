@@ -60,10 +60,9 @@ def load_schema(psql_path, db_url, schema_path, psql_args=[], create=False):
 		dsn.get('db') or 'txspace',
 	] + list(psql_args)
 	
-	child = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+	child = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 	child.wait()
 
 def load_python(pool, python_path):
 	x = exchange.ObjectExchange(pool)
 	execfile(python_path, globals(), dict(exchange=x))
-	x.commit()

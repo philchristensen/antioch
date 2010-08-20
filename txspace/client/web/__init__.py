@@ -305,7 +305,7 @@ class ClientConnector(athena.LiveElement):
 			defer.returnValue(None)
 		
 		data = simplejson.loads(msg.content.body.decode('utf8'))
-		print data
+		
 		if(data['command'] == 'observe'):
 			yield self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):

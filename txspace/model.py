@@ -23,6 +23,18 @@ weak references-based dictionary keyed on object ID would be sufficient.
 
 from txspace import errors, code
 
+default_permissions = (
+	'anything',
+	'read',
+	'write',
+	'entrust',
+	'execute',
+	'move',
+	'transmute',
+	'derive',
+	'develop',
+)
+
 class PropertyStub(object):
 	def __init__(self, value):
 		self.value = value
@@ -59,7 +71,7 @@ class Entity(object):
 		self._ex.save(self)
 	
 	def get_owner(self):
-		self.check('read', self)
+		#self.check('read', self)
 		return self.get_exchange().instantiate('object', id=self._owner_id)
 	
 	owner = property(get_owner, set_owner)
@@ -67,7 +79,19 @@ class Entity(object):
 	def check(self, permission, subject):
 		ctx = self.get_context()
 		if ctx and not(ctx.is_allowed(permission, subject)):
-			raise errors.PermissionError(' '.join([str(ctx), permission, str(subject)]))
+			raise errors.ACLError(ctx, permission, subject)
+	
+	def allow(self, accessor, permission, create=False):
+		if(isinstance(accessor, Object)):
+			self._ex.allow(self, accessor.get_id(), permission, create)
+		else:
+			self._ex.allow(self, accessor, permission, create)
+	
+	def deny(self, accessor, permission, create=False):
+		if(isinstance(accessor, Object)):
+			self._ex.deny(self, accessor.get_id(), permission, create)
+		else:
+			self._ex.deny(self, accessor, permission, create)
 	
 	def get_type(self):
 		return type(self).__name__.lower()
@@ -94,8 +118,11 @@ class Object(Entity):
 		# used for verbs
 		v = self.get_verb(name)
 		if(v is None):
-			raise AttributeError("No such verb `%s` on %s" % (name, self))
+			raise errors.NoSuchVerbError("No such verb `%s` on %s" % (name, self))
 		return v
+	
+	def owns(self, subject):
+		return subject.get_owner() == self
 	
 	def get_verb(self, name, recurse=True):
 		self.check('read', self)
@@ -104,7 +131,12 @@ class Object(Entity):
 	
 	def add_verb(self, name):
 		self.check('write', self)
-		owner_id = self._ex.get_context().get_id()
+		ctx = self._ex.get_context()
+		if(ctx):
+			owner_id = ctx.get_id()
+		else:
+			owner_id = None
+		
 		v = self._ex.instantiate('verb', origin_id=self._id, owner_id=owner_id)
 		v.add_name(name)
 		return v
@@ -158,8 +190,8 @@ class Object(Entity):
 	def is_player(self):
 		return self._ex.is_player(self.get_id())
 	
-	def set_player(self, is_player, passwd=None):
-		return self._ex.set_player(self.get_id(), is_player, passwd)
+	def set_player(self, is_player, is_wizard=False, passwd=None):
+		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
 	
 	def is_connected_player(self):
 		return self._ex.is_connected_player(self.get_id())
@@ -228,7 +260,7 @@ class Object(Entity):
 		self._ex.add_parent(parent.get_id(), self.get_id())
 	
 	def is_allowed(self, permission, subject):
-		return self._ex.is_allowed(self.get_id(), permission, subject.get_type(), subject.get_id())
+		return self._ex.is_allowed(self, permission, subject)
 	
 	name = property(get_name, set_name)
 	location = property(get_location, set_location)
@@ -252,9 +284,11 @@ class Verb(Entity):
 			raise RuntimeError("%s is not a method." % self)
 		self.check('execute', self)
 		
-		env = dict(
-			value	= 'some value',
-		)
+		from txspace import parser
+		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
+		env = default_parser.get_environment()
+		env['args'] = args
+		env['kwargs'] = kwargs
 		code.r_exec(self._code, env)
 	
 	def execute(self, parser):

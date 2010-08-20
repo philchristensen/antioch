@@ -163,7 +163,7 @@ class TransactionParser(object):
 	The parser instance is created by the avatar. A new instance is created
 	for each remote call to perspective_parse.
 	"""
-	def __init__(self, lexer, caller, exchange, queue):
+	def __init__(self, lexer, caller, exchange):
 		"""
 		Create a new parser object for the given command, as issued by
 		the given caller, using the registry.
@@ -171,7 +171,6 @@ class TransactionParser(object):
 		self.lexer = lexer
 		self.caller = caller
 		self.exchange = exchange
-		self.queue = queue
 		
 		self.this = None
 		
@@ -215,16 +214,16 @@ class TransactionParser(object):
 	
 	def get_environment(self):
 		def api_write(user, text, is_error=False):
-			print 'trying to write: ' + str(text)
-			self.queue.send(user.get_id(), dict(
+			#print 'trying to write: ' + str(text)
+			self.exchange.queue.send(user.get_id(), dict(
 				command		= 'write',
 				text		= str(text),
 				is_error	= is_error,
 			))
 		
 		def api_observe(user, observations):
-			print 'trying to display: ' + str(observations)
-			self.queue.send(user.get_id(), dict(
+			#print 'trying to display: ' + str(observations)
+			self.exchange.queue.send(user.get_id(), dict(
 				command			= 'observe',
 				observations	= observations,
 			))
@@ -240,7 +239,7 @@ class TransactionParser(object):
 			this			= self.this,
 			
 			system			= self.exchange.get_object(1),
-			here			= self.caller.get_location(),
+			here			= self.caller.get_location() if self.caller else None,
 			
 			write			= api_write,
 			observe			= api_observe,

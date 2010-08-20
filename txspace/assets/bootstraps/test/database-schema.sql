@@ -88,6 +88,7 @@ CREATE TABLE access (
 	type access_type NOT NULL,
 	accessor_id bigint REFERENCES object ON DELETE CASCADE,
 	"group" group_type,
+	weight serial,
 	PRIMARY KEY (id),
 	CONSTRAINT permission_uniq UNIQUE(object_id, verb_id, property_id, rule, permission_id, type, accessor_id, "group"),
 	CONSTRAINT object_id_only CHECK(
@@ -124,6 +125,7 @@ CREATE TABLE player (
 	id bigserial,
 	avatar_id bigint REFERENCES object ON DELETE SET NULL,
 	session_id bigint,
+	wizard boolean NOT NULL,
 	crypt varchar(255) NOT NULL,
 	last_login timestamp,
 	last_logout timestamp,

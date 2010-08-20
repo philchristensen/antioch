@@ -6,6 +6,7 @@
 import re
 
 from twisted.trial import unittest
+from twisted.internet import defer
 
 from txspace import exchange, test, model, errors
 
@@ -26,9 +27,15 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pass
 	
 	def test_instantiate(self):
+		results = [
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True)],
+			[dict(name='System Object', id=1)],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True)],
+			[dict(name='wizard', id=2)],
+		]
 		def runQuery(query, *a, **kw):
 			if(query.startswith('SELECT')):
-				return [dict(name='wizard', id=1)]
+				return results.pop()
 			else:
 				expected_insert = """INSERT INTO object 
 										(id, location_id, name, owner_id, unique_name) 
@@ -148,6 +155,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(p._owner_id, 2048)
 		self.failUnlessEqual(p._dynamic, False)
 	
+	@defer.inlineCallbacks
 	def test_commit(self):
 		ids = list(range(1, 6))
 		
@@ -167,13 +175,14 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runOperation	= runOperation,
 		)
 		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		queue = test.Anything(commit=lambda: defer.Deferred().callback(None))
+		ex = exchange.ObjectExchange(pool, queue, ctx)
 		for index in range(1, 6):
 			o = model.Object(ex)
 			o.set_id(index)
 			ex.cache['object-%s' % index] = o
 		
-		ex.commit()
+		yield ex.commit()
 		
 		self.failUnlessEqual(ex.cache, {})
 	
@@ -396,7 +405,6 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			ex.cache['object-%s' % obj_id] = o
 		
 		expected_ids = expected_ids[1:]
-		
 		parents = ex.get_parents(1024)
 		for parent in parents:
 			expected_ids.remove(parent.get_id())
@@ -714,14 +722,15 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_get_contents(self):
 		results = [
-			[dict(id=2048)],
-			[dict(id=4096)],
+			# [dict(id=2048)],
+			# [dict(id=4096)],
 			[], 
 			[dict(id=4096), dict(id=2048)],
 		]
 		
 		queries = [
-			'SELECT id FROM object WHERE location_id IN %s',
+			'SELECT parent_id FROM object_relation WHERE child_id = 4096',
+			'SELECT p.* FROM property p WHERE p.name = 0 AND p.origin_id = 4096',
 			'SELECT id FROM object WHERE location_id = 1024',
 		]
 		

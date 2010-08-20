@@ -67,22 +67,6 @@ class Parse(WorldTransaction):
 				]
 	response = [('response', amp.Boolean())]
 
-class DetailObject(WorldTransaction):
-	arguments = [
-				('user_id', amp.Integer()),
-				('lookup_key', amp.String()),
-				]
-	response = [
-				('id', amp.Integer()),
-				('name', amp.String()),
-				('description', amp.String()),
-				('location_id', amp.Integer()),
-				('contents', amp.AmpList([
-					('name', amp.String()),
-					('type', amp.String()),
-				])),
-				]
-
 class ModifyObject(WorldTransaction):
 	arguments = [
 				('object_id', amp.Integer()),
@@ -181,9 +165,10 @@ class TransactionChild(child.AMPChild):
 		self.msg_service = messaging.MessageService()
 	
 	def get_exchange(self, ctx=None):
-		return exchange.ObjectExchange(self.pool, ctx)
+		return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
 	
 	@Authenticate.responder
+	@defer.inlineCallbacks
 	def authenticate(self, username, password):
 		exchange = self.get_exchange()
 		
@@ -192,7 +177,7 @@ class TransactionChild(child.AMPChild):
 			user = authentication(username, password)
 			if not(user):
 				raise errors.PermissionError("Invalid login credentials. (1)")
-			return {'user_id': user.get_id()}
+			defer.returnValue({'user_id': user.get_id()})
 		try:
 			user = exchange.get_object(username)
 			if not(user):
@@ -208,10 +193,11 @@ class TransactionChild(child.AMPChild):
 		if not(exchange.validate_password(user.get_id(), password)):
 			raise errors.PermissionError("Invalid login credentials. (6)")
 		
-		exchange.commit()
-		return {'user_id': user.get_id()}
+		yield exchange.commit()
+		defer.returnValue({'user_id': user.get_id()})
 	
 	@Login.responder
+	@defer.inlineCallbacks
 	def login(self, user_id, ip_address):
 		print 'user #%s logged in from %s' % (user_id, ip_address)
 		
@@ -227,10 +213,11 @@ class TransactionChild(child.AMPChild):
 		if(system.has_verb("login")):
 			system.login(user)
 		
-		exchange.commit()
-		return {'response': True}
+		yield exchange.commit()
+		defer.returnValue({'response': True})
 	
 	@Logout.responder
+	@defer.inlineCallbacks
 	def logout(self, user_id):
 		print 'user #%s logged out' % (user_id,)
 		
@@ -243,29 +230,27 @@ class TransactionChild(child.AMPChild):
 		if(system.has_verb("logout")):
 			system.logout(user)
 		
-		exchange.commit()
-		return {'response': True}
+		yield exchange.commit()
+		defer.returnValue({'response': True})
 	
 	@Parse.responder
 	@defer.inlineCallbacks
 	def parse(self, user_id, sentence):
 		exchange = self.get_exchange(user_id)
-		messages = self.msg_service.get_queue()
-		
 		caller = exchange.get_object(user_id)
 		
 		try:
 			log.msg('%s: %s' % (caller, sentence))
 			
 			l = parser.Lexer(sentence)
-			p = parser.TransactionParser(l, caller, exchange, messages)
+			p = parser.TransactionParser(l, caller, exchange)
 			
 			v = p.get_verb()
 			v.execute(p)
 		except errors.TestError, e:
 			raise e
 		except errors.UserError, e:
-			messages.send(user_id, dict(
+			exchange.queue.send(user_id, dict(
 				command		= 'write',
 				text		= str(e),
 				is_error	= True,
@@ -274,97 +259,50 @@ class TransactionChild(child.AMPChild):
 			import traceback
 			trace = traceback.format_exc()
 			print 'BAD_ERROR: ' + trace
-			messages.send(user_id, dict(
+			exchange.queue.send(user_id, dict(
 				command		= 'write',
 				text		= trace,
 				is_error	= True,
 			))
 		
-		exchange.commit()
-		try:
-			yield self.msg_service.connect()
-			yield messages.commit()
-		except Exception, e:
-			print 'ERR: %s' % e
+		yield exchange.commit()
 		
 		defer.returnValue({'response': True})
 	
-	@DetailObject.responder
-	def detail_object(self, user_id, lookup_key):
-		exchange = self.get_exchange(user_id)
-		
-		obj = exchange.get_object(lookup_key)
-		return dict(
-			id			= obj.get_id(),
-			name		= obj.get_name(),
-			location_id	= obj._location_id or 0,
-			description	= obj.get('description', 'Nothing much to see here.').value,
-			contents	= [],
-		)
-	
 	@ModifyObject.responder
 	def modify_object(self, object_id, name, unique_name, owner_id, location_id):
-		exchange = self.get_exchange()
-		exchange.commit()
 		return {'response': None}
 	
 	@CreateObject.responder
 	def create_object(self, name, unique_name, owner_id, location_id):
-		exchange = self.get_exchange()
-		
-		obj = exchange.new(name, unique_name)
-		owner = exchange.get_object(owner_id)
-		location = exchange.get_object(location_id)
-		
-		obj.set_owner(owner)
-		obj.set_location(location)
-		
-		exchange.commit()
 		return {'response': obj.get_id()}
 	
 	@DeleteObject.responder
 	def delete_object(self, object_id):
-		exchange = self.get_exchange()
-		exchange.remove(object_id)
-		exchange.commit()
 		return {'response': True}
 	
 	@ModifyVerb.responder
 	def modify_verb(self, verb_id, **details):
-		exchange = self.get_exchange()
-		exchange.commit()
 		return {'response': None}
 	
 	@CreateVerb.responder
 	def create_verb(self, **details):
-		exchange = self.get_exchange()
-		exchange.commit()
 		return {'response': None}
 	
 	@DeleteVerb.responder
 	def delete_verb(self, verb_id):
-		exchange = self.get_exchange()
-		exchange.remove('verb', verb_id)
-		exchange.commit()
 		return {'response': True}
 	
 	@ModifyProperty.responder
 	def modify_property(self, property_id, **details):
-		exchange = self.get_exchange()
-		exchange.commit()
 		return {'response': None}
 	
 	@CreateProperty.responder
 	def create_property(self, **details):
-		exchange = self.get_exchange()
-		exchange.commit()
 		return {'response': None}
 	
 	@DeleteProperty.responder
 	def delete_property(self, property_id, **details):
-		exchange = self.get_exchange()
-		self.exchange.remove('property', property_id)
-		exchange.commit()
 		return {'response': True}
 	
 	# @ModifyPermissions.responder

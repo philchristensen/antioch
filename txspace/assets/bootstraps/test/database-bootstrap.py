@@ -8,28 +8,44 @@
 Default database bootstrap.
 """
 
-from txspace import model
+from txspace import model, sql
+
+for name in model.default_permissions:
+	exchange.pool.runOperation(sql.build_insert('permission', name=name))
 
 system = exchange.instantiate('object', name='System Object')
-wizard = exchange.instantiate('object', name='Wizard', unique_name=True)
-phil = exchange.instantiate('object', name= 'Phil', unique_name=True)
+set_default_permissions_verb = model.Verb(system)
+set_default_permissions_verb._method = True
+set_default_permissions_verb._code = """#!txspace
+obj = args[0]
+obj.allow('wizards', 'anything')
+obj.allow('owners', 'anything')
+obj.allow('everyone', 'read')
+"""
+exchange.save(set_default_permissions_verb)
+set_default_permissions_verb.add_name('set_default_permissions')
 
-room = exchange.instantiate('object', name='The Laboratory')
-box = exchange.instantiate('object', name='box')
+wizard = exchange.instantiate('object', name='Wizard', unique_name=True)
+wizard.set_owner(wizard)
 
 system.set_owner(wizard)
-wizard.set_owner(wizard)
+set_default_permissions_verb.set_owner(wizard)
+
+room = exchange.instantiate('object', name='The Laboratory')
 room.set_owner(wizard)
 
+phil = exchange.instantiate('object', name= 'Phil', unique_name=True)
 phil.set_owner(phil)
+
+box = exchange.instantiate('object', name='box')
 box.set_owner(phil)
 
 wizard.set_location(room)
 phil.set_location(room)
 box.set_location(room)
 
-wizard.set_player(True, 'wizard')
-phil.set_player(True, 'phil')
+wizard.set_player(True, is_wizard=True, passwd='wizard')
+phil.set_player(True, passwd='phil')
 
 exec_verb = exchange.instantiate('verb', dict(
 	owner_id = wizard.get_id(),
