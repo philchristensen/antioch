@@ -37,9 +37,12 @@ default_permissions = (
 
 class PropertyStub(object):
 	def __init__(self, value):
-		self.value = value
+		self.value = value	
 
 class Entity(object):
+	def __repr__(self):
+		return '<%s %s>' % (self.__class__.__name__, self)
+	
 	def set_id(self, id):
 		if(self._id != 0):
 			raise RuntimeError("Can't redefine a %s's ID." % self.get_type())
@@ -65,13 +68,22 @@ class Entity(object):
 	def get_context(self):
 		return self._ex.get_context()
 	
+	def save(self):
+		self._ex.save(self)
+	
+	def destroy(self):
+		self.check('destroy', self)
+		self._ex.destroy(self)
+	
 	def set_owner(self, owner):
 		self.check('entrust', self)
 		self._owner_id = owner.get_id()
-		self._ex.save(self)
+		self.save()
 	
 	def get_owner(self):
 		#self.check('read', self)
+		if not(self._owner_id):
+			return None
 		return self.get_exchange().instantiate('object', id=self._owner_id)
 	
 	owner = property(get_owner, set_owner)
@@ -79,7 +91,7 @@ class Entity(object):
 	def check(self, permission, subject):
 		ctx = self.get_context()
 		if ctx and not(ctx.is_allowed(permission, subject)):
-			raise errors.ACLError(ctx, permission, subject)
+			raise errors.AccessError(ctx, permission, subject)
 	
 	def allow(self, accessor, permission, create=False):
 		if(isinstance(accessor, Object)):
@@ -125,17 +137,14 @@ class Object(Entity):
 		return subject.get_owner() == self
 	
 	def get_verb(self, name, recurse=True):
-		self.check('read', self)
+		# self.check('read', self)
 		v = self._ex.get_verb(self._id, name, recurse=recurse)
 		return v
 	
 	def add_verb(self, name):
 		self.check('write', self)
 		ctx = self._ex.get_context()
-		if(ctx):
-			owner_id = ctx.get_id()
-		else:
-			owner_id = None
+		owner_id = ctx.get_id() if ctx else None
 		
 		v = self._ex.instantiate('verb', origin_id=self._id, owner_id=owner_id)
 		v.add_name(name)
@@ -150,34 +159,35 @@ class Object(Entity):
 	def get(self, name, default=None):
 		try:
 			return self[name]
-		except KeyError, e:
+		except errors.NoSuchPropertyError, e:
 			return PropertyStub(default)
 	
 	def get_ancestor_with(self, type, name):
 		return self._ex.get_ancestor_with(self._id, type, name)
 	
 	def __getitem__(self, name):
+		if(isinstance(name, (int, long))):
+			raise IndexError(name)
 		# used for properties
 		p = self.get_property(name)
 		if(p is None):
-			raise KeyError("No such property `%s` on %s" % (name, self))
+			raise errors.NoSuchPropertyError(name, self)
 		return p
 	
 	def __contains__(self, name):
 		return self.has_readable_property(name)
 	
 	def get_property(self, name, recurse=True):
-		self.check('read', self)
+		# self.check('read', self)
 		p = self._ex.get_property(self._id, name, recurse=recurse)
-		if(p is None):
-			raise KeyError("No such property `%s` on %s" % (name, self))
-		if(p.origin != self):
-			self.check('inherit', p)
+		# if(p is not None and p.origin != self):
+		# 	return self.check('inherit', p)
 		return p
 	
 	def add_property(self, name):
 		self.check('write', self)
-		owner_id = self._ex.get_context().get_id()
+		ctx = self._ex.get_context()
+		owner_id = ctx.get_id() if ctx else None
 		p = self._ex.instantiate('property', origin_id=self._id, name=name, owner_id=owner_id)
 		return p
 	
@@ -205,7 +215,7 @@ class Object(Entity):
 				raise ValueError("Sorry, '%s' is an ambiguous name." % name)
 			
 			self._name = name
-			self._ex.save(self)
+			self.save()
 		else:
 			if('name' in self):
 				self['name'].value = name
@@ -234,14 +244,16 @@ class Object(Entity):
 		if(self.contains(location)):
 			raise errors.RecursiveError("Sorry, '%s' already contains '%s'" % (self, location))
 		self._location_id = location.get_id()
-		self._ex.save(self)
+		self.save()
 	
 	def get_location(self):
 		self.check('read', self)
+		if not(self._location_id):
+			return None
 		return self._ex.instantiate('object', id=self._location_id)
 	
 	def has_parent(self, parent):
-		return self._ex.has_parent(parent.get_id(), self.get_id())
+		return self._ex.has_parent(self.get_id(), parent.get_id())
 	
 	def get_parents(self, recurse=False):
 		self.check('read', self)
@@ -257,7 +269,7 @@ class Object(Entity):
 		
 		if(parent.has_parent(self)):
 			raise errors.RecursiveError("Sorry, '%s' is already parent to '%s'" % (self, parent))
-		self._ex.add_parent(parent.get_id(), self.get_id())
+		self._ex.add_parent(self.get_id(), parent.get_id())
 	
 	def is_allowed(self, permission, subject):
 		return self._ex.is_allowed(self, permission, subject)
@@ -286,15 +298,23 @@ class Verb(Entity):
 		
 		from txspace import parser
 		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
-		env = default_parser.get_environment()
+		env = code.get_environment(default_parser)
 		env['args'] = args
 		env['kwargs'] = kwargs
 		code.r_exec(self._code, env)
 	
+	def __str__(self):
+		"""
+		Return a string representation of this class.
+		"""
+		return "#%s%s%s on #%d" % (
+			self._id, ['', ' ability'][self._ability], ['', ' method'][self._method], self._origin_id
+		)
+	
 	def execute(self, parser):
 		self.check('execute', self)
 		
-		env = parser.get_environment()
+		env = code.get_environment(parser)
 		code.r_exec(self._code, env)
 	
 	def add_name(self, name):
@@ -306,12 +326,18 @@ class Verb(Entity):
 		return self._ex.remove_verb_name(self.get_id(), name)
 	
 	def get_names(self):
+		# self.check('read', self)
 		return self._ex.get_verb_names(self.get_id())
+	
+	def set_names(self, given_names):
+		old_names = self.get_names()
+		[self.remove_name(n) for n in old_names if n not in given_names]
+		[self.add_name(n) for n in given_names if n not in old_names]
 	
 	def set_code(self, code):
 		self.check('develop', self)
 		self._code = code
-		self._ex.save(self)
+		self.save()
 	
 	def get_code(self):
 		self.check('read', self)
@@ -320,19 +346,19 @@ class Verb(Entity):
 	def set_ability(self, ability):
 		self.check('develop', self)
 		self._ability = bool(ability)
-		self._ex.save(self)
+		self.save()
 	
 	def is_ability(self):
-		self.check('read', self)
+		# self.check('read', self)
 		return self._ability
 	
 	def set_method(self, method):
 		self.check('develop', self)
 		self._method = bool(method)
-		self._ex.save(self)
+		self.save()
 	
 	def is_method(self):
-		self.check('read', self)
+		# self.check('read', self)
 		return self._method
 	
 	def is_executable(self):
@@ -341,6 +367,14 @@ class Verb(Entity):
 		except errors.PermissionError, e:
 			return False
 		return True
+	
+	def performable_by(self, caller):
+		if(self.is_method()):
+			return False
+		if not(caller.is_allowed('execute', self)):
+			return False
+		elif(self.is_ability()):
+			return caller is self.origin or caller.has_parent(self.origin)
 	
 	name = property(lambda x: x.get_names().pop(0))
 	names = property(get_names)
@@ -360,8 +394,14 @@ class Property(Entity):
 		
 		self._name = ''
 		self._value = None
-		self._dynamic = False
+		self._type = 'string'
 		self._owner_id = None
+	
+	def __str__(self):
+		"""
+		Return a string representation of this class.
+		"""
+		return '#%d (%s) = %s(%s) on #%d' % (self._id, self._name, self._type, self._value, self._origin_id)
 	
 	def is_readable(self):
 		try:
@@ -373,19 +413,19 @@ class Property(Entity):
 	def set_name(self, name):
 		self.check('write', self)
 		self._name = name
-		self._ex.save(self)
+		self.save()
 	
 	def get_name(self):
 		self.check('read', self)
 		return self._name
 	
-	def set_value(self, value, dynamic=False):
+	def set_value(self, value, type='string'):
 		self.check('write', self)
-		if(self._dynamic):
+		if(type == 'dynamic'):
 			raise RuntimeError('Dynamic properties not available yet.')
 		self._value = value
-		self._dynamic = dynamic
-		self._ex.save(self)
+		self._type = type
+		self.save()
 	
 	def get_value(self):
 		self.check('read', self)

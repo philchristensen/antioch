@@ -147,13 +147,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			value		= 'some random string',
 			origin_id	= 1024,
 			owner_id	= 2048,
-			dynamic		= False,
+			type		= 'string',
 		))
 		
 		self.failUnlessEqual(p.get_name(), 'my property')
 		self.failUnlessEqual(p._origin_id, 1024)
 		self.failUnlessEqual(p._owner_id, 2048)
-		self.failUnlessEqual(p._dynamic, False)
+		self.failUnlessEqual(p._type, 'string')
 	
 	@defer.inlineCallbacks
 	def test_commit(self):
@@ -245,10 +245,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	def test_save_property(self):
 		expected_results = [False, [dict(id=1024)]]
 		expected_query = """UPDATE property 
-							SET dynamic = 'f', 
-								name = 'myprop', 
+							SET name = 'myprop', 
 								origin_id = 0, 
 								owner_id = NULL, 
+								type = 'string', 
 								value = NULL 
 							WHERE id = 1024
 							""".replace('\n', '').replace('\t', '')
@@ -450,9 +450,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_remove_parent(self):
 		def runOperation(q, *a, **kw):
-			self.failUnlessEqual(q, 'DELETE FROM object_relation WHERE child_id = %s AND parent_id = %s')
-			self.failUnlessEqual(a[0], 1024)
-			self.failUnlessEqual(a[1], 2048)
+			self.failUnlessEqual(q, 'DELETE FROM object_relation WHERE child_id = 1024 AND parent_id = 2048')
 		
 		pool = test.Anything(
 			runOperation		= runOperation,
@@ -464,9 +462,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_add_parent(self):
 		def runOperation(q, *a, **kw):
-			self.failUnlessEqual(q, 'INSERT INTO object_relation (child_id, parent_id) VALUES (%s, %s)')
-			self.failUnlessEqual(a[0], 1024)
-			self.failUnlessEqual(a[1], 2048)
+			self.failUnlessEqual(q, 'INSERT INTO object_relation (child_id, parent_id) VALUES (1024, 2048)')
 		
 		pool = test.Anything(
 			runOperation		= runOperation,
@@ -599,7 +595,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= lambda *a, **kw: results.pop(),
 			runOperation	= lambda q, *a, **kw:
-				self.failUnlessEqual(q, "UPDATE property SET dynamic = 'f', name = 'description', origin_id = 1024, owner_id = NULL, value = NULL WHERE id = 2048")
+				self.failUnlessEqual(q, "UPDATE property SET name = 'description', origin_id = 1024, owner_id = NULL, type = 'string', value = NULL WHERE id = 2048")
 		)
 		ctx = test.Anything(
 			get_type	= lambda:'object',

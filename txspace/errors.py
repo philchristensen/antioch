@@ -96,7 +96,7 @@ class AmbiguousVerbError(UserError):
 				result = result + ", "
 			if(index == len(matches) - 1):
 				result = result + " and "
-			result = result + match
+			result = result + str(match)
 		result = result + "."
 		UserError.__init__(self, result, matches)
 
@@ -105,7 +105,7 @@ class PermissionError(UserError):
 	The user tried to do something he doesn't have permission for. (duh?)
 	"""
 
-class ACLError(PermissionError):
+class AccessError(PermissionError):
 	"""
 	A more specific kind of PermissionError.
 	"""
@@ -154,6 +154,13 @@ class NoSuchVerbError(UserError):
 	"""
 	def __init__(self, name):
 		UserError.__init__(self, "I don't know how to do that.", name)
+
+class NoSuchPropertyError(UserError):
+	"""
+	Raised by the system when it cannot find a needed property.
+	"""
+	def __init__(self, name, origin=None):
+		UserError.__init__(self, "There is no '" + str(name) + "' property defined" + ['.', ' on %s.' % origin][bool(origin)])
 
 class ExecutionError(UserError):
 	"""

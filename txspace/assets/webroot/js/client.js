@@ -111,7 +111,7 @@ txspace.ClientConnector.methods(
 		/*
 		 * Called by the server to open an object editor window.
 		 */
-		return openEditor('entity', info, 435, 390);
+		return openEditor('object', info, 435, 390);
 	},
 	function verbedit(self, info){
 		/*
@@ -125,11 +125,11 @@ txspace.ClientConnector.methods(
 		 */
 		return openEditor('property', info, 821, 351);
 	},
-	function acledit(self, info){
+	function accessedit(self, info){
 		/*
-		 * Called by the server to open an ACL editor window.
+		 * Called by the server to open an access editor window.
 		 */
-		return openEditor('acl', info, 435, 390);
+		return openEditor('access', info, 435, 290);
 	},
 	function logout(self){
 		/*
@@ -157,7 +157,8 @@ function openEditor(type, info, width, height){
 	var resultDeferred = new Divmod.Defer.Deferred();
 	
 	var window_name = type + '-' + Date.now();
-	var editorWindow = window.open('/edit/' + type, window_name, 'menubar=no,status=no,toolbar=no,location=no,directories=no,resizable=yes,scrollbars=no,width=' + width + ',height=' + height);
+	var scrollbars = 'auto';
+	var editorWindow = window.open('/edit/' + type, window_name, 'menubar=no,status=no,toolbar=no,location=no,directories=no,resizable=yes,scrollbars=' + scrollbars + ',width=' + width + ',height=' + height);
 	
 	editorDetails[window_name] = {
 		info			: info,
@@ -167,7 +168,7 @@ function openEditor(type, info, width, height){
 	// this 'thread' waits for the editor window to
 	// close before cancelling the waiting deferred
 	var spyID = setInterval(function(){
-		if(editorWindow.closed && ! resultDeferred._called){
+		if(editorWindow && editorWindow.closed && ! resultDeferred._called){
 			resultDeferred.callback(null);
 			delete editorDetails[window_name];
 			clearInterval(spyID);

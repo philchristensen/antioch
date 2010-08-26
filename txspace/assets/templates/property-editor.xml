@@ -11,19 +11,26 @@
 <body>
 	<div class="editor">
 		<div class="controls">
-			<label id="name-label" for="name-field">Name:</label><input type="text" id="name-field" size="20"/>
-			<label id="owner-label" for="owner-field">Owner:</label><input type="text" id="owner-field" size="20"/>
+			<label id="name-label" for="name-field">Name:</label>
+			<input type="text" id="name-field" size="20"/>
+			
+			<label id="owner-label" for="owner-field">Owner:</label>
+			<input type="text" id="owner-field" size="20"/>
+			
+			<input type="button" id="access-button" value="Access..." />
+			
 			<label id="type-label" for="type-field">Type:</label>
 			<select id="type-select">
-				<option value="0">string</option>
-				<option value="1">string (html)</option>
-				<option value="2">python</option>
-				<option value="3">dynamic python</option>
+				<option value="string">string</option>
+				<option value="python">python</option>
+				<option value="dynamic">dynamic python</option>
 			</select>
-			<input type="button" id="acl-button" value="Permissions..." />
+			
+			<label id="html-label" for="html-checkbox">HTML:</label>
+			<input type="checkbox" id="html-checkbox" />
 		</div>
 		<div>
-			<textarea id="prop_code" rows="33" cols="100"></textarea>
+			<textarea id="property-value" rows="33" cols="100"></textarea>
 		</div>
 	</div>
 	<input type="button" id="cancel-button" value="cancel" />

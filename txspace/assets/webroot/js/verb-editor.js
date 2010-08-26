@@ -7,7 +7,7 @@ function loadVerb(){
 	$('#names-field').val(info['names']);
 	$('#owner-field').val(info['owner']);
 	
-	editor = new CodeMirror(CodeMirror.replace("verb_code"), {
+	editor = new CodeMirror(CodeMirror.replace("verb-code"), {
 		parserfile: ["parsetxspace.js"],
 		path: "/assets/CodeMirror-0.63/js/",
 		stylesheet: "/assets/CodeMirror-0.63/css/txspacecolors.css",
@@ -24,7 +24,7 @@ function saveVerb(){
 	var details = getEditorDetails(window);
 	var info = {};
 	
-	info['names'] = $('#names-field').val().split(/,\s*/);
+	info['names'] = $('#names-field').val();
 	info['owner'] = $('#owner-field').val();
 	info['code'] = editor.getCode();
 	
@@ -38,16 +38,16 @@ function cancelVerb(){
 	window.close();
 }
 
-function requestACLEditor(){
+function requestAccessEditor(){
 	var connector = window.opener.getConnector();
 	var details = getEditorDetails(window);
-	var deferred = connector.callRemote('req_acl_editor', details.info['origin'], details.info['names'][0]);
+	var deferred = connector.callRemote('req_access_editor', details.info['origin'], 'verb', details.info['names'][0]);
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
 
 $(document).ready(function(){
-	$('#acl-button').click(requestACLEditor);
+	$('#access-button').click(requestAccessEditor);
 	
 	$('#cancel-button').click(cancelVerb);
 	$('#save-button').click(saveVerb);

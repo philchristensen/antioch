@@ -7,16 +7,16 @@ from txspace import bootstrap, dbapi, assets, transact
 
 psql_path = 'psql'
 
-initialized = False
-pool = None
+initialized = {}
+pool = {}
 
 # dbapi.debug = True
 
-def init_database():
+def init_database(dbid, dataset='minimal'):
 	global initialized, pool, oscar
-	if(initialized):
-		return pool
-	initialized = True
+	if(initialized.get(dbid)):
+		return pool.get(dbid)
+	initialized[dbid] = True
 	
 	db_url = transact.db_url.split('/')
 	db_url[-1] = 'txspace_test'
@@ -24,14 +24,14 @@ def init_database():
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	
-	schema_path = assets.get('bootstraps/test/database-schema.sql')
+	schema_path = assets.get('bootstraps/%s/database-schema.sql' % dataset)
 	bootstrap.load_schema(psql_path, db_url, schema_path)
 	
-	pool = dbapi.connect(db_url)
-	bootstrap_path = assets.get('bootstraps/test/database-bootstrap.py')
-	bootstrap.load_python(pool, bootstrap_path)
+	pool[dbid] = dbapi.connect(db_url)
+	bootstrap_path = assets.get('bootstraps/%s/database-bootstrap.py' % dataset)
+	bootstrap.load_python(pool[dbid], bootstrap_path)
 
-	return pool
+	return pool[dbid]
 
 class Anything(object):
 	def __init__(self, **attribs):

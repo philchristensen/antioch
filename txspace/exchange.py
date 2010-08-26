@@ -35,7 +35,23 @@ import crypt
 from twisted.internet import defer
 from twisted.python import util
 
+from txamqp.client import Closed
+
 from txspace import sql, model, errors
+
+def extract_id(literal):
+	if(isinstance(literal, basestring) and literal.startswith('#')):
+		end = literal.find("(")
+		if(end == -1):
+			end = literal.find( " ")
+		if(end == -1):
+			end = len(literal)
+		return int(literal[1:end])
+	
+	if(isinstance(literal, (int, long))):
+		return literal
+	
+	return None
 
 class ObjectExchange(object):
 	def __init__(self, pool, queue=None, ctx=None):
@@ -49,6 +65,12 @@ class ObjectExchange(object):
 			self.ctx = self.get_object(ctx)
 		else:
 			self.ctx = ctx
+	
+	def __enter__(self):
+		return self
+	
+	def __exit__(self, exc_type, exc_val, exc_tb):
+		self.commit()
 	
 	def get_context(self):
 		return self.ctx
@@ -116,7 +138,7 @@ class ObjectExchange(object):
 		
 		return results
 	
-	new = lambda s, *a, **kw: s.instantiate('object', *a, **kw)
+	new = lambda self, name, *a, **kw: self.instantiate('object', *a, **dict(name=name, **kw))
 	
 	def _mkobject(self, record):
 		obj = model.Object(self)
@@ -130,27 +152,27 @@ class ObjectExchange(object):
 	
 	def _mkverb(self, record):
 		origin = self.instantiate('object', id=record['origin_id'])
-		verb = model.Verb(origin)
+		v = model.Verb(origin)
 		
-		verb._code = record.get('code', '')
-		verb._owner_id = record.get('owner_id', None)
-		verb._ability = record.get('ability', False)
-		verb._method = record.get('method', False)
-		verb._origin_id = record['origin_id']
+		v._code = record.get('code', '')
+		v._owner_id = record.get('owner_id', None)
+		v._ability = record.get('ability', False)
+		v._method = record.get('method', False)
+		v._origin_id = record['origin_id']
 		
-		return verb
+		return v
 	
 	def _mkproperty(self, record):
 		origin = self.instantiate('object', id=record['origin_id'])
-		prop = model.Property(origin)
+		p = model.Property(origin)
 		
-		prop._name = record['name']
-		prop._origin_id = record['origin_id']
-		prop._value = record.get('value', '')
-		prop._dynamic = record.get('dynamic', False)
-		prop._owner_id = record.get('owner_id', None)
+		p._name = record['name']
+		p._origin_id = record['origin_id']
+		p._value = record.get('value', '')
+		p._type = record.get('type', 'string')
+		p._owner_id = record.get('owner_id', None)
 		
-		return prop
+		return p
 	
 	def _mkpermission(self, record):
 		origin = None
@@ -181,7 +203,10 @@ class ObjectExchange(object):
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
-			yield self.queue.commit()
+			try:
+				yield self.queue.commit()
+			except Closed, e:
+				pass
 	
 	def load(self, obj_type, obj_id):
 		obj_key = '%s-%s' % (obj_type, obj_id)
@@ -227,7 +252,7 @@ class ObjectExchange(object):
 				value		= obj._value,
 				owner_id	= obj._owner_id,
 				origin_id	= obj._origin_id,
-				dynamic		= ('f', 't')[obj._dynamic],
+				type		= obj._type,
 			)
 		elif(obj_type == 'permission'):
 			pass
@@ -302,13 +327,44 @@ class ObjectExchange(object):
 			else:
 				recurse = False
 		
-		return self.instantiate('object', *parent_ids)
+		result = self.instantiate('object', *parent_ids)
+		if not(isinstance(result, (list, tuple))):
+			result = [result]
+		return result
+	
+	def has_parent(self, child_id, parent_id):
+		parent_ids = [
+			x['id'] for x in self.pool.runQuery(sql.interp(
+				"""SELECT parent_id AS id
+					FROM object_relation
+					WHERE child_id = %s
+					ORDER BY weight DESC
+				""", child_id))
+		]
+		
+		while(parent_ids):
+			if(parent_id in parent_ids):
+				return True
+			parent_ids = [
+				x['id'] for x in self.pool.runQuery(sql.interp(
+				"""SELECT parent_id AS id
+					FROM object_relation
+					WHERE child_id IN %s
+					ORDER BY weight DESC
+				""", parent_ids))
+			]
+		
+		return False
 	
 	def remove_parent(self, child_id, parent_id):
-		self.pool.runOperation("DELETE FROM object_relation WHERE child_id = %s AND parent_id = %s", child_id, parent_id)
+		self.pool.runOperation(sql.interp(
+			"DELETE FROM object_relation WHERE child_id = %s AND parent_id = %s",
+			child_id, parent_id))
 	
 	def add_parent(self, child_id, parent_id):
-		self.pool.runOperation("INSERT INTO object_relation (child_id, parent_id) VALUES (%s, %s)", child_id, parent_id)
+		self.pool.runOperation(sql.interp(
+			"INSERT INTO object_relation (child_id, parent_id) VALUES (%s, %s)",
+			child_id, parent_id))
 	
 	def has(self, origin_id, item_type, name, recurse=True, unrestricted=True):
 		item = getattr(self, 'get_%s' % item_type, lambda *x: None)(origin_id, name, recurse)
@@ -367,14 +423,34 @@ class ObjectExchange(object):
 					WHERE vn.name = %s
 					  AND v.origin_id = %s
 				""", name, parent_id))
-			if(not v and recurse):
+			if(v or not recurse):
+				break
+			else:
 				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
 				parents.extend([result['parent_id'] for result in results])
-
+		
 		if not(v):
 			return None
 		
 		return self.instantiate('verb', v[0], default_permissions=(name != 'set_default_permissions'))
+	
+	def get_verb_list(self, origin_id):
+		verbs = self.pool.runQuery(sql.interp(
+			"""SELECT v.id, array_agg(vn.name) AS names
+				FROM verb v
+					INNER JOIN verb_name vn ON v.id = vn.verb_id
+				WHERE v.origin_id = %s
+				GROUP BY v.id
+			""", origin_id))
+		return dict([(v['names'][0], v['names']) for v in verbs])
+	
+	def get_property_list(self, origin_id):
+		properties = self.pool.runQuery(sql.interp(
+			"""SELECT p.id, p.name
+				FROM property p
+				WHERE p.origin_id = %s
+			""", origin_id))
+		return dict([(p['name'], p['name']) for p in properties])
 	
 	def get_verb_names(self, verb_id):
 		result = self.pool.runQuery(sql.interp("SELECT name FROM verb_name WHERE verb_id = %s", verb_id))
@@ -397,7 +473,9 @@ class ObjectExchange(object):
 					WHERE p.name = %s
 					  AND p.origin_id = %s
 				""", name, parent_id))
-			if(not p and recurse):
+			if(p or not recurse):
+				break
+			else:
 				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
 				parents.extend([result['parent_id'] for result in results])
 		
@@ -529,6 +607,14 @@ class ObjectExchange(object):
 		
 		return False
 	
+	def get_access(self, object_id, type):
+		return self.pool.runQuery(sql.interp(
+			"""SELECT a.*, p.name AS permission_name
+				FROM access a
+					INNER JOIN permission p ON a.permission_id = p.id
+				WHERE %s_id = %%s
+			""" % type, object_id))
+	
 	def is_allowed(self, accessor, permission, subject):
 		result = self.pool.runQuery(sql.build_select('permission', name=permission))
 		if(result):
@@ -550,10 +636,10 @@ class ObjectExchange(object):
 			__order_by		= 'weight DESC',
 		))
 		
-		acl = self.pool.runQuery(access_query)
+		access = self.pool.runQuery(access_query)
 		
 		result = False
-		for rule in acl:
+		for rule in access:
 			rule_type = (rule['rule'] == 'allow')
 			if(rule['type'] == 'group'):
 				if(rule['group'] == 'owners' and accessor.owns(subject)):
@@ -610,3 +696,4 @@ class ObjectExchange(object):
 		saved_crypt = saved_crypt[0]['crypt']
 		
 		return crypt.crypt(password, saved_crypt[0:2]) == saved_crypt
+	

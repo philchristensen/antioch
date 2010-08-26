@@ -1,66 +1,67 @@
-function loadEntity(){
+function loadObject(){
 	var details = getEditorDetails(window);
 	var info = details.info;
 	
 	$('#name-field').val(info['name']);
-	$('#parent-field').val(info['parent']);
+	$('#parent-field').val(info['parents']);
 	$('#location-field').val(info['location']);
 	$('#owner-field').val(info['owner']);
 	$('#id-field').val(info['id']);
-	$('#type-select').val(info['entity_type']);
 	
 	var verbsSelect = $('#verbs-select');
 	verbsSelect.empty()
-	for(index in info['verbs']){
-		var verb = info['verbs'][index];
-		verbsSelect.append('<option value="' + verb + '">' + verb + '</option>');
+	for(key in info['verbs']){
+		var v = info['verbs'][key];
+		verbsSelect.append('<option value="' + key + '">' + v.join(',') + '</option>');
 	}
 	
-	var propsSelect = $('#props-select');
-	propsSelect.empty()
-	for(index in info['properties']){
-		var prop = info['properties'][index];
-		propsSelect.append('<option value="' + prop + '">' + prop + '</option>');
+	var propertiesSelect = $('#properties-select');
+	propertiesSelect.empty()
+	for(key in info['properties']){
+		var p = info['properties'][key];
+		propertiesSelect.append('<option value="' + key + '">' + p + '</option>');
 	}
 }
 
-function saveEntity(){
+function saveObject(){
 	var details = getEditorDetails(window);
 	var info = {};
 	
 	info['name'] = $('#name-field').val();
-	info['parent'] = $('#parent-field').val();
+	info['parents'] = $('#parent-field').val();
 	info['location'] = $('#location-field').val();
 	info['owner'] = $('#owner-field').val();
-	info['entity_type'] = parseInt($('#type-select').val());
 	
 	details.resultDeferred.callback(info);
 	window.close();
 }
 
-function cancelEntity(){
+function cancelObject(){
 	var details = getEditorDetails(window);
 	details.resultDeferred.callback(null);
 	window.close();
 }
 
-function reloadEntity(){
+function reloadObject(){
+	console.log("Object reload disabled.");
+	/*
 	var details = getEditorDetails(window);
 	var connector = window.opener.getConnector();
-	var deferred = connector.callRemote('get_entity_attributes', details.info['id']);
+	var deferred = connector.callRemote('get_object_attributes', details.info['id']);
 	
 	deferred.addCallback(function(response){
 		details.info = response;
-		loadEntity();
+		loadObject();
 	});
 	deferred.addErrback(alertFailure);
 	
 	return deferred;
+	*/
 }
 
-function requestEntityEditor(id){
+function requestObjectEditor(id){
 	var connector = window.opener.getConnector();
-	deferred = connector.callRemote('req_entity_editor', id);
+	deferred = connector.callRemote('req_object_editor', id);
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
@@ -74,10 +75,10 @@ function addVerb(){
 		alert("Sorry, verb names cannot have spaces.");
 	}
 	else{
-		var deferred = connector.callRemote('req_code_editor', details.info['id'], verb_name);
+		var deferred = connector.callRemote('req_verb_editor', details.info['id'], verb_name);
 		
 		deferred.addCallback(function(response){
-			reloadEntity();
+			reloadObject();
 		});
 		deferred.addErrback(alertFailure);
 		
@@ -94,7 +95,7 @@ function removeVerb(){
 			var deferred = connector.callRemote('remove_verb', details.info['id'], verb_name);
 			
 			deferred.addCallback(function(response){
-				reloadEntity();
+				reloadObject();
 			});
 			deferred.addErrback(alertFailure);
 			
@@ -103,13 +104,13 @@ function removeVerb(){
 	}
 }
 
-function requestVerbEditor(item){
+function requestVerbEditor(object_id, verb_name){
 	var details = getEditorDetails(window);
 	var connector = window.opener.getConnector();
-	var deferred = connector.callRemote('req_code_editor', details.info['id'], item);
+	var deferred = connector.callRemote('req_verb_editor', object_id, verb_name);
 	
 	deferred.addCallback(function(response){
-		reloadEntity();
+		reloadObject();
 	});
 	deferred.addErrback(alertFailure);
 	
@@ -128,7 +129,7 @@ function addProperty(){
 		var deferred = connector.callRemote('req_property_editor', details.info['id'], prop_name);
 		
 		deferred.addCallback(function(response){
-			reloadEntity();
+			reloadObject();
 		});
 		deferred.addErrback(alertFailure);
 		
@@ -138,14 +139,14 @@ function addProperty(){
 
 function removeProperty(){
 	var details = getEditorDetails(window);
-	if($('#props-select').val()){
-		var prop_name = $('#props-select').val();
+	if($('#properties-select').val()){
+		var prop_name = $('#properties-select').val();
 		if(confirm("Are you sure you want to delete the property '" + prop_name + "'?")){
 			var connector = window.opener.getConnector();
 			var deferred = connector.callRemote('remove_property', details.info['id'], prop_name);
 			
 			deferred.addCallback(function(response){
-				reloadEntity();
+				reloadObject();
 			});
 			deferred.addErrback(alertFailure);
 			
@@ -153,47 +154,49 @@ function removeProperty(){
 		}
 	}
 }
-function requestPropertyEditor(item){
+function requestPropertyEditor(object_id, property_name){
 	var details = getEditorDetails(window);
 	var connector = window.opener.getConnector();
-	var deferred = connector.callRemote('req_property_editor', details.info['id'], item);
+	var deferred = connector.callRemote('req_property_editor', object_id, property_name);
 	
 	deferred.addCallback(function(response){
-		reloadEntity();
+		reloadObject();
 	});
 	deferred.addErrback(alertFailure);
 	
 	return deferred;
 }
 
-function requestACLEditor(){
+function requestAccessEditor(){
 	var details = getEditorDetails(window);
 	var connector = window.opener.getConnector();
 	
-	deferred = connector.callRemote('req_acl_editor', details.info['id'], null);
+	deferred = connector.callRemote('req_access_editor', details.info['id'], 'object', '');
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
 
 $(document).ready(function(){
 	$('#parent-button').click(function(){
-		requestEntityEditor($('#parent-field').val())
+		requestObjectEditor($('#parent-field').val())
 	});
 	$('#location-button').click(function(){
-		requestEntityEditor($('#location-field').val())
+		requestObjectEditor($('#location-field').val())
 	});
 	$('#owner-button').click(function(){
-		requestEntityEditor($('#owner-field').val())
+		requestObjectEditor($('#owner-field').val())
 	});
 	
-	$('#acl-button').click(requestACLEditor);
+	$('#access-button').click(requestAccessEditor);
 	
 	$('#verbs-select').dblclick(function(){
-		requestVerbEditor($('#verbs-select').val());
+		var details = getEditorDetails(window);
+		requestVerbEditor(details.info['id'], $('#verbs-select').val());
 	});
 	
-	$('#props-select').dblclick(function(){
-		requestPropertyEditor($('#props-select').val());
+	$('#properties-select').dblclick(function(){
+		var details = getEditorDetails(window);
+		requestPropertyEditor(details.info['id'], $('#properties-select').val());
 	});
 	
 	$('#add-verb').click(addVerb);
@@ -201,8 +204,8 @@ $(document).ready(function(){
 	$('#add-prop').click(addProperty);
 	$('#remove-prop').click(removeProperty);
 	
-	$('#cancel-button').click(cancelEntity);
-	$('#save-button').click(saveEntity);
+	$('#cancel-button').click(cancelObject);
+	$('#save-button').click(saveObject);
 	
-	loadEntity();
+	loadObject();
 });

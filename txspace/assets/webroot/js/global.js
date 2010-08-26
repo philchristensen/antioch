@@ -1,14 +1,17 @@
 function inspect(obj){
 	var output = '';
-	for(prop in obj){
-		if(!(obj[prop] instanceof Function)){
-			output += prop + ': ' + obj[prop] + "\n";
+	for(p in obj){
+		if(!(obj[p] instanceof Function)){
+			output += p + ': ' + obj[p] + "\n";
 		}
 	}
 	alert(output);
 }
 
 function getEditorDetails(editorWindow){
+	if(!editorWindow.opener){
+		return {};
+	}
 	return editorWindow.opener.getEditorDetails(editorWindow);
 }
 

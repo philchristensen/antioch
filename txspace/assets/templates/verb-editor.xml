@@ -13,10 +13,10 @@
 		<div class="controls">
 			<label id="names-label" for="names-field">Names:</label><input type="text" id="names-field" size="20"/>
 			<label id="owner-label" for="owner-field">Owner:</label><input type="text" id="owner-field" size="20"/>
-			<input type="button" id="acl-button" value="Permissions..." />
+			<input type="button" id="access-button" value="Access..." />
 		</div>
 		<div>
-			<textarea id="verb_code" rows="33" cols="100"></textarea>
+			<textarea id="verb-code" rows="33" cols="100"></textarea>
 		</div>
 	</div>
 	<input type="button" id="cancel-button" value="cancel" />

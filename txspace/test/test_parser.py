@@ -9,7 +9,7 @@ from txspace import parser, errors, exchange, test
 
 class ParserTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database()
+		self.pool = test.init_database(ParserTestCase, 'minimal')
 		self.exchange = exchange.ObjectExchange(self.pool)
 		self.queue = test.Anything()
 		

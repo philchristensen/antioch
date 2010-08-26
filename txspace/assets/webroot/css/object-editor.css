@@ -2,10 +2,10 @@
 	font-size: 10px;
 }
 
-#verbs-props label {
+#verbs-properties label {
 	display: block;
 }
 
-#verbs-props select {
+#verbs-properties select {
 	width: 200px;
 }

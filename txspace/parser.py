@@ -54,6 +54,12 @@ POBJ_TEST = PREP + "\s" + PHRASE
 QOTD = r'(?:\".+?(?!\\).\")'
 MULTI_WORD = r'((\"|\').+?(?!\\).\2)|(\S+)'
 
+def parse(caller, sentence):
+	l = Lexer(sentence)
+	p = TransactionParser(l, caller, caller.get_exchange())
+	v = p.get_verb()
+	v.execute(p)
+
 class Lexer(object):
 	"""
 	An instance of this class will identify the various parts of a imperitive
@@ -212,49 +218,6 @@ class TransactionParser(object):
 			self.dobj = None
 			self.dobj_str = None
 	
-	def get_environment(self):
-		def api_write(user, text, is_error=False):
-			#print 'trying to write: ' + str(text)
-			self.exchange.queue.send(user.get_id(), dict(
-				command		= 'write',
-				text		= str(text),
-				is_error	= is_error,
-			))
-		
-		def api_observe(user, observations):
-			#print 'trying to display: ' + str(observations)
-			self.exchange.queue.send(user.get_id(), dict(
-				command			= 'observe',
-				observations	= observations,
-			))
-		
-		return dict(
-			command			= self.command,
-			caller			= self.caller,
-			dobj			= self.dobj,
-			dobj_str		= self.dobj_str,
-			dobj_spec_str	= self.dobj_spec_str,
-			words			= self.words,
-			prepositions	= self.prepositions,
-			this			= self.this,
-			
-			system			= self.exchange.get_object(1),
-			here			= self.caller.get_location() if self.caller else None,
-			
-			write			= api_write,
-			observe			= api_observe,
-			
-			get_dobj		= self.get_dobj,
-			get_dobj_str	= self.get_dobj_str,
-			has_dobj		= self.has_dobj,
-			has_dobj_str	= self.has_dobj_str,
-			
-			get_pobj		= self.get_pobj,
-			get_pobj_str 	= self.get_pobj_str,
-			has_pobj 		= self.has_pobj,
-			has_pobj_str 	= self.has_pobj_str,
-		)
-	
 	def find_object(self, specifier, name):
 		"""
 		Look for an object, with the optional specifier, in the area
@@ -286,12 +249,11 @@ class TransactionParser(object):
 			Caller->Caller's Contents->Location->Items in Location->
 			Direct Object->Objects of the Preposition
 		"""
-		if(getattr(self, 'this', None) is not None):
-			a = self.this.get_ancestor_with(verb_str)
-			return a.get_verb(verb_str)
-		
 		if not(self.words):
 			raise NoSuchVerbError('parser: ' + self.command)
+		
+		if(getattr(self, 'this', None) is not None):
+			return self.this.get_verb(self.words[0], recurse=True)
 		
 		verb_str = self.words[0]
 		matches = []
@@ -334,27 +296,20 @@ class TransactionParser(object):
 	
 	def filter_matches(self, possible):
 		result = []
-		#print "possble is " + str(possible)
+		# print "possble is " + str(possible)
 		if not(isinstance(possible, list)):
 			possible = [possible]
-		ctx = self.caller
 		verb_str = self.words[0]
 		for item in possible:
-			if(item.is_player() and item is not self.caller):
+			if(item in result):
 				continue
-			elif(item in result):
+			verb = item.get_verb(verb_str)
+			if not(verb and verb.performable_by(self.caller)):
 				continue
-			
-			origin = item.get_ancestor_with('verb', verb_str)
-			verb = origin.get_verb(verb_str)
-			
-			if(verb.is_ability() and self.caller != item):
+			if(verb.is_ability() and item != self.caller):
 				continue
-			elif(verb.is_method()):
-				continue
-
 			result.append(item)
-
+		
 		#print "result is " + str(result)
 		return result
 		

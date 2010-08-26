@@ -14,7 +14,7 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
-from txspace import dbapi, exchange, errors, parser, messaging
+from txspace import dbapi, exchange, errors, parser, messaging, sql, code
 
 __processPool = None
 db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
@@ -67,89 +67,67 @@ class Parse(WorldTransaction):
 				]
 	response = [('response', amp.Boolean())]
 
+class OpenEditor(WorldTransaction):
+	arguments = [
+				('user_id', amp.Integer()),
+				('object_id', amp.String()),
+				('type', amp.String()),
+				('name', amp.String()),
+				]
+
+class OpenAccess(WorldTransaction):
+	arguments = [
+				('user_id', amp.Integer()),
+				('object_id', amp.String()),
+				('type', amp.String()),
+				('name', amp.String()),
+				]
+
 class ModifyObject(WorldTransaction):
 	arguments = [
+				('user_id', amp.Integer()),
 				('object_id', amp.Integer()),
 				('name', amp.String()),
-				('location_id', amp.Integer()),
-				('owner_id', amp.Integer()),
+				('location', amp.String()),
+				('parents', amp.String()),
+				('owner', amp.String()),
 				]
-	response = [('response', amp.Boolean())]
-
-class CreateObject(WorldTransaction):
-	arguments = [
-				('name', amp.String()),
-				('unique_name', amp.Boolean()),
-				('location_id', amp.Integer()),
-				('owner_id', amp.Integer()),
-				]
-	response = [('response', amp.Integer())]
-
-class DeleteObject(WorldTransaction):
-	arguments = [
-				('object_id', amp.Integer()),
-				]
-	response = [('response', amp.Boolean())]
 
 class ModifyVerb(WorldTransaction):
 	arguments = [
-				('verb_id', amp.Integer()),
-				('names', amp.ListOf(amp.String())),
+				('user_id', amp.Integer()),
+				('object_id', amp.String()),
+				('verb_id', amp.String()),
+				('names', amp.String()),
 				('code', amp.String()),
-				('origin_id', amp.Integer()),
-				('owner_id', amp.Integer()),
+				('owner', amp.String()),
 				]
-	response = [('response', amp.Boolean())]
-
-class CreateVerb(WorldTransaction):
-	arguments = [
-				('names', amp.ListOf(amp.String())),
-				('code', amp.String()),
-				('origin_id', amp.Integer()),
-				('owner_id', amp.Integer()),
-				]
-	response = [('response', amp.Integer())]
-
-class DeleteVerb(WorldTransaction):
-	arguments = [
-				('verb_id', amp.Integer()),
-				]
-	response = [('response', amp.Boolean())]
 
 class ModifyProperty(WorldTransaction):
 	arguments = [
-				('property_id', amp.Integer()),
+				('user_id', amp.Integer()),
+				('object_id', amp.String()),
+				('property_id', amp.String()),
 				('name', amp.String()),
 				('value', amp.String()),
-				('eval_type_id', amp.Integer()),
-				('origin_id', amp.Integer()),
-				('owner_id', amp.Integer()),
+				('type', amp.String()),
+				('owner', amp.String()),
 				]
-	response = [('response', amp.Boolean())]
 
-class CreateProperty(WorldTransaction):
+class ModifyAccess(WorldTransaction):
 	arguments = [
+				('user_id', amp.Integer()),
+				('object_id', amp.String()),
+				('type', amp.String()),
 				('name', amp.String()),
-				('value', amp.String()),
-				('eval_type_id', amp.Integer()),
-				('origin_id', amp.Integer()),
-				('owner_id', amp.Integer()),
+				('access', amp.AmpBox([
+					('rule', amp.String()),
+					('access', amp.String()),
+					('accessor', amp.String()),
+					('permission', amp.String()),
+					('subject', amp.String()),
+				])),
 				]
-	response = [('response', amp.Integer())]
-
-class DeleteProperty(WorldTransaction):
-	arguments = [
-				('property_id', amp.Integer()),
-				]
-	response = [('response', amp.Boolean())]
-
-# class ModifyPermissions(WorldTransaction):
-# 	arguments = [
-# 				('item_id', amp.Integer()),
-# 				('item_type_id', amp.Integer()),
-# 				('permissions', amp.ListOf(amp.String())),
-# 				]
-# 	response = [('response', amp.Boolean())]
 
 
 class TransactionChild(child.AMPChild):
@@ -168,143 +146,180 @@ class TransactionChild(child.AMPChild):
 		return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
 	
 	@Authenticate.responder
-	@defer.inlineCallbacks
 	def authenticate(self, username, password):
-		exchange = self.get_exchange()
+		with self.get_exchange() as x:
+			authentication = x.get_verb(1, 'authenticate')
+			if(authentication):
+				u = authentication(username, password)
+				if not(u):
+					raise errors.PermissionError("Invalid login credentials. (1)")
+				defer.returnValue({'user_id': u.get_id()})
+			try:
+				u = x.get_object(username)
+				if not(u):
+					raise errors.PermissionError("Invalid login credentials. (2)")
+			except errors.NoSuchObjectError, e:
+				raise errors.PermissionError("Invalid login credentials. (3)")
+			except errors.AmbiguousObjectError, e:
+				raise errors.PermissionError("Invalid login credentials. (4)")
+			
+			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
+				raise errors.PermissionError('User is already logged in.')
+			
+			if not(x.validate_password(u.get_id(), password)):
+				raise errors.PermissionError("Invalid login credentials. (6)")
 		
-		authentication = exchange.get_verb(1, 'authenticate')
-		if(authentication):
-			user = authentication(username, password)
-			if not(user):
-				raise errors.PermissionError("Invalid login credentials. (1)")
-			defer.returnValue({'user_id': user.get_id()})
-		try:
-			user = exchange.get_object(username)
-			if not(user):
-				raise errors.PermissionError("Invalid login credentials. (2)")
-		except errors.NoSuchObjectError, e:
-			raise errors.PermissionError("Invalid login credentials. (3)")
-		except errors.AmbiguousObjectError, e:
-			raise errors.PermissionError("Invalid login credentials. (4)")
-		
-		if(user.is_connected_player() and user.is_allowed('multi_login', user)):
-			raise errors.PermissionError('User is already logged in.')
-		
-		if not(exchange.validate_password(user.get_id(), password)):
-			raise errors.PermissionError("Invalid login credentials. (6)")
-		
-		yield exchange.commit()
-		defer.returnValue({'user_id': user.get_id()})
+		return {'user_id': u.get_id()}
 	
 	@Login.responder
-	@defer.inlineCallbacks
 	def login(self, user_id, ip_address):
 		print 'user #%s logged in from %s' % (user_id, ip_address)
 		
-		exchange = self.get_exchange()
+		with self.get_exchange() as x:
+			x.login_player(user_id)
+			
+			system = x.get_object(1)
+			if(system.has_verb('connect') and not system.connect(ip_address)):
+				raise errors.PermissionError("System connect script denied access.")
+			
+			user = x.get_object(user_id)
+			if(system.has_verb("login")):
+				system.login(user)
 		
-		exchange.login_player(user_id)
-		
-		system = exchange.get_object(1)
-		if(system.has_verb('connect') and not system.connect(ip_address)):
-			raise errors.PermissionError("System connect script denied access.")
-		
-		user = exchange.get_object(user_id)
-		if(system.has_verb("login")):
-			system.login(user)
-		
-		yield exchange.commit()
-		defer.returnValue({'response': True})
+		return {'response': True}
 	
 	@Logout.responder
-	@defer.inlineCallbacks
 	def logout(self, user_id):
 		print 'user #%s logged out' % (user_id,)
 		
-		exchange = self.get_exchange(user_id)
+		with self.get_exchange(user_id) as x:
+			x.logout_player(user_id)
+			
+			system = x.get_object(1)
+			user = x.get_object(user_id)
+			if(system.has_verb("logout")):
+				system.logout(user)
 		
-		exchange.logout_player(user_id)
-		
-		system = exchange.get_object(1)
-		user = exchange.get_object(user_id)
-		if(system.has_verb("logout")):
-			system.logout(user)
-		
-		yield exchange.commit()
-		defer.returnValue({'response': True})
+		return {'response': True}
 	
 	@Parse.responder
-	@defer.inlineCallbacks
 	def parse(self, user_id, sentence):
-		exchange = self.get_exchange(user_id)
-		caller = exchange.get_object(user_id)
-		
-		try:
-			log.msg('%s: %s' % (caller, sentence))
+		with self.get_exchange(user_id) as x:
+			caller = x.get_object(user_id)
 			
-			l = parser.Lexer(sentence)
-			p = parser.TransactionParser(l, caller, exchange)
-			
-			v = p.get_verb()
-			v.execute(p)
-		except errors.TestError, e:
-			raise e
-		except errors.UserError, e:
-			exchange.queue.send(user_id, dict(
-				command		= 'write',
-				text		= str(e),
-				is_error	= True,
-			))
-		except Exception, e:
-			import traceback
-			trace = traceback.format_exc()
-			print 'BAD_ERROR: ' + trace
-			exchange.queue.send(user_id, dict(
-				command		= 'write',
-				text		= trace,
-				is_error	= True,
-			))
+			try:
+				log.msg('%s: %s' % (caller, sentence))
+				parser.parse(caller, sentence)
+			except errors.TestError, e:
+				raise e
+			except errors.UserError, e:
+				x.queue.send(user_id, dict(
+					command		= 'write',
+					text		= str(e),
+					is_error	= True,
+				))
+			except Exception, e:
+				import traceback
+				trace = traceback.format_exc()
+				print 'BAD_ERROR: ' + trace
+				x.queue.send(user_id, dict(
+					command		= 'write',
+					text		= trace,
+					is_error	= True,
+				))
 		
-		yield exchange.commit()
+		return {'response': True}
+	
+	@OpenEditor.responder
+	def open_editor(self, user_id, object_id, type, name):
+		with self.get_exchange(user_id) as x:
+			item = getattr(x, 'get_' + type)(object_id, name)
+			caller = x.get_object(user_id)
+			p = parser.TransactionParser(parser.Lexer(''), caller, x)
+			code.edit(p)(item)
 		
-		defer.returnValue({'response': True})
+		return {'response': True}
+	
+	@OpenAccess.responder
+	def open_access(self, user_id, object_id, type, name):
+		with self.get_exchange(user_id) as x:
+			origin = x.get_object(object_id)
+			caller = x.get_object(user_id)
+			if(type == 'object'):
+				item = origin
+			else:
+				item = getattr(origin, 'get_' + type)(name)
+			p = parser.TransactionParser(parser.Lexer(''), caller, x)
+			code.access(p)(item)
+		
+		return {'response': True}
 	
 	@ModifyObject.responder
-	def modify_object(self, object_id, name, unique_name, owner_id, location_id):
-		return {'response': None}
-	
-	@CreateObject.responder
-	def create_object(self, name, unique_name, owner_id, location_id):
-		return {'response': obj.get_id()}
-	
-	@DeleteObject.responder
-	def delete_object(self, object_id):
+	def modify_object(self, user_id, object_id, name, location, parents, owner):
+		with self.get_exchange(user_id) as x:
+			def obj(oid):
+				if(oid in ('', 'None')):
+					return None
+				return x.get_object(oid)
+			
+			o = obj(object_id)
+			o.set_name(name, real=True)
+			o.set_location(obj(location))
+			o.set_owner(obj(owner))
+			
+			old_parents = o.get_parents()
+			new_parents = [obj(p.strip()) for p in parents.split(',')]
+			
+			[o.remove_parent(x) for x in old_parents if x not in new_parents]
+			[o.add_parent(x) for x in new_parents if x not in old_parents]
+		
 		return {'response': True}
 	
 	@ModifyVerb.responder
-	def modify_verb(self, verb_id, **details):
-		return {'response': None}
-	
-	@CreateVerb.responder
-	def create_verb(self, **details):
-		return {'response': None}
-	
-	@DeleteVerb.responder
-	def delete_verb(self, verb_id):
+	def modify_verb(self, user_id, object_id, verb_id, names, code, owner):
+		with self.get_exchange(user_id) as x:
+			def obj(oid):
+				if(oid in ('', 'None')):
+					return None
+				return x.get_object(oid)
+			
+			names = [n.strip() for n in names.split(',')]
+			
+			v = x.get_verb(exchange.extract_id(object_id), names[0])
+			v.set_names(names)
+			v.set_owner(obj(owner))
+			v.set_code(code)
+		
 		return {'response': True}
-	
+
 	@ModifyProperty.responder
-	def modify_property(self, property_id, **details):
-		return {'response': None}
-	
-	@CreateProperty.responder
-	def create_property(self, **details):
-		return {'response': None}
-	
-	@DeleteProperty.responder
-	def delete_property(self, property_id, **details):
+	def modify_property(self, user_id, object_id, property_id, name, value, type, owner):
+		with self.get_exchange(user_id) as x:
+			def obj(oid):
+				if(oid in ('', 'None')):
+					return None
+				return x.get_object(oid)
+			
+			p = x.get_property(exchange.extract_id(object_id), name)
+			p.set_name(name)
+			p.set_owner(obj(owner))
+			p.set_value(value, type=type)
+		
 		return {'response': True}
-	
-	# @ModifyPermissions.responder
-	# def modify_permissions(self, item_id, item_type_id, permissions):
-	# 	pass
+
+	@ModifyAccess.responder
+	def modify_access(self, user_id, object_id, type, name, access):
+		with self.get_exchange(user_id) as x:
+			def obj(oid):
+				if(oid in ('', 'None')):
+					return None
+				return x.get_object(oid)
+			
+			if(type == 'object'):
+				item = get_object(object_id)
+			else:
+				item = getattr(x, 'get_' + type)(exchange.extract_id(object_id), name)
+			
+			print 'would change access to %s' % item
+		
+		return {'response': True}

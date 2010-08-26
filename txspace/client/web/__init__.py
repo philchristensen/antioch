@@ -28,16 +28,16 @@ from nevow import inevow, loaders, athena, guard, rend, tags
 from txamqp import content
 from txamqp.queue import Closed
 
-from txspace import errors, editors, assets, client, transact
+from txspace import errors, assets, client, transact
 
 def createTemplatePage(template):
 	className = ''.join([x.capitalize() for x in os.path.basename(template).split('-')])
 	return type(className, (rend.Page,), dict(docFactory=loaders.xmlfile(template)))
 
-EntityEditor = createTemplatePage(assets.get_template_path('entity-editor'))
+ObjectEditor = createTemplatePage(assets.get_template_path('object-editor'))
 VerbEditor = createTemplatePage(assets.get_template_path('verb-editor'))
 PropertyEditor = createTemplatePage(assets.get_template_path('property-editor'))
-ACLEditor = createTemplatePage(assets.get_template_path('acl-editor'))
+AccessEditor = createTemplatePage(assets.get_template_path('access-editor'))
 
 class Mind(object):
 	"""
@@ -92,14 +92,14 @@ class RootDelegatePage(rend.Page):
 						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service)
 					returnValue((client, segments[1:]))
 				elif(len(segments) > 1 and segments[0] == 'edit'):
-					if(segments[1] == 'entity'):
-						returnValue((EntityEditor(user), segments[2:]))
+					if(segments[1] == 'object'):
+						returnValue((ObjectEditor(user), segments[2:]))
 					elif(segments[1] == 'verb'):
 						returnValue((VerbEditor(user), segments[2:]))
 					elif(segments[1] == 'property'):
 						returnValue((PropertyEditor(user), segments[2:]))
-					elif(segments[1] == 'acl'):
-						returnValue((ACLEditor(user), segments[2:]))
+					elif(segments[1] == 'access'):
+						returnValue((AccessEditor(user), segments[2:]))
 				elif(segments[0] == 'logout'):
 					self.pool.logoutUser(sid)
 					if(sid in self.connections):
@@ -307,9 +307,64 @@ class ClientConnector(athena.LiveElement):
 		data = simplejson.loads(msg.content.body.decode('utf8'))
 		
 		if(data['command'] == 'observe'):
-			yield self.callRemote('setObservations', data['observations'])
+			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
-			yield self.callRemote('write', data['text'], data['is_error'])
+			d = self.callRemote('write', data['text'], data['is_error'])
+		elif(data['command'] == 'access'):
+			def _cb_accessedit(result):
+				return result if not result else transact.OpenAccess.run(
+					user_id		= self.user_id,
+					object_id	= data['details']['id'],
+					type		= data['details']['type'],
+					access		= [dict(
+						rule		= item['rule'].encode('utf8'),
+						access		= item['rule'].encode('utf8'),
+						accessor	= item['rule'].encode('utf8'),
+						permission	= item['rule'].encode('utf8'),
+						subject		= data['details']['id'],
+					) for item in result]
+				)
+			d = self.callRemote('accessedit', data['details'])
+			d.addCallback(_cb_accessedit)
+		elif(data['command'] == 'edit'):
+			if(data['details']['kind'] == 'object'):
+				def _cb_objedit(result):
+					return result if not result else transact.ModifyObject.run(
+						user_id		= self.user_id,
+						object_id	= data['details']['id'],
+						name		= result['name'].encode('utf8'),
+						location	= result['location'].encode('utf8'),
+						parents		= result['parents'].encode('utf8'),
+						owner		= result['owner'].encode('utf8'),
+					)
+				d = self.callRemote('objedit', data['details'])
+				d.addCallback(_cb_objedit)
+			elif(data['details']['kind'] == 'property'):
+				def _cb_propedit(result):
+					return result if not result else transact.ModifyProperty.run(
+						user_id		= self.user_id,
+						object_id	= data['details']['origin'].encode('utf8'),
+						property_id	= str(data['details']['id']),
+						name		= result['name'].encode('utf8'),
+						value		= result['value'].encode('utf8'),
+						type		= str(result['type']),
+						owner		= result['owner'].encode('utf8'),
+					)
+				d = self.callRemote('propedit', data['details'])
+				d.addCallback(_cb_propedit)
+			elif(data['details']['kind'] == 'verb'):
+				def _cb_verbedit(result):
+					return result if not result else transact.ModifyVerb.run(
+						user_id		= self.user_id,
+						object_id	= data['details']['origin'].encode('utf8'),
+						verb_id		= str(data['details']['id']),
+						names		= result['names'].encode('utf8'),
+						code		= result['code'].encode('utf8'),
+						owner		= result['owner'].encode('utf8'),
+					)
+				d = self.callRemote('verbedit', data['details'])
+				d.addCallback(_cb_verbedit)
+		
 	
 	@defer.inlineCallbacks
 	def logout(self, *args, **kwargs):
@@ -336,60 +391,78 @@ class ClientConnector(athena.LiveElement):
 		yield transact.Parse.run(user_id=self.user_id, sentence=command.encode('utf8'))
 	
 	@athena.expose	
-	def req_entity_editor(self, id):
+	@defer.inlineCallbacks
+	def req_object_editor(self, object_id):
 		"""
-		Open an entity editor as requested by the client.
+		Open an object editor as requested by the client.
 		"""
-		obj = self.registry.get(id)
-		return editors.edit_entity(self.user, obj)
+		yield transact.OpenEditor.run(
+			user_id		= self.user_id,
+			object_id	= unicode(object_id).encode('utf8'),
+			type		= 'object',
+			name		= '',
+		)
 	
 	@athena.expose	
-	def req_code_editor(self, id, verb):
+	@defer.inlineCallbacks
+	def req_verb_editor(self, object_id, verb_name):
 		"""
 		Open a verb editor as requested by the client.
 		"""
-		obj = self.registry.get(id)
-		return editors.edit_verb(self.user, obj, verb)
+		yield transact.OpenEditor.run(
+			user_id		= self.user_id,
+			object_id	= unicode(object_id).encode('utf8'),
+			type		= 'verb',
+			name		= verb_name.encode('utf8'),
+		)
 	
 	@athena.expose	
-	def req_property_editor(self, id, prop):
+	@defer.inlineCallbacks
+	def req_property_editor(self, object_id, property_name):
 		"""
 		Open a property editor as requested by the client.
 		"""
-		obj = self.registry.get(id)
-		return editors.edit_property(self.user, obj, prop)
+		yield transact.OpenEditor.run(
+			user_id		= self.user_id,
+			object_id	= unicode(object_id).encode('utf8'),
+			type		= 'property',
+			name		= property_name.encode('utf8'),
+		)
 	
 	@athena.expose	
-	def req_acl_editor(self, id, item):
+	@defer.inlineCallbacks
+	def req_access_editor(self, object_id, type, name):
 		"""
-		Open an ACL editor as requested by the client.
+		Open an access editor as requested by the client.
 		"""
-		obj = self.registry.get(id)
-		if(item):
-			obj = obj._vdict[item]
-		return editors.edit_acl(self.user, obj)
+		yield transact.OpenAccess.run(
+			user_id		= self.user_id,
+			object_id	= unicode(object_id).encode('utf8'),
+			type		= type.encode('utf8'),
+			name		= name.encode('utf8'),
+		)
 	
 	@athena.expose	
-	def get_entity_attributes(self, id):
+	def get_object_attributes(self, id):
 		"""
-		Return entity details (id, attributes, verbs, properties).
+		Return object details (id, attributes, verbs, properties).
 		"""
 		obj = self.registry.get(id)
 		return obj.get_details(self.user)
 	
 	@athena.expose	
-	def remove_verb(self, id, verb):
+	def remove_verb(self, id, verb_name):
 		"""
 		Attempt to remove a verb from an object.
 		"""
 		obj = self.registry.get(id)
-		return obj.remove_verb(self.user, verb)
+		return obj.remove_verb(self.user, verb_name)
 	
 	@athena.expose	
-	def remove_property(self, id, prop):
+	def remove_property(self, id, property_name):
 		"""
 		Attempt to remove a property from an object.
 		"""
 		obj = self.registry.get(id)
-		return obj.remove_property(self.user, prop)
+		return obj.remove_property(self.user, property_name)
 
