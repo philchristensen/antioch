@@ -7,6 +7,11 @@ function loadVerb(){
 	$('#names-field').val(info['names']);
 	$('#owner-field').val(info['owner']);
 	
+	$('#type-' + info['exec_type']).attr('checked', 'checked');
+	$('#type-radio').buttonset('refresh');
+	
+	document.title = 'Verb #' + info['id'] + ' (' + info['names'].join(', ') + ') on Object ' + info['origin'];
+	
 	editor = new CodeMirror(CodeMirror.replace("verb-code"), {
 		parserfile: ["parsetxspace.js"],
 		path: "/assets/CodeMirror-0.63/js/",
@@ -16,7 +21,8 @@ function loadVerb(){
 		lineNumbers: true,
 		indentUnit: 4,
 		tabMode: 'shift',
-		height: '90%'
+		height: null,
+		width: null,
 	});
 }
 
@@ -27,6 +33,7 @@ function saveVerb(){
 	info['names'] = $('#names-field').val();
 	info['owner'] = $('#owner-field').val();
 	info['code'] = editor.getCode();
+	info['exec_type'] = $('#type-radio').find('[aria-pressed=true]').text();
 	
 	details.resultDeferred.callback(info);
 	window.close();
@@ -46,11 +53,13 @@ function requestAccessEditor(){
 	return deferred;
 }
 
-$(document).ready(function(){
-	$('#access-button').click(requestAccessEditor);
+function jqueryLoaded(){
+	$('#access-button').button().click(requestAccessEditor);
 	
-	$('#cancel-button').click(cancelVerb);
-	$('#save-button').click(saveVerb);
+	$('#cancel-button').button().click(cancelVerb);
+	$('#save-button').button().click(saveVerb);
+	
+	$('#type-radio').buttonset();
 	
 	loadVerb();
-});
+}

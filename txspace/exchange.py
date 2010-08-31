@@ -39,6 +39,12 @@ from txamqp.client import Closed
 
 from txspace import sql, model, errors
 
+group_definitions = dict(
+	owners		= lambda x,a,s: a.owns(s),
+	wizards		= lambda x,a,s: x.is_wizard(a.get_id()),
+	everyone	= lambda x,a,s: True,
+)
+
 def extract_id(literal):
 	if(isinstance(literal, basestring) and literal.startswith('#')):
 		end = literal.find("(")
@@ -271,10 +277,15 @@ class ObjectExchange(object):
 			self.cache[object_key] = obj
 	
 	def get_object(self, key, return_list=False):
+		if(isinstance(key, basestring)):
+			key = key.strip()
 		try:
 			key = int(key)
 		except:
 			pass
+		
+		if(key in ('', 'none', 'None', 'null', 'NULL')):
+			return None
 		
 		items = None
 		if(isinstance(key, basestring)):
@@ -442,7 +453,7 @@ class ObjectExchange(object):
 				WHERE v.origin_id = %s
 				GROUP BY v.id
 			""", origin_id))
-		return dict([(v['names'][0], v['names']) for v in verbs])
+		return [dict(id=v['id'], names=','.join(v['names'])) for v in verbs]
 	
 	def get_property_list(self, origin_id):
 		properties = self.pool.runQuery(sql.interp(
@@ -450,7 +461,7 @@ class ObjectExchange(object):
 				FROM property p
 				WHERE p.origin_id = %s
 			""", origin_id))
-		return dict([(p['name'], p['name']) for p in properties])
+		return [dict(id=p['id'], name=p['name']) for p in properties]
 	
 	def get_verb_names(self, verb_id):
 		result = self.pool.runQuery(sql.interp("SELECT name FROM verb_name WHERE verb_id = %s", verb_id))
@@ -613,7 +624,54 @@ class ObjectExchange(object):
 				FROM access a
 					INNER JOIN permission p ON a.permission_id = p.id
 				WHERE %s_id = %%s
+				ORDER BY a.weight
 			""" % type, object_id))
+	
+	def update_access(self, access_id, rule, access, accessor, permission, weight, subject, deleted):
+		record = {} if not access_id else self.pool.runQuery(sql.interp(
+			"""SELECT a.*, p.name AS permission
+				FROM access a
+					INNER JOIN permission p ON a.permission_id = p.id
+				WHERE a.id = %s
+			""", access_id))
+		if(record):
+			record = record[0]
+		else:
+			record = {}
+		
+		if(deleted):
+			self.pool.runOperation(sql.build_delete('access', id=access_id))
+			return
+		
+		record['rule'] = rule
+		record['type'] = access
+		record['weight'] = weight
+		
+		record.pop('group', '')
+		if(access == 'group'):
+			record['"group"'] = accessor
+			record['accessor_id'] = None
+		else:
+			record['"group"'] = None
+			record['accessor_id'] = accessor.get_id()
+		
+		if(record.pop('permission', '') != permission):
+			p = self.pool.runQuery(sql.interp("SELECT p.* FROM permission p WHERE p.name = %s", permission))
+			if not(p):
+				raise ValueError("Unknown permission: %s" % permission)
+			record['permission_id'] = p[0]['id']
+		
+		if(subject.get_type() == 'object'):
+			record['object_id'] = subject.get_id()
+		elif(subject.get_type() == 'verb'):
+			record['verb_id'] = subject.get_id()
+		elif(subject.get_type() == 'property'):
+			record['property_id'] = subject.get_id()
+		
+		if(access_id):
+			self.pool.runOperation(sql.build_update('access', record, dict(id=access_id)))
+		else:
+			self.pool.runOperation(sql.build_insert('access', **record))
 	
 	def is_allowed(self, accessor, permission, subject):
 		result = self.pool.runQuery(sql.build_select('permission', name=permission))
@@ -642,11 +700,9 @@ class ObjectExchange(object):
 		for rule in access:
 			rule_type = (rule['rule'] == 'allow')
 			if(rule['type'] == 'group'):
-				if(rule['group'] == 'owners' and accessor.owns(subject)):
-					result = rule_type
-				elif(rule['group'] == 'wizards' and self.is_wizard(accessor.get_id())):
-					result = rule_type
-				elif(rule['group'] == 'everyone'):
+				if(rule['group'] not in group_definitions):
+					raise ValueError("Unknown group: %s" % rule['accessor'])
+				if(group_definitions[rule['group']](self, accessor, subject)):
 					result = rule_type
 			elif(rule['type'] == 'accessor'):
 				if(rule['accessor_id'] == accessor.get_id()):
@@ -660,6 +716,9 @@ class ObjectExchange(object):
 		self._grant('deny', subject, accessor, permission, create)
 	
 	def _grant(self, rule, subject, accessor, permission, create=False):
+		if(isinstance(accessor, basestring) and accessor not in group_definitions):
+			raise ValueError("Unknown group: %s" % accessor)
+		
 		result = self.pool.runQuery(sql.build_select('permission', name=permission))
 		if(result):
 			permission_id = result[0]['id']

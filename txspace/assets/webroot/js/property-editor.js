@@ -15,6 +15,8 @@ function loadProperty(){
 	
 	$('#type-select').val(info['type']);
 	
+	document.title = 'Property #' + info['id'] + ' (' + info['name'] + ') on Object ' + info['origin'];
+	
 	editor = new CodeMirror(CodeMirror.replace("property-value"), {
 		parserfile: ["parsexml.js", "parsecss.js", "parsejavascript.js", "tokenizejavascript.js",
 						"parsehtmlmixed.js", "parsetxspace.js", "parsedummy.js"],
@@ -25,7 +27,8 @@ function loadProperty(){
 		lineNumbers: true,
 		indentUnit: 4,
 		tabMode: "shift",
-		height: "90%",
+		height: null,
+		width: null,
 		initCallback: function(){
 			editor.setParser(syntaxStates[$('#type-select').val()]);
 		}
@@ -63,12 +66,11 @@ function requestAccessEditor(){
 	return deferred;
 }
 
-
-$(document).ready(function(){
-	$('#access-button').click(requestAccessEditor);
+function jqueryLoaded(){
+	$('#access-button').button().click(requestAccessEditor);
 	
-	$('#cancel-button').click(cancelProperty);
-	$('#save-button').click(saveProperty);
+	$('#cancel-button').button().click(cancelProperty);
+	$('#save-button').button().click(saveProperty);
 	
 	$('#type-select').change(function(){
 		var lang = $('#type-select').val();
@@ -89,4 +91,4 @@ $(document).ready(function(){
 	});
 	
 	loadProperty();
-});
+}

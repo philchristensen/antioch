@@ -34,10 +34,10 @@ class MessageService(service.Service):
 	
 	@defer.inlineCallbacks
 	def connect(self):
-		print 'connecting %s' % self
 		if(self.connection):
 			defer.returnValue(self.connection)
 		else:
+			print 'connecting %s' % self
 			self.connection = yield self.factory.connectTCP('localhost', 5672)
 			yield self.connection.authenticate('guest', 'guest')
 	
@@ -50,9 +50,9 @@ class MessageService(service.Service):
 	
 	@defer.inlineCallbacks
 	def open_channel(self):
-		print 'opening channel on %s' % self
 		self.channel_counter += 1
 		chan = yield self.connection.channel(self.channel_counter)
+		#print 'opened channel %s on %s' % (chan, self)
 		yield chan.channel_open()
 		defer.returnValue(chan)
 
@@ -76,7 +76,6 @@ class MessageQueue(object):
 			routing_key = 'user-%s' % user_id
 			data = simplejson.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
-			print 'sending %s to %s' % (routing_key, exchange)
 			chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
 	

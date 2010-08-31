@@ -111,25 +111,25 @@ txspace.ClientConnector.methods(
 		/*
 		 * Called by the server to open an object editor window.
 		 */
-		return openEditor('object', info, 435, 390);
+		return openEditor('object', info, 465, 535);
 	},
 	function verbedit(self, info){
 		/*
 		 * Called by the server to open a verb editor window.
 		 */
-		return openEditor('verb', info, 821, 551);
+		return openEditor('verb', info, 970, 600);
 	},
 	function propedit(self, info){
 		/*
 		 * Called by the server to open a property editor window.
 		 */
-		return openEditor('property', info, 821, 351);
+		return openEditor('property', info, 630, 525);
 	},
 	function accessedit(self, info){
 		/*
 		 * Called by the server to open an access editor window.
 		 */
-		return openEditor('access', info, 435, 290);
+		return openEditor('access', info, 750, 295, 'yes');
 	},
 	function logout(self){
 		/*
@@ -148,7 +148,7 @@ var commandHistory = [];
 var historyPosition = -1;
 var currentCommand = ''
 
-function openEditor(type, info, width, height){
+function openEditor(type, info, width, height, scrollbars){
 	/*
 	 * Once the server has sent `info`, this function opens an
 	 * editor window. The child window uses the parent's Athena
@@ -156,8 +156,10 @@ function openEditor(type, info, width, height){
 	 */
 	var resultDeferred = new Divmod.Defer.Deferred();
 	
-	var window_name = type + '-' + Date.now();
-	var scrollbars = 'auto';
+	var window_name = type + '-' + info['id'];
+	if(!scrollbars){
+		scrollbars = 'auto';
+	}
 	var editorWindow = window.open('/edit/' + type, window_name, 'menubar=no,status=no,toolbar=no,location=no,directories=no,resizable=yes,scrollbars=' + scrollbars + ',width=' + width + ',height=' + height);
 	
 	editorDetails[window_name] = {

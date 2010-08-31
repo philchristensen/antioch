@@ -8,18 +8,21 @@ function loadObject(){
 	$('#owner-field').val(info['owner']);
 	$('#id-field').val(info['id']);
 	
+	document.title = 'Object #' + info['id'] + ' (' + info['name'] + ')';
+	
 	var verbsSelect = $('#verbs-select');
 	verbsSelect.empty()
-	for(key in info['verbs']){
-		var v = info['verbs'][key];
-		verbsSelect.append('<option value="' + key + '">' + v.join(',') + '</option>');
+	for(index in info['verbs']){
+		v = info['verbs'][index];
+		verb_name = v['names'].split(',')[0]
+		verbsSelect.append('<option value="' + verb_name + '">' + v['names'] + '</option>');
 	}
 	
 	var propertiesSelect = $('#properties-select');
 	propertiesSelect.empty()
-	for(key in info['properties']){
-		var p = info['properties'][key];
-		propertiesSelect.append('<option value="' + key + '">' + p + '</option>');
+	for(index in info['properties']){
+		p = info['properties'][index];
+		propertiesSelect.append('<option value="' + p['name'] + '">' + p['name'] + '</option>');
 	}
 }
 
@@ -43,11 +46,9 @@ function cancelObject(){
 }
 
 function reloadObject(){
-	console.log("Object reload disabled.");
-	/*
 	var details = getEditorDetails(window);
 	var connector = window.opener.getConnector();
-	var deferred = connector.callRemote('get_object_attributes', details.info['id']);
+	var deferred = connector.callRemote('get_object_details', details.info['id']);
 	
 	deferred.addCallback(function(response){
 		details.info = response;
@@ -56,7 +57,6 @@ function reloadObject(){
 	deferred.addErrback(alertFailure);
 	
 	return deferred;
-	*/
 }
 
 function requestObjectEditor(id){
@@ -176,18 +176,23 @@ function requestAccessEditor(){
 	return deferred;
 }
 
-$(document).ready(function(){
-	$('#parent-button').click(function(){
-		requestObjectEditor($('#parent-field').val())
+function jqueryLoaded(){
+	jQuery.getScript('/assets/js/jquery.scrollTo-1.4.2-min.js');
+	
+	$('#parent-button').button({icons:{primary:'ui-icon-newwin'}, text:false}).click(function(){
+		var parents = $('#parent-field').val().split(',');
+		for(index in parents){
+			requestObjectEditor(parents[index]);
+		}
 	});
-	$('#location-button').click(function(){
+	$('#location-button').button({icons:{primary:'ui-icon-newwin'}, text:false}).click(function(){
 		requestObjectEditor($('#location-field').val())
 	});
-	$('#owner-button').click(function(){
+	$('#owner-button').button({icons:{primary:'ui-icon-newwin'}, text:false}).click(function(){
 		requestObjectEditor($('#owner-field').val())
 	});
 	
-	$('#access-button').click(requestAccessEditor);
+	$('#access-button').button().click(requestAccessEditor);
 	
 	$('#verbs-select').dblclick(function(){
 		var details = getEditorDetails(window);
@@ -199,13 +204,13 @@ $(document).ready(function(){
 		requestPropertyEditor(details.info['id'], $('#properties-select').val());
 	});
 	
-	$('#add-verb').click(addVerb);
-	$('#remove-verb').click(removeVerb);
-	$('#add-prop').click(addProperty);
-	$('#remove-prop').click(removeProperty);
+	$('#add-verb').button({icons:{primary:'ui-icon-plusthick'}}).click(addVerb);
+	$('#remove-verb').button({icons:{primary:'ui-icon-minusthick'}}).click(removeVerb);
+	$('#add-prop').button({icons:{primary:'ui-icon-plusthick'}}).click(addProperty);
+	$('#remove-prop').button({icons:{primary:'ui-icon-minusthick'}}).click(removeProperty);
 	
-	$('#cancel-button').click(cancelObject);
-	$('#save-button').click(saveObject);
+	$('#cancel-button').button().click(cancelObject);
+	$('#save-button').button().click(saveObject);
 	
 	loadObject();
-});
+}

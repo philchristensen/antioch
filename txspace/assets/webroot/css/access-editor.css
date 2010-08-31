@@ -1,6 +1,5 @@
-#permissions-field {
-	width: 100%;
-	height: 95%;
+#editor {
+	padding: 10px;
 }
 
 .editor label {
@@ -9,32 +8,52 @@
 
 .drag-thumb {
 	width: 10px;
-	height: 19px;
+	height: 25px;
 	background-image: url('/assets/images/drag-thumb.gif');
 	display: inline-block;
-	vertical-align: middle;
+	vertical-align: bottom;
 }
 
-.rule-toggle {
-	width: 46px;
-	height: 14px;
-	background-image: url('/assets/images/allow-button.png');
-	display: inline-block;
-	vertical-align: middle;
-}
-
-.rule-toggle.deny {
-	background-image: url('/assets/images/deny-button.png');
+.permission-field {
+	width: 140px;
 }
 
 .access-toggle {
-	width: 46px;
-	height: 14px;
-	background-image: url('/assets/images/group-button.png');
-	display: inline-block;
-	vertical-align: middle;
+	min-width: 120px !important;
 }
 
-.access-toggle.accessor {
-	background-image: url('/assets/images/object-button.png');
+.rule-toggle {
+	min-width: 80px !important;
+}
+
+.delete-rule {
+	position: relative;
+	top: 7px;
+	height: 27px;
+}
+
+.ui-widget-content .allow {
+	border: 1px solid #45930b;
+	background: #4ca20b url(jquery-ui/images/ui-bg_highlight-soft_60_4ca20b_1x100.png) 50% 50% repeat-x;
+	font-weight: bold;
+	color: #cceecc;
+}
+
+.ui-widget-content .deny {
+	border: 1px solid #bb0000;
+	background: #bf0303 url(jquery-ui/images/ui-bg_glass_65_bf0303_1x400.png) 50% 50% repeat-x;
+	font-weight: bold;
+	color: #ffaaaa;
+}
+
+.ui-widget-content .accessor {
+	border: 1px solid #5526e8;
+	background: #593be3 url(jquery-ui/images/ui-bg_glass_50_593be3_1x400.png) 50% 50% repeat-x;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+.ui-widget-content .access-rule.deleted .delete-rule {
+	border: 1px solid #bb0000;
+	background: #bf0303 url(jquery-ui/images/ui-bg_glass_65_bf0303_1x400.png) 50% 50% repeat-x;
 }

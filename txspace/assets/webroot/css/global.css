@@ -6,3 +6,8 @@ body {
 	color: red;
 }
 
+.action-button {
+	margin-top: 10px;
+	float: right;
+}
+

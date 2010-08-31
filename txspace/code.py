@@ -51,46 +51,25 @@ def observe(p, user, observations):
 
 @api
 def edit(p, item):
-	details = dict(
-		id			= item.get_id(),
-		kind		= item.get_type(),
-		owner		= str(item.get_owner()),
-	)
-	
-	if(details['kind'] == 'object'):
-		details['name'] = item.get_name(real=True)
-		details['location'] = str(item.get_location())
-		details['parents'] = ', '.join([str(x) for x in item.get_parents()])
-		details['verbs'] = p.exchange.get_verb_list(item.get_id())
-		details['properties'] = p.exchange.get_property_list(item.get_id())
-	elif(details['kind'] == 'property'):
-		details['name'] = item.get_name()
-		details['value'] = str(item.get_value())
-		details['type'] = 'string'
-		details['origin'] = str(item.get_origin())
-	elif(details['kind'] == 'verb'):
-		details['names'] = item.get_names()
-		details['code'] = str(item.get_code())
-		details['origin'] = str(item.get_origin())
-	
 	p.exchange.queue.send(p.caller.get_id(), dict(
 		command			= 'edit',
-		details			= details,
+		details			= item.get_details(),
 	))
 
 @api
 def access(p, item):
-	result = p.exchange.get_access(item.get_id(), item.get_type())
-	
+	acl = p.exchange.get_access(item.get_id(), item.get_type())
 	details = dict(
-		id		= item.get_id(),
+		id		= str(item),
 		type	= item.get_type(),
+		origin	= str(getattr(item, 'origin', '')),
 		access	= [dict(
-			rule		= row['rule'],
-			access		= row['type'],
-			accessor	= str(p.exchange.get_object(row['accessor_id'])) if row['accessor_id'] else row['group'],
-			permission	= row['permission_name'],
-		) for row in result]
+			access_id	= rule['id'],
+			rule		= rule['rule'],
+			access		= rule['type'],
+			accessor	= str(p.exchange.get_object(rule['accessor_id'])) if rule['accessor_id'] else rule['group'],
+			permission	= rule['permission_name'],
+		) for rule in acl]
 	)
 	
 	p.exchange.queue.send(p.caller.get_id(), dict(

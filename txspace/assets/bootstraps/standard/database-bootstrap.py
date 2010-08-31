@@ -31,6 +31,7 @@ wizard.set_owner(wizard)
 system.set_owner(wizard)
 set_default_permissions_verb.set_owner(wizard)
 set_default_permissions_verb.allow('everyone', 'execute')
+set_default_permissions_verb.allow('wizards', 'anything')
 
 bag_of_holding = exchange.instantiate('object', name='bag of holding')
 bag_of_holding.set_name('bag')

@@ -41,7 +41,7 @@ class PropertyStub(object):
 
 class Entity(object):
 	def __repr__(self):
-		return '<%s %s>' % (self.__class__.__name__, self)
+		return '<%s>' % (self)
 	
 	def set_id(self, id):
 		if(self._id != 0):
@@ -124,7 +124,7 @@ class Object(Entity):
 		of "#0 (System Object)"; the object ID is prefixed by a pound sign,
 		and the ID is followed by the real name of the object in parentheses.
 		"""
-		return "#%d (%s)" % (self._id, self._name)
+		return "#%s (%s)" % (self._id, self._name)
 	
 	def __getattr__(self, name):
 		# used for verbs
@@ -132,6 +132,18 @@ class Object(Entity):
 		if(v is None):
 			raise errors.NoSuchVerbError("No such verb `%s` on %s" % (name, self))
 		return v
+	
+	def get_details(self):
+		return dict(
+			id			= self._id,
+			kind		= self.get_type(),
+			name		= self._name,
+			parents 	= ', '.join([str(x) for x in self.get_parents()]),
+			owner		= str(self.get_owner()),
+			location	= str(self.get_location()),
+			verbs		= self._ex.get_verb_list(self.get_id()),
+			properties	= self._ex.get_property_list(self.get_id()),
+		)
 	
 	def owns(self, subject):
 		return subject.get_owner() == self
@@ -241,9 +253,9 @@ class Object(Entity):
 	
 	def set_location(self, location):
 		self.check('move', self)
-		if(self.contains(location)):
+		if(location and self.contains(location)):
 			raise errors.RecursiveError("Sorry, '%s' already contains '%s'" % (self, location))
-		self._location_id = location.get_id()
+		self._location_id = location.get_id() if location else None
 		self.save()
 	
 	def get_location(self):
@@ -307,8 +319,19 @@ class Verb(Entity):
 		"""
 		Return a string representation of this class.
 		"""
-		return "#%s%s%s on #%d" % (
-			self._id, ['', ' ability'][self._ability], ['', ' method'][self._method], self._origin_id
+		return "%s #%s on %s" % (
+			[['Verb', 'Ability'][self._ability], 'Method'][self._method], self._id, self.origin
+		)
+	
+	def get_details(self):
+		return dict(
+			id			= self.get_id(),
+			kind		= self.get_type(),
+			exec_type	= 'verb' if not self._method else 'method' if not self._ability else 'ability',
+			owner		= str(self.get_owner()),
+			names		= self.get_names(),
+			code		= str(self.get_code()),
+			origin		= str(self.get_origin()),
 		)
 	
 	def execute(self, parser):
@@ -401,7 +424,18 @@ class Property(Entity):
 		"""
 		Return a string representation of this class.
 		"""
-		return '#%d (%s) = %s(%s) on #%d' % (self._id, self._name, self._type, self._value, self._origin_id)
+		return 'property #%s (%s) on %s' % (self._id, self._name, self.origin)
+	
+	def get_details(self):
+		return dict(
+			id			= self.get_id(),
+			kind		= self.get_type(),
+			owner		= str(self.get_owner()),
+			name		= self.get_name(),
+			value		= str(self._value),
+			type		= str(self._type),
+			origin		= str(self.get_origin()),
+		)
 	
 	def is_readable(self):
 		try:

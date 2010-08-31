@@ -1,25 +1,47 @@
 <html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
 <head>
-	<title>txSpace Client</title>
+	<title>txSpace Verb Editor</title>
+	<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
 	<link rel="stylesheet" type="text/css" href="/assets/css/verb-editor.css"/>
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+		google.load('jquery', '1.4.2');
+		google.load('jqueryui', '1.8.4');
+		google.setOnLoadCallback(function(){
+			jqueryLoaded();
+		}, true);
+	</script>
 	<script type="text/javascript" src="/assets/js/global.js"></script>
 	<script type="text/javascript" src="/assets/CodeMirror-0.63/js/codemirror.js"></script>
-	<script type="text/javascript" src="/assets/js/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" src="/assets/js/verb-editor.js"></script>
 </head>
 <body>
-	<div class="editor">
+	<div class="editor ui-widget ui-widget-content ui-corner-all">
 		<div class="controls">
-			<label id="names-label" for="names-field">Names:</label><input type="text" id="names-field" size="20"/>
-			<label id="owner-label" for="owner-field">Owner:</label><input type="text" id="owner-field" size="20"/>
-			<input type="button" id="access-button" value="Access..." />
+			<label id="names-label" for="names-field">names:</label>
+			<input type="text" id="names-field" size="20"/>
+			<label id="owner-label" for="owner-field">owner:</label>
+			<input type="text" id="owner-field" size="20"/>
+			
+			<div id="type-radio">
+				<input type="radio" class="type-button" name="type_verb" id="type-verb" value="verb"
+					/><label id="type-verb-label" for="type-verb">verb</label><input
+					type="radio" class="type-button" name="type_verb" id="type-method" value="method" /><label
+					id="type-method-label" for="type-method">method</label><input
+					type="radio" class="type-button" name="type_verb" id="type-ability" value="ability" /><label
+					id="type-ability-label" for="type-ability">ability</label>
+			</div>
+			
+			<input type="button" id="access-button" value="access..." />
 		</div>
-		<div>
-			<textarea id="verb-code" rows="33" cols="100"></textarea>
+		<div class="code-editor">
+			<textarea id="verb-code"></textarea>
 		</div>
 	</div>
-	<input type="button" id="cancel-button" value="cancel" />
-	<input type="button" id="save-button" value="save" />
+	<div class="controls">
+		<button type="button" class="action-button" id="save-button">save</button>
+		<button type="button" class="action-button" id="cancel-button">cancel</button>
+	</div>
 </body>
 </html>

@@ -59,15 +59,14 @@ class txSpace2Server(object):
 	@classmethod
 	def makeWebFactory(cls, checker, msg_service, accesslog):
 		from nevow import guard, appserver
-		from txspace.client import web as webclient
-		from txspace.client.web import session
+		from txspace import client, session
 		
 		pool = session.TransactionUserSessionStore(checker)
 		
 		web_portal = portal.Portal(session.SessionRealm(pool))
 		web_portal.registerChecker(session.SessionChecker(pool))
 		
-		site_root = webclient.RootDelegatePage(pool, msg_service, web_portal)
+		site_root = client.RootDelegatePage(pool, msg_service, web_portal)
 		
 		if(accesslog != '-'):
 			factory = appserver.NevowSite(site_root, logPath=accesslog)

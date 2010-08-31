@@ -116,29 +116,6 @@ def build_insert(table, data=None, **kwargs):
 	
 	return interp(query, *values)
 
-def build_replace(table, data=None, **kwargs):
-	"""
-	Given a table name and a dictionary, construct an REPLACE INTO query. Keys are
-	sorted alphabetically before output, so the result of running a semantically
-	identical dictionary should be the same every time.
-	
-	Use modu.sql.RAW to embed SQL directly in the SET clause.
-	
-	@param table: the desired table name
-	@type table: str
-	
-	@param data: a column name to value map
-	@type data: dict
-	
-	@returns: an SQL query
-	@rtype: str
-	"""
-	if(data is None):
-		data = {}
-	data.update(kwargs)
-	query_stub = 'REPLACE INTO %s ' % table
-	return query_stub + build_set(data)
-
 def build_set(data=None, **kwargs):
 	"""
 	Given a dictionary, construct a SET clause. Keys are sorted alphabetically
