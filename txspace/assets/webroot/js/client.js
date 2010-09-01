@@ -3,6 +3,26 @@
 txspace.ClientConnector = Nevow.Athena.Widget.subclass('txspace.ClientConnector');
 
 txspace.ClientConnector.methods(
+	function plugin(self, name, plugin_script_url, args){
+		var resultDeferred = new Divmod.Defer.Deferred();
+		function initialize_plugin(){
+			var result = eval(name + '_plugin_init(args);');
+			result.addCallback(function(r){
+				resultDeferred.callback(r);
+			});
+			return result;
+		}
+		
+		if(plugin_installs[plugin_script_url]){
+			initialize_plugin();
+		}
+		else{
+			jQuery.getScript(plugin_script_url, initialize_plugin);
+			plugin_installs[plugin_script_url] = 1;
+		}
+		
+		return resultDeferred;
+	},
 	function parse(self, text){
 		/*
 		 * Send a command to the server.
@@ -107,30 +127,6 @@ txspace.ClientConnector.methods(
 		
 		actions.scrollTo('max');
 	},
-	function objedit(self, info){
-		/*
-		 * Called by the server to open an object editor window.
-		 */
-		return openEditor('object', info, 465, 535);
-	},
-	function verbedit(self, info){
-		/*
-		 * Called by the server to open a verb editor window.
-		 */
-		return openEditor('verb', info, 970, 600);
-	},
-	function propedit(self, info){
-		/*
-		 * Called by the server to open a property editor window.
-		 */
-		return openEditor('property', info, 630, 525);
-	},
-	function accessedit(self, info){
-		/*
-		 * Called by the server to open an access editor window.
-		 */
-		return openEditor('access', info, 750, 295, 'yes');
-	},
 	function logout(self){
 		/*
 		 * Called by the server to logout the user.
@@ -140,122 +136,4 @@ txspace.ClientConnector.methods(
 	}
 );
 
-// the waiting deferred and the editor details
-// are keyed to the window name.
-var editorDetails = {};
-
-var commandHistory = [];
-var historyPosition = -1;
-var currentCommand = ''
-
-function openEditor(type, info, width, height, scrollbars){
-	/*
-	 * Once the server has sent `info`, this function opens an
-	 * editor window. The child window uses the parent's Athena
-	 * connection to communicate with the server.
-	 */
-	var resultDeferred = new Divmod.Defer.Deferred();
-	
-	var window_name = type + '-' + info['id'];
-	if(!scrollbars){
-		scrollbars = 'auto';
-	}
-	var editorWindow = window.open('/edit/' + type, window_name, 'menubar=no,status=no,toolbar=no,location=no,directories=no,resizable=yes,scrollbars=' + scrollbars + ',width=' + width + ',height=' + height);
-	
-	editorDetails[window_name] = {
-		info			: info,
-		resultDeferred	: resultDeferred,
-	}
-	
-	// this 'thread' waits for the editor window to
-	// close before cancelling the waiting deferred
-	var spyID = setInterval(function(){
-		if(editorWindow && editorWindow.closed && ! resultDeferred._called){
-			resultDeferred.callback(null);
-			delete editorDetails[window_name];
-			clearInterval(spyID);
-		}
-	}, 100);
-	
-	return resultDeferred;
-}
-
-function getEditorDetails(editorWindow){
-	/*
-	 * Retrieve the proper info for the given window.
-	 */
-	return editorDetails[editorWindow.name];
-}
-
-function getConnector(){
-	/*
-	 * Return the Athena connection to the server.
-	 */
-	var element = document.getElementById('athenaid:1-client-connector');
-	return Nevow.Athena.Widget.get(element);
-}
-
-function handleKeyEvent(event){
-	/*
-	 * Command-line key handler.
-	 */
-	switch(event.which){
-		case 13:
-			var connector = getConnector();
-			var command = event.target.value;
-			if(command){
-				connector.parse(command);
-				commandHistory.push(command);
-				historyPosition = commandHistory.length - 1;
-			}
-			event.target.value = '';
-			event.preventDefault();
-			break;
-		case 38:
-			// up arrow
-			if(historyPosition == commandHistory.length - 1){
-				currentCommand = event.target.value
-			}
-			if(historyPosition >= 0){
-				event.target.value = commandHistory[historyPosition--];
-			}
-			event.preventDefault();
-			break;
-		case 40:
-			// down arrow
-			if(historyPosition + 2 <= commandHistory.length){
-				if(historyPosition + 2 == commandHistory.length){
-					event.target.value = currentCommand;
-				}
-				else{
-					event.target.value = commandHistory[historyPosition + 2];
-				}
-				historyPosition++;
-			}
-			event.preventDefault();
-			break;
-		default:
-			break;
-	}
-}
-
-function look(item){
-	/*
-	 * Primitive click-to-look support.
-	 */
-	var connector = getConnector()
-	
-	connector.parse('look ' + item);
-}
-
-$(document).ready(function(){
-	$('.client-prompt').keyup(handleKeyEvent);
-	
-	$('.look-me').click(function(){
-		look('me');
-	});
-	
-	$('.look-here').click(function(){
-		look('here');
-	});
-});
+var plugin_installs = {};

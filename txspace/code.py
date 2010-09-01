@@ -7,7 +7,7 @@
 """
 Code
 """
-from txspace import errors
+from txspace import errors, modules
 
 def r_eval(code, environment):
 	if not(environment):
@@ -50,34 +50,6 @@ def observe(p, user, observations):
 	))
 
 @api
-def edit(p, item):
-	p.exchange.queue.send(p.caller.get_id(), dict(
-		command			= 'edit',
-		details			= item.get_details(),
-	))
-
-@api
-def access(p, item):
-	acl = p.exchange.get_access(item.get_id(), item.get_type())
-	details = dict(
-		id		= str(item),
-		type	= item.get_type(),
-		origin	= str(getattr(item, 'origin', '')),
-		access	= [dict(
-			access_id	= rule['id'],
-			rule		= rule['rule'],
-			access		= rule['type'],
-			accessor	= str(p.exchange.get_object(rule['accessor_id'])) if rule['accessor_id'] else rule['group'],
-			permission	= rule['permission_name'],
-		) for rule in acl]
-	)
-	
-	p.exchange.queue.send(p.caller.get_id(), dict(
-		command			= 'access',
-		details			= details,
-	))
-
-@api
 def get_object(p, key):
 	return p.exchange.get_object(key)
 
@@ -105,6 +77,11 @@ def get_environment(p):
 		has_pobj 		= p.has_pobj,
 		has_pobj_str 	= p.has_pobj_str,
 	)
+	
+	for mod in modules.iterate():
+		for name, func in mod.get_environment(p).items():
+			func.func_name = name
+			api(func) if callable(func) else None
 	
 	for name, func in api.locals.items():
 		env[name] = func(p)

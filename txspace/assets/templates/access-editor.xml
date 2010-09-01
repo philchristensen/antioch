@@ -9,11 +9,12 @@
 		google.load('jquery', '1.4.2');
 		google.load('jqueryui', '1.8.4');
 		google.setOnLoadCallback(function(){
-			jqueryLoaded();
+			init();
 		}, true);
 	</script>
 	<script type="text/javascript" src="/assets/js/global.js"></script>
 	<script type="text/javascript" src="/assets/js/access-editor.js"></script>
+	<script type="text/javascript" src="/assets/js/editor-plugin-support.js"></script>
 </head>
 <body>
 	<div id="editor" class="ui-widget-content ui-corner-all">

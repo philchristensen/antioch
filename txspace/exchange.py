@@ -445,6 +445,11 @@ class ObjectExchange(object):
 		
 		return self.instantiate('verb', v[0], default_permissions=(name != 'set_default_permissions'))
 	
+	def remove_verb(self, origin_id, name):
+		v = self.get_verb(origin_id, name)
+		if(v):
+			self.pool.runOperation(sql.build_delete('verb', id=v.get_id()))
+	
 	def get_verb_list(self, origin_id):
 		verbs = self.pool.runQuery(sql.interp(
 			"""SELECT v.id, array_agg(vn.name) AS names
@@ -494,6 +499,11 @@ class ObjectExchange(object):
 			return None
 		
 		return self.instantiate('property', p[0])
+	
+	def remove_property(self, origin_id, name):
+		v = self.get_property(origin_id, name)
+		if(v):
+			self.pool.runOperation(sql.build_delete('property', id=v.get_id()))
 	
 	def refs(self, key):
 		"""

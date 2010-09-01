@@ -162,6 +162,10 @@ class Object(Entity):
 		v.add_name(name)
 		return v
 	
+	def remove_verb(self, name):
+		self.check('write', self)
+		self._ex.remove_verb(origin_id=self._id, name=name)
+	
 	def has_verb(self, name):
 		return self._ex.has(self._id, 'verb', name)
 	
@@ -202,6 +206,10 @@ class Object(Entity):
 		owner_id = ctx.get_id() if ctx else None
 		p = self._ex.instantiate('property', origin_id=self._id, name=name, owner_id=owner_id)
 		return p
+	
+	def remove_property(self, name):
+		self.check('write', self)
+		self._ex.remove_property(origin_id=self._id, name=name)
 	
 	def has_property(self, name):
 		return self._ex.has(self._id, 'property', name)

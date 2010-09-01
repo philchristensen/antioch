@@ -47,7 +47,7 @@ function cancelObject(){
 
 function reloadObject(){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var deferred = connector.callRemote('get_object_details', details.info['id']);
 	
 	deferred.addCallback(function(response){
@@ -60,7 +60,7 @@ function reloadObject(){
 }
 
 function requestObjectEditor(id){
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	deferred = connector.callRemote('req_object_editor', id);
 	deferred.addErrback(alertFailure);
 	return deferred;
@@ -68,7 +68,7 @@ function requestObjectEditor(id){
 
 function addVerb(){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var verb_name = prompt("What do you want to call this verb?");
 	
 	if(! verb_name.match(/^\S+$/)){
@@ -91,7 +91,7 @@ function removeVerb(){
 	if($('#verbs-select').val()){
 		var verb_name = $('#verbs-select').val();
 		if(confirm("Are you sure you want to delete the verb '" + verb_name + "'?")){
-			var connector = window.opener.getConnector();
+			var connector = getClientWindow(window).getConnector();
 			var deferred = connector.callRemote('remove_verb', details.info['id'], verb_name);
 			
 			deferred.addCallback(function(response){
@@ -106,7 +106,7 @@ function removeVerb(){
 
 function requestVerbEditor(object_id, verb_name){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var deferred = connector.callRemote('req_verb_editor', object_id, verb_name);
 	
 	deferred.addCallback(function(response){
@@ -119,7 +119,7 @@ function requestVerbEditor(object_id, verb_name){
 
 function addProperty(){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var prop_name = prompt("What do you want to call this property?");
 	
 	if(! prop_name.match(/^\S+$/)){
@@ -142,7 +142,7 @@ function removeProperty(){
 	if($('#properties-select').val()){
 		var prop_name = $('#properties-select').val();
 		if(confirm("Are you sure you want to delete the property '" + prop_name + "'?")){
-			var connector = window.opener.getConnector();
+			var connector = getClientWindow(window).getConnector();
 			var deferred = connector.callRemote('remove_property', details.info['id'], prop_name);
 			
 			deferred.addCallback(function(response){
@@ -156,7 +156,7 @@ function removeProperty(){
 }
 function requestPropertyEditor(object_id, property_name){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var deferred = connector.callRemote('req_property_editor', object_id, property_name);
 	
 	deferred.addCallback(function(response){
@@ -169,16 +169,13 @@ function requestPropertyEditor(object_id, property_name){
 
 function requestAccessEditor(){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
-	
+	var connector = getClientWindow(window).getConnector();
 	deferred = connector.callRemote('req_access_editor', details.info['id'], 'object', '');
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
 
-function jqueryLoaded(){
-	jQuery.getScript('/assets/js/jquery.scrollTo-1.4.2-min.js');
-	
+function init(){
 	$('#parent-button').button({icons:{primary:'ui-icon-newwin'}, text:false}).click(function(){
 		var parents = $('#parent-field').val().split(',');
 		for(index in parents){

@@ -127,7 +127,7 @@ function cancelAccess(){
 	window.close();
 }
 
-function jqueryLoaded(){
+function init(){
 	$('#editor').sortable({
 		handle:	".drag-thumb",
 		items: 	".access-rule",  

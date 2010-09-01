@@ -60,13 +60,13 @@ function toggleSyntax(type){
 
 function requestAccessEditor(){
 	var details = getEditorDetails(window);
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	deferred = connector.callRemote('req_access_editor', details.info['origin'], 'property', details.info['name']);
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
 
-function jqueryLoaded(){
+function init(){
 	$('#access-button').button().click(requestAccessEditor);
 	
 	$('#cancel-button').button().click(cancelProperty);

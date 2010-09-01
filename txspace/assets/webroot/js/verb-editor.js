@@ -46,14 +46,14 @@ function cancelVerb(){
 }
 
 function requestAccessEditor(){
-	var connector = window.opener.getConnector();
+	var connector = getClientWindow(window).getConnector();
 	var details = getEditorDetails(window);
 	var deferred = connector.callRemote('req_access_editor', details.info['origin'], 'verb', details.info['names'][0]);
 	deferred.addErrback(alertFailure);
 	return deferred;
 }
 
-function jqueryLoaded(){
+function init(){
 	$('#access-button').button().click(requestAccessEditor);
 	
 	$('#cancel-button').button().click(cancelVerb);
