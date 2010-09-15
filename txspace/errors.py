@@ -37,13 +37,7 @@ class UserError(Exception):
 		return str(self._message) + data
 
 class TestError(Exception):
-	"""
-	This is a special class used by the test units.
-	
-	It isn't caught by the execution framework, so it can be used to
-	detect events happening to "fake" test clients.
-	"""
-	def __init__(self, message, data=None):
+	def __init__(self, message=None, data=None):
 		self._message = message
 		self.data = data
 	

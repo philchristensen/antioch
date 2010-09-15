@@ -9,6 +9,17 @@ Code
 """
 from txspace import errors, modules
 
+def massage_verb_code(code):
+	code = code.replace('\r\n', '\n')
+	code = code.replace('\n\r', '\n')
+	code = code.replace('\r', '\n')
+	code = '\n'.join(
+		['def __verb__():'] +
+		['\t' + x for x in code.split('\n') if x.strip()] +
+		['__result__ = __verb__()']
+	)
+	return code
+
 def r_eval(code, environment):
 	if not(environment):
 		raise RuntimeError('No environment')
@@ -17,6 +28,9 @@ def r_eval(code, environment):
 def r_exec(code, environment):
 	if not(environment):
 		raise RuntimeError('No environment')
+	
+	code = massage_verb_code(code)
+	
 	exec(code, environment)
 	if("__result__" in environment):
 		return environment["__result__"]

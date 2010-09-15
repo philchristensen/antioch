@@ -26,12 +26,48 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	def tearDown(self):
 		pass
 	
+	def test_extract_id(self):
+		self.failUnlessEqual(2, exchange.extract_id('#2 (Object)'))
+		self.failUnlessEqual(2, exchange.extract_id(2))
+		self.failUnlessEqual(2, exchange.extract_id('#2'))
+		self.failUnlessEqual(None, exchange.extract_id('2'))
+		self.failUnlessEqual(None, exchange.extract_id('Object'))
+	
+	def test_precache_default_permissions(self):
+		queries = [
+			'SELECT * FROM object WHERE id = 1024',
+			'SELECT * FROM verb WHERE id = 2048',
+			"SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
+			'SELECT * FROM object WHERE id = 1',
+		]
+		
+		results = [
+			[dict(id=1024, name='System Object')],
+			[dict(id=2048, origin_id=1024, name='set_default_permissions')],
+			[dict(id=2048, origin_id=1024, name='set_default_permissions')],
+			[dict(id=1024, name='System Object')],
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery = runQuery
+		)
+		ctx = test.Anything()
+		
+		ex = exchange.ObjectExchange(pool, ctx)
+		ex.precache_default_permissions()
+		
+		self.failUnlessEqual(ex.default_permissions_precached, True)
+		self.failUnless('verb-2048' in ex.cache, "default permissions verb was not cached")
+	
 	def test_instantiate(self):
 		results = [
-			[dict(name='set_default_permissions', id=1, origin_id=1, method=True)],
-			[dict(name='System Object', id=1)],
-			[dict(name='set_default_permissions', id=1, origin_id=1, method=True)],
-			[dict(name='wizard', id=2)],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 		]
 		def runQuery(query, *a, **kw):
 			if(query.startswith('SELECT')):
@@ -171,11 +207,15 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		def runOperation(q, *a, **kw):
 			self.failUnlessEqual(q, queries.pop())
 		
+		self.queue_committed = False
+		def commit():
+			self.queue_committed = True
+		
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
 		ctx = test.Anything()
-		queue = test.Anything(commit=lambda: defer.Deferred().callback(None))
+		queue = test.Anything(commit=commit)
 		ex = exchange.ObjectExchange(pool, queue, ctx)
 		for index in range(1, 6):
 			o = model.Object(ex)
@@ -184,6 +224,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		yield ex.commit()
 		
+		self.failUnlessEqual(self.queue_committed, True)
 		self.failUnlessEqual(ex.cache, {})
 	
 	def test_save_object(self):
@@ -410,6 +451,89 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			expected_ids.remove(parent.get_id())
 		self.failIf(expected_ids, "Didn't get back all the expected parent objects.")
 	
+	def test_has_parent(self):
+		results = [
+			[],
+			[dict(id=2048)],
+		]
+		queries = [
+			'SELECT parent_id AS id FROM object_relation WHERE child_id = 1024 ORDER BY weight DESC',
+			'SELECT parent_id AS id FROM object_relation WHERE child_id = 1024 ORDER BY weight DESC',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	= runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		self.failUnlessEqual(ex.has_parent(1024, 2048), True)
+		self.failUnlessEqual(ex.has_parent(1024, 4096), False)
+	
+	def test_has(self):
+		results = [
+			[],
+			[dict(id=1, origin_id=2048, name='test')],
+			[dict(parent_id=2048)],
+			[],
+			[],
+			[dict(id=1, origin_id=2048, name='test')],
+			[dict(parent_id=2048)],
+			[],
+			[],
+			[dict(id=1, origin_id=2048)],
+			[dict(parent_id=2048)],
+			[],
+			[],
+			[dict(id=2048)],
+			[dict(id=1, origin_id=2048)],
+			[dict(parent_id=2048)],
+			[],
+		]
+		queries = [
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 1024",
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 2048",
+			'SELECT parent_id FROM object_relation WHERE child_id = 1024',
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 1024",
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 1024",
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 2048",
+			'SELECT parent_id FROM object_relation WHERE child_id = 1024',
+			"SELECT p.* FROM property p WHERE p.name = 'test' AND p.origin_id = 1024",
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 1024",
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 2048",
+			'SELECT parent_id FROM object_relation WHERE child_id = 1024',
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 1024",
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 1024",
+			'SELECT * FROM object WHERE id = 2048',
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 2048",
+			'SELECT parent_id FROM object_relation WHERE child_id = 1024',
+			"SELECT v.* FROM verb v INNER JOIN verb_name vn ON vn.verb_id = v.id WHERE vn.name = 'look' AND v.origin_id = 1024",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	= runQuery,
+		)
+		ctx = test.Anything(
+		)
+		ex = exchange.ObjectExchange(pool, ctx)
+
+		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=True), True)
+		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=True), False)
+		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=False), True)
+		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=False), False)
+		
+		self.failUnlessEqual(ex.has(1024, 'property', 'test', recurse=True, unrestricted=True), True)
+		self.failUnlessEqual(ex.has(1024, 'property', 'test', recurse=False, unrestricted=True), False)
+		self.failUnlessEqual(ex.has(1024, 'property', 'test', recurse=True, unrestricted=False), True)
+		self.failUnlessEqual(ex.has(1024, 'property', 'test', recurse=False, unrestricted=False), False)
+	
 	def test_get_all_parents(self):
 		results = [
 			[dict(id=256)],
@@ -505,6 +629,27 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(v2.get_id(), 2048)
 		self.failUnlessEqual(v, v2)
 	
+	def test_get_verb_list(self):
+		results = [
+			[dict(id=1, names='one'), dict(id=2, names='two'), dict(id=3, names='three')]
+		]
+		
+		queries = [
+			'SELECT v.id, array_agg(vn.name) AS names FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE v.origin_id = 1024 GROUP BY v.id',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.get_verb_list(1024)
+	
 	def test_get_verb_names(self):
 		def runQuery(q, *a, **kw):
 			self.failUnlessEqual(q, 'SELECT name FROM verb_name WHERE verb_id = 1024')
@@ -586,6 +731,38 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(v2.get_id(), 2048)
 		self.failUnlessEqual(v, v2)
 	
+	def test_get_ancestor_with(self):
+		results = [
+			[],
+			[],
+			[dict(id=2048, name='test object')],
+			[dict(id=2048)],
+			[dict(parent_id=2048)],
+			[],
+		]
+		
+		queries = [
+			'SELECT parent_id FROM object_relation WHERE child_id = 2048',
+			"SELECT p.* FROM property p WHERE p.name = 'name' AND p.origin_id = 2048",
+			'SELECT * FROM object WHERE id = 2048',
+			"SELECT v.origin_id AS id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 2048",
+			'SELECT parent_id FROM object_relation WHERE child_id = 1024',
+			"SELECT v.origin_id AS id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 1024",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		o = ex.get_ancestor_with(1024, 'verb', 'look')
+		self.failUnlessEqual(o.name, 'test object')
+	
 	def test_get_property(self):
 		results = [
 			[dict(id=1024)],
@@ -649,6 +826,27 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(p2.get_id(), 2048)
 		self.failUnlessEqual(p, p2)
 	
+	def test_get_property_list(self):
+		results = [
+			[dict(id=1, name='one'), dict(id=2, name='two'), dict(id=3, name='three')]
+		]
+		
+		queries = [
+			'SELECT p.id, p.name FROM property p WHERE p.origin_id = 1024',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.get_property_list(1024)
+	
 	def test_refs(self):
 		names = ['some name', 'some other name', 'yet another name']
 		results = [10, 1, 0]
@@ -701,6 +899,331 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		self.failUnlessEqual(ex.cache.get('object-1024'), None)
 	
+	def test_get_access(self):
+		results = [
+			[dict(permission_name='read'), dict(permission_name='write')],
+			[dict(permission_name='read'), dict(permission_name='write')],
+			[dict(permission_name='read'), dict(permission_name='write')],
+		]
+		
+		queries = [
+			'SELECT a.*, p.name AS permission_name FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE property_id = 1024 ORDER BY a.weight',
+			'SELECT a.*, p.name AS permission_name FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE verb_id = 1024 ORDER BY a.weight',
+			'SELECT a.*, p.name AS permission_name FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE object_id = 1024 ORDER BY a.weight',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.get_access(1024, 'object')
+		ex.get_access(1024, 'verb')
+		ex.get_access(1024, 'property')
+	
+	def test_update_access(self):
+		results = [
+			[dict(id=4096)],
+			[dict(id=2048)],
+			[dict(id=2, name='write')],
+			[dict(id=2, name='write')],
+			[dict(id=1, name='read')],
+			[dict(id=1, name='read')],
+		]
+		
+		queries = [
+			'',
+			'DELETE FROM access WHERE id = 4096',
+			'SELECT a.*, p.name AS permission FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE a.id = 4096',
+			'DELETE FROM access WHERE id = 2048',
+			'SELECT a.*, p.name AS permission FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE a.id = 2048',
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 2, 'deny', 'accessor', 0)",
+			"SELECT p.* FROM permission p WHERE p.name = 'write'",
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 2, 'allow', 'accessor', 0)",
+			"SELECT p.* FROM permission p WHERE p.name = 'write'",
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 1, 'deny', 'group', 0)",
+			"SELECT p.* FROM permission p WHERE p.name = 'read'",
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 1, 'allow', 'group', 0)",
+			"SELECT p.* FROM permission p WHERE p.name = 'read'",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runQuery		= runQuery,
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		o = model.Object(ex)
+		o.set_id(1024)
+		ex.cache['object-1024'] = o
+		
+		ex.update_access(0, 'allow', 'group', 'everyone', 'read', 0, o, False)
+		ex.update_access(0, 'deny', 'group', 'everyone', 'read', 0, o, False)
+		
+		ex.update_access(0, 'allow', 'accessor', o, 'write', 0, o, False)
+		ex.update_access(0, 'deny', 'accessor', o, 'write', 0, o, False)
+		
+		ex.update_access(2048, 'allow', 'accessor', o, 'write', 0, o, True)
+		ex.update_access(4096, 'deny', 'accessor', o, 'write', 0, o, True)
+	
+	def test_is_allowed(self):
+		results = [
+			[],
+			[dict(id=1, name='anything')],
+			[dict(id=3, name='write')],
+			[dict(rule='allow', type='group', group='everyone', permission_id=2)],
+			[dict(id=1, name='anything')],
+			[dict(id=2, name='read')],
+		]
+		
+		queries = [
+			'SELECT * FROM access WHERE object_id = 2048 AND permission_id IN (3, 1) AND property_id IS NULL AND verb_id IS NULL ORDER BY weight DESC',
+			"SELECT * FROM permission WHERE name = 'anything'",
+			"SELECT * FROM permission WHERE name = 'write'",
+			'SELECT * FROM access WHERE object_id = 2048 AND permission_id IN (2, 1) AND property_id IS NULL AND verb_id IS NULL ORDER BY weight DESC',
+			"SELECT * FROM permission WHERE name = 'anything'",
+			"SELECT * FROM permission WHERE name = 'read'",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		accessor = model.Object(ex)
+		accessor.set_id(1024)
+		
+		subject = model.Object(ex)
+		subject.set_id(2048)
+		
+		ex.cache['object-1024'] = accessor
+		ex.cache['object-2048'] = subject
+		
+		self.failUnlessEqual(ex.is_allowed(accessor, 'read', subject), True)
+		self.failUnlessEqual(ex.is_allowed(accessor, 'write', subject), False)
+	
+	def test_allow(self):
+		results = [
+			[dict(id=1, name='write')],
+			[dict(id=1, name='anything')],
+		]
+
+		queries = [
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES (NULL, 0, 0, 1, NULL, 'allow', 'accessor', NULL, 0)",
+			"SELECT * FROM permission WHERE name = 'write'",
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'allow', 'group', NULL, 0)",
+			"SELECT * FROM permission WHERE name = 'anything'",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runQuery		= runQuery,
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		o = model.Object(ex)
+		o.allow('owners', 'anything')
+		o.allow(o, 'write')
+	
+	def test_deny(self):
+		results = [
+			[dict(id=1, name='anything')],
+		]
+
+		queries = [
+			"INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'deny', 'group', NULL, 0)",
+			"SELECT * FROM permission WHERE name = 'anything'",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runQuery		= runQuery,
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		o = model.Object(ex)
+		o.deny('owners', 'anything')
+	
+	def test_is_wizard(self):
+		results = [
+			[],
+			[dict(id=1)],
+		]
+		
+		queries = [
+			"SELECT id FROM player WHERE wizard = 't' AND avatar_id = 1024",
+			"SELECT id FROM player WHERE wizard = 't' AND avatar_id = 2048",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		self.failUnlessEqual(ex.is_wizard(2048), True)
+		self.failUnlessEqual(ex.is_wizard(1024), False)
+	
+	def test_is_connected_player(self):
+		results = [
+			[],
+			[dict(connected=1)],
+		]
+		
+		queries = [
+			'SELECT 1 AS connected FROM player WHERE COALESCE(last_login, to_timestamp(0)) > COALESCE(last_logout, to_timestamp(0)) AND avatar_id = 1024',
+			'SELECT 1 AS connected FROM player WHERE COALESCE(last_login, to_timestamp(0)) > COALESCE(last_logout, to_timestamp(0)) AND avatar_id = 2048',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		self.failUnlessEqual(ex.is_connected_player(2048), True)
+		self.failUnlessEqual(ex.is_connected_player(1024), False)
+	
+	def test_set_player(self):
+		results = [
+			[dict(id=1)],
+			[],
+			[],
+		]
+		
+		queries = [
+			'DELETE FROM player WHERE avatar_id = 1',
+			'SELECT id FROM player WHERE avatar_id = 1',
+			"INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veYk4kGvM83ec', 't')",
+			'SELECT id FROM player WHERE avatar_id = 1',
+			"INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veFIEE6ItqLts', 'f')",
+			'SELECT id FROM player WHERE avatar_id = 1',
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runQuery		= runQuery,
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.set_player(1, True, False, 'password')
+		ex.set_player(1, True, True, 'wizard password')
+		ex.set_player(1, False)
+	
+	def test_validate_password(self):
+		import crypt
+		results = [
+			[dict(crypt=crypt.crypt('password', 'ab'))],
+			[dict(crypt=crypt.crypt('password', 'ab'))],
+		]
+		
+		queries = [
+			'SELECT crypt FROM player WHERE avatar_id = 1024',
+			'SELECT crypt FROM player WHERE avatar_id = 1024'
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		self.failUnlessEqual(ex.validate_password(1024, 'password'), True)
+		self.failUnlessEqual(ex.validate_password(1024, 'badpassword'), False)
+	
+	def test_login_player(self):
+		results = [
+		]
+		
+		queries = [
+			'UPDATE player SET last_login = now() WHERE avatar_id = 1024'
+		]
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.login_player(1024)
+	
+	def test_logout_player(self):
+		results = [
+		]
+		
+		queries = [
+			'UPDATE player SET last_logout = now() WHERE avatar_id = 1024'
+		]
+		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		ex.logout_player(1024)
+	
+	
 	def test_is_player(self):
 		results = [[dict(id=1024)], []]
 		def runQuery(q, *a, **kw):
@@ -716,10 +1239,48 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(ex.is_player(1024), False)
 		self.failUnlessEqual(ex.is_player(1024), True)
 	
+	def test_find(self):
+		results = [
+			[dict(id=3)],
+			[dict(id=2)],
+			[dict(id=1)],
+			[dict(id=3)],
+			[dict(id=2)],
+			[dict(id=1)],
+			[],
+			[],
+			[],
+		]
+		
+		queries = [
+			'SELECT * FROM object WHERE id = 3',
+			'SELECT * FROM object WHERE id = 2',
+			'SELECT * FROM object WHERE id = 1',
+			"SELECT o.id FROM object o INNER JOIN object_alias oa ON oa.object_id = o.id WHERE LOWER(oa.alias) = LOWER('box') AND o.location_id = 1024",
+			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('box') AND o.location_id = 1024",
+			"SELECT id FROM object WHERE LOWER(name) = LOWER('box') AND location_id = 1024",
+			"SELECT o.id FROM object o INNER JOIN object_alias oa ON oa.object_id = o.id WHERE LOWER(oa.alias) = LOWER('box') AND o.location_id = 1024",
+			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('box') AND o.location_id = 1024",
+			"SELECT id FROM object WHERE LOWER(name) = LOWER('box') AND location_id = 1024",
+		]
+		
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+			return results.pop()
+		
+		pool = test.Anything(
+			runQuery	=	runQuery,
+		)
+		ctx = test.Anything()
+		ex = exchange.ObjectExchange(pool, ctx)
+		
+		self.failIf(ex.find(1024, 'box'))
+		
+		results = ex.find(1024, 'box')
+		self.failUnlessEqual(len([x for x in results if x.get_id()]), 3)
+	
 	def test_get_contents(self):
 		results = [
-			# [dict(id=2048)],
-			# [dict(id=4096)],
 			[], 
 			[dict(id=4096), dict(id=2048)],
 		]

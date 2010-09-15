@@ -321,7 +321,7 @@ class Verb(Entity):
 		env = code.get_environment(default_parser)
 		env['args'] = args
 		env['kwargs'] = kwargs
-		code.r_exec(self._code, env)
+		return code.r_exec(self._code, env)
 	
 	def __str__(self):
 		"""
@@ -406,6 +406,7 @@ class Verb(Entity):
 			return False
 		elif(self.is_ability()):
 			return caller is self.origin or caller.has_parent(self.origin)
+		return False
 	
 	name = property(lambda x: x.get_names().pop(0))
 	names = property(get_names)

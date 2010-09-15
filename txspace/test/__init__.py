@@ -24,14 +24,17 @@ def init_database(dbid, dataset='minimal'):
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	
-	schema_path = assets.get('bootstraps/%s/database-schema.sql' % dataset)
+	schema_path = assets.get('bootstraps/schema.sql')
 	bootstrap.load_schema(psql_path, db_url, schema_path)
 	
 	pool[dbid] = dbapi.connect(db_url)
-	bootstrap_path = assets.get('bootstraps/%s/database-bootstrap.py' % dataset)
+	bootstrap_path = assets.get('bootstraps/%s.py' % dataset)
 	bootstrap.load_python(pool[dbid], bootstrap_path)
 
 	return pool[dbid]
+
+def raise_e(e):
+	raise e
 
 class Anything(object):
 	def __init__(self, **attribs):

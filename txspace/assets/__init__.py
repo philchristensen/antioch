@@ -8,13 +8,15 @@ import os.path
 
 from nevow import static
 
-def enable_assets(rsrc):
-	assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'webroot'))
+def enable_assets(rsrc, assets_path=None, name='assets'):
+	if(assets_path is None):
+		assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'webroot'))
 	assets_root = static.File(assets_path)
-	rsrc.putChild('assets', assets_root)
+	rsrc.putChild(name, assets_root)
 
-def get_template_path(template_name):
-	module_dir = os.path.dirname(__file__)
+def get_template_path(template_name, module_dir=None):
+	if(module_dir is None):
+		module_dir = os.path.dirname(__file__)
 	template_path = os.path.join(module_dir, 'templates', template_name + '.xml')
 	absolute_path = os.path.abspath(template_path)
 	return absolute_path

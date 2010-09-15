@@ -18,9 +18,8 @@ from twisted.python import usage
 
 from txspace import bootstrap, transact, dbapi, assets
 
-default_bootstrap_path = assets.get('bootstraps/%s/database-bootstrap.py')
-default_schema_path = assets.get('bootstraps/%s/database-schema.sql')
-default_grants_path = assets.get('bootstraps/%s/database-grants.sql')
+default_bootstrap_path = assets.get('bootstraps/%s.py')
+default_schema_path = assets.get('bootstraps/schema.sql')
 
 class Options(usage.Options):
 	"""
@@ -29,7 +28,6 @@ class Options(usage.Options):
 	optParameters = [
 					["with-psql", "k", "psql", "Path to the psql binary"],
 					["schema-file", "z", default_schema_path, "The database schema file to use."],
-					["grants-file", "Z", default_grants_path, "The database grants file to use."],
 					["bootstrap-file", "b", default_bootstrap_path, "The database bootstrap file to use."],
 					]
 	
@@ -53,7 +51,7 @@ if(__name__ == '__main__'):
 		print e.args[0]
 		sys.exit(1)
 	
-	schema_path = os.path.abspath(config['schema-file'] % config['dataset-name'])
+	schema_path = os.path.abspath(config['schema-file'])
 	bootstrap_path = os.path.abspath(config['bootstrap-file'] % config['dataset-name'])
 	
 	bootstrap.initialize_database(config['with-psql'], config['db-url'])

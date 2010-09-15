@@ -1,3 +1,14 @@
+2010-09-01    Phil Christensen <phil@bubblehouse.org>
+    * Massive rewrites for most of the codebase.
+    * Shared-nothing deployment architecture
+    * Objects loaded from PostgreSQL database
+    * Simple system for spawning new databases
+    * Message passing occurs via RabbitMQ server
+    * Verbs run synchronously inside child processes
+    * Created module system for extending GUI
+    * Object editors re-styled and cleaned up, implemented as module
+    * Using jQuery UI, both jQuery libs loaded from Google CDN
+
 2009-09-14    Phil Christensen <phil@bubblehouse.org>
     * Enhanced information returned to client for contents list.
       Split into players and contents, added support for player

@@ -414,7 +414,7 @@ class ObjectExchange(object):
 					""" % name, object_id))
 			
 			if not(a):
-				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
+				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
 				parents.extend([result['parent_id'] for result in results])
 		
 		if not(a):
@@ -443,7 +443,14 @@ class ObjectExchange(object):
 		if not(v):
 			return None
 		
-		return self.instantiate('verb', v[0], default_permissions=(name != 'set_default_permissions'))
+		# return self.instantiate('verb', v[0], default_permissions=(name != 'set_default_permissions'))
+		verb_id = v[0]['id']
+		if('verb-%s' % verb_id in self.cache):
+			return self.cache['verb-%s' % verb_id]
+		
+		v = self._mkverb(v[0])
+		v.set_id(verb_id)
+		return v
 	
 	def remove_verb(self, origin_id, name):
 		v = self.get_verb(origin_id, name)
@@ -498,7 +505,14 @@ class ObjectExchange(object):
 		if not(p):
 			return None
 		
-		return self.instantiate('property', p[0])
+		# return self.instantiate('property', p[0])
+		property_id = p[0]['id']
+		if('property-%s' % property_id in self.cache):
+			return self.cache['property-%s' % property_id]
+		
+		p = self._mkproperty(p[0])
+		p.set_id(property_id)
+		return p
 	
 	def remove_property(self, origin_id, name):
 		v = self.get_property(origin_id, name)
@@ -533,7 +547,7 @@ class ObjectExchange(object):
 	
 	def is_connected_player(self, avatar_id):
 		result = self.pool.runQuery(sql.interp(
-			"""SELECT 1
+			"""SELECT 1 AS connected
 				 FROM player
 				WHERE COALESCE(last_login, to_timestamp(0)) > COALESCE(last_logout, to_timestamp(0))
 				  AND avatar_id = %s

@@ -1,0 +1,51 @@
+<html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
+<head>
+	<title>txSpace Property Editor</title>
+	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
+	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/property-editor.css"/>
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+		google.load('jquery', '1.4.2');
+		google.load('jqueryui', '1.8.4');
+		google.setOnLoadCallback(function(){
+			init();
+		}, true);
+	</script>
+	<script type="text/javascript" src="/assets/js/global.js"></script>
+	<script type="text/javascript" src="/plugin/editor/assets/js/CodeMirror-0.63/js/codemirror.js"></script>
+	<script type="text/javascript" src="/plugin/editor/assets/js/property-editor.js"></script>
+	<script type="text/javascript" src="/plugin/editor/assets/js/editor-plugin-support.js"></script>
+</head>
+<body>
+	<div class="editor ui-widget ui-widget-content ui-corner-all">
+		<div class="controls">
+			<label id="name-label" for="name-field">name:</label>
+			<input type="text" id="name-field" size="20"/>
+			
+			<label id="owner-label" for="owner-field">owner:</label>
+			<input type="text" id="owner-field" size="20"/>
+		</div>
+		<div class="controls">
+			<label id="type-label" for="type-field">type:</label>
+			<select id="type-select" class="ui-widget ui-widget-content">
+				<option value="string">string</option>
+				<option value="python">python</option>
+				<option value="dynamic">dynamic python</option>
+			</select>
+			
+			<label id="html-label" for="html-checkbox">html:</label>
+			<input type="checkbox" id="html-checkbox" />
+			
+			<input type="button" id="access-button" value="access..." />
+		</div>
+		<div class="property-editor">
+			<textarea id="property-value"></textarea>
+		</div>
+	</div>
+	<div class="controls">
+		<button type="button" class="action-button" id="save-button">save</button>
+		<button type="button" class="action-button" id="cancel-button">cancel</button>
+	</div>
+</body>
+</html>
