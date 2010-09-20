@@ -143,6 +143,7 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 	def __init__(self, *args, **kwargs):
 		self.timeout = kwargs.pop('timeout', 21600)
 		self.conn_lasttime = {}
+		self.autocommit = kwargs.pop('autocommit', True)
 		adbapi.ConnectionPool.__init__(self, *args, **kwargs)
 	
 	def connect(self, *args, **kwargs):
@@ -193,10 +194,12 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 			if(result and isinstance(result, (list, tuple)) and isinstance(result[0], (list, tuple))):
 				result = [dict(zip([c[0] for c in trans._cursor.description], item)) for item in result]
 			trans.close()
-			#conn.commit()
+			if(self.autocommit):
+				conn.commit()
 			return result
 		except:
-			#conn.rollback()
+			if(self.autocommit):
+				conn.rollback()
 			raise
 
 

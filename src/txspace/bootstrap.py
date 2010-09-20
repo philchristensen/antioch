@@ -22,6 +22,27 @@ def get_dsn(db_url):
 	dsn['db'] = dsn['db'][1:]
 	return dsn
 
+def drop_database(psql_path, db_url, quiet=True):
+	dsn = get_dsn(db_url)
+	
+	kwargs = {}
+	if(quiet):
+		kwargs['stderr'] = subprocess.STDOUT
+	
+	subprocess.Popen([psql_path,
+		'-h', dsn.get('host') or 'localhost',
+		'-p', dsn.get('port') or '5432',
+		'-U', 'postgres',
+		'-c', "DROP USER %(user)s;" % dsn,
+	], stdout=subprocess.PIPE, **kwargs).wait()
+	
+	subprocess.Popen([psql_path,
+		'-h', dsn.get('host') or 'localhost',
+		'-p', dsn.get('port') or '5432',
+		'-U', 'postgres',
+		'-c', 'DROP DATABASE %(db)s;' % dsn,
+	], stdout=subprocess.PIPE, **kwargs).wait()
+
 def initialize_database(psql_path, db_url, quiet=True):
 	dsn = get_dsn(db_url)
 	

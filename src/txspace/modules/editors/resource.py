@@ -6,6 +6,8 @@
 
 import os.path
 
+import pkg_resources as pkg
+
 from nevow import loaders, rend
 
 from txspace import assets
@@ -19,11 +21,10 @@ class EditorDelegatePage(rend.Page):
 	
 	def locateChild(self, ctx, segments):
 		if(segments and self.user and segments[0] in ('object', 'verb', 'property', 'access')):
-			module_dir = os.path.dirname(__file__)
-			template = assets.get_template_path(segments[0] + '-editor', module_dir)
-			className = ''.join([x.capitalize() for x in os.path.basename(template).split('-')])
+			template = pkg.resource_string('txspace.modules.editors', 'templates/%s-editor.xml' % segments[0])
+			className = segments[0].capitalize() + 'Editor'
 			cls = type(className, (rend.Page,), dict(
-				docFactory	= loaders.xmlfile(template),
+				docFactory	= loaders.xmlstr(template),
 				user		= self.user
 			))
 			return (cls(), segments[2:])

@@ -90,7 +90,7 @@ class TransactionChild(child.AMPChild):
 	"""
 
 	def __init__(self):
-		self.pool = dbapi.connect(db_url)
+		self.pool = dbapi.connect(db_url, autocommit=False)
 		self.msg_service = messaging.MessageService()
 	
 	def get_exchange(self, ctx=None):
@@ -117,13 +117,12 @@ class DefaultTransactionChild(TransactionChild):
 				raise errors.PermissionError("Invalid login credentials. (3)")
 			except errors.AmbiguousObjectError, e:
 				raise errors.PermissionError("Invalid login credentials. (4)")
-			
+		
 			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
 				raise errors.PermissionError('User is already logged in.')
-			
+		
 			if not(x.validate_password(u.get_id(), password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
-		
 		return {'user_id': u.get_id()}
 	
 	@Login.responder

@@ -67,7 +67,7 @@ class EditorRemoteReference(object):
 			user_id		= self.user_id,
 			object_id	= unicode(object_id).encode('utf8'),
 		)
-		result = json.parse(json.serialize(result).decode('utf8'))
+		result = simplejson.loads(simplejson.dumps(result).decode('utf8'))
 		defer.returnValue(result)
 	
 	def remove_verb(self, object_id, verb_name):

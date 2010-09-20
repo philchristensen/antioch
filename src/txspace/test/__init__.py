@@ -10,9 +10,9 @@ psql_path = 'psql'
 initialized = {}
 pool = {}
 
-# dbapi.debug = True
+#dbapi.debug = True
 
-def init_database(dbid, dataset='minimal'):
+def init_database(dbid, dataset='minimal', autocommit=False):
 	global initialized, pool, oscar
 	if(initialized.get(dbid)):
 		return pool.get(dbid)
@@ -22,12 +22,13 @@ def init_database(dbid, dataset='minimal'):
 	db_url[-1] = 'txspace_test'
 	db_url = '/'.join(db_url)
 	
+	#bootstrap.drop_database(psql_path, db_url)
 	bootstrap.initialize_database(psql_path, db_url)
 	
 	schema_path = assets.get('bootstraps/schema.sql')
 	bootstrap.load_schema(psql_path, db_url, schema_path)
 	
-	pool[dbid] = dbapi.connect(db_url)
+	pool[dbid] = dbapi.connect(db_url, autocommit=autocommit)
 	bootstrap_path = assets.get('bootstraps/%s.py' % dataset)
 	bootstrap.load_python(pool[dbid], bootstrap_path)
 

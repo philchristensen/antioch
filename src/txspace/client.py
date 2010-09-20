@@ -13,9 +13,11 @@ Java and Cocoa versions.
 """
 import os, os.path
 
+import pkg_resources as pkg
+
 from zope.interface import implements
 
-from nevow import json
+import simplejson
 
 from twisted.application import service, internet
 from twisted.internet import reactor, defer, task
@@ -29,15 +31,6 @@ from txamqp import content
 from txamqp.queue import Closed
 
 from txspace import errors, assets, transact, session, modules
-
-def createTemplatePage(template):
-	className = ''.join([x.capitalize() for x in os.path.basename(template).split('-')])
-	return type(className, (rend.Page,), dict(docFactory=loaders.xmlfile(template)))
-
-ObjectEditor = createTemplatePage(assets.get_template_path('object-editor'))
-VerbEditor = createTemplatePage(assets.get_template_path('verb-editor'))
-PropertyEditor = createTemplatePage(assets.get_template_path('property-editor'))
-AccessEditor = createTemplatePage(assets.get_template_path('access-editor'))
 
 class Mind(object):
 	"""
@@ -71,6 +64,7 @@ class RootDelegatePage(rend.Page):
 		self.msg_service = msg_service
 		self.connections = {}
 		
+		#assets.enable_assets(self, assets)
 		assets.enable_assets(self)
 	
 	@inlineCallbacks
@@ -171,7 +165,7 @@ class ClientLogin(rend.Page):
 		Provide the necessary objects to handle session saving.
 		"""
 		super(ClientLogin, self).__init__()
-		self.docFactory = loaders.xmlfile(assets.get_template_path('client-login'))
+		self.docFactory = loaders.xmlstr(pkg.resource_string('txspace.assets', 'templates/client-login.xml'))
 		self.portal = portal
 		self.pool = pool
 	
@@ -224,7 +218,7 @@ class ClientInterface(athena.LivePage):
 		
 		self.user_id = user['avatar_id']
 		self.mind = mind
-		self.docFactory = loaders.xmlfile(assets.get_template_path('client'))
+		self.docFactory = loaders.xmlstr(pkg.resource_string('txspace.assets', 'templates/client.xml'))
 		self.connector = None
 		self.notifyOnDisconnect().errback = self.logout
 	
@@ -318,7 +312,7 @@ class ClientConnector(athena.LiveElement):
 		except Closed, e:
 			defer.returnValue(None)
 		
-		data = json.parse(msg.content.body.decode('utf8'))
+		data = simplejson.loads(msg.content.body.decode('utf8'))
 		mod = modules.get(data['command'])
 		
 		if(mod):

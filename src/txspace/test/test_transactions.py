@@ -4,13 +4,18 @@
 # See LICENSE for details
 
 from twisted.trial import unittest
+from twisted.internet import defer
 
-from txspace import test, errors, exchange, dbapi, parser
+from txspace import test, errors, exchange, dbapi, parser, transact
 
 class TransactionTestCase(unittest.TestCase):
 	def setUp(self):
 		self.pool = test.init_database(TransactionTestCase)
 		self.exchange = exchange.ObjectExchange(self.pool)
+	
+	@defer.inlineCallbacks
+	def tearDown(self):
+		yield transact.shutdown()	
 	
 	def test_basic_rollback(self):
 		try:
@@ -35,4 +40,5 @@ class TransactionTestCase(unittest.TestCase):
 		except:
 			pass
 		
+		self.failUnless(created, "'Test Object' not created.")
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")

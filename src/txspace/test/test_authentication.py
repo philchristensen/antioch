@@ -37,5 +37,3 @@ class AuthenticationTestCase(unittest.TestCase):
 		creds = credentials.UsernamePassword('Wizard', 'wizard')
 		avatar_id = yield checker.requestAvatarId(creds)
 		self.failUnlessEqual(avatar_id, 2)
-
-		

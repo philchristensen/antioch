@@ -4,11 +4,13 @@
 #
 # See LICENSE for details
 
+import pkg_resources as pkg
+
 from twisted.application import service
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
 
-from nevow import json
+import simplejson
 
 from txamqp import spec, protocol, content
 from txamqp.client import TwistedDelegate
@@ -24,7 +26,7 @@ class MessageService(service.Service):
 		"""
 		Create a service with the given connection.
 		"""
-		s = spec.load(assets.get('amqp-specs/amqp0-8.xml'))
+		s = spec.loadString(pkg.resource_string('txspace.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml')
 		self.factory = ClientCreator(reactor, protocol.AMQClient, delegate=TwistedDelegate(), vhost='/', spec=s)
 		self.connection = None
 		self.channel_counter = 0
@@ -74,7 +76,7 @@ class MessageQueue(object):
 		while(self.queue):
 			user_id, msg = self.queue.pop(0)
 			routing_key = 'user-%s' % user_id
-			data = json.serialize(msg)
+			data = simplejson.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
 			chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
