@@ -30,7 +30,7 @@ No, they don't. They can remove things they don't own from their object, but the
 change the value of those items.
 
 """
-import crypt
+import crypt, string, random
 
 from twisted.internet import defer
 from twisted.python import util
@@ -44,6 +44,8 @@ group_definitions = dict(
 	wizards		= lambda x,a,s: x.is_wizard(a.get_id()),
 	everyone	= lambda x,a,s: True,
 )
+
+salt = list(string.printable[:])
 
 def extract_id(literal):
 	if(isinstance(literal, basestring) and literal.startswith('#')):
@@ -67,16 +69,48 @@ class ObjectExchange(object):
 		
 		self.default_permissions_precached = False
 		
+		if(queue and not ctx):
+			raise RuntimeError("Queues can't be written to without a context.")
+		
 		if(isinstance(ctx, int)):
 			self.ctx = self.get_object(ctx)
 		else:
 			self.ctx = ctx
 	
 	def __enter__(self):
+		self.pool.runOperation('BEGIN')
 		return self
 	
-	def __exit__(self, exc_type, exc_val, exc_tb):
-		self.commit()
+	def __exit__(self, etype, e, trace):
+		try:
+			if(etype is errors.TestError):
+				self.pool.runOperation('COMMIT')
+				return False
+			elif(etype is errors.UserError):
+				self.pool.runOperation('COMMIT')
+				if(self.queue):
+					self.queue.send(self.ctx.get_id(), dict(
+						command		= 'write',
+						text		= str(e),
+						is_error	= True,
+					))
+					return True
+			elif(etype is not None):
+				self.pool.runOperation('ROLLBACK')
+				import traceback, StringIO
+				io = StringIO.StringIO()
+				traceback.print_exception(etype, e, trace, None, io)
+				if(self.queue):
+					self.queue.send(self.ctx.get_id(), dict(
+						command		= 'write',
+						text		= io.getvalue(),
+						is_error	= True,
+					))
+					return True
+			else:
+				self.pool.runOperation('COMMIT')
+		finally:
+			self.commit()
 	
 	def get_context(self):
 		return self.ctx
@@ -554,14 +588,26 @@ class ObjectExchange(object):
 			""", avatar_id))
 		return bool(result)
 	
-	def set_player(self, object_id, is_player, is_wizard=False, passwd=None):
-		player_mode = self.is_player(object_id)
-		if(is_player and not(player_mode)):
-			salt = 've' # TODO: make this random
-			c = crypt.crypt(passwd, salt)
-			self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, crypt=c, wizard=is_wizard)))
-		elif(not is_player and player_mode):
+	def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None):
+		if(player):
+			attribs = {}
+			if(passwd):
+				random.shuffle(salt)
+				attribs['crypt'] = crypt.crypt(passwd, test_salt or ''.join(salt[0:2]))
+			if(wizard is not None):
+				attribs['wizard'] = wizard
+			if(self.is_player(object_id)):
+				if not(attribs):
+					return
+				self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
+			else:
+				if not(attribs.get('crypt')):
+					raise ValueError('You must provide a password for the account.')
+				attribs['wizard'] = wizard or False
+				self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
+		else:
 			self.pool.runOperation(sql.build_delete('player', dict(avatar_id=object_id)))
+
 	
 	def login_player(self, avatar_id):
 		self.pool.runOperation(sql.build_update('player', dict(last_login=sql.RAW('now()')), dict(avatar_id=avatar_id)))
@@ -747,8 +793,6 @@ class ObjectExchange(object):
 		if(result):
 			permission_id = result[0]['id']
 		elif(create):
-			if(self.ctx):
-				self.ctx.check('grant', subject)
 			permission_id = self.pool.runQuery(sql.build_insert('permission', dict(
 				name	= permission
 			)) + ' RETURNING id')[0]['id']

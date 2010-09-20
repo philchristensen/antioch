@@ -55,9 +55,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery = runQuery
 		)
-		ctx = test.Anything()
 		
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		ex.precache_default_permissions()
 		
 		self.failUnlessEqual(ex.default_permissions_precached, True)
@@ -86,11 +85,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		obj = ex.new(name="wizard", unique_name=True)
 		self.failUnlessEqual(obj.get_name(real=True), 'wizard')
@@ -100,11 +95,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_mkobject(self):
 		pool = test.Anything()
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = ex._mkobject(dict(
 			name		= 'Test Object',
@@ -127,11 +118,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = ex._mkobject(dict(
 			name		= 'Test Object',
@@ -163,11 +150,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = ex._mkobject(dict(
 			name		= 'Test Object',
@@ -214,8 +197,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
 		queue = test.Anything(commit=commit)
+		ctx = test.Anything()
 		ex = exchange.ObjectExchange(pool, queue, ctx)
 		for index in range(1, 6):
 			o = model.Object(ex)
@@ -240,11 +223,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= lambda q: expected_results.pop(),
 			runOperation	= lambda q: self.failUnlessEqual(q, expected_query)
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		ex.save(o)
@@ -268,11 +247,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= lambda q, *a, **kw: expected_results.pop(),
 			runOperation	= lambda q, *a, **kw: self.failUnlessEqual(q, expected_query)
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		v = model.Verb(o)
@@ -297,11 +272,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= lambda q, *a, **kw: expected_results.pop(),
 			runOperation	= lambda q, *a, **kw: self.failUnlessEqual(q, expected_query)
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s, p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		p = model.Property(o)
@@ -328,11 +299,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda p, s: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_name('test object', real=True)
@@ -356,11 +323,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda p, s: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_name('test object', real=True)
@@ -376,8 +339,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		results = [[dict(id=1024)], [dict(id=1024)]]
 		
 		pool = test.Anything()
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(1024)
@@ -388,8 +350,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_get_object_bad_key(self):
 		pool = test.Anything()
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		self.failUnlessRaises(ValueError, ex.get_object, None)
 	
 	def test_get_object_unknown_key(self):
@@ -404,8 +365,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, "#2048")
 		self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, 2048)
 	
@@ -417,8 +377,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		self.failUnlessRaises(errors.AmbiguousObjectError, ex.get_object, "ambiguous object name")
 	
 	def test_get_parents(self):
@@ -436,8 +395,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [1024, 2048, 4096]
 		for obj_id in expected_ids:
@@ -468,8 +426,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		self.failUnlessEqual(ex.has_parent(1024, 2048), True)
 		self.failUnlessEqual(ex.has_parent(1024, 4096), False)
 	
@@ -520,9 +477,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		ctx = test.Anything(
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 
 		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=True), True)
 		self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=True), False)
@@ -558,8 +513,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:
@@ -579,8 +533,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation		= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.remove_parent(1024, 2048)
 	
@@ -591,8 +544,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation		= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.add_parent(1024, 2048)
 	
@@ -614,8 +566,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(1024)
@@ -645,8 +596,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.get_verb_list(1024)
 	
@@ -658,8 +608,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.get_verb_names(1024)
 	
@@ -670,8 +619,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.add_verb_name(1024, 'look')
 	
@@ -682,8 +630,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.remove_verb_name(1024, 'look')
 	
@@ -709,8 +656,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(512)
@@ -757,8 +703,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = ex.get_ancestor_with(1024, 'verb', 'look')
 		self.failUnlessEqual(o.name, 'test object')
@@ -774,11 +719,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runOperation	= lambda q, *a, **kw:
 				self.failUnlessEqual(q, "UPDATE property SET name = 'description', origin_id = 1024, owner_id = NULL, type = 'string', value = NULL WHERE id = 2048")
 		)
-		ctx = test.Anything(
-			get_type	= lambda:'object',
-			is_allowed	= lambda s,p: True,
-		)
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(1024)
@@ -804,8 +745,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	lambda *a, **kw: results.pop(),
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(512)
@@ -842,8 +782,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.get_property_list(1024)
 	
@@ -858,8 +797,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.refs('yet another name'), 0)
 		self.failUnlessEqual(ex.refs('some other name'), 1)
@@ -875,8 +813,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.is_unique_name('yet another name'), False)
 		self.failUnlessEqual(ex.is_unique_name('some other name'), True)
@@ -889,8 +826,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	=	runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.cache['object-1024'] = model.Object(ex)
 		ex.cache['object-1024'].set_id(1024)
@@ -919,8 +855,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.get_access(1024, 'object')
 		ex.get_access(1024, 'verb')
@@ -963,8 +898,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= runQuery,
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.set_id(1024)
@@ -1005,8 +939,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		accessor = model.Object(ex)
 		accessor.set_id(1024)
@@ -1044,8 +977,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= runQuery,
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.allow('owners', 'anything')
@@ -1072,8 +1004,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= runQuery,
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		o = model.Object(ex)
 		o.deny('owners', 'anything')
@@ -1096,8 +1027,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.is_wizard(2048), True)
 		self.failUnlessEqual(ex.is_wizard(1024), False)
@@ -1120,8 +1050,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.is_connected_player(2048), True)
 		self.failUnlessEqual(ex.is_connected_player(1024), False)
@@ -1135,7 +1064,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		queries = [
 			'DELETE FROM player WHERE avatar_id = 1',
-			'SELECT id FROM player WHERE avatar_id = 1',
+			# 'SELECT id FROM player WHERE avatar_id = 1',
 			"INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veYk4kGvM83ec', 't')",
 			'SELECT id FROM player WHERE avatar_id = 1',
 			"INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veFIEE6ItqLts', 'f')",
@@ -1153,11 +1082,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			runQuery		= runQuery,
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
-		ex.set_player(1, True, False, 'password')
-		ex.set_player(1, True, True, 'wizard password')
+		ex.set_player(1, True, False, 'password', test_salt='ve')
+		ex.set_player(1, True, True, 'wizard password', test_salt='ve')
 		ex.set_player(1, False)
 	
 	def test_validate_password(self):
@@ -1179,8 +1107,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.validate_password(1024, 'password'), True)
 		self.failUnlessEqual(ex.validate_password(1024, 'badpassword'), False)
@@ -1199,8 +1126,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.login_player(1024)
 	
@@ -1218,8 +1144,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		ex.logout_player(1024)
 	
@@ -1233,8 +1158,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failUnlessEqual(ex.is_player(1024), False)
 		self.failUnlessEqual(ex.is_player(1024), True)
@@ -1271,8 +1195,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	=	runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		self.failIf(ex.find(1024, 'box'))
 		
@@ -1298,8 +1221,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [2048, 4096]
 		for obj_id in expected_ids:
@@ -1336,8 +1258,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:
@@ -1368,8 +1289,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [2048, 4096]
 		for obj_id in expected_ids:
@@ -1406,8 +1326,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery		= runQuery,
 		)
-		ctx = test.Anything()
-		ex = exchange.ObjectExchange(pool, ctx)
+		ex = exchange.ObjectExchange(pool)
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:

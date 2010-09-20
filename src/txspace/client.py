@@ -15,7 +15,7 @@ import os, os.path
 
 from zope.interface import implements
 
-import simplejson
+from nevow import json
 
 from twisted.application import service, internet
 from twisted.internet import reactor, defer, task
@@ -318,7 +318,7 @@ class ClientConnector(athena.LiveElement):
 		except Closed, e:
 			defer.returnValue(None)
 		
-		data = simplejson.loads(msg.content.body.decode('utf8'))
+		data = json.parse(msg.content.body.decode('utf8'))
 		mod = modules.get(data['command'])
 		
 		if(mod):

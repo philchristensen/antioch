@@ -18,8 +18,8 @@ from twisted.python import usage
 
 from txspace import bootstrap, transact, dbapi, assets
 
-default_bootstrap_path = assets.get('bootstraps/%s.py')
-default_schema_path = assets.get('bootstraps/schema.sql')
+default_bootstrap_path = 'bootstraps/%s.py'
+default_schema_path = 'bootstraps/schema.sql'
 
 class Options(usage.Options):
 	"""
@@ -27,13 +27,13 @@ class Options(usage.Options):
 	"""
 	optParameters = [
 					["with-psql", "k", "psql", "Path to the psql binary"],
-					["schema-file", "z", default_schema_path, "The database schema file to use."],
-					["bootstrap-file", "b", default_bootstrap_path, "The database bootstrap file to use."],
+					["schema-file", "z", None, "The database schema file to use."],
+					["bootstrap-file", "b", None, "The database bootstrap file to use."],
 					]
 	
 	synopsis = "Usage: mkspace.py [options] <db-url|'default'> <dataset-name> [<psql-arg>*]"
 	
-	def parseArgs(self, db_url, dataset_name, *psql_args):
+	def parseArgs(self, db_url='default', dataset_name='default', *psql_args):
 		if(db_url == 'default'):
 			self['db-url'] = transact.db_url
 		else:
@@ -51,10 +51,19 @@ if(__name__ == '__main__'):
 		print e.args[0]
 		sys.exit(1)
 	
-	schema_path = os.path.abspath(config['schema-file'])
-	bootstrap_path = os.path.abspath(config['bootstrap-file'] % config['dataset-name'])
+	if(config['schema-file']):
+		schema_path = config['schema-file']
+	else:
+		schema_path = assets.get(default_schema_path)
+	schema_path = os.path.abspath(schema_path)
 	
-	bootstrap.initialize_database(config['with-psql'], config['db-url'])
+	if(config['bootstrap-file']):
+		bootstrap_path = config['bootstrap-file']
+	else:
+		bootstrap_path = assets.get(default_bootstrap_path % config['dataset-name'])
+	bootstrap_path = os.path.abspath(bootstrap_path)
+	
+	bootstrap.initialize_database(config['with-psql'], config['db-url'], quiet=False)
 	bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path, config['psql-args'])
 	
 	pool = dbapi.connect(config['db-url'])

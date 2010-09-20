@@ -22,22 +22,26 @@ def get_dsn(db_url):
 	dsn['db'] = dsn['db'][1:]
 	return dsn
 
-def initialize_database(psql_path, db_url):
+def initialize_database(psql_path, db_url, quiet=True):
 	dsn = get_dsn(db_url)
+	
+	kwargs = {}
+	if(quiet):
+		kwargs['stderr'] = subprocess.STDOUT
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
 		'-c', "CREATE USER %(user)s WITH UNENCRYPTED PASSWORD '%(passwd)s';" % dsn,
-	], stdout=subprocess.PIPE).wait()
+	], stdout=subprocess.PIPE, **kwargs).wait()
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
 		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
-	], stdout=subprocess.PIPE).wait()
+	], stdout=subprocess.PIPE, **kwargs).wait()
 
 def drop_database(psql_path, db_url):
 	dsn = get_dsn(db_url)
@@ -64,5 +68,5 @@ def load_schema(psql_path, db_url, schema_path, psql_args=[], create=False):
 	child.wait()
 
 def load_python(pool, python_path):
-	x = exchange.ObjectExchange(pool)
-	execfile(python_path, globals(), dict(exchange=x))
+	with exchange.ObjectExchange(pool) as x:
+		execfile(python_path, globals(), dict(exchange=x))

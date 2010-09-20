@@ -16,7 +16,7 @@ from twisted.enterprise import adbapi
 
 debug = False
 debug_stream = sys.stderr
-debug_syntax_highlighting = True
+debug_syntax_highlighting = False
 
 pools = {}
 async_pools = {}
@@ -193,10 +193,10 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 			if(result and isinstance(result, (list, tuple)) and isinstance(result[0], (list, tuple))):
 				result = [dict(zip([c[0] for c in trans._cursor.description], item)) for item in result]
 			trans.close()
-			conn.commit()
+			#conn.commit()
 			return result
 		except:
-			conn.rollback()
+			#conn.rollback()
 			raise
 
 

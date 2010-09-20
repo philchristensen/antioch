@@ -1,0 +1,3 @@
+include src/twisted/plugins/dropin.cache
+include src/nevow/plugins/dropin.cache
+include src/txspace/modules/editors/dropin.cache

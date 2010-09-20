@@ -67,6 +67,10 @@ def observe(p, user, observations):
 def get_object(p, key):
 	return p.exchange.get_object(key)
 
+@api
+def create_object(p, name, unique_name=False):
+	return p.exchange.new(name=name, unique_name=unique_name)
+
 def get_environment(p):
 	env = dict(
 		command			= p.command,

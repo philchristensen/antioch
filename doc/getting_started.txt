@@ -52,9 +52,9 @@ User:     wizard
 Password: wizard
 
 Obviously, once in, it's a pretty good idea to change your password for the wizard
-account, which you can do by entering the command:
+account, which you can do by executing:
 
-@password me to <new password>
+@exec caller.set_player(passwd='newpasswd')
 
 If you'd like a more specific name for your administrator character, for the moment
 you can use:

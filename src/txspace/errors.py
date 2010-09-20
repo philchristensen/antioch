@@ -9,17 +9,11 @@ Errors
 
 These are a variety of Error classes for the txSpace server.
 """
-class EngineError(Exception):
-	"""
-	This is the superclass for all Errors that may be generated which
-	should not be reported to the user who "caused" them.
-	"""
-	pass
 
 class UserError(Exception):
 	"""
 	This is the superclass for all Errors that may be generated which
-	**should** be reported to the user who "caused" them. At construction,
+	should be reported to the user who "caused" them. At construction,
 	additional information can be supplied that will be presented to the
 	user if they are a "wizard" user.
 	"""

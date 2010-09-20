@@ -94,12 +94,14 @@ class Entity(object):
 			raise errors.AccessError(ctx, permission, subject)
 	
 	def allow(self, accessor, permission, create=False):
+		self.check('grant', self)
 		if(isinstance(accessor, Object)):
 			self._ex.allow(self, accessor.get_id(), permission, create)
 		else:
 			self._ex.allow(self, accessor, permission, create)
 	
 	def deny(self, accessor, permission, create=False):
+		self.check('grant', self)
 		if(isinstance(accessor, Object)):
 			self._ex.deny(self, accessor.get_id(), permission, create)
 		else:
@@ -220,7 +222,7 @@ class Object(Entity):
 	def is_player(self):
 		return self._ex.is_player(self.get_id())
 	
-	def set_player(self, is_player, is_wizard=False, passwd=None):
+	def set_player(self, is_player=None, is_wizard=None, passwd=None):
 		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
 	
 	def is_connected_player(self):

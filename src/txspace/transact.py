@@ -19,7 +19,7 @@ from txspace import dbapi, exchange, errors, parser, messaging, sql, code, modul
 __processPools = {}
 db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
 
-def get_process_pool(child=None):
+def get_process_pool(child=None, autocreate=True):
 	if(child is None):
 		child = DefaultTransactionChild
 	
@@ -27,10 +27,21 @@ def get_process_pool(child=None):
 	if(child.__name__ in __processPools):
 		return __processPools[child.__name__]
 	
-	starter = main.ProcessStarter(packages=("twisted", "ampoule"))
-	__processPools[child.__name__] = pool.ProcessPool(child, name='txspace-process-pool', starter=starter)
+	if(autocreate):
+		starter = main.ProcessStarter(packages=("twisted", "ampoule"))
+		__processPools[child.__name__] = pool.ProcessPool(child, name='txspace-process-pool', starter=starter)
 	
-	return __processPools[child.__name__]
+	return __processPools.get(child.__name__, None)
+
+@defer.inlineCallbacks
+def shutdown(child=None):
+	if(child is None):
+		child = DefaultTransactionChild
+	
+	global __processPools
+	if(child.__name__ in __processPools):
+		yield __processPools[child.__name__].stop()
+		del __processPools[child.__name__]
 
 class WorldTransaction(amp.Command):
 	@classmethod
@@ -83,7 +94,10 @@ class TransactionChild(child.AMPChild):
 		self.msg_service = messaging.MessageService()
 	
 	def get_exchange(self, ctx=None):
-		return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
+		if(ctx):
+			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
+		else:
+			return exchange.ObjectExchange(self.pool)
 	
 class DefaultTransactionChild(TransactionChild):
 	@Authenticate.responder
@@ -148,26 +162,8 @@ class DefaultTransactionChild(TransactionChild):
 		with self.get_exchange(user_id) as x:
 			caller = x.get_object(user_id)
 			
-			try:
-				log.msg('%s: %s' % (caller, sentence))
-				parser.parse(caller, sentence)
-			except errors.TestError, e:
-				raise e
-			except errors.UserError, e:
-				x.queue.send(user_id, dict(
-					command		= 'write',
-					text		= str(e),
-					is_error	= True,
-				))
-			except Exception, e:
-				import traceback
-				trace = traceback.format_exc()
-				print 'BAD_ERROR: ' + trace
-				x.queue.send(user_id, dict(
-					command		= 'write',
-					text		= trace,
-					is_error	= True,
-				))
+			log.msg('%s: %s' % (caller, sentence))
+			parser.parse(caller, sentence)
 		
 		return {'response': True}
 	
