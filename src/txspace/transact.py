@@ -17,9 +17,9 @@ from ampoule import child, pool, main, util
 from txspace import dbapi, exchange, errors, parser, messaging, sql, code, modules
 
 __processPools = {}
-db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
+default_db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
 
-def get_process_pool(child=None, autocreate=True):
+def get_process_pool(child=None, *args):
 	if(child is None):
 		child = DefaultTransactionChild
 	
@@ -27,9 +27,8 @@ def get_process_pool(child=None, autocreate=True):
 	if(child.__name__ in __processPools):
 		return __processPools[child.__name__]
 	
-	if(autocreate):
-		starter = main.ProcessStarter(packages=("twisted", "ampoule"))
-		__processPools[child.__name__] = pool.ProcessPool(child, name='txspace-process-pool', starter=starter)
+	starter = main.ProcessStarter(packages=("twisted", "ampoule", "txspace"))
+	__processPools[child.__name__] = pool.ProcessPool(child, name='txspace-process-pool', starter=starter, ampChildArgs=args)
 	
 	return __processPools.get(child.__name__, None)
 
@@ -45,9 +44,9 @@ def shutdown(child=None):
 
 class WorldTransaction(amp.Command):
 	@classmethod
-	def run(cls, transaction_child=None, **kwargs):
-		pool = get_process_pool(transaction_child)
-		return pool.doWork(cls, **kwargs)
+	def run(cls, transaction_child=None, db_url='', **kwargs):
+		pool = get_process_pool(transaction_child, db_url)
+		return pool.doWork(cls, _timeout=2, **kwargs)
 
 class Authenticate(WorldTransaction):
 	arguments = [
@@ -89,7 +88,9 @@ class TransactionChild(child.AMPChild):
 	in a synchronous manner, while still meeting all other design goals.
 	"""
 
-	def __init__(self):
+	def __init__(self, db_url=''):
+		if not(db_url):
+			db_url = default_db_url
 		self.pool = dbapi.connect(db_url, autocommit=False)
 		self.msg_service = messaging.MessageService()
 	
@@ -102,6 +103,7 @@ class TransactionChild(child.AMPChild):
 class DefaultTransactionChild(TransactionChild):
 	@Authenticate.responder
 	def authenticate(self, username, password):
+		dbapi.debug = True
 		with self.get_exchange() as x:
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):

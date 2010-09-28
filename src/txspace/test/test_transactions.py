@@ -4,7 +4,7 @@
 # See LICENSE for details
 
 from twisted.trial import unittest
-from twisted.internet import defer
+from twisted.internet import defer, error
 
 from txspace import test, errors, exchange, dbapi, parser, transact
 
@@ -27,6 +27,17 @@ class TransactionTestCase(unittest.TestCase):
 		
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
 	
+	@defer.inlineCallbacks
+	def test_timeout(self):
+		terminated = False
+		user_id = 2 # Wizard ID
+		try:
+			result = yield transact.Parse.run(user_id=user_id, sentence='@exec import time; time.sleep(10)')
+		except error.ProcessTerminated, e:
+			terminated = True
+		
+		self.failUnless(terminated, "Pool did not through ProcessTerminated")
+	
 	def test_parser_rollback(self):
 		created = False
 		user_id = 2 # Wizard ID
@@ -42,3 +53,21 @@ class TransactionTestCase(unittest.TestCase):
 		
 		self.failUnless(created, "'Test Object' not created.")
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
+	
+	def test_protected_attribute_access(self):
+		user_id = 2 # Wizard ID
+		with self.exchange as x:
+			wizard = x.get_object(user_id)
+			self.failUnlessEqual(wizard._location_id, wizard.get_location().get_id())
+		
+		with exchange.ObjectExchange(self.pool, ctx=user_id) as x:
+			wizard = x.get_object(user_id)
+			eval_verb = x.get_verb(user_id, '@eval')
+			
+			# since this will raise AttributeError, the model will attempt to find a verb by that name
+			self.failUnlessRaises(errors.NoSuchVerbError, getattr, wizard, '_location_id')
+			
+			self.failUnlessRaises(AttributeError, getattr, eval_verb, '_origin_id')
+			self.failUnlessRaises(AttributeError, getattr, eval_verb, '__dict__')
+			self.failUnlessRaises(AttributeError, getattr, eval_verb, '__slots__')
+		

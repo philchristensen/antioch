@@ -153,7 +153,7 @@ else:
 observations = dict(
 	id				= obj.get_id(),
 	name			= obj.get_name(),
-	location_id		= obj._location_id or 0,
+	location_id		= str(obj.get_location()) or 0,
 	description		= obj.get('description', 'Nothing much to see here.').value,
 	contents		= [
 		dict(

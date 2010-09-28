@@ -175,7 +175,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		self.failUnlessEqual(p._type, 'string')
 	
 	@defer.inlineCallbacks
-	def test_commit(self):
+	def test_dequeue(self):
 		ids = list(range(1, 6))
 		
 		queries = [
@@ -205,7 +205,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			o.set_id(index)
 			ex.cache['object-%s' % index] = o
 		
-		yield ex.commit()
+		yield ex.dequeue()
 		
 		self.failUnlessEqual(self.queue_committed, True)
 		self.failUnlessEqual(ex.cache, {})

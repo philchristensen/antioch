@@ -72,22 +72,30 @@ class ObjectExchange(object):
 		if(queue and not ctx):
 			raise RuntimeError("Queues can't be written to without a context.")
 		
+		self.ctx = ctx
 		if(isinstance(ctx, int)):
 			self.ctx = self.get_object(ctx)
-		else:
-			self.ctx = ctx
 	
 	def __enter__(self):
-		self.pool.runOperation('BEGIN')
+		self.begin()
 		return self
+	
+	def begin(self):
+		self.pool.runOperation('BEGIN')
+	
+	def commit(self):
+		self.pool.runOperation('COMMIT')
+	
+	def rollback(self):
+		self.pool.runOperation('ROLLBACK')
 	
 	def __exit__(self, etype, e, trace):
 		try:
 			if(etype is errors.TestError):
-				self.pool.runOperation('COMMIT')
+				self.commit()
 				return False
 			elif(etype is errors.UserError):
-				self.pool.runOperation('COMMIT')
+				self.commit()
 				if(self.queue):
 					self.queue.send(self.ctx.get_id(), dict(
 						command		= 'write',
@@ -96,7 +104,7 @@ class ObjectExchange(object):
 					))
 					return True
 			elif(etype is not None):
-				self.pool.runOperation('ROLLBACK')
+				self.rollback()
 				import traceback, StringIO
 				io = StringIO.StringIO()
 				traceback.print_exception(etype, e, trace, None, io)
@@ -108,9 +116,9 @@ class ObjectExchange(object):
 					))
 					return True
 			else:
-				self.pool.runOperation('COMMIT')
+				self.commit()
 		finally:
-			self.commit()
+			self.dequeue()
 	
 	def get_context(self):
 		return self.ctx
@@ -239,7 +247,7 @@ class ObjectExchange(object):
 		return perm
 	
 	@defer.inlineCallbacks
-	def commit(self):
+	def dequeue(self):
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):

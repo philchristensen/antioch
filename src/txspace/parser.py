@@ -225,20 +225,21 @@ class TransactionParser(object):
 		form is used (i.e., "Bill's spoon") and that person is not
 		here, a NoSuchObjectError is thrown for that person.
 		"""
+		result = None
+		search = None
+		
 		if(specifier == 'my'):
 			search = self.caller
 		elif(specifier and specifier.find("'") != -1):
 			person = specifier[0:specifier.index("'")]
-			search = self.caller.get_location().find(person)
-			if not(search):
-				return None
+			location = self.caller.get_location()
+			if(location):
+				search = location.find(person)
 		else:
 			search = self.caller.get_location()
 		
-		if(name):
+		if(name and search):
 			result = search.find(name)
-		else:
-			result = None
 		
 		return result
 	

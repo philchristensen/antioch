@@ -9,55 +9,15 @@ from txspace import parser, errors, exchange, test
 
 class ParserTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(ParserTestCase, 'minimal')
+		self.pool = test.init_database(ParserTestCase)
 		self.exchange = exchange.ObjectExchange(self.pool)
-		self.queue = test.Anything()
-		
-		self.wizard = self.exchange.get_object("Wizard")
-		self.box = self.exchange.get_object("box")
-		self.room = self.exchange.get_object("The Laboratory")
 	
 	def tearDown(self):
-		self.wizard = None
-		self.box = None
-		self.room = None
-		
-		return self.exchange.commit()
+		return self.exchange.dequeue()
 	
 	def test_parse_verb(self):
-		results = [
-			dict(
-				command			= 'observe',
-				observations	= dict(
-					contents	= [
-						dict(
-							image	= None,
-							mood	= None,
-							name	= 'Wizard',
-							type	= True,
-						),
-						dict(
-							image	= None,
-							mood	= None,
-							name	= 'Phil',
-							type	= True,
-						),
-						dict(
-							image	= None,
-							mood	= None,
-							name	= 'box',
-							type	= False,
-						),
-					],
-					description	= 'Nothing much to see here.',
-					id			= 3L,
-					location_id	= 0,
-					name		= 'The Laboratory',
-				)
-			)
-		]
-		
-		p = parser.TransactionParser(parser.Lexer("look"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval"), wizard, self.exchange)
 		assert not p.has_dobj(), "unexpected object found for dobj"
 		assert not p.has_dobj_str(), "unexpected string found for dobj"
 		assert not p.prepositions, "unexpected prepositional objects found"
@@ -65,26 +25,21 @@ class ParserTestCase(unittest.TestCase):
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj, "on")
 		self.assertRaises(errors.NoSuchObjectError, p.get_dobj_str)
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj_str, "on")
-		
-		self.exchange.queue = test.Anything(
-			send	= lambda u, m: self.failUnlessEqual(results.pop(), m),
-			commit	= lambda: None,
-		)
-		v = p.get_verb()
-		v.execute(p)
 	
 	def test_parse_verb_dobj(self):
-		p = parser.TransactionParser(parser.Lexer("look wizard"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval wizard"), wizard, self.exchange)
 		assert p.has_dobj(), "dobj 'wizard' not found"
 		assert p.has_dobj_str(), "dobj string 'wizard' not found"
 		assert not p.prepositions, "unexpected prepositional objects/strings found"
-		self.assertEqual(p.get_dobj(), self.wizard)
+		self.assertEqual(p.get_dobj(), wizard)
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj, "on")
-		self.assertEqual(p.get_dobj_str().lower(), self.wizard.get_name().lower())
+		self.assertEqual(p.get_dobj_str().lower(), wizard.get_name().lower())
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj_str, "on")
 		
 	def test_parse_verb_pobj(self):
-		p = parser.TransactionParser(parser.Lexer("look through peephole"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval through peephole"), wizard, self.exchange)
 		assert not p.has_dobj(), "unexpected object found for dobj"
 		assert not p.has_dobj_str(), "unexpected string found for dobj"
 		assert p.has_pobj_str('through'), "no prepositional object string found for 'through'"
@@ -95,53 +50,58 @@ class ParserTestCase(unittest.TestCase):
 		self.assertEqual(p.get_pobj_str("through"), "peephole")
 		
 	def test_parse_verb_pobj_pobj(self):
-		p = parser.TransactionParser(parser.Lexer("look through peephole with box"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval through peephole with wizard"), wizard, self.exchange)
 		assert not p.has_dobj(), "unexpected object found for dobj"
 		assert not p.has_dobj_str(), "unexpected string found for dobj"
 		self.assertRaises(errors.NoSuchObjectError, p.get_dobj)
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj, "from")
-		self.assertEqual(p.get_pobj("with"), self.box)
-		self.assertEqual(p.get_pobj_str("with"), "box")
+		self.assertEqual(p.get_pobj("with"), wizard)
+		self.assertEqual(p.get_pobj_str("with"), "wizard")
 		self.assertRaises(errors.NoSuchObjectError, p.get_dobj_str)
 		self.assertEqual(p.get_pobj_str("through"), "peephole")
 	
 	def test_parse_verb_dobj_pobj(self):
-		p = parser.TransactionParser(parser.Lexer("take glasses from wizard with tongs"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval glasses from wizard with tongs"), wizard, self.exchange)
 		self.assertRaises(errors.NoSuchObjectError, p.get_dobj)
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj, "under")
 		self.assertEqual(p.get_dobj_str(), "glasses")
 		self.assertEqual(p.get_pobj_str("with"), "tongs")
-		self.assertEqual(p.get_pobj("from"), self.wizard)
+		self.assertEqual(p.get_pobj("from"), wizard)
 		self.assertEqual(p.get_pobj_str("from"), "wizard")
 	
 	def test_complex(self):
-		p = parser.TransactionParser(parser.Lexer("take the box from 'bag under stairs' with tongs in wizard's bag"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval the wizard from 'bag under stairs' with tongs in wizard's bag"), wizard, self.exchange)
 		self.assertRaises(errors.NoSuchObjectError, p.get_pobj, "from")
 		self.assertRaises(errors.NoSuchObjectError, p.get_pobj, "with")
 		self.assertEqual(p.get_pobj_str('from'), 'bag under stairs')
-		self.assertEqual(p.get_dobj(), self.box)
+		self.assertEqual(p.get_dobj(), wizard)
 		self.assertEqual(p.get_pobj_str("with"), "tongs")
 	
 	def test_quoted_strings(self):
-		p = parser.TransactionParser(parser.Lexer("@passwd wizard to 'something here'"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval wizard to 'something here'"), wizard, self.exchange)
 		self.assertEqual(p.get_pobj_str('to'), 'something here')
 	
 	def test_bug_9(self):
-		p = parser.TransactionParser(parser.Lexer("@describe here as 'Large amounts of chalkdust lay all over the objects in this room, and a large chalkboard at one end has become coated with a thick layer of Queen Anne\\'s lace. Strange semi-phosphorescant orbs are piled all around this ancient hall.'"), self.wizard, self.exchange)
+		wizard = self.exchange.get_object('wizard')
+		p = parser.TransactionParser(parser.Lexer("@eval here as 'Large amounts of chalkdust lay all over the objects in this room, and a large chalkboard at one end has become coated with a thick layer of Queen Anne\\'s lace. Strange semi-phosphorescant orbs are piled all around this ancient hall.'"), wizard, self.exchange)
 		self.assertRaises(errors.NoSuchPrepositionError, p.get_pobj_str, 'around')
 		assert "\\" not in p.get_pobj_str('as')
 	
 	def test_inventory(self):
-		self.box.set_location(self.wizard)
+		wizard = self.exchange.get_object('wizard')
+		box = self.exchange.instantiate('object', name='box')
+		box.set_location(wizard)
 		
-		p = parser.TransactionParser(parser.Lexer("drop my box"), self.wizard, self.exchange)
+		p = parser.TransactionParser(parser.Lexer("@eval my box"), wizard, self.exchange)
 		self.failUnless(p.has_dobj())
 		
-		phil = self.exchange.get_object('phil')
-		self.box.set_location(phil)
+		user = self.exchange.get_object('user')
+		box.set_location(user)
 		
-		p = parser.TransactionParser(parser.Lexer("take phil's box"), self.wizard, self.exchange)
+		p = parser.TransactionParser(parser.Lexer("@eval user's box"), wizard, self.exchange)
 		self.failUnless(p.has_dobj())
-		
-		# put it back for ther tests
-		self.box.set_location(self.room)
+

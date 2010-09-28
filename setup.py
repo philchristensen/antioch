@@ -26,7 +26,7 @@ log.set_threshold(log.INFO)
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
-import bzr_support
+import setup_bzr
 
 def autosetup():
 	pluginPackages = ['twisted.plugins', 'nevow.plugins', 'txspace.modules']
@@ -43,7 +43,7 @@ def autosetup():
 		package_dir		= {'':'src'},
 		entry_points	= {
 			'setuptools.file_finders'	: [
-				'bzr = bzr_support:find_files_for_bzr'
+				'bzr = setup_bzr:find_files_for_bzr'
 			]
 		},
 		
@@ -63,7 +63,7 @@ def autosetup():
 		
 		include_package_data = True,
 		package_data = {
-			''			: ['ez_setup.py', 'ChangeLog.md', 'INSTALL.md', 'LICENSE.md', 'README.md'],
+			''			: ['ez_setup.py', 'setup_bzr.py', 'ChangeLog.md', 'INSTALL.md', 'LICENSE.md', 'README.md'],
 			'twisted'	: ['plugins/txspace_server.py'],
 			'nevow'		: ['plugins/txspace_plugin.py'],
 		},

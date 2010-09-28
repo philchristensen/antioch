@@ -21,6 +21,8 @@ filter that returns a cached copy of the existing object. Some kind of
 weak references-based dictionary keyed on object ID would be sufficient.
 """
 
+import inspect, os.path
+
 from txspace import errors, code
 
 default_permissions = (
@@ -35,11 +37,47 @@ default_permissions = (
 	'develop',
 )
 
+def isLocal():
+	stack = inspect.stack()
+	try:
+		# check for same file
+		if(stack[1][1] == stack[2][1]):
+			return True
+		
+		from txspace import exchange
+		exchange_source_path = os.path.abspath(exchange.__file__)[:-1]
+		if(stack[2][1] == exchange_source_path):
+			return True
+		
+		from txspace import test
+		test_source_path = os.path.abspath(os.path.dirname(test.__file__))
+		if(stack[2][1].startswith(test_source_path)):
+			return True
+		
+		from txspace import assets
+		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
+		if(stack[2][1].startswith(bootstrap_source_path)):
+			return True
+		
+		return False
+	finally:
+		del(stack)
+
 class PropertyStub(object):
 	def __init__(self, value):
 		self.value = value	
 
 class Entity(object):
+	def __getattribute__(self, name):
+		if(name.startswith('_') and not isLocal()):
+			raise AttributeError(name)
+		return object.__getattribute__(self, name)
+	
+	def __setattr__(self, name, value):
+		if(name.startswith('_') and not isLocal()):
+			raise AttributeError(name)
+		return object.__setattr__(self, name, value)
+	
 	def __repr__(self):
 		return '<%s>' % (self)
 	
@@ -111,6 +149,8 @@ class Entity(object):
 		return type(self).__name__.lower()
 
 class Object(Entity):
+	__slots__ = ['_id', '_ex', '_name', '_unique_name', '_owner_id', '_location_id']
+	
 	def __init__(self, exchange):
 		self._id = 0
 		self._ex = exchange
@@ -265,6 +305,14 @@ class Object(Entity):
 		self.check('move', self)
 		if(location and self.contains(location)):
 			raise errors.RecursiveError("Sorry, '%s' already contains '%s'" % (self, location))
+		if(location and location.has_verb('accept')):
+			if not(location.accept(self)):
+				raise errors.PermissionError("%s won't let %s inside." % (location, self))
+			if(location.has_verb('enter')):
+				location.enter(self)
+		old_location = self.get_location()
+		if(old_location and old_location.has_verb('exit')):
+			old_location.exit(self)
 		self._location_id = location.get_id() if location else None
 		self.save()
 	
@@ -300,6 +348,8 @@ class Object(Entity):
 	location = property(get_location, set_location)
 
 class Verb(Entity):
+	__slots__ = ['_id', '_origin_id', '_ex', '_code', '_owner_id', '_ability', '_method']
+	
 	def __init__(self, origin):
 		"""
 		Create a verb record and attach it to object.
@@ -418,6 +468,8 @@ class Verb(Entity):
 	executable = property(is_executable)
 
 class Property(Entity):
+	__slots__ = ['_id', '_origin_id', '_ex', '_name', '_value', '_type', '_owner_id']
+	
 	def __init__(self, origin):
 		"""
 		Create a property record and attach it to object.

@@ -28,6 +28,9 @@ class TransactionChecker(object):
 		credentials.IUsernameHashedPassword,
 		credentials.IAnonymous)
 	
+	def __init__(self, db_url=None):
+		self.db_url = db_url
+	
 	@defer.inlineCallbacks
 	def requestAvatarId(self, creds):
 		"""
@@ -36,7 +39,7 @@ class TransactionChecker(object):
 		and password).
 		"""
 		if(credentials.IUsernamePassword.providedBy(creds)):
-			result = yield transact.Authenticate.run(username=creds.username, password=creds.password)
+			result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password)
 			if(result['user_id'] == -1):
 				defer.returnValue(failure.Failure(error.UnauthorizedLogin(result['error'])))
 			defer.returnValue(result['user_id'])

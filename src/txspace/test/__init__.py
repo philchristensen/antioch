@@ -12,15 +12,18 @@ pool = {}
 
 #dbapi.debug = True
 
-def init_database(dbid, dataset='minimal', autocommit=False):
+def get_test_db_url(suffix=''):
+	url = transact.default_db_url.split('/')
+	url[-1] = 'txspace_test' + suffix
+	return '/'.join(url)
+
+def init_database(dbid, dataset='minimal', autocommit=False, suffix=''):
 	global initialized, pool, oscar
 	if(initialized.get(dbid)):
 		return pool.get(dbid)
 	initialized[dbid] = True
 	
-	db_url = transact.db_url.split('/')
-	db_url[-1] = 'txspace_test'
-	db_url = '/'.join(db_url)
+	db_url = get_test_db_url(suffix)
 	
 	#bootstrap.drop_database(psql_path, db_url)
 	bootstrap.initialize_database(psql_path, db_url)

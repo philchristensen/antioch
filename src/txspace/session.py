@@ -332,7 +332,7 @@ class TransactionUserSessionStore(object):
 		Create the in-memory session store.
 		"""
 		self.checker = checker
-		self.pool = dbapi.connect(transact.db_url, async=True)
+		self.pool = dbapi.connect(transact.default_db_url, async=True)
 	
 	@inlineCallbacks
 	def loadUser(self, avatarId):

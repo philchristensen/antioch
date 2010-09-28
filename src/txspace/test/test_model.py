@@ -371,6 +371,7 @@ class ObjectTestCase(unittest.TestCase):
 		room = model.Object(e)
 		room_mock = test.Anything(
 			get_id	= lambda: 1024,
+			has_verb = lambda v: None,
 		)
 		subject = model.Object(e)
 		

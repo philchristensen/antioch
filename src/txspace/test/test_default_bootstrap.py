@@ -7,16 +7,16 @@ from twisted.trial import unittest
 
 from txspace import parser, exchange, test
 
-class StandardBootstrapTestCase(unittest.TestCase):
+class DefaultBootstrapTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(StandardBootstrapTestCase, 'default')
+		self.pool = test.init_database(DefaultBootstrapTestCase, dataset='default', suffix='_default')
 		self.exchange = exchange.ObjectExchange(self.pool)
 		self.exchange.queue = test.Anything(
 			commit	= lambda: None,
 		)
 	
 	def tearDown(self):
-		return self.exchange.commit()
+		return self.exchange.dequeue()
 	
 	def test_player_look(self):
 		caller = self.exchange.get_object('phil')

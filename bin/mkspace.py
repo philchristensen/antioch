@@ -35,7 +35,7 @@ class Options(usage.Options):
 	
 	def parseArgs(self, db_url='default', dataset_name='default', *psql_args):
 		if(db_url == 'default'):
-			self['db-url'] = transact.db_url
+			self['db-url'] = transact.default_db_url
 		else:
 			self['db-url'] = db_url
 		self['dataset-name'] = dataset_name
