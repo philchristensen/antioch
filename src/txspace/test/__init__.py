@@ -17,15 +17,14 @@ def get_test_db_url(suffix=''):
 	url[-1] = 'txspace_test' + suffix
 	return '/'.join(url)
 
-def init_database(dbid, dataset='minimal', autocommit=False, suffix=''):
-	global initialized, pool, oscar
+def init_database(dbid, dataset='minimal', autocommit=False):
+	global initialized, pool
 	if(initialized.get(dbid)):
 		return pool.get(dbid)
 	initialized[dbid] = True
 	
-	db_url = get_test_db_url(suffix)
+	db_url = get_test_db_url(dbid.__name__.lower())
 	
-	#bootstrap.drop_database(psql_path, db_url)
 	bootstrap.initialize_database(psql_path, db_url)
 	
 	schema_path = assets.get('bootstraps/schema.sql')

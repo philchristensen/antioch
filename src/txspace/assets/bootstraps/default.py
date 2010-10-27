@@ -13,6 +13,8 @@ from txspace import model, sql
 for name in model.default_permissions:
 	exchange.pool.runOperation(sql.build_insert('permission', name=name))
 
+exchange.load_permissions()
+
 system = exchange.instantiate('object', name='System Object')
 set_default_permissions_verb = model.Verb(system)
 set_default_permissions_verb._method = True

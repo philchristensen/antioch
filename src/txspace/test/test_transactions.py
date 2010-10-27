@@ -29,14 +29,16 @@ class TransactionTestCase(unittest.TestCase):
 	
 	@defer.inlineCallbacks
 	def test_timeout(self):
+		if(transact.code_timeout is None):
+			raise unittest.SkipTest("Code timeout disabled.")
 		terminated = False
 		user_id = 2 # Wizard ID
 		try:
-			result = yield transact.Parse.run(user_id=user_id, sentence='@exec import time; time.sleep(10)')
+			result = yield transact.Parse.run(user_id=user_id, sentence='@exec import time; time.sleep(20)')
 		except error.ProcessTerminated, e:
 			terminated = True
 		
-		self.failUnless(terminated, "Pool did not through ProcessTerminated")
+		self.failUnless(terminated, "Pool did not throw ProcessTerminated")
 	
 	def test_parser_rollback(self):
 		created = False

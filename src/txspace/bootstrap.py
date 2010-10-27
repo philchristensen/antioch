@@ -22,27 +22,6 @@ def get_dsn(db_url):
 	dsn['db'] = dsn['db'][1:]
 	return dsn
 
-def drop_database(psql_path, db_url, quiet=True):
-	dsn = get_dsn(db_url)
-	
-	kwargs = {}
-	if(quiet):
-		kwargs['stderr'] = subprocess.STDOUT
-	
-	subprocess.Popen([psql_path,
-		'-h', dsn.get('host') or 'localhost',
-		'-p', dsn.get('port') or '5432',
-		'-U', 'postgres',
-		'-c', "DROP USER %(user)s;" % dsn,
-	], stdout=subprocess.PIPE, **kwargs).wait()
-	
-	subprocess.Popen([psql_path,
-		'-h', dsn.get('host') or 'localhost',
-		'-p', dsn.get('port') or '5432',
-		'-U', 'postgres',
-		'-c', 'DROP DATABASE %(db)s;' % dsn,
-	], stdout=subprocess.PIPE, **kwargs).wait()
-
 def initialize_database(psql_path, db_url, quiet=True):
 	dsn = get_dsn(db_url)
 	
@@ -61,18 +40,15 @@ def initialize_database(psql_path, db_url, quiet=True):
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
-		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
+		'-c', 'DROP DATABASE %(db)s;' % dsn,
 	], stdout=subprocess.PIPE, **kwargs).wait()
-
-def drop_database(psql_path, db_url):
-	dsn = get_dsn(db_url)
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
-		'-c', 'DROP DATABASE %(db)s;' % dsn,
-	], stdout=subprocess.PIPE).wait()
+		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
+	], stdout=subprocess.PIPE, **kwargs).wait()
 
 def load_schema(psql_path, db_url, schema_path, psql_args=[], create=False):
 	dsn = get_dsn(db_url)

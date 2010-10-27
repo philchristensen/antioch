@@ -603,6 +603,7 @@ class VerbTestCase(unittest.TestCase):
 		e = test.Anything(
 			get_context		= lambda: None,
 			is_allowed		= lambda a,p,s: True,
+			has_parent		= lambda c,p: False,
 			save			= lambda i: None,
 			instantiate		= lambda *a, **kw: o if a[0] == 'object' else v
 		)

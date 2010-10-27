@@ -143,3 +143,17 @@ CREATE TABLE session (
 	PRIMARY KEY (id),
 	CONSTRAINT session_uniq UNIQUE(id)
 );
+
+CREATE TABLE task (
+id bigserial,
+user_id bigint REFERENCES object ON DELETE CASCADE,
+origin_id bigint REFERENCES object ON DELETE CASCADE,
+verb_name varchar(255) NOT NULL,
+args varchar(255) NOT NULL,
+kwargs varchar(255) NOT NULL,
+created timestamp NOT NULL default NOW(),
+delay int NOT NULL,
+killed boolean NOT NULL default 'f',
+PRIMARY KEY (id)
+);
+CREATE INDEX user_idx ON task(user_id);

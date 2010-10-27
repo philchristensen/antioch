@@ -62,12 +62,15 @@ def extract_id(literal):
 	return None
 
 class ObjectExchange(object):
+	permission_list = None
+	
 	def __init__(self, pool, queue=None, ctx=None):
 		self.cache = util.OrderedDict()
 		self.pool = pool
 		self.queue = queue
 		
-		self.default_permissions_precached = False
+		self.default_grants_active = False
+		self.load_permissions()
 		
 		if(queue and not ctx):
 			raise RuntimeError("Queues can't be written to without a context.")
@@ -123,8 +126,13 @@ class ObjectExchange(object):
 	def get_context(self):
 		return self.ctx
 	
-	def precache_default_permissions(self):
-		if(self.default_permissions_precached):
+	def load_permissions(self):
+		if not(ObjectExchange.permission_list):
+			results = self.pool.runQuery(sql.build_select('permission'))
+			ObjectExchange.permission_list = dict([(x['name'], x['id']) for x in results])
+	
+	def activate_default_grants(self):
+		if(self.default_grants_active):
 			return
 		system = self.instantiate('object', default_permissions=False, id=1)
 		result = self.pool.runQuery(sql.interp(
@@ -136,7 +144,7 @@ class ObjectExchange(object):
 			""", system.get_id()))
 		
 		self.instantiate('verb', default_permissions=False, *result)
-		self.default_permissions_precached = True
+		self.default_grants_active = True
 	
 	def instantiate(self, obj_type, record=None, *additions, **fields):
 		records = []
@@ -167,7 +175,7 @@ class ObjectExchange(object):
 					
 					if(default_permissions):
 						try:
-							self.precache_default_permissions()
+							self.activate_default_grants()
 							system = self.get_object(1)
 							set_default_permissions = system.set_default_permissions
 						except (errors.NoSuchObjectError, errors.NoSuchVerbError), e:
@@ -302,8 +310,6 @@ class ObjectExchange(object):
 				origin_id	= obj._origin_id,
 				type		= obj._type,
 			)
-		elif(obj_type == 'permission'):
-			pass
 		else:
 			raise RuntimeError("Don't know how to save an object of type '%s'" % obj_type)
 		
@@ -420,16 +426,43 @@ class ObjectExchange(object):
 			child_id, parent_id))
 	
 	def has(self, origin_id, item_type, name, recurse=True, unrestricted=True):
-		item = getattr(self, 'get_%s' % item_type, lambda *x: None)(origin_id, name, recurse)
-		if(item is None):
-			return False
+		if(item_type not in ('property', 'verb')):
+			raise ValueError("Invalid item type: %s" % type)
 		
-		if(item_type == 'verb'):
-			return unrestricted or item.is_executable()
-		elif(item_type == 'property'):
-			return unrestricted or item.is_readable()
+		a = None
+		parents = [origin_id]
+		while(parents):
+			object_id = parents.pop(0)
+			if(item_type == 'verb'):
+				a = self.pool.runQuery(sql.interp(
+					"""SELECT v.id
+						 FROM verb v
+							INNER JOIN verb_name vn ON v.id = vn.verb_id
+						WHERE vn.name = %s
+						  AND v.origin_id = %s
+					""", name, object_id))
+			elif(item_type == 'property'):
+				a = self.pool.runQuery(sql.interp(
+					"""SELECT p.id
+						 FROM property p
+						WHERE p.name = %s
+						 AND p.origin_id = %s
+					""", name, object_id))
+			
+			if(a):
+				if(unrestricted):
+					return True
+				elif(item_type == 'verb'):
+					item = self.instantiate('verb', a[0])
+					return item.is_executable()
+				elif(item_type == 'property'):
+					item = self.instantiate('property', a[0])
+					return item.is_readable()
+			elif(recurse):
+				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
+				parents.extend([result['parent_id'] for result in results])
 		
-		raise ValueError("Unknown item type, '%s'." % item_type)
+		return False
 	
 	def get_ancestor_with(self, descendent_id, attribute_type, name):
 		if(attribute_type not in ('property', 'verb')):
@@ -453,9 +486,11 @@ class ObjectExchange(object):
 						 FROM property p
 						WHERE p.name = %s
 						 AND p.origin_id = %s
-					""" % name, object_id))
+					""", name, object_id))
 			
-			if not(a):
+			if(a):
+				break
+			else:
 				results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
 				parents.extend([result['parent_id'] for result in results])
 		
@@ -734,10 +769,9 @@ class ObjectExchange(object):
 			record['accessor_id'] = accessor.get_id()
 		
 		if(record.pop('permission', '') != permission):
-			p = self.pool.runQuery(sql.interp("SELECT p.* FROM permission p WHERE p.name = %s", permission))
-			if not(p):
+			if(permission not in self.permission_list):
 				raise ValueError("Unknown permission: %s" % permission)
-			record['permission_id'] = p[0]['id']
+			record['permission_id'] = self.permission_list[permission]
 		
 		if(subject.get_type() == 'object'):
 			record['object_id'] = subject.get_id()
@@ -752,17 +786,11 @@ class ObjectExchange(object):
 			self.pool.runOperation(sql.build_insert('access', **record))
 	
 	def is_allowed(self, accessor, permission, subject):
-		result = self.pool.runQuery(sql.build_select('permission', name=permission))
-		if(result):
-			permission_id = result[0]['id']
-		else:
+		if(permission not in self.permission_list):
 			return False
 		
-		result = self.pool.runQuery(sql.build_select('permission', name='anything'))
-		if(result):
-			anything_id = result[0]['id']
-		else:
-			anything_id = None
+		permission_id = self.permission_list[permission]
+		anything_id = self.permission_list['anything']
 		
 		access_query = sql.build_select('access', dict(
 			object_id		= subject.get_id() if isinstance(subject, model.Object) else None,
@@ -797,9 +825,8 @@ class ObjectExchange(object):
 		if(isinstance(accessor, basestring) and accessor not in group_definitions):
 			raise ValueError("Unknown group: %s" % accessor)
 		
-		result = self.pool.runQuery(sql.build_select('permission', name=permission))
-		if(result):
-			permission_id = result[0]['id']
+		if(permission in self.permission_list):
+			permission_id = self.permission_list[permission]
 		elif(create):
 			permission_id = self.pool.runQuery(sql.build_insert('permission', dict(
 				name	= permission
@@ -831,4 +858,24 @@ class ObjectExchange(object):
 		saved_crypt = saved_crypt[0]['crypt']
 		
 		return crypt.crypt(password, saved_crypt[0:2]) == saved_crypt
+	
+	def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
+		task_id = self.pool.runQuery(sql.build_insert('task', dict(
+			user_id		= user_id,
+			delay		= delay,
+			origin_id	= origin_id,
+			verb_name	= verb_name,
+			args		= args,
+			kwargs		= kwargs,
+		)) + ' RETURNING id')[0]['id']
+		return task_id
+	
+	def get_task(self, task_id):
+		return self.pool.runQuery(sql.build_select('task', id=task_id))
+	
+	def get_tasks(self, user_id=None):
+		if(user_id):
+			return self.pool.runQuery(sql.build_select('task', user_id=user_id))
+		else:
+			return self.pool.runQuery(sql.build_select('task'))
 	

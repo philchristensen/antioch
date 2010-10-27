@@ -4,6 +4,8 @@
 #
 # See LICENSE for details
 
+import simplejson
+
 from twisted.internet import defer
 
 from txspace.modules.editors import transactions

@@ -72,7 +72,7 @@ class MessageQueue(object):
 		
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
-		yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
+		# yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
 		while(self.queue):
 			user_id, msg = self.queue.pop(0)
 			routing_key = 'user-%s' % user_id

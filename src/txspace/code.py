@@ -7,6 +7,9 @@
 """
 Code
 """
+
+import simplejson, time
+
 from txspace import errors, modules
 
 def massage_verb_code(code):
@@ -31,7 +34,10 @@ def r_exec(code, environment):
 	
 	code = massage_verb_code(code)
 	
+	# t = time.time()
 	exec(code, environment)
+	# print 'execute took %s seconds' % (time.time() - t)
+	
 	if("__result__" in environment):
 		return environment["__result__"]
 
@@ -45,6 +51,25 @@ def api(func):
 	api.locals[func.func_name] = _api
 	
 	return _api
+
+@api
+def task(p, delay, origin, verb_name, *args, **kwargs):
+	#force exception here if undumpable
+	p.exchange.queue.send(p.caller, dict(
+		command		= 'task',
+		delay		= int(delay),
+		origin		= str(origin),
+		verb_name	= str(verb_name),
+		args		= simplejson.dumps(args),
+		kwargs		= simplejson.dumps(kwargs),
+	))
+
+@api
+def tasks(p):
+	if(p.caller.is_wizard()):
+		return p.exchange.get_tasks()
+	else:
+		return p.exchange.get_tasks(user_id=p.caller.get_id())
 
 @api
 def write(p, user, text, is_error=False):

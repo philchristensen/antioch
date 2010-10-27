@@ -11,13 +11,12 @@ Webclient
 This is the primary client for txSpace, replacing the
 Java and Cocoa versions.
 """
-import os, os.path
+
+import os, os.path, simplejson, time
 
 import pkg_resources as pkg
 
 from zope.interface import implements
-
-import simplejson
 
 from twisted.application import service, internet
 from twisted.internet import reactor, defer, task
@@ -277,10 +276,10 @@ class ClientConnector(athena.LiveElement):
 		consumertag = "user-%s-consumer" % self.user_id
 		routing_key = 'user-%s' % self.user_id
 		
-		yield self.chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
-		yield self.chan.queue_declare(queue=queue, durable=False, exclusive=False, auto_delete=True)
+		yield self.chan.exchange_declare(exchange=exchange, type="direct", durable=True, auto_delete=True)
+		yield self.chan.queue_declare(queue=queue, durable=True, exclusive=False, auto_delete=True)
 		yield self.chan.queue_bind(queue=queue, exchange=exchange, routing_key=routing_key)
-		yield self.chan.basic_consume(queue=queue, no_ack=True, consumer_tag=consumertag)
+		yield self.chan.basic_consume(queue=queue, consumer_tag=consumertag, no_ack=True)
 		
 		self.queue = yield self.msg_service.connection.queue(consumertag)
 		
@@ -317,10 +316,22 @@ class ClientConnector(athena.LiveElement):
 		
 		if(mod):
 			d = mod.handle_message(data, self)
+		elif(data['command'] == 'task'):
+			task_id = transact.RegisterTask(
+						user_id=user_id, delay=data['delay'], origin_id=data['origin'], 
+						verb_name=data['verb_name'], args=data['args'], kwargs=data['kwargs'])
+			task = reactor.callLater(data['delay'], self.task, task_id)
 		elif(data['command'] == 'observe'):
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
 			d = self.callRemote('write', data['text'], data['is_error'])
+	
+	@defer.inlineCallbacks
+	def task(self, task_id):
+		"""
+		Run a delayed task.
+		"""
+		yield transact.RunTask.run(user_id=self.user_id, task_id=task_id)
 	
 	@athena.expose	
 	@defer.inlineCallbacks

@@ -11,7 +11,8 @@ from txspace import exchange, test, auth, transact, errors
 
 class AuthenticationTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(AuthenticationTestCase)
+		self.pool = test.init_database(self.__class__)
+		self.test_db_url = test.get_test_db_url(self.__class__.__name__.lower())
 	
 	@defer.inlineCallbacks
 	def tearDown(self):
@@ -19,7 +20,7 @@ class AuthenticationTestCase(unittest.TestCase):
 
 	@defer.inlineCallbacks
 	def test_checker_failed(self):
-		checker = auth.TransactionChecker(db_url=test.get_test_db_url())
+		checker = auth.TransactionChecker(db_url=self.test_db_url)
 		creds = credentials.UsernamePassword('asdfgasd', 'adsfgsdfg')
 		
 		failed = False
@@ -41,7 +42,7 @@ class AuthenticationTestCase(unittest.TestCase):
 				u.set_player(True, passwd='test_checker_passed_password')
 			user_id = u.get_id()
 		
-		checker = auth.TransactionChecker(db_url=test.get_test_db_url())
+		checker = auth.TransactionChecker(db_url=self.test_db_url)
 		creds = credentials.UsernamePassword('test_checker_passed_user', 'test_checker_passed_password')
 		avatar_id = yield checker.requestAvatarId(creds)
 		self.failUnlessEqual(avatar_id, user_id)

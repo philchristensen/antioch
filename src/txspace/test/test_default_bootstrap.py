@@ -9,7 +9,7 @@ from txspace import parser, exchange, test
 
 class DefaultBootstrapTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(DefaultBootstrapTestCase, dataset='default', suffix='_default')
+		self.pool = test.init_database(DefaultBootstrapTestCase, dataset='default')
 		self.exchange = exchange.ObjectExchange(self.pool)
 		self.exchange.queue = test.Anything(
 			commit	= lambda: None,

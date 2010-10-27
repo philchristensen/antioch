@@ -8,6 +8,8 @@
 Execution layer
 """
 
+import simplejson
+
 from twisted.python import log
 from twisted.internet import defer
 from twisted.protocols import amp
@@ -18,6 +20,7 @@ from txspace import dbapi, exchange, errors, parser, messaging, sql, code, modul
 
 __processPools = {}
 default_db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
+code_timeout = None #5
 
 def get_process_pool(child=None, *args):
 	if(child is None):
@@ -45,8 +48,11 @@ def shutdown(child=None):
 class WorldTransaction(amp.Command):
 	@classmethod
 	def run(cls, transaction_child=None, db_url='', **kwargs):
-		pool = get_process_pool(transaction_child, db_url)
-		return pool.doWork(cls, _timeout=2, **kwargs)
+		if(db_url):
+			pool = get_process_pool(transaction_child, db_url)
+		else:
+			pool = get_process_pool(transaction_child)
+		return pool.doWork(cls, _timeout=code_timeout, **kwargs)
 
 class Authenticate(WorldTransaction):
 	arguments = [
@@ -80,6 +86,24 @@ class Parse(WorldTransaction):
 	]
 	response = [('response', amp.Boolean())]
 
+class RegisterTask(WorldTransaction):
+	arguments = [
+		('user_id', amp.Integer()),
+		('delay', amp.Integer()),
+		('origin_id', amp.String()),
+		('verb_name', amp.String()),
+		('args', amp.String()),
+		('kwargs', amp.String()),
+	]
+	response = [('response', amp.Boolean())]
+
+class RunTask(WorldTransaction):
+	arguments = [
+		('user_id', amp.Integer()),
+		('task_id', amp.Integer()),
+	]
+	response = [('response', amp.Boolean())]
+
 class TransactionChild(child.AMPChild):
 	"""
 	Even though a transaction child is technically supposed to be asynchronous,
@@ -103,7 +127,6 @@ class TransactionChild(child.AMPChild):
 class DefaultTransactionChild(TransactionChild):
 	@Authenticate.responder
 	def authenticate(self, username, password):
-		dbapi.debug = True
 		with self.get_exchange() as x:
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):
@@ -119,10 +142,10 @@ class DefaultTransactionChild(TransactionChild):
 				raise errors.PermissionError("Invalid login credentials. (3)")
 			except errors.AmbiguousObjectError, e:
 				raise errors.PermissionError("Invalid login credentials. (4)")
-		
+	
 			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
 				raise errors.PermissionError('User is already logged in.')
-		
+	
 			if not(x.validate_password(u.get_id(), password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
 		return {'user_id': u.get_id()}
@@ -168,4 +191,24 @@ class DefaultTransactionChild(TransactionChild):
 		
 		return {'response': True}
 	
-
+	@RegisterTask.responder
+	def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
+		with self.get_exchange(user_id) as x:
+			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+		return {'task_id': task_id}
+	
+	@RunTask.responder
+	def run_task(self, user_id, task_id):
+		with self.get_exchange(user_id) as x:
+			task = x.get_task(task_id)
+			if(not task or task['killed']):
+				return {'response': False}
+			
+			origin = x.get_object(task['origin_id'])
+			args = simplejson.loads(task['args'])
+			kwargs = simplejson.loads(task['kwargs'])
+			
+			v = origin.get_verb(task['verb_name'])
+			v(*args, **kwargs)
+		
+		return {'response': True}

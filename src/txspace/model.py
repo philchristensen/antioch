@@ -45,7 +45,9 @@ def isLocal():
 			return True
 		
 		from txspace import exchange
-		exchange_source_path = os.path.abspath(exchange.__file__)[:-1]
+		exchange_source_path = os.path.abspath(exchange.__file__)
+		if(exchange_source_path.endswith('pyc')):
+			exchange_source_path = exchange_source_path[:-1]
 		if(stack[2][1] == exchange_source_path):
 			return True
 		
@@ -457,7 +459,9 @@ class Verb(Entity):
 		if not(caller.is_allowed('execute', self)):
 			return False
 		elif(self.is_ability()):
-			return caller is self.origin or caller.has_parent(self.origin)
+			if(self._ex.has_parent(caller.get_id(), self._origin_id)):
+				return True
+			return caller.get_id() == self._origin_id
 		return False
 	
 	name = property(lambda x: x.get_names().pop(0))

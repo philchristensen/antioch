@@ -46,13 +46,14 @@ for item in preps:
 	if(item != preps[len(preps) - 1]):
 		prepstring += "|"
 
-# TODO: These should be compiled ahead of time
-PREP = r'(?P<prep>' + prepstring + r')'
+PREP_SRC = r'(?:\b)(?P<prep>' + prepstring + r')(?:\b)'
 SPEC = r"(?P<spec_str>my|the|a|an|\S+(?:\'s|s\'))"
-PHRASE = r'(?:' + SPEC + r'\s)?(?P<obj_str>.+)'
-POBJ_TEST = PREP + "\s" + PHRASE
-QOTD = r'(?:\".+?(?!\\).\")'
-MULTI_WORD = r'((\"|\').+?(?!\\).\2)|(\S+)'
+PHRASE_SRC = r'(?:' + SPEC + r'\s)?(?P<obj_str>.+)'
+
+PREP = re.compile(PREP_SRC)
+PHRASE = re.compile(PHRASE_SRC)
+POBJ_TEST = re.compile(PREP_SRC + "\s" + PHRASE_SRC)
+MULTI_WORD = re.compile(r'((\"|\').+?(?!\\).\2)|(\S+)')
 
 def parse(caller, sentence):
 	l = Lexer(sentence)
@@ -82,7 +83,7 @@ class Lexer(object):
 			self.words.append(word)
 		
 		# Now, find all prepositions
-		iterator = re.finditer(r"\b" + PREP + r"\b", command)
+		iterator = re.finditer(PREP, command)
 		prep_matches = []
 		for item in iterator:
 			prep_matches.append(item)
@@ -260,13 +261,14 @@ class TransactionParser(object):
 		matches = []
 		ctx = self.caller
 		
-		location = self.caller.get_location()
-		
 		checks = [self.caller]
 		checks.extend(self.caller.get_contents())
+		
+		location = self.caller.get_location()
 		if(location):
 			checks.append(location)
 			checks.extend(location.get_contents())
+		
 		checks.append(self.dobj)
 		
 		for key in self.prepositions:
@@ -297,17 +299,19 @@ class TransactionParser(object):
 	
 	def filter_matches(self, possible):
 		result = []
-		# print "possble is " + str(possible)
+		#print "possble is " + str(possible)
 		if not(isinstance(possible, list)):
 			possible = [possible]
 		verb_str = self.words[0]
 		for item in possible:
+			if(item is None):
+				continue
 			if(item in result):
 				continue
 			verb = item.get_verb(verb_str)
-			if not(verb and verb.performable_by(self.caller)):
+			if(not verb.performable_by(self.caller)):
 				continue
-			if(verb.is_ability() and item != self.caller):
+			if(verb.is_ability() and item.get_id() != self.caller.get_id()):
 				continue
 			result.append(item)
 		
