@@ -52,87 +52,80 @@
       A highly-customizable, scalable game server for creating virtual worlds.
     </div>
 
-    <p>txSpace is a web application for building scalable, interactive virtual worlds.
+    <p>txSpace is a web application for building scalable, interactive virtual worlds.</p>
 
-Begun as a MOO-like system for building virtual worlds, the goal was to take the LambdaMOO approach to creating online worlds, and update it in hopes of attracting new players to an old idea.
+<p>Begun as a MOO-like system for building virtual worlds, the goal was to take the LambdaMOO approach to creating online worlds, and update it in hopes of attracting new players to an old idea.</p>
 
-Like many MOO-clones before it, txSpace uses Python as its internal scripting language. This provides a powerful environment for game authors, while a flexible object model allows for creation of complex in-game objects.
-</p><h2>Dependencies</h2>
-<p>
-Requirements for Server
------------------------
-
-As long as you're using Python 2.5 or better, most recent versions of
-everything else should work, but to be specific:
-
-* [Python         >=  2.5  ](http://www.python.org)
-* [PostgreSQL     >=  8.4  ](http://www.postgresql.org)
-* [Twisted        >= 10.1  ](http://www.twistedmatrix.com)
-* [Nevow          >=  0.10 ](http://divmod.org/trac/wiki/DivmodNevow)
-* [psycopg2       >=  2.2.1](http://initd.org/psycopg)
-* [txAMQP         >=  0.3  ](https://launchpad.net/txamqp)
-* [ampoule        >=  0.1  ](https://launchpad.net/ampoule)
-
-Requirements for Client
------------------------
-
-Pretty much any WebKit- or Mozilla-based browser should work. Opera
-and Internet Exporer 6 or better should also work, but neither is
-supported at this time.
-
-* [Firefox](http://www.mozilla.com/firefox)
-* [Safari](http://www.apple.com/safari)
+<p>Like many MOO-clones before it, txSpace uses Python as its internal scripting language. This provides a powerful environment for game authors, while a flexible object model allows for creation of complex in-game objects.
 </p>
+<h2>Dependencies</h2>
+
+<p>As long as you're using Python 2.5 or better, most recent versions of
+everything else should work, but to be specific:</p>
+
+<ul>
+<li><a href="http://www.python.org">Python         &gt;=  2.5  </a></li>
+<li><a href="http://www.postgresql.org">PostgreSQL     &gt;=  8.4  </a></li>
+<li><a href="http://www.twistedmatrix.com">Twisted        &gt;= 10.1  </a></li>
+<li><a href="http://divmod.org/trac/wiki/DivmodNevow">Nevow          &gt;=  0.10 </a></li>
+<li><a href="http://initd.org/psycopg">psycopg2       &gt;=  2.2.1</a></li>
+<li><a href="https://launchpad.net/txamqp">txAMQP         &gt;=  0.3  </a></li>
+<li><a href="https://launchpad.net/ampoule">ampoule        &gt;=  0.1  </a></li>
+</ul><h2>Requirements for Client</h2>
+
+<p>Pretty much any WebKit- or Mozilla-based browser should work. Opera
+and Internet Exporer 6 or better should also work, but neither is
+supported at this time.</p>
+
+<ul>
+<li><a href="http://www.mozilla.com/firefox">Firefox</a></li>
+<li><a href="http://www.apple.com/safari">Safari</a></li>
+</ul>
+
 <h2>Install</h2>
-<p>Running the Server
--------------------
 
-Once you install Python and Twisted, the rest will be taken care of by
-the setuptools-based installer.
+<h2>Running the Server</h2>
 
-    python setup.py install
+<p>Once you install Python and Twisted, the rest will be taken care of by
+the setuptools-based installer.</p>
 
-Next you'll need to create the default database. By default, `mkspace` tries
-to connect to your PostgreSQL database as the `postgres` super-user.
+<pre><code>python setup.py install
+</code></pre>
 
-    mkspace.py
+<p>Next you'll need to create the default database. By default, <code>mkspace</code> tries
+to connect to your PostgreSQL database as the <code>postgres</code> super-user.</p>
 
-This should have created the `txspace` user and a corresponding database. Next
-you should be able to start up the server with:
+<pre><code>mkspace.py
+</code></pre>
 
-    twistd -n txspace
+<p>This should have created the <code>txspace</code> user and a corresponding database. Next
+you should be able to start up the server with:</p>
 
+<pre><code>twistd -n txspace
+</code></pre>
 
-Running the Client
-------------------
+<h2>Running the Client</h2>
 
-Connect to: <http://localhost:8080>
+<p>Connect to: <a href="http://localhost:8080">http://localhost:8080</a></p>
 
-Login with username and password: `wizard/wizard`</p>
+<p>Login with username and password: <code>wizard/wizard</code></p>
+
 <h2>License</h2>
-<p>Copyright (c) 1999-2010 Phil Christensen (phil@bubblehouse.org)
+<p>Copyright (c) 1999-2010 Phil Christensen (phil@bubblehouse.org)</p>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
 <h2>Authors</h2>
-<p>Phil Christensen (phil@bubblehouse.org)<br/><br/>      </p>
+<p>Phil Christensen (phil@bubblehouse.org)
+<br/>
+<br/>      </p>
 <h2>Contact</h2>
-<p>Phil Christensen (phil@bubblehouse.org)<br/>      </p>
+<p>Phil Christensen (phil@bubblehouse.org)
+<br/>      </p>
 
 
     <h2>Download</h2>
