@@ -10,12 +10,14 @@ from twisted.application import service
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
 
-import simplejson
+import simplejson, time
 
 from txamqp import spec, protocol, content
 from txamqp.client import TwistedDelegate
 
 from txspace import assets
+
+profile_messages = False
 
 class MessageService(service.Service):
 	"""
@@ -68,10 +70,18 @@ class MessageQueue(object):
 	
 	@defer.inlineCallbacks
 	def commit(self):
+		t = time.time()
+		
 		yield self.service.connect()
+		if(profile_messages):
+			print '[messages] connect took %s seconds' % (time.time() - t)
+			t = time.time()
 		
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
+		if(profile_messages):
+			print '[messages] channel open took %s seconds' % (time.time() - t)
+			t = time.time()
 		# yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
 		while(self.queue):
 			user_id, msg = self.queue.pop(0)
@@ -80,5 +90,8 @@ class MessageQueue(object):
 			c = content.Content(data, properties={'content type':'application/json'})
 			chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
+		if(profile_messages):
+			print '[messages] purging queue took %s seconds' % (time.time() - t)
+			t = time.time()
 	
 	

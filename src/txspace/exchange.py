@@ -30,7 +30,7 @@ No, they don't. They can remove things they don't own from their object, but the
 change the value of those items.
 
 """
-import crypt, string, random
+import crypt, string, random, time
 
 from twisted.internet import defer
 from twisted.python import util
@@ -46,6 +46,8 @@ group_definitions = dict(
 )
 
 salt = list(string.printable[:])
+
+profile_exchange = False
 
 def extract_id(literal):
 	if(isinstance(literal, basestring) and literal.startswith('#')):
@@ -81,12 +83,16 @@ class ObjectExchange(object):
 	
 	def __enter__(self):
 		self.begin()
+		if(profile_exchange):
+			self.transaction_started = time.time()
 		return self
 	
 	def begin(self):
 		self.pool.runOperation('BEGIN')
 	
 	def commit(self):
+		if(profile_exchange):
+			print '[exchange] transaction took %s seconds' % (time.time() - self.transaction_started)
 		self.pool.runOperation('COMMIT')
 	
 	def rollback(self):

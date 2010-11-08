@@ -15,6 +15,7 @@ import threading, random, sys, time, re, subprocess
 from twisted.enterprise import adbapi
 
 debug = False
+profile_debug = True
 debug_stream = sys.stderr
 debug_syntax_highlighting = False
 
@@ -31,10 +32,11 @@ URL_RE = re.compile(URL_REGEXP, re.IGNORECASE)
 
 RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
 
-def sql_debug(query, args, kwargs):
+def sql_debug(query, args, kwargs, runtime=0):
 	original_query = query
 	if(debug):
-		query = '%s%s%s%s' % (re.sub(RE_WS, ' ', query),
+		query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 4) if runtime and profile_debug else '',
+								re.sub(RE_WS, ' ', query),
 								('', '\n')[bool(args or kwargs)],
 								('', repr(args))[bool(args)],
 								('', repr(kwargs))[bool(kwargs)],
@@ -169,15 +171,19 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 		"""
 		Trivial override to provide debugging support.
 		"""
-		sql_debug(query, args, kwargs)
-		return adbapi.ConnectionPool.runOperation(self, query, *args, **kwargs)
+		t = time.time()
+		result = adbapi.ConnectionPool.runOperation(self, query, *args, **kwargs)
+		sql_debug(query, args, kwargs, time.time() - t)
+		return result
 	
 	def runQuery(self, query, *args, **kwargs):
 		"""
 		Trivial override to provide debugging support.
 		"""
-		sql_debug(query, args, kwargs)
-		return adbapi.ConnectionPool.runQuery(self, query, *args, **kwargs)
+		t = time.time()
+		result = adbapi.ConnectionPool.runQuery(self, query, *args, **kwargs)
+		sql_debug(query, args, kwargs, time.time() - t)
+		return result
 	
 	def _runInteraction(self, interaction, *args, **kw):
 		"""

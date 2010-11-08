@@ -8,7 +8,7 @@
 Execution layer
 """
 
-import simplejson
+import simplejson, time
 
 from twisted.python import log
 from twisted.internet import defer
@@ -21,6 +21,8 @@ from txspace import dbapi, exchange, errors, parser, messaging, sql, code, modul
 __processPools = {}
 default_db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
 code_timeout = None #5
+
+profile_transactions = False
 
 def get_process_pool(child=None, *args):
 	if(child is None):
@@ -115,7 +117,12 @@ class TransactionChild(child.AMPChild):
 	def __init__(self, db_url=''):
 		if not(db_url):
 			db_url = default_db_url
+		
+		t = time.time()
 		self.pool = dbapi.connect(db_url, autocommit=False)
+		if(profile_transactions):
+			print "[transact] db connection took %s seconds" % (time.time() - t)
+		
 		self.msg_service = messaging.MessageService()
 	
 	def get_exchange(self, ctx=None):

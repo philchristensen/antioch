@@ -28,6 +28,8 @@ CREATE TABLE object (
 	PRIMARY KEY (id),
 	CONSTRAINT obj_name_nomts CHECK(name <> '')
 );
+CREATE INDEX object_owner_key ON object (owner_id);
+CREATE INDEX object_location_key ON object (location_id);
 
 CREATE TABLE object_relation (
 	parent_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
@@ -35,6 +37,8 @@ CREATE TABLE object_relation (
 	weight int NOT NULL DEFAULT 0,
 	PRIMARY KEY (parent_id, child_id)
 );
+CREATE INDEX object_relation_parent ON object_relation (parent_id);
+CREATE INDEX object_relation_child ON object_relation (child_id);
 
 CREATE TABLE object_alias (
 	object_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
@@ -42,6 +46,7 @@ CREATE TABLE object_alias (
 	PRIMARY KEY (object_id, alias),
 	CONSTRAINT verb_name_nomts CHECK(alias <> '')
 );
+CREATE INDEX object_alias_key ON object_alias (alias);
 
 CREATE TABLE verb (
 	id bigserial,
@@ -52,6 +57,8 @@ CREATE TABLE verb (
 	method boolean NOT NULL,
 	PRIMARY KEY (id)
 );
+CREATE INDEX verb_origin_key ON verb (origin_id);
+CREATE INDEX verb_owner_key ON verb (owner_id);
 
 CREATE TABLE verb_name (
 	verb_id bigint NOT NULL REFERENCES verb ON DELETE CASCADE,
@@ -59,6 +66,7 @@ CREATE TABLE verb_name (
 	PRIMARY KEY (verb_id, name),
 	CONSTRAINT verb_name_nomts CHECK(name <> '')
 );
+CREATE INDEX verb_name_key ON verb_name (name);
 
 CREATE TABLE property (
 	id bigserial,
@@ -69,6 +77,9 @@ CREATE TABLE property (
 	origin_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	PRIMARY KEY (id)
 );
+CREATE INDEX property_name_key ON property (name);
+CREATE INDEX property_origin_key ON property (origin_id);
+CREATE INDEX property_owner_key ON property (owner_id);
 
 CREATE TABLE permission (
 	id bigserial,
@@ -120,6 +131,10 @@ CREATE TABLE access (
 		END
 	)
 );
+CREATE INDEX access_permission_key ON access (permission_id);
+CREATE INDEX access_object_key ON access (object_id);
+CREATE INDEX access_verb_key ON access (verb_id);
+CREATE INDEX access_property_key ON access (property_id);
 
 CREATE TABLE player (
 	id bigserial,
@@ -132,6 +147,8 @@ CREATE TABLE player (
 	PRIMARY KEY (id),
 	CONSTRAINT user_uniq UNIQUE(id)
 );
+CREATE INDEX player_avatar_key ON player (avatar_id);
+CREATE INDEX player_session_key ON player (session_id);
 
 CREATE TABLE session (
 	id varchar(255),
@@ -143,17 +160,20 @@ CREATE TABLE session (
 	PRIMARY KEY (id),
 	CONSTRAINT session_uniq UNIQUE(id)
 );
+CREATE INDEX session_user_key ON session (user_id);
 
 CREATE TABLE task (
-id bigserial,
-user_id bigint REFERENCES object ON DELETE CASCADE,
-origin_id bigint REFERENCES object ON DELETE CASCADE,
-verb_name varchar(255) NOT NULL,
-args varchar(255) NOT NULL,
-kwargs varchar(255) NOT NULL,
-created timestamp NOT NULL default NOW(),
-delay int NOT NULL,
-killed boolean NOT NULL default 'f',
-PRIMARY KEY (id)
+	id bigserial,
+	user_id bigint REFERENCES object ON DELETE CASCADE,
+	origin_id bigint REFERENCES object ON DELETE CASCADE,
+	verb_name varchar(255) NOT NULL,
+	args varchar(255) NOT NULL,
+	kwargs varchar(255) NOT NULL,
+	created timestamp NOT NULL default NOW(),
+	delay int NOT NULL,
+	killed boolean NOT NULL default 'f',
+	PRIMARY KEY (id)
 );
-CREATE INDEX user_idx ON task(user_id);
+CREATE INDEX task_user_key ON task (user_id);
+CREATE INDEX task_origin_key ON task (origin_id);
+CREATE INDEX task_verb_key ON task (verb_name);

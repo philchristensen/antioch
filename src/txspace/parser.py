@@ -16,7 +16,7 @@ of phrases, but they are all represented by the (BNF?) form:
 There are a long list of prepositions supported, some of which are interchangeable.
 """
 
-import re, string, types
+import sys, time, re, string, types
 
 from txspace.errors import *
 from txspace import exchange
@@ -55,11 +55,26 @@ PHRASE = re.compile(PHRASE_SRC)
 POBJ_TEST = re.compile(PREP_SRC + "\s" + PHRASE_SRC)
 MULTI_WORD = re.compile(r'((\"|\').+?(?!\\).\2)|(\S+)')
 
+profile_command_parser = True
+
 def parse(caller, sentence):
+	t = dict(time=time.time())
+	def _profile(name):
+		if(profile_command_parser):
+			print "[parser] %s took %s seconds" % (name, time.time() - t['time'])
+			t['time'] = time.time()
+	
 	l = Lexer(sentence)
+	_profile('lexer')
+	
 	p = TransactionParser(l, caller, caller.get_exchange())
+	_profile('parser')
+	
 	v = p.get_verb()
+	_profile('verb search')
+	
 	v.execute(p)
+	_profile('execution')
 
 class Lexer(object):
 	"""
