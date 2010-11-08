@@ -26,7 +26,7 @@ log.set_threshold(log.INFO)
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
-import setup_bzr
+import setup_git
 
 def autosetup():
 	pluginPackages = ['twisted.plugins', 'nevow.plugins', 'txspace.modules']
@@ -39,11 +39,15 @@ def autosetup():
 		name			= "txspace",
 		version			= "2.0",
 		
-		packages		= find_packages('src') + ['twisted', 'nevow'],
-		package_dir		= {'':'src'},
+		packages		= find_packages('src') + ['twisted.plugins', 'nevow.plugins'],
+		package_dir		= {
+			''			: 'src',
+		},
+		include_package_data = True,
+		
 		entry_points	= {
 			'setuptools.file_finders'	: [
-				'bzr = setup_bzr:find_files_for_bzr'
+				'git = setup_git:find_files_for_git',
 			]
 		},
 		
@@ -60,13 +64,6 @@ def autosetup():
 			txamqp		= "0.3",
 			ampoule		= "0.1",
 		).items()],
-		
-		include_package_data = True,
-		package_data = {
-			''			: ['ez_setup.py', 'setup_bzr.py', 'ChangeLog.md', 'INSTALL.md', 'LICENSE.md', 'README.md'],
-			'twisted'	: ['plugins/txspace_server.py'],
-			'nevow'		: ['plugins/txspace_plugin.py'],
-		},
 		
 		# metadata for upload to PyPI
 		author			= "Phil Christensen",
