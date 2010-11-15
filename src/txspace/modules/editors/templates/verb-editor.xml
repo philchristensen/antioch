@@ -13,7 +13,7 @@
 		}, true);
 	</script>
 	<script type="text/javascript" src="/assets/js/global.js"></script>
-	<script type="text/javascript" src="/assets/CodeMirror-0.63/js/codemirror.js"></script>
+	<script type="text/javascript" src="/plugin/editor/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/verb-editor.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/editor-plugin-support.js"></script>
 </head>

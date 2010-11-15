@@ -14,8 +14,8 @@ function loadVerb(){
 	
 	editor = new CodeMirror(CodeMirror.replace("verb-code"), {
 		parserfile: ["parsetxspace.js"],
-		path: "/plugin/editor/assets/CodeMirror-0.63/js/",
-		stylesheet: "/plugin/editor/assets/CodeMirror-0.63/css/txspacecolors.css",
+		path: "/plugin/editor/assets/js/CodeMirror-0.91/js/",
+		stylesheet: "/plugin/editor/assets/js/CodeMirror-0.91/css/txspacecolors.css",
 		content: info['code'],
 		textWrapping: false,
 		lineNumbers: true,

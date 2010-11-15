@@ -20,8 +20,8 @@ function loadProperty(){
 	editor = new CodeMirror(CodeMirror.replace("property-value"), {
 		parserfile: ["parsexml.js", "parsecss.js", "parsejavascript.js", "tokenizejavascript.js",
 						"parsehtmlmixed.js", "parsetxspace.js", "parsedummy.js"],
-		path: "/plugin/editor/assets/CodeMirror-0.63/js/",
-		stylesheet: "/plugin/editor/assets/CodeMirror-0.63/css/txspacecolors.css",
+		path: "/plugin/editor/assets/js/CodeMirror-0.91/js/",
+		stylesheet: "/plugin/editor/assets/js/CodeMirror-0.91/css/txspacecolors.css",
 		content: info['value'],
 		textWrapping: false,
 		lineNumbers: true,
