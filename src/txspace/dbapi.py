@@ -32,10 +32,21 @@ URL_RE = re.compile(URL_REGEXP, re.IGNORECASE)
 
 RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
 
+total_query_time = 0
+
+def get_total_query_time():
+	return total_query_time
+
+def reset_total_query_time():
+	global total_query_time
+	total_query_time = 0
+
 def sql_debug(query, args, kwargs, runtime=0):
+	global total_query_time
+	total_query_time += runtime
 	original_query = query
 	if(debug):
-		query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 4) if runtime and profile_debug else '',
+		query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 6) if runtime and profile_debug else '',
 								re.sub(RE_WS, ' ', query),
 								('', '\n')[bool(args or kwargs)],
 								('', repr(args))[bool(args)],

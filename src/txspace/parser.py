@@ -19,7 +19,7 @@ There are a long list of prepositions supported, some of which are interchangeab
 import sys, time, re, string, types
 
 from txspace.errors import *
-from txspace import exchange
+from txspace import exchange, dbapi
 
 #Here are all our supported prepositions
 preps = [['with', 'using'],
@@ -55,15 +55,21 @@ PHRASE = re.compile(PHRASE_SRC)
 POBJ_TEST = re.compile(PREP_SRC + "\s" + PHRASE_SRC)
 MULTI_WORD = re.compile(r'((\"|\').+?(?!\\).\2)|(\S+)')
 
-profile_command_parser = True
+profile_command_parser = False
 
 def parse(caller, sentence):
 	t = dict(time=time.time())
 	def _profile(name):
 		if(profile_command_parser):
-			print "[parser] %s took %s seconds" % (name, time.time() - t['time'])
+			query_seconds = dbapi.get_total_query_time()
+			print "[parser] %s took %4f seconds, %4f query seconds" % (
+				name, time.time() - t['time'], query_seconds
+			)
+			dbapi.reset_total_query_time()
 			t['time'] = time.time()
 	
+	
+	dbapi.reset_total_query_time()
 	l = Lexer(sentence)
 	_profile('lexer')
 	

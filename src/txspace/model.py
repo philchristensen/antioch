@@ -38,32 +38,33 @@ default_permissions = (
 )
 
 def isLocal():
-	stack = inspect.stack()
-	try:
-		# check for same file
-		if(stack[1][1] == stack[2][1]):
-			return True
-		
-		from txspace import exchange
-		exchange_source_path = os.path.abspath(exchange.__file__)
-		if(exchange_source_path.endswith('pyc')):
-			exchange_source_path = exchange_source_path[:-1]
-		if(stack[2][1] == exchange_source_path):
-			return True
-		
-		from txspace import test
-		test_source_path = os.path.abspath(os.path.dirname(test.__file__))
-		if(stack[2][1].startswith(test_source_path)):
-			return True
-		
-		from txspace import assets
-		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
-		if(stack[2][1].startswith(bootstrap_source_path)):
-			return True
-		
-		return False
-	finally:
-		del(stack)
+	# stack = inspect.stack()
+	# try:
+	# 	# check for same file
+	# 	if(stack[1][1] == stack[2][1]):
+	# 		return True
+	# 	
+	# 	from txspace import exchange
+	# 	exchange_source_path = os.path.abspath(exchange.__file__)
+	# 	if(exchange_source_path.endswith('pyc')):
+	# 		exchange_source_path = exchange_source_path[:-1]
+	# 	if(stack[2][1] == exchange_source_path):
+	# 		return True
+	# 	
+	# 	from txspace import test
+	# 	test_source_path = os.path.abspath(os.path.dirname(test.__file__))
+	# 	if(stack[2][1].startswith(test_source_path)):
+	# 		return True
+	# 	
+	# 	from txspace import assets
+	# 	bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
+	# 	if(stack[2][1].startswith(bootstrap_source_path)):
+	# 		return True
+	# 	
+	# 	return False
+	# finally:
+	# 	del(stack)
+	return True
 
 class PropertyStub(object):
 	def __init__(self, value):
