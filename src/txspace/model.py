@@ -21,7 +21,7 @@ filter that returns a cached copy of the existing object. Some kind of
 weak references-based dictionary keyed on object ID would be sufficient.
 """
 
-import inspect, os.path
+import inspect, os.path, sys
 
 from txspace import errors, code
 
@@ -37,34 +37,42 @@ default_permissions = (
 	'develop',
 )
 
+protection_enabled = True
+
 def isLocal():
-	# stack = inspect.stack()
-	# try:
-	# 	# check for same file
-	# 	if(stack[1][1] == stack[2][1]):
-	# 		return True
-	# 	
-	# 	from txspace import exchange
-	# 	exchange_source_path = os.path.abspath(exchange.__file__)
-	# 	if(exchange_source_path.endswith('pyc')):
-	# 		exchange_source_path = exchange_source_path[:-1]
-	# 	if(stack[2][1] == exchange_source_path):
-	# 		return True
-	# 	
-	# 	from txspace import test
-	# 	test_source_path = os.path.abspath(os.path.dirname(test.__file__))
-	# 	if(stack[2][1].startswith(test_source_path)):
-	# 		return True
-	# 	
-	# 	from txspace import assets
-	# 	bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
-	# 	if(stack[2][1].startswith(bootstrap_source_path)):
-	# 		return True
-	# 	
-	# 	return False
-	# finally:
-	# 	del(stack)
-	return True
+	if not(protection_enabled):
+		return True
+	
+	f = sys._getframe(1)
+	c1 = f.f_code
+	c2 = f.f_back.f_code
+	try:
+		# check for same file
+		if(c1.co_filename == c2.co_filename):
+			return True
+		
+		from txspace import exchange
+		exchange_source_path = os.path.abspath(exchange.__file__)
+		if(exchange_source_path.endswith('pyc')):
+			exchange_source_path = exchange_source_path[:-1]
+		if(c2.co_filename == exchange_source_path):
+			return True
+		
+		from txspace import test
+		test_source_path = os.path.abspath(os.path.dirname(test.__file__))
+		if(c2.co_filename.startswith(test_source_path)):
+			return True
+		
+		from txspace import assets
+		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
+		if(c2.co_filename.startswith(bootstrap_source_path)):
+			return True
+		
+		return False
+	finally:
+		del c2
+		del c1
+		del f
 
 class PropertyStub(object):
 	def __init__(self, value):

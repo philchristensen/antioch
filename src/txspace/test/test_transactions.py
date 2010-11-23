@@ -6,7 +6,7 @@
 from twisted.trial import unittest
 from twisted.internet import defer, error
 
-from txspace import test, errors, exchange, dbapi, parser, transact
+from txspace import test, errors, exchange, dbapi, parser, transact, model
 
 class TransactionTestCase(unittest.TestCase):
 	def setUp(self):
@@ -57,6 +57,9 @@ class TransactionTestCase(unittest.TestCase):
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
 	
 	def test_protected_attribute_access(self):
+		if not(model.protection_enabled):
+			raise unittest.SkipTest("Model protection disabled.")
+			
 		user_id = 2 # Wizard ID
 		with self.exchange as x:
 			wizard = x.get_object(user_id)
