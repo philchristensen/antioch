@@ -201,6 +201,7 @@ class TransactionParser(object):
 		self.exchange = exchange
 		
 		self.this = None
+		self.verb = None
 		
 		if(self.lexer):
 			for key, value in self.lexer.get_details().items():
@@ -275,8 +276,8 @@ class TransactionParser(object):
 		if not(self.words):
 			raise NoSuchVerbError('parser: ' + self.command)
 		
-		if(getattr(self, 'this', None) is not None):
-			return self.this.get_verb(self.words[0], recurse=True)
+		if(getattr(self, 'verb', None) is not None):
+			return self.verb
 		
 		verb_str = self.words[0]
 		matches = []
@@ -316,11 +317,12 @@ class TransactionParser(object):
 			raise NoSuchVerbError('parser: ' + verb_str)
 		
 		#print "Verb found on: " + str(self.this)
-		return self.this.get_verb(verb_str, recurse=True)
+		self.verb = self.this.get_verb(self.words[0], recurse=True)
+		return self.verb
 	
 	def filter_matches(self, possible):
 		result = []
-		#print "possble is " + str(possible)
+		# print "possble is " + str(possible)
 		if not(isinstance(possible, list)):
 			possible = [possible]
 		verb_str = self.words[0]
@@ -336,7 +338,7 @@ class TransactionParser(object):
 				continue
 			result.append(item)
 		
-		#print "result is " + str(result)
+		# print "result is " + str(result)
 		return result
 		
 	def get_pronoun_object(self, pronoun):

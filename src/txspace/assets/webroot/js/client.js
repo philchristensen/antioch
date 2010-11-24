@@ -7,9 +7,14 @@ txspace.ClientConnector.methods(
 		var resultDeferred = new Divmod.Defer.Deferred();
 		function initialize_plugin(){
 			var result = eval(name + '_plugin_init(args);');
-			result.addCallback(function(r){
-				resultDeferred.callback(r);
-			});
+			if(result.addCallback){
+				result.addCallback(function(r){
+					resultDeferred.callback(r);
+				});
+			}
+			else{
+				resultDeferred.callback(result);
+			}
 			return result;
 		}
 		

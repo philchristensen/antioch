@@ -382,6 +382,7 @@ class Verb(Entity):
 		from txspace import parser
 		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
 		env = code.get_environment(default_parser)
+		env['method'] = True
 		env['args'] = args
 		env['kwargs'] = kwargs
 		return code.r_exec(self._code, env)
@@ -463,8 +464,8 @@ class Verb(Entity):
 		return True
 	
 	def performable_by(self, caller):
-		if(self.is_method()):
-			return False
+		# if(self.is_method()):
+		# 	return False
 		if not(caller.is_allowed('execute', self)):
 			return False
 		elif(self.is_ability()):

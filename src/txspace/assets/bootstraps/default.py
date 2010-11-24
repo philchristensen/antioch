@@ -172,3 +172,32 @@ observe(caller, observations)
 ))
 look_verb.add_name('look')
 look_verb.allow('everyone', 'execute')
+
+passwd_verb = exchange.instantiate('verb', dict(
+	origin_id = player_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = True,
+	code = """#!txspace
+if(method):
+	if(args[1] == 'validate'):
+		#TODO validate passwd
+		ask('Please enter the new password:', self, user.get_id(), 'change')
+	else:
+		passwd(
+	return
+
+if(has_dobj_str()):
+	user = get_dobj()
+else:
+	user = caller
+
+if(user == caller):
+	ask('Please enter your current password:', self, user.get_id(), 'validate')
+else:
+	ask('Please enter the new password:', self, user.get_id(), 'change')
+""",
+))
+
+passwd_verb.add_name('@passwd')
+passwd_verb.allow('everyone', 'execute')

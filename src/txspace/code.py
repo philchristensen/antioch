@@ -106,9 +106,12 @@ def get_environment(p):
 		words			= p.words,
 		prepositions	= p.prepositions,
 		this			= p.this,
+		self			= p.verb,
 		
 		system			= p.exchange.get_object(1),
 		here			= p.caller.get_location() if p.caller else None,
+		
+		method			= False,
 		
 		get_dobj		= p.get_dobj,
 		get_dobj_str	= p.get_dobj_str,
