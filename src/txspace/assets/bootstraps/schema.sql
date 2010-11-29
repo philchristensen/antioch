@@ -172,6 +172,8 @@ CREATE TABLE task (
 	created timestamp NOT NULL default NOW(),
 	delay int NOT NULL,
 	killed boolean NOT NULL default 'f',
+	error varchar(255) NOT NULL default '',
+	trace text NOT NULL default '',
 	PRIMARY KEY (id)
 );
 CREATE INDEX task_user_key ON task (user_id);

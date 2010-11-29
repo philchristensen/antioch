@@ -20,7 +20,7 @@ from txspace import dbapi, exchange, errors, parser, messaging, sql, code, modul
 
 __processPools = {}
 default_db_url = 'psycopg2://txspace:moavmic7@localhost/txspace'
-code_timeout = None #5
+code_timeout = 5
 
 profile_transactions = False
 
@@ -97,12 +97,17 @@ class RegisterTask(WorldTransaction):
 		('args', amp.String()),
 		('kwargs', amp.String()),
 	]
-	response = [('response', amp.Boolean())]
+	response = [('task_id', amp.Integer())]
 
 class RunTask(WorldTransaction):
 	arguments = [
 		('user_id', amp.Integer()),
 		('task_id', amp.Integer()),
+	]
+	response = [('response', amp.Boolean())]
+
+class IterateTasks(WorldTransaction):
+	arguments = [
 	]
 	response = [('response', amp.Boolean())]
 
@@ -219,3 +224,11 @@ class DefaultTransactionChild(TransactionChild):
 			v(*args, **kwargs)
 		
 		return {'response': True}
+	
+	@IterateTasks.responder
+	def iterate_tasks(self):
+		# note this is a 'superuser exchange'
+		# should be fine, since all iterate_task does
+		# is create another subprocess for the proper user
+		with self.get_exchange() as x:
+			return {'response': x.iterate_task(self)}

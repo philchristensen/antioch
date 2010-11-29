@@ -23,18 +23,20 @@ def massage_verb_code(code):
 	)
 	return code
 
-def r_eval(code, environment):
+def r_eval(code, environment, name="__eval__"):
 	if not(environment):
 		raise RuntimeError('No environment')
+	environment['__name__'] = name
 	return eval(code, environment)
 
-def r_exec(code, environment):
+def r_exec(code, environment, name="__exec__"):
 	if not(environment):
 		raise RuntimeError('No environment')
 	
 	code = massage_verb_code(code)
 	
 	# t = time.time()
+	environment['__name__'] = name
 	exec(code, environment)
 	# print 'execute took %s seconds' % (time.time() - t)
 	
@@ -110,8 +112,6 @@ def get_environment(p):
 		
 		system			= p.exchange.get_object(1),
 		here			= p.caller.get_location() if p.caller else None,
-		
-		method			= False,
 		
 		get_dobj		= p.get_dobj,
 		get_dobj_str	= p.get_dobj_str,

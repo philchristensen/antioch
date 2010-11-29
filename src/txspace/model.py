@@ -381,11 +381,11 @@ class Verb(Entity):
 		
 		from txspace import parser
 		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
+		default_parser.verb = self
 		env = code.get_environment(default_parser)
-		env['method'] = True
 		env['args'] = args
 		env['kwargs'] = kwargs
-		return code.r_exec(self._code, env)
+		return code.r_exec(self._code, env, name="__method__")
 	
 	def __str__(self):
 		"""
@@ -410,7 +410,7 @@ class Verb(Entity):
 		self.check('execute', self)
 		
 		env = code.get_environment(parser)
-		code.r_exec(self._code, env)
+		code.r_exec(self._code, env, name="__verb__")
 	
 	def add_name(self, name):
 		self.check('write', self)

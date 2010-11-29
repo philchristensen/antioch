@@ -16,7 +16,7 @@ from twisted import plugin
 
 from nevow import athena
 
-from txspace import modules
+from txspace import modules, transact
 
 def ask(p, question, callback, *args, **kwargs):
 	details = dict(
@@ -25,8 +25,8 @@ def ask(p, question, callback, *args, **kwargs):
 	p.exchange.queue.send(p.caller.get_id(), dict(
 		command		= 'ask',
 		details		= details,
-		object_id	= callback.get_origin().get_id(),
-		method_name	= callback.get_names()[0],
+		origin_id	= callback.get_origin().get_id(),
+		verb_name	= callback.get_names()[0],
 		args		= args,
 		kwargs		= kwargs,
 	))
@@ -47,22 +47,14 @@ class AskModule(object):
 		return resource.AskDelegatePage()
 	
 	def handle_message(self, data, client):
-		from txspace.modules.ask import transactions
 		def _cb_ask(result):
-			transactions.AnswerQuestion.run(
-				transaction_child	= transactions.AskTransactionChild,
+			transact.RegisterTask.run(
 				user_id		= client.user_id,
-				object_id	= data['object_id'],
-				method_name	= data['method_name'].encode('utf8'),
-				response	= result.encode('utf8'),
-				args		= simplejson.dumps(data['args']),
+				origin_id	= str(data['origin_id']),
+				verb_name	= data['verb_name'].encode('utf8'),
+				args		= simplejson.dumps(data['args'] + [result]),
 				kwargs		= simplejson.dumps(data['kwargs']),
+				delay		= 0,
 			)
 		d = client.callRemote('plugin', self.name, self.script_url, data['details'])
 		d.addCallback(_cb_ask)
-	
-	def activate_athena_commands(self, child):
-		pass
-
-
-

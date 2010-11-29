@@ -78,7 +78,7 @@ class ObjectExchange(object):
 			raise RuntimeError("Queues can't be written to without a context.")
 		
 		self.ctx = ctx
-		if(isinstance(ctx, int)):
+		if(isinstance(ctx, (int, long))):
 			self.ctx = self.get_object(ctx)
 	
 	def __enter__(self):
@@ -865,6 +865,34 @@ class ObjectExchange(object):
 		
 		return crypt.crypt(password, saved_crypt[0:2]) == saved_crypt
 	
+	def iterate_task(self, responder):
+		next_task = self.pool.runQuery(
+			"""SELECT t.*
+				FROM task t
+				WHERE t.created + (t.delay * interval '1 second') < NOW()
+				  AND t.killed = 'f'
+				ORDER BY t.created ASC
+				LIMIT 1
+			""")
+		
+		if not(next_task):
+			return False
+		
+		try:
+			responder.run_task(
+				user_id		= next_task[0]['user_id'],
+				task_id		= next_task[0]['id'],
+			)
+		except Exception, e:
+			import traceback
+			trace = traceback.format_exc()
+			err = '%s: %s' % (e.__class__.__name__, str(e))
+			self.pool.runOperation(sql.build_update('task', dict(killed=True, error=err, trace=trace), dict(id=next_task[0]['id'])))
+			return None
+		else:
+			self.pool.runOperation(sql.build_delete('task', dict(id=next_task[0]['id'])))
+			return True
+	
 	def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
 		task_id = self.pool.runQuery(sql.build_insert('task', dict(
 			user_id		= user_id,
@@ -877,7 +905,8 @@ class ObjectExchange(object):
 		return task_id
 	
 	def get_task(self, task_id):
-		return self.pool.runQuery(sql.build_select('task', id=task_id))
+		result = self.pool.runQuery(sql.build_select('task', id=task_id))
+		return result[0] if result else None
 	
 	def get_tasks(self, user_id=None):
 		if(user_id):

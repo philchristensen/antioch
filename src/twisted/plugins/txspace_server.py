@@ -13,7 +13,7 @@ from twisted.cred import portal, checkers, credentials
 from twisted.internet import reactor, defer
 from twisted.application import internet, service
 
-from txspace import auth, dbapi, messaging
+from txspace import auth, dbapi, messaging, tasks
 
 class txSpaceServer(object):
 	classProvides(service.IServiceMaker, plugin.IPlugin)
@@ -47,12 +47,17 @@ class txSpaceServer(object):
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
 		
+		task_service = tasks.TaskService()
+		task_service.setName("task-interface")
+		task_service.setServiceParent(master_service)
+		
 		web_factory = cls.makeWebFactory(auth.TransactionChecker(), msg_service, config['accesslog'])
 		web_service = internet.TCPServer(int(config['port']), web_factory)
 		web_service.setName("client-interface")
 		web_service.setServiceParent(master_service)
 		
 		reactor.addSystemEventTrigger('before', 'shutdown', msg_service.disconnect)
+		task_service.run()
 		
 		return master_service
 	

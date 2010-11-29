@@ -179,12 +179,14 @@ passwd_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = True,
 	code = """#!txspace
-if(method):
+if(__name__ == '__method__'):
+	user = get_object(args[0])
 	if(args[1] == 'validate'):
 		#TODO validate passwd
 		ask('Please enter the new password:', self, user.get_id(), 'change')
 	else:
-		passwd(
+		#passwd(user, args[2])
+		write(caller, "Would change password for %s to: %s" % (user, args[2]))
 	return
 
 if(has_dobj_str()):

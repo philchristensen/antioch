@@ -263,7 +263,8 @@ class ClientConnector(athena.LiveElement):
 		self.login(mind).errback = _init_eb
 		
 		for mod in modules.iterate():
-			mod.activate_athena_commands(self)
+			if(hasattr(mod, 'activate_athena_commands')):
+				mod.activate_athena_commands(self)
 	
 	@defer.inlineCallbacks
 	def login(self, mind):
@@ -317,10 +318,9 @@ class ClientConnector(athena.LiveElement):
 		if(mod):
 			d = mod.handle_message(data, self)
 		elif(data['command'] == 'task'):
-			task_id = transact.RegisterTask(
+			d = transact.RegisterTask(
 						user_id=user_id, delay=data['delay'], origin_id=data['origin'], 
 						verb_name=data['verb_name'], args=data['args'], kwargs=data['kwargs'])
-			task = reactor.callLater(data['delay'], self.task, task_id)
 		elif(data['command'] == 'observe'):
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
