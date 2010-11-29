@@ -1156,7 +1156,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	def test_get_task(self):
 		def runQuery(q, *a, **kw):
 			self.failUnlessEqual(rmws(q), 'SELECT * FROM task WHERE id = -1')
-			return {'id':-1}
+			return [{'id':-1}]
 		
 		pool = test.Anything(
 			runQuery	= runQuery,
