@@ -1,0 +1,44 @@
+<html xmlns:nevow="http://nevow.com/ns/nevow/0.1"
+	  xmlns:athena="http://divmod.org/ns/athena/0.7">
+<head>
+<title>antioch Client</title>
+<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/client.css"/>
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+		google.load('jquery', '1.4.2');
+		google.load('jqueryui', '1.8.4');
+		google.setOnLoadCallback(function(){
+			init();
+		}, true);
+	</script>
+<nevow:invisible nevow:render="liveglue"></nevow:invisible>
+<script type="text/javascript" src="/assets/js/global.js"></script>
+<script type="text/javascript" src="/assets/js/client-support.js"></script>
+</head>
+<body>
+	<div id="client">
+	<div id="client-wrapper">
+		<div class="name">antioch</div>
+		<div id="top-pane">
+			<div class="contents-area">
+				<ul>
+				<li class="look-me"><strong>&#171; myself</strong></li>
+				<li class="look-here"><strong>&#171; my location</strong></li>
+				</ul>
+				<br/>
+				<div class="contents">
+				</div>
+			</div>
+			<div class="description"></div>
+		</div>
+		<div id="bottom-pane">
+			<div class="actions"></div>
+			<div class="prompt-area"><input type="text" class="client-prompt" size="80" /></div>
+			
+			<div nevow:render="ClientConnector"></div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>

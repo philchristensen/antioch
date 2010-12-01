@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# txSpace
+# antioch
 # Copyright (c) 1999-2010 Phil Christensen
 #
 # $Id$
@@ -8,7 +8,7 @@
 # See LICENSE for details
 
 """
-Initialize a new txspace universe.
+Initialize a new antioch universe.
 """
 
 import os.path, sys
@@ -16,7 +16,7 @@ sys.path.append('.')
 
 from twisted.python import usage
 
-from txspace import bootstrap, transact, dbapi, assets
+from antioch import bootstrap, transact, dbapi, assets
 
 default_bootstrap_path = 'bootstraps/%s.py'
 default_schema_path = 'bootstraps/schema.sql'

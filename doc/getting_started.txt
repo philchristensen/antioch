@@ -1,4 +1,4 @@
-Getting Started With txSpace
+Getting Started With antioch
 by Phil Christensen
 17 October 2005
 
@@ -9,7 +9,7 @@ Documentation is like sex: when it is good, it is very, very good; and
 when it is bad, it is better than nothing.
                 -- Dick Brandon
 
-Thanks for downloading txSpace. This document aims to provide an overview of the
+Thanks for downloading antioch. This document aims to provide an overview of the
 framework, including the minimal set of predefined objects and verbs.
 
 I'm a programmer. So naturally, this document is aimed toward my peers, those who
@@ -19,7 +19,7 @@ databases aimed at different genres or styles of gameplay, but for now, a certai
 amount of "DIY" attitude may be required ;-)...
 
 To begin with, there's a few sources that readers might want to refer to in order to
-get the most out of txSpace. I've chosen to omit any general discussions of MUD/
+get the most out of antioch. I've chosen to omit any general discussions of MUD/
 MOO/MUCK/MUSH/etc. technology; if you're here, you probably have a clue.
 
 First of all, this framework borrows heavily from the ideas of the greatest (imo)
@@ -32,7 +32,7 @@ http://cvs.sourceforge.net/viewcvs.py/lambdamoo/manual/
 
 A little Googling will lead you to other formats, I'm sure.
 
-Also, the networking layer of txSpace is provided by the Twisted python package,
+Also, the networking layer of antioch is provided by the Twisted python package,
 available at:
 
 http://www.twistedmatrix.com

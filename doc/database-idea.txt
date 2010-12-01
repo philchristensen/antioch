@@ -1,11 +1,11 @@
-# txSpace
+# antioch
 # Copyright (c) 1999-2010 Phil Christensen
 #
 # $Id$
 #
 # See LICENSE for details
 
-the solution to the database vs. txspace issue may lie in a combination of using PostgreSQL in combination with t.e.adbapi's runInteraction method. The interaction would be used to spawn any interaction with the database, including login/logout housekeeping, parsing command statements, and particularly in issuing verb calls.
+the solution to the database vs. antioch issue may lie in a combination of using PostgreSQL in combination with t.e.adbapi's runInteraction method. The interaction would be used to spawn any interaction with the database, including login/logout housekeeping, parsing command statements, and particularly in issuing verb calls.
 
 this allows entity code to remain entirely synchronous, both in verbs and in actual entity methods.
 
@@ -27,7 +27,7 @@ and that can even happen by mistake. however, once all changes to the universe a
 
 investigate twisted ampoule, or whatever that thing was they were doing with subprocesses. that probably makes this like 10 lines of code ;-)
 
-my plan is to allow deferred verb calls, that will run code at a later time with whatever are the appropriate privileges. to prevent a determined or stupid programmer from creating a slightly slower version of the above code, txspace should treat verb code as queue of one or more pieces of code. even though the database would be updated after each piece ran, they would be adding to a total score for the original caller.
+my plan is to allow deferred verb calls, that will run code at a later time with whatever are the appropriate privileges. to prevent a determined or stupid programmer from creating a slightly slower version of the above code, antioch should treat verb code as queue of one or more pieces of code. even though the database would be updated after each piece ran, they would be adding to a total score for the original caller.
 
 it may also be possible to use postgres metrics of some kind to determine how much data or rows are changed in the transaction each chunk of code commits, thus adding to another total.
 

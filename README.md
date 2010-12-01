@@ -1,4 +1,4 @@
-txSpace 2.0
+antioch 2.0
 ===========
 
 17 September 2010
@@ -9,13 +9,13 @@ mailto:phil@bubblehouse.org
 
 Introduction
 -------------
-txSpace is a web application for building scalable, interactive virtual worlds.
+antioch is a web application for building scalable, interactive virtual worlds.
 
 Begun as a MOO-like system for building virtual worlds, the goal was to
 take the LambdaMOO approach to creating online worlds, and update it in hopes
 of attracting new players to an old idea.
 
-Like many MOO-clones before it, txSpace uses Python as its internal scripting
+Like many MOO-clones before it, antioch uses Python as its internal scripting
 language. This provides a powerful environment for game authors, while a flexible
 object model allows for creation of complex in-game objects.
 
@@ -31,19 +31,19 @@ Feature Set
 -----------
 
 **Customizable AJAX-Enabled Client**
-> The txSpace web client provides a standards-compliant interface based
+> The antioch web client provides a standards-compliant interface based
 > on the Nevow Athena AJAX framework, and is supported by all modern browsers.
 > 
 > Although the default database provided is geared towards text-based games,
 > the flexibility of the client interface and the power of the plugin system
-> allows many different kinds of games to be developed on the txSpace platform.
+> allows many different kinds of games to be developed on the antioch platform.
 
 **Graphical Object Editors**
 > Programmers and authors alike will find the built-in authoring tools
 > expedite world creation and verb programming.
 
 **Plugin System**
-> txSpace 'modules' allow developers to create new client functionality out of
+> antioch 'modules' allow developers to create new client functionality out of
 > whole cloth. The module system was used to implement the built-in object and
 > verb editors, demonstrating the creation of new verb-environment functions,
 > Web resources, and client-side JavaScript.
@@ -54,7 +54,7 @@ Feature Set
 > verb code to be written in a synchronous style.
 
 **Highly Scalable Messaging Layer**
-> txSpace uses the RabbitMQ server to implement message passing support, allowing
+> antioch uses the RabbitMQ server to implement message passing support, allowing
 > support of thousands of active clients with minimal latency.
 
 **Powerful Natural-Language Parser**
@@ -66,7 +66,7 @@ Feature Set
 > allowing a high degree of customization.
   
 **Robust Networking**
-> txSpace relies on the Twisted Python and Nevow frameworks to implement
+> antioch relies on the Twisted Python and Nevow frameworks to implement
 > client-server communication. This robust asynchronous networking library
 > allows client counts to scale easily to hundreds of connections.
 
@@ -77,5 +77,5 @@ Copyright
 All code in this distribution is (C) Phil Christensen, except
 CodePress, Copyright (C) Fernando M.A.d.S. <fermads@gmail.com>
 
-txSpace is made available under the MIT/X Consortium license.
+antioch is made available under the MIT/X Consortium license.
 The included LICENSE file describes this in detail.

@@ -1,4 +1,4 @@
-txSpace Installation
+antioch Installation
 ====================
 
 by Phil Christensen
@@ -41,10 +41,10 @@ to connect to your PostgreSQL database as the `postgres` super-user.
 
     mkspace.py
 
-This should have created the `txspace` user and a corresponding database. Next
+This should have created the `antioch` user and a corresponding database. Next
 you should be able to start up the server with:
 
-    twistd -n txspace
+    twistd -n antioch
 
 
 Running the Client

@@ -1,4 +1,4 @@
-# txSpace
+# antioch
 # Copyright (c) 1999-2010 Phil Christensen
 #
 #
@@ -13,7 +13,7 @@ try:
 	from twisted import plugin
 	from twisted.python.reflect import namedAny
 except ImportError, e:
-	print >>sys.stderr, "setup.py requires Twisted to create a proper txspace installation. Please install it before continuing."
+	print >>sys.stderr, "setup.py requires Twisted to create a proper antioch installation. Please install it before continuing."
 	sys.exit(1)
 
 from setuptools import setup, find_packages
@@ -29,14 +29,14 @@ os.environ['COPYFILE_DISABLE'] = 'true'
 import setup_git
 
 def autosetup():
-	pluginPackages = ['twisted.plugins', 'nevow.plugins', 'txspace.modules']
+	pluginPackages = ['twisted.plugins', 'nevow.plugins', 'antioch.modules']
 	
 	dist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src')
 	sys.path.insert(0, dist_dir)
 	regeneratePluginCache(pluginPackages)
 	
 	dist = setup(
-		name			= "txspace",
+		name			= "antioch",
 		version			= "2.0",
 		
 		packages		= find_packages('src') + ['twisted.plugins', 'nevow.plugins'],
@@ -51,7 +51,7 @@ def autosetup():
 			]
 		},
 		
-		test_suite		= "txspace.test",
+		test_suite		= "antioch.test",
 		scripts			= ['bin/mkspace.py'],
 		
 		zip_safe		= False,
@@ -70,10 +70,10 @@ def autosetup():
 		author_email	= "phil@bubblehouse.org",
 		description		= "a MOO-like system for building virtual worlds",
 		license			= "MIT",
-		keywords		= "txspace moo lambdamoo mud game",
-		url				= "http://launchpad.net/txspace",
+		keywords		= "antioch moo lambdamoo mud game",
+		url				= "http://launchpad.net/antioch",
 		# could also include long_description, download_url, classifiers, etc.
-		long_description = """txSpace is a web application for building scalable, interactive virtual worlds.
+		long_description = """antioch is a web application for building scalable, interactive virtual worlds.
 								Begun as a MOO-like system for building virtual worlds, the goal was to
 								take the LambdaMOO approach to creating online worlds, and update it in hopes
 								of attracting new players to an old idea.
