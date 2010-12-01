@@ -276,6 +276,9 @@ class Object(Entity):
 	def set_player(self, is_player=None, is_wizard=None, passwd=None):
 		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
 	
+	def validate_password(self, passwd):
+		return self._ex.validate_password(self.get_id(), passwd)
+	
 	def is_connected_player(self):
 		return self._ex.is_connected_player(self.get_id())
 	

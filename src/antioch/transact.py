@@ -158,7 +158,7 @@ class DefaultTransactionChild(TransactionChild):
 			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
 				raise errors.PermissionError('User is already logged in.')
 	
-			if not(x.validate_password(u.get_id(), password)):
+			if not(u.validate_password(password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
 		return {'user_id': u.get_id()}
 	

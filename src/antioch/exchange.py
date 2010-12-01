@@ -638,7 +638,7 @@ class ObjectExchange(object):
 		return bool(result)
 	
 	def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None):
-		if(player):
+		if(player is not False):
 			attribs = {}
 			if(passwd):
 				random.shuffle(salt)
