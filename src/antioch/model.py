@@ -30,6 +30,7 @@ default_permissions = (
 	'read',
 	'write',
 	'entrust',
+	'grant',
 	'execute',
 	'move',
 	'transmute',
@@ -256,7 +257,7 @@ class Object(Entity):
 	def add_property(self, name):
 		self.check('write', self)
 		ctx = self._ex.get_context()
-		owner_id = ctx.get_id() if ctx else None
+		owner_id = ctx.get_id() if ctx else self._owner_id
 		p = self._ex.instantiate('property', origin_id=self._id, name=name, owner_id=owner_id)
 		return p
 	
@@ -272,6 +273,9 @@ class Object(Entity):
 	
 	def is_player(self):
 		return self._ex.is_player(self.get_id())
+	
+	def is_wizard(self):
+		return self._ex.is_wizard(self.get_id())
 	
 	def set_player(self, is_player=None, is_wizard=None, passwd=None):
 		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
@@ -368,6 +372,9 @@ class Object(Entity):
 		self._ex.add_parent(self.get_id(), parent.get_id())
 	
 	def is_allowed(self, permission, subject):
+		ctx = self.get_context()
+		if ctx and ctx.is_wizard() and permission == 'grant':
+			return True
 		return self._ex.is_allowed(self, permission, subject)
 	
 	name = property(get_name, set_name)
@@ -547,8 +554,6 @@ class Property(Entity):
 	
 	def set_value(self, value, type='string'):
 		self.check('write', self)
-		if(type == 'dynamic'):
-			raise RuntimeError('Dynamic properties not available yet.')
 		self._value = value
 		self._type = type
 		self.save()

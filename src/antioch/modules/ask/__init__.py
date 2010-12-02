@@ -7,16 +7,13 @@
 """
 Client-side prompt support.
 """
-
-import simplejson
-
 from zope.interface import classProvides
 
 from twisted import plugin
 
 from nevow import athena
 
-from antioch import modules, transact
+from antioch import modules, transact, json
 
 def ask(p, question, callback, *args, **kwargs):
 	details = dict(
@@ -52,8 +49,8 @@ class AskModule(object):
 				user_id		= client.user_id,
 				origin_id	= str(data['origin_id']),
 				verb_name	= data['verb_name'].encode('utf8'),
-				args		= simplejson.dumps(data['args'] + [result]),
-				kwargs		= simplejson.dumps(data['kwargs']),
+				args		= json.dumps(data['args'] + [result]),
+				kwargs		= json.dumps(data['kwargs']),
 				delay		= 0,
 			)
 		d = client.callRemote('plugin', self.name, self.script_url, data['details'])

@@ -8,9 +8,9 @@
 Code
 """
 
-import simplejson, time
+import time
 
-from antioch import errors, modules
+from antioch import errors, modules, json
 
 def massage_verb_code(code):
 	code = code.replace('\r\n', '\n')
@@ -62,8 +62,8 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 		delay		= int(delay),
 		origin		= str(origin),
 		verb_name	= str(verb_name),
-		args		= simplejson.dumps(args),
-		kwargs		= simplejson.dumps(kwargs),
+		args		= json.dumps(args),
+		kwargs		= json.dumps(kwargs),
 	))
 
 @api
@@ -96,7 +96,7 @@ def get_object(p, key):
 
 @api
 def create_object(p, name, unique_name=False):
-	return p.exchange.new(name=name, unique_name=unique_name)
+	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=p.caller.get_id())
 
 def get_environment(p):
 	env = dict(

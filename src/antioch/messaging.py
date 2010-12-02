@@ -10,12 +10,12 @@ from twisted.application import service
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
 
-import simplejson, time
+import time
 
 from txamqp import spec, protocol, content
 from txamqp.client import TwistedDelegate
 
-from antioch import assets
+from antioch import assets, json
 
 profile_messages = False
 
@@ -86,7 +86,7 @@ class MessageQueue(object):
 		while(self.queue):
 			user_id, msg = self.queue.pop(0)
 			routing_key = 'user-%s' % user_id
-			data = simplejson.dumps(msg)
+			data = json.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
 			chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()

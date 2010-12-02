@@ -4,10 +4,9 @@
 #
 # See LICENSE for details
 
-import simplejson
-
 from twisted.internet import defer
 
+from antioch import json
 from antioch.modules.editors import transactions
 
 class EditorRemoteReference(object):
@@ -69,7 +68,7 @@ class EditorRemoteReference(object):
 			user_id		= self.user_id,
 			object_id	= unicode(object_id).encode('utf8'),
 		)
-		result = simplejson.loads(simplejson.dumps(result).decode('utf8'))
+		result = json.loads(json.dumps(result).decode('utf8'))
 		defer.returnValue(result)
 	
 	def remove_verb(self, object_id, verb_name):

@@ -198,6 +198,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			ctx			= x,
 			is_allowed	= lambda *a: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		
@@ -255,6 +256,7 @@ class ObjectTestCase(unittest.TestCase):
 			instantiate	= lambda *a, **kw: (a, kw),
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		o.set_id(1024)
@@ -336,6 +338,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_property		= lambda *a, **kw: p,
 			get_context			= lambda: o,
 			is_allowed			= lambda *a: True,
+			is_wizard			= lambda *a: False,
 			save				= lambda s: True,
 		)
 		e.ctx = test.Anything(
@@ -366,6 +369,7 @@ class ObjectTestCase(unittest.TestCase):
 			contains	= lambda *a, **kw: contained.pop(),
 			get_context	= lambda: subject,
 			is_allowed	= lambda *a: True,
+			is_wizard	= lambda *a: False,
 			save		= lambda s: True,
 		)
 		room = model.Object(e)
@@ -420,6 +424,7 @@ class ObjectTestCase(unittest.TestCase):
 			has_parent	= lambda p, r: True,
 			get_context	= lambda: child,
 			is_allowed	= lambda *a: True,
+			is_wizard	= lambda *a: False,
 		)
 		child = model.Object(e)
 		child.set_id(1024)
@@ -459,6 +464,7 @@ class ObjectTestCase(unittest.TestCase):
 		e = test.Anything(
 			is_allowed	= lambda *a: allowances.pop(),
 			get_context	= lambda: ctx,
+			is_wizard	= lambda *a: False,
 		)
 		ctx = model.Object(e)
 		
@@ -490,6 +496,7 @@ class VerbTestCase(unittest.TestCase):
 			instantiate	= lambda *a, **kw: (a, kw),
 			is_allowed	= lambda *a: True,
 			get_context	= lambda: o,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		o.set_id(1024)
@@ -525,6 +532,7 @@ class VerbTestCase(unittest.TestCase):
 			add_verb_name	= lambda *a, **kw: (a, kw),
 			is_allowed	= lambda *a: True,
 			get_context	= lambda: o,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		v = model.Verb(o)
@@ -550,6 +558,7 @@ class VerbTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			get_context	= lambda: o,
 			save		= lambda s: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		v = model.Verb(o)
@@ -578,6 +587,7 @@ class VerbTestCase(unittest.TestCase):
 		e = test.Anything(
 			is_allowed	= lambda *a: False,
 			get_context	= lambda: ctx,
+			is_wizard	= lambda *a: False,
 		)
 		ctx = model.Object(e)
 		
@@ -592,6 +602,7 @@ class VerbTestCase(unittest.TestCase):
 			is_allowed	= lambda *a, **kw: results.pop(),
 			get_context	= lambda: o,
 			instantiate	= lambda *a, **kw: o,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		p = model.Property(o)
@@ -644,6 +655,7 @@ class PropertyTestCase(unittest.TestCase):
 			instantiate	= lambda *a, **kw: (a, kw),
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		o.set_id(1024)
@@ -656,6 +668,7 @@ class PropertyTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
 			save		= lambda s: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		p = model.Property(o)
@@ -668,6 +681,7 @@ class PropertyTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
 			save		= lambda s: True,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		p = model.Property(o)
@@ -681,6 +695,7 @@ class PropertyTestCase(unittest.TestCase):
 			is_allowed	= lambda *a, **kw: results.pop(),
 			get_context	= lambda: o,
 			instantiate	= lambda *a, **kw: o,
+			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
 		p = model.Property(o)

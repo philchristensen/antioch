@@ -36,7 +36,7 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 	
 	def test_player_multiparent_look(self):
 		caller = self.exchange.get_object('phil')
-		random = self.exchange.new('random')
+		random = self.exchange.instantiate('object', name='random')
 		caller.add_parent(random)
 		
 		l = parser.Lexer('look here')

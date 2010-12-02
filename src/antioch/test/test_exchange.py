@@ -99,7 +99,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		obj = ex.new(name="wizard", unique_name=True)
+		obj = ex.instantiate('object', name="wizard", unique_name=True)
 		self.failUnlessEqual(obj.get_name(real=True), 'wizard')
 		
 		obj2 = ex.instantiate('object', id=obj.get_id())

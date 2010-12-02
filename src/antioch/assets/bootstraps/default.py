@@ -59,8 +59,13 @@ wizard_class.set_location(bag_of_holding)
 wizard_class.set_owner(wizard)
 wizard.add_parent(wizard_class)
 
+room_class = exchange.instantiate('object', name='room class')
+room_class.set_location(bag_of_holding)
+room_class.set_owner(wizard)
+
 room = exchange.instantiate('object', name='The Laboratory')
 room.set_owner(wizard)
+room.add_parent(room_class)
 bag_of_holding.set_location(room)
 
 phil = exchange.instantiate('object', name= 'Phil', unique_name=True)
@@ -179,6 +184,30 @@ elif(sub == 'list'):
 ))
 alias_verb.add_name('@alias')
 alias_verb.allow('everyone', 'execute')
+
+dig_verb = exchange.instantiate('verb', dict(
+	origin_id = author_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = False,
+	code = """#!antioch
+room_class = get_object('room class')
+direction = get_dobj_str()
+
+room = create_object(get_pobj_str('to'))
+room.add_parent(room_class)
+room.set_location(None)
+
+if(here.has_property('exits')):
+	exits = here['exits'].value
+	exits[direction] = room
+	here['exits'].value = exits
+else:
+	here.add_property('exits').value = {direction : room}
+""",
+))
+dig_verb.add_name('@dig')
+dig_verb.allow('everyone', 'execute')
 
 look_verb = exchange.instantiate('verb', dict(
 	origin_id = player_class.get_id(),

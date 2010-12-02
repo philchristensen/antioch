@@ -37,7 +37,7 @@ from twisted.python import util
 
 from txamqp.client import Closed
 
-from antioch import sql, model, errors
+from antioch import sql, model, errors, json
 
 group_definitions = dict(
 	owners		= lambda x,a,s: a.owns(s),
@@ -200,8 +200,6 @@ class ObjectExchange(object):
 		
 		return results
 	
-	new = lambda self, name, *a, **kw: self.instantiate('object', *a, **dict(name=name, **kw))
-	
 	def _mkobject(self, record):
 		obj = model.Object(self)
 		
@@ -230,7 +228,7 @@ class ObjectExchange(object):
 		
 		p._name = record['name']
 		p._origin_id = record['origin_id']
-		p._value = record.get('value', '')
+		p._value = json.loads(record.get('value', ''), exchange=self)
 		p._type = record.get('type', 'string')
 		p._owner_id = record.get('owner_id', None)
 		
@@ -311,7 +309,7 @@ class ObjectExchange(object):
 		elif(obj_type == 'property'):
 			attribs = dict(
 				name		= obj._name,
-				value		= obj._value,
+				value		= json.dumps(obj._value),
 				owner_id	= obj._owner_id,
 				origin_id	= obj._origin_id,
 				type		= obj._type,
@@ -803,6 +801,8 @@ class ObjectExchange(object):
 	
 	def is_allowed(self, accessor, permission, subject):
 		if(permission not in self.permission_list):
+			import warnings
+			warnings.warn("Unknown permission encountered: %s" % permission)
 			return False
 		
 		permission_id = self.permission_list[permission]

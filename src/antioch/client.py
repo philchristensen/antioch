@@ -12,7 +12,7 @@ This is the primary client for antioch, replacing the
 Java and Cocoa versions.
 """
 
-import os, os.path, simplejson, time
+import os, os.path, time
 
 import pkg_resources as pkg
 
@@ -29,7 +29,7 @@ from nevow import inevow, loaders, athena, guard, rend, tags
 from txamqp import content
 from txamqp.queue import Closed
 
-from antioch import errors, assets, transact, session, modules
+from antioch import errors, assets, transact, session, modules, json
 
 class Mind(object):
 	"""
@@ -314,7 +314,7 @@ class ClientConnector(athena.LiveElement):
 		except Closed, e:
 			defer.returnValue(None)
 		
-		data = simplejson.loads(msg.content.body.decode('utf8'))
+		data = json.loads(msg.content.body.decode('utf8'))
 		mod = modules.get(data['command'])
 		
 		if(mod):

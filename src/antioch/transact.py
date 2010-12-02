@@ -8,7 +8,7 @@
 Execution layer
 """
 
-import simplejson, time
+import time
 
 from twisted.python import log
 from twisted.internet import defer
@@ -16,7 +16,7 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
-from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules
+from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json
 
 __processPools = {}
 default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
@@ -201,7 +201,6 @@ class DefaultTransactionChild(TransactionChild):
 			
 			log.msg('%s: %s' % (caller, sentence))
 			parser.parse(caller, sentence)
-		
 		return {'response': True}
 	
 	@RegisterTask.responder
@@ -218,8 +217,8 @@ class DefaultTransactionChild(TransactionChild):
 				return {'response': False}
 			
 			origin = x.get_object(task['origin_id'])
-			args = simplejson.loads(task['args'])
-			kwargs = simplejson.loads(task['kwargs'])
+			args = json.loads(task['args'])
+			kwargs = json.loads(task['kwargs'])
 			
 			v = origin.get_verb(task['verb_name'])
 			v(*args, **kwargs)
