@@ -80,6 +80,15 @@ class ParserTestCase(unittest.TestCase):
 		self.assertEqual(p.get_dobj(), wizard)
 		self.assertEqual(p.get_pobj_str("with"), "tongs")
 	
+	def test_aliases(self):
+		wizard = self.exchange.get_object('wizard')
+		wizard.add_alias('The Wiz')
+		p = parser.TransactionParser(parser.Lexer("@eval the Wiz from 'bag under stairs' with tongs in wizard's bag"), wizard, self.exchange)
+		self.assertEqual(p.get_dobj(), wizard)
+		wizard.remove_alias('The Wiz')
+		p = parser.TransactionParser(parser.Lexer("@eval the Wiz from 'bag under stairs' with tongs in wizard's bag"), wizard, self.exchange)
+		self.assertEqual(p.has_dobj(), False)
+	
 	def test_quoted_strings(self):
 		wizard = self.exchange.get_object('wizard')
 		p = parser.TransactionParser(parser.Lexer("@eval wizard to 'something here'"), wizard, self.exchange)

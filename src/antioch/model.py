@@ -299,6 +299,18 @@ class Object(Entity):
 				p = self.add_property('name')
 				p.value = name
 	
+	def add_alias(self, alias):
+		self.check('write', self)
+		self._ex.add_alias(self.get_id(), alias)
+	
+	def remove_alias(self, alias):
+		self.check('write', self)
+		self._ex.remove_alias(self.get_id(), alias)
+	
+	def get_aliases(self):
+		self.check('develop', self)
+		return self._ex.get_aliases(self.get_id())
+	
 	def get_name(self, real=False):
 		self.check('read', self)
 		if(real or 'name' not in self):

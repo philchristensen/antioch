@@ -141,6 +141,45 @@ write(caller, eval(command[6:].strip()))
 ))
 eval_verb.add_name('@eval')
 
+alias_verb = exchange.instantiate('verb', dict(
+	origin_id = author_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = False,
+	code = """#!antioch
+def usage():
+	write(caller, "Usage: @alias (add <alias>|remove <alias>|list) on <object>", error=True)
+
+result = []
+if(has_dobj_str()):
+	ds = get_dobj_str()
+	result = ds.split(' ', 1)
+	if(len(result) != 2):
+		usage()
+		return
+else:
+	usage()
+	return
+
+sub, alias = result
+if(sub == 'add'):
+	obj = get_pobj('to')
+	obj.add_alias(alias)
+	write(caller, "Alias %r added to %s" % (alias, obj)) 
+elif(sub == 'remove'):
+	obj = get_pobj('from')
+	obj.remove_alias(alias)
+	write(caller, "Alias %r removed from %s" % (alias, obj)) 
+elif(sub == 'list'):
+	obj = here.find(alias)
+	aliases = obj.get_aliases()
+	write(caller, "%s has the following aliases: %r" % (obj, aliases)) 
+
+""",
+))
+alias_verb.add_name('@alias')
+alias_verb.allow('everyone', 'execute')
+
 look_verb = exchange.instantiate('verb', dict(
 	origin_id = player_class.get_id(),
 	owner_id = wizard.get_id(),

@@ -1165,12 +1165,44 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		task = ex.get_task(-1)
 		self.failUnlessEqual(task, {'id':-1})
 	
+	def test_get_aliases(self):
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), 'SELECT alias FROM object_alias WHERE object_id = -1')
+			return [{'alias':'alias'}]
+		
+		pool = test.Anything(
+			runQuery	= runQuery,
+		)
+		ex = exchange.ObjectExchange(pool)
+		aliases = ex.get_aliases(-1)
+		self.failUnlessEqual(aliases, ['alias'])
+	
+	def test_add_alias(self):
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), "INSERT INTO object_alias (alias, object_id) VALUES ('alias', -1)")
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ex = exchange.ObjectExchange(pool)
+		ex.add_alias(-1, 'alias')
+	
+	def test_remove_alias(self):
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), "DELETE FROM object_alias WHERE alias = 'alias' AND object_id = -1")
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ex = exchange.ObjectExchange(pool)
+		ex.remove_alias(-1, 'alias')
+	
 	def test_login_player(self):
 		results = [
 		]
 		
 		queries = [
-			"UPDATE player SET sid = 'sid', last_login = now() WHERE avatar_id = 1024"
+			"UPDATE player SET last_login = now(), session_id = 'sid' WHERE avatar_id = 1024"
 		]
 		
 		def runOperation(q, *a, **kw):

@@ -370,6 +370,16 @@ class ObjectExchange(object):
 		else:
 			raise ValueError("Invalid key type: %r" % repr(key))
 	
+	def get_aliases(self, object_id):
+		result = self.pool.runQuery(sql.interp("SELECT alias FROM object_alias WHERE object_id = %s", object_id))
+		return [x['alias'] for x in result] 
+	
+	def add_alias(self, object_id, alias):
+		self.pool.runOperation(sql.build_insert('object_alias', object_id=object_id, alias=alias));
+	
+	def remove_alias(self, object_id, alias):
+		self.pool.runOperation(sql.build_delete('object_alias', object_id=object_id, alias=alias));
+	
 	def get_parents(self, object_id, recurse=False):
 		#NOTE: the heavier a parent weight is, the more influence its inheritance has.
 		# e.g., if considering inheritance by left-to-right, the leftmost ancestors will
