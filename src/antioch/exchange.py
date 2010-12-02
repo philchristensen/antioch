@@ -658,8 +658,8 @@ class ObjectExchange(object):
 			self.pool.runOperation(sql.build_delete('player', dict(avatar_id=object_id)))
 
 	
-	def login_player(self, avatar_id):
-		self.pool.runOperation(sql.build_update('player', dict(last_login=sql.RAW('now()')), dict(avatar_id=avatar_id)))
+	def login_player(self, avatar_id, session_id):
+		self.pool.runOperation(sql.build_update('player', dict(session_id=session_id, last_login=sql.RAW('now()')), dict(avatar_id=avatar_id)))
 	
 	def logout_player(self, avatar_id):
 		self.pool.runOperation(sql.build_update('player', dict(last_logout=sql.RAW('now()')), dict(avatar_id=avatar_id)))

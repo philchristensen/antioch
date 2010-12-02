@@ -71,6 +71,7 @@ class Authenticate(WorldTransaction):
 class Login(WorldTransaction):
 	arguments = [
 		('user_id', amp.Integer()),
+		('session_id', amp.String()),
 		('ip_address', amp.String()),
 	]
 	response = [('response', amp.Boolean())]
@@ -163,11 +164,11 @@ class DefaultTransactionChild(TransactionChild):
 		return {'user_id': u.get_id()}
 	
 	@Login.responder
-	def login(self, user_id, ip_address):
+	def login(self, user_id, session_id, ip_address):
 		print 'user #%s logged in from %s' % (user_id, ip_address)
 		
 		with self.get_exchange() as x:
-			x.login_player(user_id)
+			x.login_player(user_id, session_id)
 			
 			system = x.get_object(1)
 			if(system.has_verb('connect') and not system.connect(ip_address)):

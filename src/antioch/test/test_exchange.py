@@ -1170,7 +1170,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		]
 		
 		queries = [
-			'UPDATE player SET last_login = now() WHERE avatar_id = 1024'
+			"UPDATE player SET sid = 'sid', last_login = now() WHERE avatar_id = 1024"
 		]
 		
 		def runOperation(q, *a, **kw):
@@ -1181,7 +1181,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		ex.login_player(1024)
+		ex.login_player(1024, 'sid')
 	
 	def test_logout_player(self):
 		results = [

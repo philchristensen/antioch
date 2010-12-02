@@ -82,7 +82,7 @@ class RootDelegatePage(rend.Page):
 					if(len(segments) > 1):
 						client = self.connections[sid]
 					else:
-						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service)
+						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service, sid)
 					returnValue((client, segments[1:]))
 				elif(len(segments) > 1 and segments[0] == 'plugin'):
 					mod = modules.get(segments[1])
@@ -207,7 +207,7 @@ class ClientInterface(athena.LivePage):
 	#TRANSPORTLESS_DISCONNECT_TIMEOUT = 300
 	#TRANSPORT_IDLE_TIMEOUT = 30
 	
-	def __init__(self, user, mind, msg_service):
+	def __init__(self, user, mind, msg_service, session_id):
 		"""
 		Setup the client interface.
 		"""
@@ -216,6 +216,7 @@ class ClientInterface(athena.LivePage):
 		self.msg_service = msg_service
 		
 		self.user_id = user['avatar_id']
+		self.session_id = session_id
 		self.mind = mind
 		self.docFactory = loaders.xmlstr(pkg.resource_string('antioch.assets', 'templates/client.xml'))
 		self.connector = None
@@ -233,7 +234,7 @@ class ClientInterface(athena.LivePage):
 		Render the Athena connection element.
 		"""
 		yield defer.maybeDeferred(self.msg_service.connect)
-		self.connector = ClientConnector(self.user_id, self.mind, self.msg_service)
+		self.connector = ClientConnector(self.user_id, self.mind, self.msg_service, self.session_id)
 		self.connector.setFragmentParent(self)
 		defer.returnValue(ctx.tag[self.connector])
 
@@ -249,10 +250,11 @@ class ClientConnector(athena.LiveElement):
 	
 	channel_counter = 0
 	
-	def __init__(self, user_id, mind, msg_service, *args, **kwargs):
+	def __init__(self, user_id, mind, msg_service, session_id, *args, **kwargs):
 		"""
 		Setup the client connection.
 		"""
+		self.session_id = session_id
 		self.user_id = user_id
 		self.msg_service = msg_service
 		
@@ -268,7 +270,7 @@ class ClientConnector(athena.LiveElement):
 	
 	@defer.inlineCallbacks
 	def login(self, mind):
-		yield transact.Login.run(user_id=self.user_id, ip_address=mind.remote_host)
+		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		
 		self.chan = yield self.msg_service.open_channel()
 		

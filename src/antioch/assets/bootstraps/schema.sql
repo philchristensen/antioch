@@ -138,8 +138,8 @@ CREATE INDEX access_property_key ON access (property_id);
 
 CREATE TABLE player (
 	id bigserial,
-	avatar_id bigint REFERENCES object ON DELETE SET NULL,
-	session_id bigint,
+	avatar_id bigint REFERENCES object ON DELETE CASCADE,
+	session_id varchar(255),
 	wizard boolean NOT NULL,
 	crypt varchar(255) NOT NULL,
 	last_login timestamp,
