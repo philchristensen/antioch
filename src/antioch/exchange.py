@@ -228,9 +228,11 @@ class ObjectExchange(object):
 		
 		p._name = record['name']
 		p._origin_id = record['origin_id']
-		p._value = json.loads(record.get('value', ''), exchange=self)
 		p._type = record.get('type', 'string')
 		p._owner_id = record.get('owner_id', None)
+		
+		val = record.get('value', '')
+		p._value = json.loads(val, exchange=self) if val else val
 		
 		return p
 	
@@ -309,7 +311,7 @@ class ObjectExchange(object):
 		elif(obj_type == 'property'):
 			attribs = dict(
 				name		= obj._name,
-				value		= json.dumps(obj._value),
+				value		= json.dumps(obj._value) if obj._value else obj._value,
 				owner_id	= obj._owner_id,
 				origin_id	= obj._origin_id,
 				type		= obj._type,

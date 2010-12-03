@@ -12,10 +12,13 @@ def loads(j, exchange=None):
 				return 'missing object #%(__object__)s' % d
 		return d
 	
-	if(exchange):
-		return simplejson.loads(j, object_hook=to_entity)
-	else:
-		return simplejson.loads(j)
+	try:
+		if(exchange):
+			return simplejson.loads(j, object_hook=to_entity)
+		else:
+			return simplejson.loads(j)
+	except simplejson.decoder.JSONDecodeError, e:
+		return j
 	
 def dumps(obj):
 	from antioch import model
