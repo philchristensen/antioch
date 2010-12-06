@@ -738,7 +738,7 @@ class ObjectExchange(object):
 				WHERE p.name = 'name'
 				  AND LOWER(p.value) = LOWER(%s)
 				  AND o.location_id = %s
-			""", name, container_id)))
+			""", '"%s"' % name, container_id)))
 		
 		match_ids.extend(self.pool.runQuery(sql.interp(
 			"""SELECT o.id

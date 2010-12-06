@@ -36,36 +36,44 @@ set_default_permissions_verb.allow('everyone', 'execute')
 set_default_permissions_verb.allow('wizards', 'anything')
 
 bag_of_holding = exchange.instantiate('object', name='bag of holding')
-bag_of_holding.set_name('bag')
 bag_of_holding.set_owner(wizard)
+bag_of_holding.set_name('bag')
 
 player_class = exchange.instantiate('object', name='player class')
 player_class.set_location(bag_of_holding)
 player_class.set_owner(wizard)
 
 author_class = exchange.instantiate('object', name='author class')
+author_class.set_owner(wizard)
 author_class.add_parent(player_class)
 author_class.set_location(bag_of_holding)
-author_class.set_owner(wizard)
 
 programmer_class = exchange.instantiate('object', name='programmer class')
+programmer_class.set_owner(wizard)
 programmer_class.add_parent(author_class)
 programmer_class.set_location(bag_of_holding)
-programmer_class.set_owner(wizard)
 
 wizard_class = exchange.instantiate('object', name='wizard class')
+wizard_class.set_owner(wizard)
 wizard_class.add_parent(programmer_class)
 wizard_class.set_location(bag_of_holding)
-wizard_class.set_owner(wizard)
 wizard.add_parent(wizard_class)
 
 room_class = exchange.instantiate('object', name='room class')
-room_class.set_location(bag_of_holding)
 room_class.set_owner(wizard)
+room_class.set_location(bag_of_holding)
 
 room = exchange.instantiate('object', name='The Laboratory')
 room.set_owner(wizard)
 room.add_parent(room_class)
+room.add_property('description', **dict(
+	owner_id = wizard.get_id(),
+	value = """A cavernous room filled with gadgetry of every kind,
+this seems like a dumping ground for every piece of dusty forgotten
+equipment a mad scientist might require.
+""",
+))
+
 bag_of_holding.set_location(room)
 
 phil = exchange.instantiate('object', name= 'Phil', unique_name=True)

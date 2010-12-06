@@ -254,11 +254,13 @@ class Object(Entity):
 		# 	return self.check('inherit', p)
 		return p
 	
-	def add_property(self, name):
+	def add_property(self, name, **kwargs):
 		self.check('write', self)
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
-		p = self._ex.instantiate('property', origin_id=self._id, name=name, owner_id=owner_id)
+		kw = dict(origin_id=self._id, owner_id=owner_id)
+		kw.update(kwargs)
+		p = self._ex.instantiate('property', name=name, **kw)
 		return p
 	
 	def remove_property(self, name):
@@ -553,12 +555,14 @@ class Property(Entity):
 		return 'property #%s (%s) on %s' % (self._id, self._name, self.origin)
 	
 	def get_details(self):
+		value = self._value
+		value = json.dumps(self._value) if not isinstance(self._value, basestring) else self._value
 		return dict(
 			id			= self.get_id(),
 			kind		= self.get_type(),
 			owner		= str(self.get_owner()),
 			name		= self.get_name(),
-			value		= json.dumps(self._value).encode('utf8'),
+			value		= value.encode('utf8'),
 			type		= str(self._type),
 			origin		= str(self.get_origin()),
 		)

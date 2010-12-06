@@ -21,7 +21,7 @@ def loads(j, exchange=None):
 		else:
 			return simplejson.loads(j)
 	except simplejson.decoder.JSONDecodeError, e:
-		return j
+		return j.strip('"').strip("'")
 	
 def dumps(obj):
 	from antioch import model
