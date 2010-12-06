@@ -170,16 +170,15 @@ sub, alias = result
 if(sub == 'add'):
 	obj = get_pobj('to')
 	obj.add_alias(alias)
-	write(caller, "Alias %r added to %s" % (alias, obj)) 
+	write(caller, "Alias %r added to %s" % (alias, obj))
 elif(sub == 'remove'):
 	obj = get_pobj('from')
 	obj.remove_alias(alias)
-	write(caller, "Alias %r removed from %s" % (alias, obj)) 
+	write(caller, "Alias %r removed from %s" % (alias, obj))
 elif(sub == 'list'):
 	obj = here.find(alias)
 	aliases = obj.get_aliases()
-	write(caller, "%s has the following aliases: %r" % (obj, aliases)) 
-
+	write(caller, "%s has the following aliases: %r" % (obj, aliases))
 """,
 ))
 alias_verb.add_name('@alias')
@@ -204,18 +203,72 @@ if(here.has_property('exits')):
 	here['exits'].value = exits
 else:
 	here.add_property('exits').value = {direction : room}
+
+write(caller, "You dug a new room %s in the %s" % (room, direction))
 """,
 ))
 dig_verb.add_name('@dig')
 dig_verb.allow('everyone', 'execute')
 
-look_verb = exchange.instantiate('verb', dict(
-	origin_id = player_class.get_id(),
+tunnel_verb = exchange.instantiate('verb', dict(
+	origin_id = author_class.get_id(),
 	owner_id = wizard.get_id(),
 	ability = True,
 	method = False,
 	code = """#!antioch
-if(dobj_str):
+room_class = get_object('room class')
+direction = get_dobj_str()
+
+room = get_object(get_pobj_str('to'))
+
+if(here.has_property('exits')):
+	exits = here['exits'].value
+	exits[direction] = room
+	here['exits'].value = exits
+else:
+	here.add_property('exits').value = {direction : room}
+
+write(caller, "You dug a tunnel %s to %s" % (direction, room))
+""",
+))
+tunnel_verb.add_name('@tunnel')
+tunnel_verb.allow('everyone', 'execute')
+
+describe_verb = exchange.instantiate('verb', dict(
+	origin_id = author_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = False,
+	code = """#!antioch
+if not(has_dobj_str()):
+	caller.write('What do you want to describe?', error=True)
+	return
+if not(has_pobj_str('as')):
+	caller.write('What do you want to describe that as?', error=True)
+	return
+
+subject = get_dobj()
+if(subject.has_property('description')):
+	description = subject.get_property('description')
+else:
+	description = subject.add_property('description')
+
+description.value = get_pobj_str('as')
+write(caller, 'Description set for %s' % subject)
+""",
+))
+describe_verb.add_name('@describe')
+describe_verb.allow('everyone', 'execute')
+
+look_verb = exchange.instantiate('verb', dict(
+	origin_id = player_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = True,
+	code = """#!antioch
+if(__name__ == 'method'):
+	obj = args[0] if args else caller.location
+elif(has_dobj_str()):
 	obj = get_dobj()
 else:
 	obj = caller.get_location()
@@ -234,12 +287,42 @@ observations = dict(
 		) for item in obj.get_contents() if item.get('visible', True).value
 	],
 )
+if(obj.is_connected_player()):
+	write(obj, "%s looks at you" % obj.get_name())
 
 observe(caller, observations)
 """,
 ))
 look_verb.add_name('look')
 look_verb.allow('everyone', 'execute')
+
+go_verb = exchange.instantiate('verb', dict(
+	origin_id = player_class.get_id(),
+	owner_id = wizard.get_id(),
+	ability = True,
+	method = False,
+	code = """#!antioch
+if not(has_dobj_str()):
+	write(caller, "Where do you want to go?", error=True)
+	return
+
+if not(caller.location.has_property('exits')):
+	write(caller, "You can't go that way.", error=True)
+	return
+
+exits = caller.location['exits'].value
+direction = get_dobj_str()
+
+if(direction not in exits):
+	write(caller, "You can't go that way.")
+	return
+
+caller.set_location(exits[direction])
+caller.look()
+""",
+))
+go_verb.add_name('go')
+go_verb.allow('everyone', 'execute')
 
 passwd_verb = exchange.instantiate('verb', dict(
 	origin_id = player_class.get_id(),
