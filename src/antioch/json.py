@@ -5,11 +5,14 @@ def loads(j, exchange=None):
 		return j
 	
 	def to_entity(d):
-		if('__object__' in d):
+		if(len(d) != 1):
+			return d
+		key = d.keys()[0]
+		if(key[0] == '#'):
 			try:
-				return exchange.get_object(d['__object__'])
+				return exchange.get_object(key)
 			except:
-				return 'missing object #%(__object__)s' % d
+				return 'missing object %s' % key
 		return d
 	
 	try:
@@ -25,6 +28,6 @@ def dumps(obj):
 	def from_entity(o):
 		if not(isinstance(o, model.Object)):
 			return o
-		return {'__object__':o.get_id()}
+		return {'#%d' % o.get_id():o.get_name(real=True)}
 	
 	return simplejson.dumps(obj, default=from_entity)

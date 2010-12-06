@@ -6,7 +6,7 @@
 
 from twisted.protocols import amp
 
-from antioch import transact, parser
+from antioch import transact, parser, json
 
 class GetObjectDetails(transact.WorldTransaction):
 	arguments = [
@@ -203,7 +203,7 @@ class EditorTransactionChild(transact.TransactionChild):
 			p = x.load('property', property_id)
 			p.set_name(name)
 			p.set_owner(x.get_object(owner))
-			p.set_value(value, type=type)
+			p.set_value(json.loads(value, exchange=x), type=type)
 		
 		return {'response': True}
 	

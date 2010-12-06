@@ -23,7 +23,7 @@ weak references-based dictionary keyed on object ID would be sufficient.
 
 import inspect, os.path, sys
 
-from antioch import errors, code
+from antioch import errors, code, json
 
 default_permissions = (
 	'anything',
@@ -531,7 +531,7 @@ class Property(Entity):
 			kind		= self.get_type(),
 			owner		= str(self.get_owner()),
 			name		= self.get_name(),
-			value		= str(self._value),
+			value		= json.dumps(self._value).encode('utf8'),
 			type		= str(self._type),
 			origin		= str(self.get_origin()),
 		)
