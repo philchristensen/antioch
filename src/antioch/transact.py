@@ -20,7 +20,7 @@ from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modul
 
 __processPools = {}
 default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
-code_timeout = 5
+code_timeout = 3
 
 profile_transactions = False
 
