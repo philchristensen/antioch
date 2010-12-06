@@ -276,18 +276,21 @@ look_verb = exchange.instantiate('verb', dict(
 	method = True,
 	code = """#!antioch
 if(__name__ == 'method'):
-	write(caller, str(args))
+	write(caller, 'looking at %r' % [args])
 	obj = args[0] if args else caller.location
+	target = this
 elif(has_dobj_str()):
 	obj = get_dobj()
+	target = caller
 else:
 	obj = caller.get_location()
+	target = caller
 
-current = caller.get_observing()
+current = target.get_observing()
 if(current and current is not obj):
-	current.remove_observer(caller)
+	current.remove_observer(target)
 if(obj and obj is not current):
-	obj.add_observer(caller)
+	obj.add_observer(target)
 
 observations = dict(
 	id				= obj.get_id(),
@@ -304,8 +307,8 @@ observations = dict(
 	],
 )
 if(obj.is_connected_player()):
-	write(obj, "%s looks at you" % caller.get_name())
-observe(caller, observations)
+	write(obj, "%s looks at you" % target.get_name())
+observe(target, observations)
 """,
 ))
 look_verb.add_name('look')

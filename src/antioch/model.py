@@ -429,7 +429,6 @@ class Verb(Entity):
 		if not(self._method):
 			raise RuntimeError("%s is not a method." % self)
 		self.check('execute', self)
-		
 		from antioch import parser
 		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
 		default_parser.verb = self
