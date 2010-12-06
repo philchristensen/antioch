@@ -315,6 +315,31 @@ class Object(Entity):
 		self.check('develop', self)
 		return self._ex.get_aliases(self.get_id())
 	
+	def add_observer(self, observer):
+		self.check('read', self)
+		self.check('write', observer)
+		self._ex.add_observer(self.get_id(), observer.get_id())
+	
+	def remove_observer(self, observer):
+		self.check('write', observer)
+		self._ex.remove_observer(self.get_id(), observer.get_id())
+	
+	def get_observers(self):
+		self.check('read', self)
+		return self._ex.get_observers(self.get_id())
+	
+	def get_observing(self):
+		self.check('read', self)
+		return self._ex.get_observing(self.get_id())
+	
+	def notify_observers(self):
+		for observer in self.get_observers():
+			if(observer.has_callable_verb('look')):
+				observer.look(self)
+	
+	def clear_observers(self):
+		self._ex.clear_observers(self.get_id())
+	
 	def get_name(self, real=False):
 		self.check('read', self)
 		if(real or 'name' not in self):
@@ -344,6 +369,8 @@ class Object(Entity):
 		if(old_location and old_location.has_verb('exit')):
 			old_location.exit(self)
 		self._location_id = location.get_id() if location else None
+		if(location is not old_location):
+			self.clear_observers()
 		self.save()
 	
 	def get_location(self):

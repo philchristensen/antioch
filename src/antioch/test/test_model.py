@@ -371,6 +371,7 @@ class ObjectTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
 			save		= lambda s: True,
+			clear_observers	= lambda s: None,
 		)
 		room = model.Object(e)
 		room_mock = test.Anything(

@@ -48,6 +48,14 @@ CREATE TABLE object_alias (
 );
 CREATE INDEX object_alias_key ON object_alias (alias);
 
+CREATE TABLE object_observer (
+	object_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
+	observer_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
+	PRIMARY KEY (object_id, observer_id)
+);
+CREATE INDEX object_observer_object_key ON object_observer (object_id);
+CREATE INDEX object_observer_key ON object_observer (observer_id);
+
 CREATE TABLE verb (
 	id bigserial,
 	code text NOT NULL,

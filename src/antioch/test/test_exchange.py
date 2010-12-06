@@ -1197,6 +1197,50 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		ex = exchange.ObjectExchange(pool)
 		ex.remove_alias(-1, 'alias')
 	
+	def test_get_observers(self):
+		def runQuery(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), 'SELECT o.* FROM object o INNER JOIN object_observer oo ON oo.observer_id = o.id WHERE oo.object_id = -1')
+			return [{'id':-1}]
+		
+		pool = test.Anything(
+			runQuery	= runQuery,
+		)
+		o = model.Object('test')
+		ex = exchange.ObjectExchange(pool)
+		ex.cache['object--1'] = o
+		observers = ex.get_observers(-1)
+		self.failUnlessEqual(observers, [o])
+	
+	def test_add_observer(self):
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), "INSERT INTO object_observer (object_id, observer_id) VALUES (-1, -2)")
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ex = exchange.ObjectExchange(pool)
+		ex.add_observer(-1, -2)
+	
+	def test_remove_observer(self):
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1 AND observer_id = -2")
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ex = exchange.ObjectExchange(pool)
+		ex.remove_observer(-1, -2)
+	
+	def test_clear_observers(self):
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1")
+		
+		pool = test.Anything(
+			runOperation	= runOperation,
+		)
+		ex = exchange.ObjectExchange(pool)
+		ex.clear_observers(-1)
+	
 	def test_login_player(self):
 		results = [
 		]

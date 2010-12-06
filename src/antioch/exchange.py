@@ -380,6 +380,37 @@ class ObjectExchange(object):
 	def remove_alias(self, object_id, alias):
 		self.pool.runOperation(sql.build_delete('object_alias', object_id=object_id, alias=alias));
 	
+	def get_observers(self, object_id):
+		result = self.instantiate('object', *self.pool.runQuery(sql.interp(
+			"""SELECT o.*
+				FROM object o
+				INNER JOIN object_observer oo ON oo.observer_id = o.id
+				WHERE oo.object_id = %s
+			""", object_id)))
+		if not(isinstance(result, (list, tuple))):
+			result = [result]
+		return result
+	
+	def get_observing(self, object_id):
+		result = self.instantiate('object', *self.pool.runQuery(sql.interp(
+			"""SELECT o.*
+				FROM object o
+				INNER JOIN object_observer oo ON oo.object_id = o.id
+				WHERE oo.observer_id = %s
+			""", object_id)))
+		if(isinstance(result, (list, tuple))):
+			return result[0] if result else None
+		return result
+	
+	def clear_observers(self, object_id):
+		self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id));
+	
+	def add_observer(self, object_id, observer_id):
+		self.pool.runOperation(sql.build_insert('object_observer', object_id=object_id, observer_id=observer_id));
+	
+	def remove_observer(self, object_id, observer_id):
+		self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id, observer_id=observer_id));
+	
 	def get_parents(self, object_id, recurse=False):
 		#NOTE: the heavier a parent weight is, the more influence its inheritance has.
 		# e.g., if considering inheritance by left-to-right, the leftmost ancestors will

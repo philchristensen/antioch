@@ -255,6 +255,7 @@ else:
 
 description.value = get_pobj_str('as')
 write(caller, 'Description set for %s' % subject)
+subject.notify_observers()
 """,
 ))
 describe_verb.add_name('@describe')
@@ -267,11 +268,18 @@ look_verb = exchange.instantiate('verb', dict(
 	method = True,
 	code = """#!antioch
 if(__name__ == 'method'):
+	write(caller, str(args))
 	obj = args[0] if args else caller.location
 elif(has_dobj_str()):
 	obj = get_dobj()
 else:
 	obj = caller.get_location()
+
+current = caller.get_observing()
+if(current and current is not obj):
+	current.remove_observer(caller)
+if(obj and obj is not current):
+	obj.add_observer(caller)
 
 observations = dict(
 	id				= obj.get_id(),
@@ -288,8 +296,7 @@ observations = dict(
 	],
 )
 if(obj.is_connected_player()):
-	write(obj, "%s looks at you" % obj.get_name())
-
+	write(obj, "%s looks at you" % caller.get_name())
 observe(caller, observations)
 """,
 ))
