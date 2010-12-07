@@ -324,6 +324,7 @@ class ClientConnector(athena.LiveElement):
 						user_id=user_id, delay=data['delay'], origin_id=data['origin'], 
 						verb_name=data['verb_name'], args=data['args'], kwargs=data['kwargs'])
 		elif(data['command'] == 'observe'):
+			# print 'setting observations for user #%s to %s' % (self.user_id, data['observations'])
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
 			d = self.callRemote('write', data['text'], data['is_error'])

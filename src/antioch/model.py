@@ -112,6 +112,16 @@ class Entity(object):
 	
 	origin = property(get_origin)
 	
+	def get_source(self):
+		if(self.get_type() == 'object'):
+			return self
+		if not hasattr(self, '_source_id'):
+			return None
+		self.check('read', self)
+		return self._ex.instantiate('object', id=self._source_id)
+	
+	source = property(get_source)
+	
 	def get_exchange(self):
 		return self._ex
 	
@@ -205,6 +215,8 @@ class Object(Entity):
 	def get_verb(self, name, recurse=True):
 		# self.check('read', self)
 		v = self._ex.get_verb(self._id, name, recurse=recurse)
+		if(v):
+			v._source_id = self.get_id()
 		return v
 	
 	def add_verb(self, name):
@@ -214,6 +226,7 @@ class Object(Entity):
 		
 		v = self._ex.instantiate('verb', origin_id=self._id, owner_id=owner_id)
 		v.add_name(name)
+		v._source_id = self.get_id()
 		return v
 	
 	def remove_verb(self, name):
@@ -250,6 +263,8 @@ class Object(Entity):
 	def get_property(self, name, recurse=True):
 		# self.check('read', self)
 		p = self._ex.get_property(self._id, name, recurse=recurse)
+		if(p):
+			p._source_id = self.get_id()
 		# if(p is not None and p.origin != self):
 		# 	return self.check('inherit', p)
 		return p
@@ -261,6 +276,7 @@ class Object(Entity):
 		kw = dict(origin_id=self._id, owner_id=owner_id)
 		kw.update(kwargs)
 		p = self._ex.instantiate('property', name=name, **kw)
+		p._source_id = self.get_id()
 		return p
 	
 	def remove_property(self, name):
@@ -410,7 +426,7 @@ class Object(Entity):
 	location = property(get_location, set_location)
 
 class Verb(Entity):
-	__slots__ = ['_id', '_origin_id', '_ex', '_code', '_owner_id', '_ability', '_method']
+	__slots__ = ['_id', '_origin_id', '_source_id', '_ex', '_code', '_owner_id', '_ability', '_method']
 	
 	def __init__(self, origin):
 		"""
@@ -430,8 +446,7 @@ class Verb(Entity):
 			raise RuntimeError("%s is not a method." % self)
 		self.check('execute', self)
 		from antioch import parser
-		default_parser = parser.TransactionParser(parser.Lexer(''), self._ex.get_context(), self._ex)
-		default_parser.verb = self
+		default_parser = parser.get_default_parser(self)
 		env = code.get_environment(default_parser)
 		env['args'] = args
 		env['kwargs'] = kwargs
@@ -532,7 +547,7 @@ class Verb(Entity):
 	executable = property(is_executable)
 
 class Property(Entity):
-	__slots__ = ['_id', '_origin_id', '_ex', '_name', '_value', '_type', '_owner_id']
+	__slots__ = ['_id', '_origin_id', '_source_id', '_ex', '_name', '_value', '_type', '_owner_id']
 	
 	def __init__(self, origin):
 		"""

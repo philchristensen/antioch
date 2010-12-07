@@ -82,6 +82,14 @@ def parse(caller, sentence):
 	v.execute(p)
 	_profile('execution')
 
+def get_default_parser(v):
+	x = v.get_exchange()
+	l = Lexer(v.name)
+	p = TransactionParser(l, x.get_context(), x)
+	p.verb = v
+	p.this = v.get_source()
+	return p
+	
 class Lexer(object):
 	"""
 	An instance of this class will identify the various parts of a imperitive
