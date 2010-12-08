@@ -272,19 +272,8 @@ class ClientConnector(athena.LiveElement):
 	def login(self, mind):
 		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		
-		self.chan = yield self.msg_service.open_channel()
-		
-		exchange = 'user-exchange'
-		queue = 'user-%s-queue' % self.user_id
-		consumertag = "user-%s-consumer" % self.user_id
-		routing_key = 'user-%s' % self.user_id
-		
-		yield self.chan.exchange_declare(exchange=exchange, type="direct", durable=True, auto_delete=True)
-		yield self.chan.queue_declare(queue=queue, durable=True, exclusive=False, auto_delete=True)
-		yield self.chan.queue_bind(queue=queue, exchange=exchange, routing_key=routing_key)
-		yield self.chan.basic_consume(queue=queue, consumer_tag=consumertag, no_ack=True)
-		
-		self.queue = yield self.msg_service.connection.queue(consumertag)
+		self.chan = self.msg_service.setup_client_channel(self.user_id)
+		self.queue = yield self.msg_service.connection.queue("user-%s-consumer" % self.user_id)
 		
 		yield transact.Parse.run(user_id=self.user_id, sentence='look here')
 		
@@ -315,6 +304,9 @@ class ClientConnector(athena.LiveElement):
 			defer.returnValue(None)
 		
 		data = json.loads(msg.content.body.decode('utf8'))
+		self.handle_message(data)
+	
+	def handle_message(self, data):
 		mod = modules.get(data['command'])
 		
 		if(mod):

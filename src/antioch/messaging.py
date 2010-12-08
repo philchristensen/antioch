@@ -37,6 +37,22 @@ class MessageService(service.Service):
 		return MessageQueue(self)
 	
 	@defer.inlineCallbacks
+	def setup_client_channel(self, user_id):
+		chan = yield self.open_channel()
+		
+		exchange = 'user-exchange'
+		queue = 'user-%s-queue' % user_id
+		consumertag = "user-%s-consumer" % user_id
+		routing_key = 'user-%s' % user_id
+		
+		yield chan.exchange_declare(exchange=exchange, type="direct", durable=True, auto_delete=True)
+		yield chan.queue_declare(queue=queue, durable=True, exclusive=False, auto_delete=True)
+		yield chan.queue_bind(queue=queue, exchange=exchange, routing_key=routing_key)
+		yield chan.basic_consume(queue=queue, consumer_tag=consumertag, no_ack=True)
+		
+		defer.returnValue(chan)
+	
+	@defer.inlineCallbacks
 	def connect(self):
 		if(self.connection):
 			defer.returnValue(self.connection)
