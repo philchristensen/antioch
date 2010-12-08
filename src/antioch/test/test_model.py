@@ -171,14 +171,14 @@ class ObjectTestCase(unittest.TestCase):
 	
 	def test_verb(self):
 		e = test.Anything(
-			get_verb	= lambda *a, **kw: (a, kw),
+			get_verb	= lambda *a, **kw: v,
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
 		)
 		o = model.Object(e)
-		
-		self.failUnlessEqual(getattr(o, 'look'), ((0, 'look',), {'recurse':True}))
-		self.failUnlessEqual(o.get_verb('look', recurse=False), ((0, 'look',), {'recurse':False}))
+		v = model.Verb(o)
+		self.failUnlessEqual(getattr(o, 'look'), v)
+		self.failUnlessEqual(o.get_verb('look', recurse=False), v)
 	
 	def test_add_verb(self):
 		class _VerbAdded(Exception):
@@ -253,7 +253,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_id		= lambda: -1
 		)
 		e = test.Anything(
-			instantiate	= lambda *a, **kw: (a, kw),
+			instantiate	= lambda *a, **kw: p,
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
@@ -264,11 +264,12 @@ class ObjectTestCase(unittest.TestCase):
 			origin	= lambda: o
 		)
 		
-		self.failUnlessEqual(o.add_property('description'), (('property',), dict(name='description',origin_id=1024,owner_id=1024)))
+		self.failUnlessEqual(o.add_property('description'), p)
 	
 	def test_has_property(self):
+		results = [False, True, True]
 		e = test.Anything(
-			has		=	lambda *a, **kw: (a, kw),
+			has		=	lambda *a, **kw: results.pop(),
 		)
 		o = model.Object(e)
 		o.set_id(1024)
@@ -276,8 +277,8 @@ class ObjectTestCase(unittest.TestCase):
 		)
 		
 		self.failUnlessEqual('description' in o, True)
-		self.failUnlessEqual(o.has_property('description'), ((1024, 'property', 'description'), {}))
-		self.failUnlessEqual(o.has_readable_property('description'), ((1024, 'property', 'description'), {'unrestricted': False}))
+		self.failUnlessEqual(o.has_property('description'), True)
+		self.failUnlessEqual(o.has_readable_property('description'), False)
 	
 	def test_remove_property(self):
 		e = test.Anything(

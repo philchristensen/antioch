@@ -337,7 +337,7 @@ if(obj):
 			dict(
 				type	= item.is_player(),
 				name	= item.get_name(),
-				image	= gravatar_url(item['gravatar_id'].value) if 'gravatar_id' in item else item['image'].value,
+				image	= gravatar_url(item['gravatar_id'].value) if 'gravatar_id' in item else item.get('image', None).value,
 				mood	= item.get('mood', None).value,
 			) for item in obj.get_contents() if item.get('visible', True).value
 		],

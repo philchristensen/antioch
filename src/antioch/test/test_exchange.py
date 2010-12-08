@@ -79,6 +79,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 		]
 		def runQuery(query, *a, **kw):
 			if(query.startswith('SELECT')):
@@ -1310,10 +1311,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			'SELECT * FROM object WHERE id = 2',
 			'SELECT * FROM object WHERE id = 1',
 			"SELECT o.id FROM object o INNER JOIN object_alias oa ON oa.object_id = o.id WHERE LOWER(oa.alias) = LOWER('box') AND o.location_id = 1024",
-			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('box') AND o.location_id = 1024",
+			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('\"box\"') AND o.location_id = 1024",
 			"SELECT id FROM object WHERE LOWER(name) = LOWER('box') AND location_id = 1024",
 			"SELECT o.id FROM object o INNER JOIN object_alias oa ON oa.object_id = o.id WHERE LOWER(oa.alias) = LOWER('box') AND o.location_id = 1024",
-			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('box') AND o.location_id = 1024",
+			"SELECT o.id FROM property p INNER JOIN object o ON p.origin_id = o.id WHERE p.name = 'name' AND LOWER(p.value) = LOWER('\"box\"') AND o.location_id = 1024",
 			"SELECT id FROM object WHERE LOWER(name) = LOWER('box') AND location_id = 1024",
 		]
 		

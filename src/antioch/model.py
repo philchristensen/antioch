@@ -391,7 +391,7 @@ class Object(Entity):
 			if not(location.accept(self)):
 				raise errors.PermissionError("%s won't let %s inside." % (location, self))
 		old_location = self.get_location()
-		if(old_location.has_verb('provide')):
+		if(old_location and old_location.has_verb('provide')):
 			if not(old_location.provide(self)):
 				raise errors.PermissionError("%s won't let %s out." % (old_location, self))
 		if(location and location.has_verb('enter')):
