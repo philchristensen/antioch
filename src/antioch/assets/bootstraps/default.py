@@ -154,6 +154,36 @@ write(caller, eval(command[6:].strip()))
 ))
 eval_verb.add_name('@eval')
 
+set_verb = exchange.instantiate('verb', dict(
+	owner_id = wizard.get_id(),
+	origin_id = player_class.get_id(),
+	ability = True,
+	method = False,
+	code = """#!antioch
+if not(has_dobj_str()):
+	write(caller, "What property do you wish to set?", error=True)
+	return
+
+if not(has_pobj_str('on')):
+	write(caller, "Where do you want to set the %r property?" % get_dobj_str(), error=True)
+	return
+
+if not(has_pobj_str('to')):
+	write(caller, "What do you want to set %r to?" % get_dobj_str(), error=True)
+	return
+
+prop_name = get_dobj_str()
+subject = get_pobj('on')
+value = get_pobj_str('to')
+
+if(subject.has_property(prop_name)):
+	subject.get_property(prop_name).value = value
+else:
+	subject.add_property(prop_name).value = value
+""",
+))
+set_verb.add_name('@set')
+
 alias_verb = exchange.instantiate('verb', dict(
 	origin_id = author_class.get_id(),
 	owner_id = wizard.get_id(),
@@ -291,6 +321,12 @@ if(current and current is not obj):
 if(obj and obj is not current):
 	obj.add_observer(target)
 
+import hashlib
+def gravatar_url(email):
+	m = hashlib.md5()
+	m.update(email.strip().lower())
+	return 'http://www.gravatar.com/avatar/%s.jpg?d=mm' % m.hexdigest()
+
 if(obj):
 	observations = dict(
 		id				= obj.get_id(),
@@ -301,7 +337,7 @@ if(obj):
 			dict(
 				type	= item.is_player(),
 				name	= item.get_name(),
-				image	= item.get('image', None).value,
+				image	= gravatar_url(item['gravatar_id'].value) if 'gravatar_id' in item else item['image'].value,
 				mood	= item.get('mood', None).value,
 			) for item in obj.get_contents() if item.get('visible', True).value
 		],
