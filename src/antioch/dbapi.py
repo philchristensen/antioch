@@ -1,8 +1,6 @@
-# modu
+# antioch
 # Copyright (c) 1999-2010 Phil Christensen
-# http://modu.bubblehouse.org
 #
-# $Id: dbapi.py 1327 2010-04-08 20:17:09Z phil $
 #
 # See LICENSE for details
 

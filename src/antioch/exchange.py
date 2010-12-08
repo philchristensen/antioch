@@ -1,34 +1,16 @@
+# antioch
+# Copyright (c) 1999-2010 Phil Christensen
+#
+#
+# See LICENSE for details
+
 """
-the antioch ObjectExchange
+ObjectExchange
 
-essentially a replacement for the old Registry class, combined with
-some new requirements needed by the DB persistence layer.
-
-this is the connecting thread between the database and verb code
+This is the connecting thread between the database and verb code
 during a transaction. it is responsible for loading and saving objects,
 verbs, properties and permissions, as well as caching objects loaded
 during a single verb transaction.
-
-
-permissions and properties/verbs
-
-the only time an object's permissions are consulted is when we are adding
-a verb or property. once it is added, any interactions with the verb or property
-should examine those objects themselves. during deletion, both the object and the
-attribute should be checked, for the following reason:
-
-
-the owner of a property/verb should be able to delete something they own from
-an object they don't (the only way that attribute could have been added in the
-first place was because the object was writable to them).
-
-however, the owner of the object should also have the ability to delete that
-attribute. if so, then do they have rights to do other things (change properties,
-edit verbs) simply because the attributes were defined on something they owned?
-
-No, they don't. They can remove things they don't own from their object, but they cannot
-change the value of those items.
-
 """
 import crypt, string, random, time
 
