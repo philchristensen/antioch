@@ -14,6 +14,7 @@ everything else should work, but to be specific:
 * [PostgreSQL     >=  8.4  ](http://www.postgresql.org)
 * [Twisted        >= 10.1  ](http://www.twistedmatrix.com)
 * [Nevow          >=  0.10 ](http://divmod.org/trac/wiki/DivmodNevow)
+* [simplejson     >=  2.1.1](http://pypi.python.org/pypi/simplejson)
 * [psycopg2       >=  2.2.1](http://initd.org/psycopg)
 * [txAMQP         >=  0.3  ](https://launchpad.net/txamqp)
 * [ampoule        >=  0.1  ](https://launchpad.net/ampoule)

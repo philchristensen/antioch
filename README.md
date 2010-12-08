@@ -31,46 +31,45 @@ unmatched possibilities for operating large-scale deployments.
 Feature Set
 -----------
 
-### Customizable AJAX-Enabled Client
-
-The antioch web client provides a standards-compliant interface based
-on the Nevow Athena AJAX framework, and is supported by all modern browsers.
-
-Although the default database provided is geared towards text-based games,
-the flexibility of the client interface and the power of the plugin system
-allows many different kinds of games to be developed on the antioch platform.
-
-### Graphical Object Editors
-Programmers and authors alike will find the built-in authoring tools
-expedite world creation and verb programming.
-
-### Plugin System
-antioch 'modules' allow developers to create new client functionality out of
-whole cloth. The module system was used to implement the built-in object and
-verb editors, demonstrating the creation of new verb-environment functions,
-Web resources, and client-side JavaScript.
-
-### Isolated Verb Execution
-Database code is run in individual subprocesses, allowing for memory and
-runtime limits to be applied at the UNIX process level, and allowing for
-verb code to be written in a synchronous style.
-
-### Highly Scalable Messaging Layer
-antioch uses the RabbitMQ server to implement message passing support, allowing
-support of thousands of active clients with minimal latency.
-
-### Powerful Natural-Language Parser
-The built-in interpreter parses a large number of different imperative
-statements, making user-world interaction a more immersive experience.
-
-### Internal Scripting
-A Pure-Python scripting layer integrates tightly with the framework code,
-allowing a high degree of customization.
+* **Customizable AJAX-Enabled Client** — 
+  The antioch web client provides a standards-compliant interface based
+  on the Nevow Athena AJAX framework, and is supported by all modern browsers.
   
-### Robust Networking
-antioch relies on the Twisted Python and Nevow frameworks to implement
-client-server communication. This robust asynchronous networking library
-allows client counts to scale easily to hundreds of connections.
+  Although the default database provided is geared towards text-based games,
+  the flexibility of the client interface and the power of the plugin system
+  allows many different kinds of games to be developed on the antioch 
+  platform.
+
+* **Graphical Object Editors** — 
+  Programmers and authors alike will find the built-in authoring tools
+  expedite world creation and verb programming.
+
+* **Plugin System** — 
+  antioch 'modules' allow developers to create new client functionality.
+  The module system was used to implement the built-in object and verb 
+  editors, demonstrating the creation of new verb-environment functions,
+  Web resources, and client-side JavaScript.
+
+* **Isolated Verb Execution** — 
+  Database code is run in individual subprocesses, allowing for memory and
+  runtime limits to be applied at the UNIX process level, and allowing for
+  verb code to be written in a synchronous style.
+
+* **Highly Scalable Messaging Layer** — 
+  antioch uses the RabbitMQ server to implement message passing support, allowing support of thousands of active clients with minimal latency.
+
+* **Powerful Natural-Language Parser** — 
+  The built-in interpreter parses a large number of different imperative
+  statements, making user-world interaction a more immersive experience.
+
+* **Internal Scripting** — 
+  A Pure-Python scripting layer integrates tightly with the framework code,
+  allowing a high degree of customization.
+  
+* **Robust Networking** — 
+  antioch relies on the Twisted Python and Nevow frameworks to implement
+  client-server communication. This robust asynchronous networking library
+  allows client counts to scale easily to hundreds of connections.
 
 
 Copyright

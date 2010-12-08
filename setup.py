@@ -23,6 +23,7 @@ import pkg_resources as pkgrsrc
 from distutils import log
 log.set_threshold(log.INFO)
 
+# disables creation of .DS_Store files inside tarballs on Mac OS X
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
@@ -71,13 +72,13 @@ def autosetup():
 		description		= "a MOO-like system for building virtual worlds",
 		license			= "MIT",
 		keywords		= "antioch moo lambdamoo mud game",
-		url				= "http://launchpad.net/antioch",
+		url				= "https://github.com/philchristensen/antioch",
 		# could also include long_description, download_url, classifiers, etc.
-		long_description = """antioch is a web application for building scalable, interactive virtual worlds.
-								Begun as a MOO-like system for building virtual worlds, the goal was to
-								take the LambdaMOO approach to creating online worlds, and update it in hopes
+		long_description = """antioch is a web application for building scalable, interactive virtual worlds. 
+								Begun as a MOO-like system for building virtual worlds, the goal was to 
+								take the LambdaMOO approach to creating online worlds, and update it in hopes 
 								of attracting new players to an old idea.
-							""".replace('\t', '')
+							""".replace('\t', '').replace('\n', '')
 	)
 	
 	return dist
