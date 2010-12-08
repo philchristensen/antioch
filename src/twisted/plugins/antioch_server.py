@@ -27,19 +27,19 @@ class antiochServer(object):
 						 ["accesslog", "l", '-', "Path to access log.", str],
 						]
 		optFlags = [
-					['debug', 'd', 'Debug database queries.'],
-					['debug-deferreds', 'D', 'Debug Deferred objects.'],
-					['debug-writes', 'w', 'Debug database writes only.'],
+					['debug-sql', 'd', 'Debug database queries.'],
+					['debug-sql-writes', 'w', 'Debug database writes only.'],
+					['debug-sql-highlighting', 'H', 'Enable SQL syntax highlighting in debug.'],
 					]
 	
 	@classmethod
 	def makeService(cls, config):
-		if(config['debug']):
+		if(config['debug-sql']):
 			dbapi.debug = True
-		if(config['debug-writes']):
+		if(config['debug-sql-writes']):
 			dbapi.debug = 1
-		if(config['debug-deferreds']):
-			defer.Deferred.debug = True
+		if(config['debug-sql-highlighting']):
+			dbapi.debug_syntax_highlighting = True
 		
 		master_service = service.MultiService()
 		
