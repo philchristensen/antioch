@@ -1,25 +1,8 @@
-"""
-The primary change brought about by the change to using a relational database is
-that the objects handled by system- and user-verbs are no longer the actual
-objects of the system. The database records are now the actual objects, and
-these classes now just a window into the database.
-
-Because verbs will run inside their own transaction, we don't have to worry
-about another process/user changing the database during the course of a verb.
-However, there's always the possibility of doing something like:
-
-	verbs = o.get_verbs()
-	verbs2 = o.get_verbs()
-	
-	verbs[0].name = 'new name'
-	verbs[1].code = 'caller.write("hello")'
-
-This sample code omits any 'saving' step, which may or may not be possible, but
-the end question is the same. One possible solution to this in this case is that
-before a resulting object is passed to the user code, it could pass through a
-filter that returns a cached copy of the existing object. Some kind of
-weak references-based dictionary keyed on object ID would be sufficient.
-"""
+# antioch
+# Copyright (c) 1999-2010 Phil Christensen
+#
+#
+# See LICENSE for details
 
 import inspect, os.path, sys
 
