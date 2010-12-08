@@ -381,14 +381,17 @@ class Object(Entity):
 		if(location and location.has_verb('accept')):
 			if not(location.accept(self)):
 				raise errors.PermissionError("%s won't let %s inside." % (location, self))
-			if(location.has_verb('enter')):
-				location.enter(self)
 		old_location = self.get_location()
-		if(old_location and old_location.has_verb('exit')):
-			old_location.exit(self)
+		if(old_location.has_verb('provide')):
+			if not(old_location.provide(self)):
+				raise errors.PermissionError("%s won't let %s out." % (old_location, self))
+		if(location and location.has_verb('enter')):
+			location.enter(self)
 		self._location_id = location.get_id() if location else None
 		if(location is not old_location):
 			self.clear_observers()
+		if(old_location and old_location.has_verb('exit')):
+			old_location.exit(self)
 		self.save()
 	
 	def get_location(self):
