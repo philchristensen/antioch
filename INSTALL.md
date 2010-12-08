@@ -46,6 +46,8 @@ you should be able to start up the server with:
 
     twistd -n antioch
 
+The -n will keep it in the foreground.
+
 
 Running the Client
 ------------------
@@ -53,3 +55,16 @@ Running the Client
 Connect to: <http://localhost:8080>
 
 Login with username and password: `wizard/wizard`
+
+Obviously, once in, it's a pretty good idea to change your password for the 
+wizard account, which you can do with the `@passwd` command.
+
+If you'd like a more specific name for your administrator character, for the 
+moment you can use:
+
+    @exec caller.set_name("My Name", real=True)
+
+Setting the `gravatar_id` property will load a user icon for you from the 
+Gravatar.com web service.
+
+    @set gravatar_id on wizard to user@example.com
