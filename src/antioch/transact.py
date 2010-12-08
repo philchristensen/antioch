@@ -144,9 +144,8 @@ class DefaultTransactionChild(TransactionChild):
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):
 				u = authentication(username, password)
-				if not(u):
-					raise errors.PermissionError("Invalid login credentials. (1)")
-				defer.returnValue({'user_id': u.get_id()})
+				if(u):
+					defer.returnValue({'user_id': u.get_id()})
 			try:
 				u = x.get_object(username)
 				if not(u):
