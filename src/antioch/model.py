@@ -8,6 +8,8 @@ import inspect, os.path, sys
 
 from antioch import errors, code, json
 
+# These are the default list of permissions, auto-created
+# first thing during universe boostrapping
 default_permissions = (
 	'anything',
 	'read',
@@ -21,9 +23,20 @@ default_permissions = (
 	'develop',
 )
 
+# This should be left alone
 protection_enabled = True
 
 def isLocal():
+	"""
+	Used by get/setattr to delegate access.
+	
+	Returns True if the call to __getattribute__ or __setattr__ originated
+	in either the exchange, test, or bootstrap modules.
+	
+	Previously this used inspect, which made it super slow. The only potential
+	issue with using _getframe() is that it's not guaranteed to be there in
+	non CPython implementations.
+	"""
 	if not(protection_enabled):
 		return True
 	
@@ -59,16 +72,29 @@ def isLocal():
 		del f
 
 class PropertyStub(object):
+	"""
+	A convenience class to allow `obj.get('property', 'default').value`
+	"""
 	def __init__(self, value):
 		self.value = value	
 
 class Entity(object):
+	"""
+	Entities are the base class for all Objects, Verbs, and Properties.
+	"""
+	
 	def __getattribute__(self, name):
+		"""
+		Private attribute protection using isLocal().
+		"""
 		if(name.startswith('_') and not isLocal()):
 			raise AttributeError(name)
 		return object.__getattribute__(self, name)
 	
 	def __setattr__(self, name, value):
+		"""
+		Private attribute protection using isLocal().
+		"""
 		if(name.startswith('_') and not isLocal()):
 			raise AttributeError(name)
 		return object.__setattr__(self, name, value)
