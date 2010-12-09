@@ -157,6 +157,9 @@ class ObjectExchange(object):
 					def fail(record):
 						raise RuntimeError("Don't know how to make an object of type '%s'" % obj_type)
 					
+					if(self.ctx and 'owner_id' not in record):
+						record['owner_id'] = ctx.get_id()
+					
 					maker = getattr(self, '_mk%s' % obj_type, fail)
 					obj = maker(record)
 					self.save(obj)

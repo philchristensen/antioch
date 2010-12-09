@@ -142,6 +142,7 @@ exec(command[6:].strip())
 """,
 ))
 exec_verb.add_name('@exec')
+exec_verb.allow('wizards', 'execute')
 
 eval_verb = exchange.instantiate('verb', dict(
 	owner_id = wizard.get_id(),
@@ -153,6 +154,7 @@ write(caller, eval(command[6:].strip()))
 """,
 ))
 eval_verb.add_name('@eval')
+eval_verb.allow('wizards', 'execute')
 
 set_verb = exchange.instantiate('verb', dict(
 	owner_id = wizard.get_id(),
@@ -161,15 +163,15 @@ set_verb = exchange.instantiate('verb', dict(
 	method = False,
 	code = """#!antioch
 if not(has_dobj_str()):
-	write(caller, "What property do you wish to set?", error=True)
+	write(caller, "What property do you wish to set?", is_error=True)
 	return
 
 if not(has_pobj_str('on')):
-	write(caller, "Where do you want to set the %r property?" % get_dobj_str(), error=True)
+	write(caller, "Where do you want to set the %r property?" % get_dobj_str(), is_error=True)
 	return
 
 if not(has_pobj_str('to')):
-	write(caller, "What do you want to set %r to?" % get_dobj_str(), error=True)
+	write(caller, "What do you want to set %r to?" % get_dobj_str(), is_error=True)
 	return
 
 prop_name = get_dobj_str()
@@ -183,6 +185,7 @@ else:
 """,
 ))
 set_verb.add_name('@set')
+set_verb.allow('everyone', 'execute')
 
 alias_verb = exchange.instantiate('verb', dict(
 	origin_id = author_class.get_id(),
@@ -191,7 +194,7 @@ alias_verb = exchange.instantiate('verb', dict(
 	method = False,
 	code = """#!antioch
 def usage():
-	write(caller, "Usage: @alias (add <alias>|remove <alias>|list) on <object>", error=True)
+	write(caller, "Usage: @alias (add <alias>|remove <alias>|list) on <object>", is_error=True)
 
 result = []
 if(has_dobj_str()):
@@ -279,10 +282,10 @@ describe_verb = exchange.instantiate('verb', dict(
 	method = False,
 	code = """#!antioch
 if not(has_dobj_str()):
-	caller.write('What do you want to describe?', error=True)
+	caller.write('What do you want to describe?', is_error=True)
 	return
 if not(has_pobj_str('as')):
-	caller.write('What do you want to describe that as?', error=True)
+	caller.write('What do you want to describe that as?', is_error=True)
 	return
 
 subject = get_dobj()
@@ -365,11 +368,11 @@ go_verb = exchange.instantiate('verb', dict(
 	method = False,
 	code = """#!antioch
 if not(has_dobj_str()):
-	write(caller, "Where do you want to go?", error=True)
+	write(caller, "Where do you want to go?", is_error=True)
 	return
 
 if not(caller.location.has_property('exits')):
-	write(caller, "You can't go that way.", error=True)
+	write(caller, "You can't go that way.", is_error=True)
 	return
 
 exits = caller.location['exits'].value

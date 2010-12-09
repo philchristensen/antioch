@@ -116,7 +116,7 @@ class Entity(object):
 		if(self.get_type() == 'object'):
 			return self
 		
-		self.check('read', self)
+		# self.check('read', self)
 		return self._ex.instantiate('object', id=self._origin_id)
 	
 	origin = property(get_origin)
@@ -126,7 +126,7 @@ class Entity(object):
 			return self
 		if not hasattr(self, '_source_id'):
 			return None
-		self.check('read', self)
+		# self.check('read', self)
 		return self._ex.instantiate('object', id=self._source_id)
 	
 	source = property(get_source)
@@ -219,7 +219,8 @@ class Object(Entity):
 		)
 	
 	def owns(self, subject):
-		return subject.get_owner() == self
+		owner = subject.get_owner()
+		return owner == self
 	
 	def get_verb(self, name, recurse=True):
 		# self.check('read', self)
@@ -430,7 +431,8 @@ class Object(Entity):
 	
 	def is_allowed(self, permission, subject):
 		ctx = self.get_context()
-		if ctx and ctx.is_wizard() and permission == 'grant':
+		# if ctx and ctx.is_wizard() and permission == 'grant':
+		if ctx and ctx.owns(subject):
 			return True
 		return self._ex.is_allowed(self, permission, subject)
 	
