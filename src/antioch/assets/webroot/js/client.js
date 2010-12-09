@@ -105,23 +105,29 @@ antioch.ClientConnector.methods(
 		
 		$('.client-prompt').focus();
 	},
-	function write(self, text, error){
+	function write(self, text, error, escape){
 		/*
 		 * Called by the server to output a line to the action pane.
 		 */
 		var actions = $('.actions');
 		
-		while(text.indexOf('<') != -1)
-			text = text.replace('<', '&lt;');
+		if(typeof(escape) == 'undefined'){
+			escape = true;
+		}
 		
-		while(text.indexOf('>') != -1)
-			text = text.replace(">", '&gt;')
-		
-		while(text.indexOf("\n") != -1)
-			text = text.replace("\n", '<br/>')
-		
-		while(text.indexOf('  ') != -1)
-			text = text.replace('  ', '&nbsp;&nbsp;')
+		if(escape){
+			while(text.indexOf('<') != -1)
+				text = text.replace('<', '&lt;');
+			
+			while(text.indexOf('>') != -1)
+				text = text.replace(">", '&gt;')
+			
+			while(text.indexOf("\n") != -1)
+				text = text.replace("\n", '<br/>')
+			
+			while(text.indexOf('  ') != -1)
+				text = text.replace('  ', '&nbsp;&nbsp;')
+		}
 		
 		if(error){
 			actions.append('<br/><span class="error-response">' + text + '</span>');

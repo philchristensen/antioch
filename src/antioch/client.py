@@ -326,7 +326,7 @@ class ClientConnector(athena.LiveElement):
 			# print 'setting observations for user #%s to %s' % (self.user_id, data['observations'])
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
-			d = self.callRemote('write', data['text'], data['is_error'])
+			d = self.callRemote('write', data['text'], data['is_error'], data.get('escape_html', True))
 	
 	@defer.inlineCallbacks
 	def task(self, task_id):

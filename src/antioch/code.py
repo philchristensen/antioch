@@ -94,7 +94,7 @@ def tasks(p):
 		return p.exchange.get_tasks(user_id=p.caller.get_id())
 
 @api
-def write(p, user, text, is_error=False):
+def write(p, user, text, is_error=False, escape_html=True):
 	"""
 	Verb API: Print a string of text to the user's console.
 	"""
@@ -102,6 +102,7 @@ def write(p, user, text, is_error=False):
 		command		= 'write',
 		text		= str(text),
 		is_error	= is_error,
+		escape_html	= escape_html,
 	))
 
 @api
