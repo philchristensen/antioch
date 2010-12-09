@@ -5,11 +5,7 @@
 # See LICENSE for details
 
 """
-Webclient
-
-
-This is the primary client for antioch, replacing the
-Java and Cocoa versions.
+Web interface support.
 """
 
 import os, os.path, time
@@ -48,17 +44,17 @@ class RootDelegatePage(rend.Page):
 	logout_url = '/logout'
 	client_url = '/universe'
 	
-	def __init__(self, pool, msg_service, portal):
+	def __init__(self, spool, msg_service, portal):
 		"""
-		Create a new root delegate page connected to the given pool and portal.
+		Create a new root delegate page connected to the given session pool and portal.
 		
-		@param pool: the current session store
-		@type pool: L{antioch.client.web.session.IUserSessionStore}
+		@param spool: the current session store
+		@type spool: L{antioch.client.web.session.IUserSessionStore}
 		
 		@param portal: the current auth portal
 		@param portal: L{twisted.cred.portal.Portal}
 		"""
-		self.pool = pool
+		self.spool = spool
 		self.portal = portal
 		self.msg_service = msg_service
 		self.connections = {}
@@ -89,21 +85,21 @@ class RootDelegatePage(rend.Page):
 					if(mod):
 						returnValue((mod.get_resource(user), segments[2:]))
 				elif(segments[0] == 'logout'):
-					self.pool.logoutUser(sid)
+					self.spool.logoutUser(sid)
 					if(sid in self.connections):
 						del self.connections[sid]
 					request = inevow.IRequest(ctx)
 					request.redirect('/login')
-					returnValue((ClientLogin(self.pool, self.portal), segments[1:]))
+					returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 			# not logged in, at login page
 			elif(segments[0] == 'login'):
-				returnValue((ClientLogin(self.pool, self.portal), segments[1:]))
+				returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 			# usually because server restarted or was bookmarked
 			# redirect to the login page for convenience
 			elif(segments[0] in ('logout', 'universe')):
 				request = inevow.IRequest(ctx)
 				request.redirect('/login')
-				returnValue((ClientLogin(self.pool, self.portal), segments[1:]))
+				returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 		
 		# let renderHTTP take care of the redirect to /login or /universe
 		returnValue(super(RootDelegatePage, self).locateChild(ctx, segments))
@@ -128,7 +124,7 @@ class RootDelegatePage(rend.Page):
 
 		creds = session.getSessionCredentials(ctx)
 		iface, user, logout = yield self.portal.login(creds, None, inevow.IResource)
-		yield session.updateSession(self.pool, request, user)
+		yield session.updateSession(self.spool, request, user)
 		
 		if(session.ISessionCredentials.providedBy(creds)):
 			sid = creds.getSid()
@@ -159,14 +155,14 @@ class ClientLogin(rend.Page):
 	"""
 	implements(inevow.IResource)
 	
-	def __init__(self, pool, portal):
+	def __init__(self, spool, portal):
 		"""
 		Provide the necessary objects to handle session saving.
 		"""
 		super(ClientLogin, self).__init__()
 		self.docFactory = loaders.xmlstr(pkg.resource_string('antioch.assets', 'templates/client-login.xml'))
 		self.portal = portal
-		self.pool = pool
+		self.spool = spool
 	
 	@inlineCallbacks	
 	def renderHTTP(self, ctx):
@@ -185,7 +181,7 @@ class ClientLogin(rend.Page):
 			creds = credentials.UsernamePassword(username, password)
 			
 			iface, user, logout = yield self.portal.login(creds, None, inevow.IResource)
-			yield session.updateSession(self.pool, request, user)
+			yield session.updateSession(self.spool, request, user)
 			
 			if(user):
 				request.redirect('/universe')
