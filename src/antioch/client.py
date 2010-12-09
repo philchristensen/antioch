@@ -266,6 +266,9 @@ class ClientConnector(athena.LiveElement):
 	
 	@defer.inlineCallbacks
 	def login(self, mind):
+		"""
+		Called when the user first connects, runs login verb code, 'look here'
+		"""
 		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		
 		self.chan = self.msg_service.setup_client_channel(self.user_id)
@@ -294,6 +297,11 @@ class ClientConnector(athena.LiveElement):
 	
 	@defer.inlineCallbacks
 	def queue_checker(self):
+		"""
+		Continually called by the self.loop LoopingCall,
+		this looks for messages sent to the user and
+		processes them appropriately.
+		"""
 		try:
 			msg = yield self.queue.get()
 		except Closed, e:
@@ -303,6 +311,9 @@ class ClientConnector(athena.LiveElement):
 		self.handle_message(data)
 	
 	def handle_message(self, data):
+		"""
+		Handle a single message from the RabbitMQ server.
+		"""
 		mod = modules.get(data['command'])
 		
 		if(mod):

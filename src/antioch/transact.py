@@ -8,6 +8,8 @@
 Execution layer
 """
 
+from __future__ import with_statement
+
 import time
 
 from twisted.python import log

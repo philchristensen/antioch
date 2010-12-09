@@ -15,7 +15,7 @@ from twisted.enterprise import adbapi
 debug = False
 profile_debug = True
 debug_stream = sys.stderr
-debug_syntax_highlighting = False
+debug_syntax_highlighting = True
 
 pools = {}
 async_pools = {}
@@ -33,13 +33,22 @@ RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
 total_query_time = 0
 
 def get_total_query_time():
+	"""
+	Profiler: Return total query time since last reset.
+	"""
 	return total_query_time
 
 def reset_total_query_time():
+	"""
+	Profiler: Reset total query time.
+	"""
 	global total_query_time
 	total_query_time = 0
 
 def sql_debug(query, args, kwargs, runtime=0):
+	"""
+	Debug: Print the current SQL query, optionally highlighted.
+	"""
 	global total_query_time
 	total_query_time += runtime
 	original_query = query
@@ -158,7 +167,9 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 		adbapi.ConnectionPool.__init__(self, *args, **kwargs)
 	
 	def connect(self, *args, **kwargs):
-		# ask ConnectionPool for a connection
+		"""
+		Ask the ConnectionPool for a connection.
+		"""
 		conn = adbapi.ConnectionPool.connect(self, *args, **kwargs)
 		
 		if(self.timeout > 3600):
@@ -361,6 +372,9 @@ class SynchronousConnectionPool(TimeoutConnectionPool):
 			reactor.removeSystemEventTrigger(self.startID)
 	
 	def _runOperation(self, trans, *args, **kw):
+		"""
+		Return the results of an operation.
+		"""
 		return trans.execute(*args, **kw)
 	
 	def runInteraction(self, interaction, *args, **kw):

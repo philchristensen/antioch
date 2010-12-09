@@ -31,6 +31,9 @@ class UserError(Exception):
 		return str(self._message) + data
 
 class TestError(Exception):
+	"""
+	Special error used by tests.
+	"""
 	def __init__(self, message=None, data=None):
 		self._message = message
 		self.data = data

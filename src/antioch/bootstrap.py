@@ -15,6 +15,9 @@ import traceback, subprocess
 from antioch import exchange, dbapi
 
 def get_dsn(db_url):
+	"""
+	Convert the provided db_url to a dictionary.
+	"""
 	match = dbapi.URL_RE.match(db_url)
 	if not(match):
 		raise ValueError("Invalid db URL: %s" % db_url)
@@ -23,6 +26,9 @@ def get_dsn(db_url):
 	return dsn
 
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
+	"""
+	Initialize a new database and user specified by the provided db_url.
+	"""
 	dsn = get_dsn(db_url)
 	
 	kwargs = {}
@@ -51,6 +57,9 @@ def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 
 def load_schema(psql_path, db_url, schema_path, create=False):
+	"""
+	Load a provided schema into the specified database.
+	"""
 	dsn = get_dsn(db_url)
 	
 	cmd = [psql_path,
@@ -65,5 +74,8 @@ def load_schema(psql_path, db_url, schema_path, create=False):
 	child.wait()
 
 def load_python(pool, python_path):
+	"""
+	Execute a provided Python bootstrap file against the provided database.
+	"""
 	with exchange.ObjectExchange(pool) as x:
 		execfile(python_path, globals(), dict(exchange=x))

@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Code
+Verb execution environment
 """
 
 import time
@@ -13,6 +13,11 @@ import time
 from antioch import errors, modules, json
 
 def massage_verb_code(code):
+	"""
+	Take a given piece of verb code and wrap it in a function.
+	
+	This allows support of 'return' within verbs, and for verbs to return values.
+	"""
 	code = code.replace('\r\n', '\n')
 	code = code.replace('\n\r', '\n')
 	code = code.replace('\r', '\n')
@@ -24,12 +29,18 @@ def massage_verb_code(code):
 	return code
 
 def r_eval(code, environment, name="__eval__"):
+	"""
+	Evaluate an expression in the provided environment.
+	"""
 	if not(environment):
 		raise RuntimeError('No environment')
 	environment['__name__'] = name
 	return eval(code, environment)
 
 def r_exec(code, environment, name="__exec__"):
+	"""
+	Execute an expression in the provided environment.
+	"""
 	if not(environment):
 		raise RuntimeError('No environment')
 	
@@ -44,6 +55,9 @@ def r_exec(code, environment, name="__exec__"):
 		return environment["__result__"]
 
 def api(func):
+	"""
+	Mark a function in this module as being part of the verb API.
+	"""
 	def _api(p):
 		def __api(*args, **kwargs):
 			return func(p, *args, **kwargs)
@@ -56,6 +70,9 @@ def api(func):
 
 @api
 def task(p, delay, origin, verb_name, *args, **kwargs):
+	"""
+	Verb API: queue up a new task.
+	"""
 	#force exception here if undumpable
 	p.exchange.queue.send(p.caller, dict(
 		command		= 'task',
@@ -68,6 +85,9 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 
 @api
 def tasks(p):
+	"""
+	Verb API: Return a list of tasks for this user, or all tasks.
+	"""
 	if(p.caller.is_wizard()):
 		return p.exchange.get_tasks()
 	else:
@@ -75,7 +95,9 @@ def tasks(p):
 
 @api
 def write(p, user, text, is_error=False):
-	#print 'trying to write: ' + str(text)
+	"""
+	Verb API: Print a string of text to the user's console.
+	"""
 	p.exchange.queue.send(user.get_id(), dict(
 		command		= 'write',
 		text		= str(text),
@@ -84,7 +106,9 @@ def write(p, user, text, is_error=False):
 
 @api
 def observe(p, user, observations):
-	#print 'trying to display: ' + str(observations)
+	"""
+	Verb API: Send a dict of observations to the user's client.
+	"""
 	p.exchange.queue.send(user.get_id(), dict(
 		command			= 'observe',
 		observations	= observations,
@@ -92,13 +116,22 @@ def observe(p, user, observations):
 
 @api
 def get_object(p, key):
+	"""
+	Verb API: Load an object by its global name or ID.
+	"""
 	return p.exchange.get_object(key)
 
 @api
 def create_object(p, name, unique_name=False):
+	"""
+	Verb API: Create a new object.
+	"""
 	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=p.caller.get_id())
 
 def get_environment(p):
+	"""
+	Given the provided parser object, construct an environment dictionary.
+	"""
 	env = dict(
 		command			= p.command,
 		caller			= p.caller,

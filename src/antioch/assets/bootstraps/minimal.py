@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Default database bootstrap.
+Minimal database bootstrap.
 """
 
 from antioch import model, sql

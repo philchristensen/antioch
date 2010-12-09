@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Auth
+Authentication support.
 """
 
 from zope.interface import implements
@@ -19,8 +19,7 @@ from antioch import transact
 
 class TransactionChecker(object):
 	"""
-	This class allows us to authenticate against objects in
-	the database.
+	This class allows us to authenticate against objects in the database.
 	"""
 	implements(checkers.ICredentialsChecker)
 	
@@ -29,6 +28,9 @@ class TransactionChecker(object):
 		credentials.IAnonymous)
 	
 	def __init__(self, db_url=None):
+		"""
+		Check credentials against the database specified by the provided db_url.
+		"""
 		self.db_url = db_url
 	
 	@defer.inlineCallbacks
