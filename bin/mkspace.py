@@ -63,8 +63,8 @@ if(__name__ == '__main__'):
 		bootstrap_path = assets.get(default_bootstrap_path % config['dataset-name'])
 	bootstrap_path = os.path.abspath(bootstrap_path)
 	
-	bootstrap.initialize_database(config['with-psql'], config['db-url'], quiet=False)
-	bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path, config['psql-args'])
+	bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)
+	bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path)
 	
 	pool = dbapi.connect(config['db-url'])
 	bootstrap.load_python(pool, bootstrap_path)

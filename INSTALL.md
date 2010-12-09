@@ -38,17 +38,31 @@ the setuptools-based installer.
 
     python setup.py install
 
-Next you'll need to create the default database. By default, `mkspace` tries
-to connect to your PostgreSQL database as the `postgres` super-user.
+Make sure your RabbitMQ server is running. RabbitMQ can usually be installed
+by package on most UNIXes, and via MacPorts on OS X. The default configuration
+will usually suffice. (Details: currently antioch looks for a RabbitMQ server
+running on localhost:5672, connecting as guest/guest to the '/' vhost.)
+
+Next you'll need to create the default database:
 
     mkspace.py
+
+> By default, `mkspace` tries to connect to a PostgreSQL database running on
+> localhost:5432 as the `postgres` super-user. This is configurable by passing
+> additional `psql` arguments to mkspace.
 
 This should have created the `antioch` user and a corresponding database. Next
 you should be able to start up the server with:
 
     twistd -n antioch
 
-The -n will keep it in the foreground. You can redirect the request log to a file with `--accesslog` or send it to /dev/null.
+The -n will keep it in the foreground. You can redirect the request log to a
+file with `--accesslog` or send it to /dev/null.
+
+> Again, the default is to look for a PostgreSQL server on localhost:5432 and a
+> RabbitMQ on localhost:5672, however the time of this writing these were only
+> configurable via global variables in transact.py and messaging.py
+> respectively.
 
 
 Running the Client

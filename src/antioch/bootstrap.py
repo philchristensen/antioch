@@ -22,7 +22,7 @@ def get_dsn(db_url):
 	dsn['db'] = dsn['db'][1:]
 	return dsn
 
-def initialize_database(psql_path, db_url, quiet=True):
+def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	dsn = get_dsn(db_url)
 	
 	kwargs = {}
@@ -34,32 +34,32 @@ def initialize_database(psql_path, db_url, quiet=True):
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
 		'-c', "CREATE USER %(user)s WITH UNENCRYPTED PASSWORD '%(passwd)s';" % dsn,
-	], stdout=subprocess.PIPE, **kwargs).wait()
+	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
 		'-c', 'DROP DATABASE %(db)s;' % dsn,
-	], stdout=subprocess.PIPE, **kwargs).wait()
+	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
 		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
-	], stdout=subprocess.PIPE, **kwargs).wait()
+	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 
-def load_schema(psql_path, db_url, schema_path, psql_args=[], create=False):
+def load_schema(psql_path, db_url, schema_path, create=False):
 	dsn = get_dsn(db_url)
 	
 	cmd = [psql_path,
 		'-f', schema_path,
-		'-h', dsn.get('host') or 'localhost',
+		'-h', dsn['host'],
 		'-p', dsn.get('port') or '5432',
-		'-U', dsn.get('user') or 'postgres',
-		dsn.get('db') or 'antioch',
-	] + list(psql_args)
+		'-U', dsn['user'],
+		dsn['db'],
+	]
 	
 	child = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 	child.wait()
