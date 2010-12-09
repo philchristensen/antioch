@@ -12,6 +12,7 @@ everything else should work, but to be specific:
 
 * [Python         >=  2.5  ](http://www.python.org)
 * [PostgreSQL     >=  8.4  ](http://www.postgresql.org)
+* [RabbitMQ       >=  1.7  ](http://www.rabbitmq.com)
 * [Twisted        >= 10.1  ](http://www.twistedmatrix.com)
 * [Nevow          >=  0.10 ](http://divmod.org/trac/wiki/DivmodNevow)
 * [simplejson     >=  2.1.1](http://pypi.python.org/pypi/simplejson)
@@ -47,7 +48,7 @@ you should be able to start up the server with:
 
     twistd -n antioch
 
-The -n will keep it in the foreground.
+The -n will keep it in the foreground. You can redirect the request log to a file with `--accesslog` or send it to /dev/null.
 
 
 Running the Client
