@@ -19,7 +19,7 @@
     <div>
       
     </div>
-    <div>Verb execution environment<table class="fieldTable"></table></div>
+    <div>Provide the verb execution environment<table class="fieldTable"></table></div>
 
     
     
@@ -34,77 +34,84 @@
   </tr>
 <tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L20">20</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L23">23</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#massage_verb_code">massage_verb_code</a></td>
     <td><span>Take a given piece of verb code and wrap it in a function.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L36">36</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L39">39</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#r_eval">r_eval</a></td>
     <td><span>Evaluate an expression in the provided environment.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L48">48</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L51">51</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#r_exec">r_exec</a></td>
     <td><span>Execute an expression in the provided environment.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L69">69</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L71">71</a></td>
+    <td>Function</td>
+    <td><a href="antioch.code.html#restricted_import">restricted_import</a></td>
+    <td><span>Used to drastically limit the importable modules.</span></td>
+  </tr><tr class="function">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L79">79</a></td>
+    <td>Function</td>
+    <td><a href="antioch.code.html#get_restricted_environment">get_restricted_environment</a></td>
+    <td><span>Get a dictionary of the special environment needed for 
+RestrictedPython.</span></td>
+  </tr><tr class="function">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L98">98</a></td>
+    <td>Function</td>
+    <td><a href="antioch.code.html#get_environment">get_environment</a></td>
+    <td><span>Given the provided parser object, construct an environment 
+dictionary.</span></td>
+  </tr><tr class="function">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L143">143</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#api">api</a></td>
     <td><span>Mark a function in this module as being part of the verb API.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L84">84</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L158">158</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#task">task</a></td>
     <td><span>Verb API: queue up a new task.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L99">99</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L173">173</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#tasks">tasks</a></td>
     <td><span>Verb API: Return a list of tasks for this user, or all tasks.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L109">109</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L183">183</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#write">write</a></td>
     <td><span>Verb API: Print a string of text to the user's console.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L121">121</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L195">195</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#observe">observe</a></td>
     <td><span>Verb API: Send a dict of observations to the user's client.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L131">131</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L205">205</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#get_object">get_object</a></td>
     <td><span>Verb API: Load an object by its global name or ID.</span></td>
   </tr><tr class="function">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L138">138</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L212">212</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#create_object">create_object</a></td>
     <td><span>Verb API: Create a new object.</span></td>
-  </tr><tr class="function">
-    
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L144">144</a></td>
-    <td>Function</td>
-    <td><a href="antioch.code.html#get_environment">get_environment</a></td>
-    <td><span>Given the provided parser object, construct an environment 
-dictionary.</span></td>
-  </tr><tr class="class">
-    
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L189">189</a></td>
-    <td>Class</td>
-    <td><a href="antioch.code.MetaImporter.html">MetaImporter</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
   </tr>
   
 </table>
@@ -126,7 +133,7 @@ dictionary.</span></td>
     
     def
     massage_verb_code(code):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L20" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L23" class="functionSourceLink">
       
       (source)
     </a>
@@ -147,8 +154,8 @@ values.<table class="fieldTable"></table></div>
   <div class="functionHeader">
     
     def
-    r_eval(code, environment, name='__eval__'):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L36" class="functionSourceLink">
+    r_eval(src, environment, runtype='eval'):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L39" class="functionSourceLink">
       
       (source)
     </a>
@@ -167,8 +174,8 @@ values.<table class="fieldTable"></table></div>
   <div class="functionHeader">
     
     def
-    r_exec(code, environment, name='__exec__'):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L48" class="functionSourceLink">
+    r_exec(src, environment, runtype='exec'):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L51" class="functionSourceLink">
       
       (source)
     </a>
@@ -176,6 +183,68 @@ values.<table class="fieldTable"></table></div>
   <div class="functionBody">
     
     <div>Execute an expression in the provided environment.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.code.restricted_import">
+    
+  </a>
+  <a name="restricted_import">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    restricted_import(name, gdict, ldict, fromlist, level=-1):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L71" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Used to drastically limit the importable modules.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.code.get_restricted_environment">
+    
+  </a>
+  <a name="get_restricted_environment">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_restricted_environment():
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L79" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Get a dictionary of the special environment needed for 
+RestrictedPython.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.code.get_environment">
+    
+  </a>
+  <a name="get_environment">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_environment(p):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L98" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Given the provided parser object, construct an environment 
+dictionary.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.code.api">
@@ -188,7 +257,7 @@ values.<table class="fieldTable"></table></div>
     
     def
     api(func):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L69" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L143" class="functionSourceLink">
       
       (source)
     </a>
@@ -208,7 +277,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     task(p, delay, origin, verb_name, *args, **kwargs):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L84" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L158" class="functionSourceLink">
       
       (source)
     </a>
@@ -228,7 +297,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     tasks(p):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L99" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L173" class="functionSourceLink">
       
       (source)
     </a>
@@ -248,7 +317,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     write(p, user, text, is_error=False, escape_html=True):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L109" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L183" class="functionSourceLink">
       
       (source)
     </a>
@@ -268,7 +337,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     observe(p, user, observations):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L121" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L195" class="functionSourceLink">
       
       (source)
     </a>
@@ -288,7 +357,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     get_object(p, key):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L131" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L205" class="functionSourceLink">
       
       (source)
     </a>
@@ -308,7 +377,7 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     create_object(p, name, unique_name=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L138" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L212" class="functionSourceLink">
       
       (source)
     </a>
@@ -317,30 +386,9 @@ values.<table class="fieldTable"></table></div>
     
     <div>Verb API: Create a new object.<table class="fieldTable"></table></div>
   </div>
-</div><div class="function">
-  <a name="antioch.code.get_environment">
-    
-  </a>
-  <a name="get_environment">
-    
-  </a>
-  <div class="functionHeader">
-    
-    def
-    get_environment(p):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L144" class="functionSourceLink">
-      
-      (source)
-    </a>
-  </div>
-  <div class="functionBody">
-    
-    <div>Given the provided parser object, construct an environment 
-dictionary.<table class="fieldTable"></table></div>
-  </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 15:04:24.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 15:11:17.
     </address>
   </body>
 </html>

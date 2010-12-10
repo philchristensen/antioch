@@ -13,18 +13,21 @@
     <h1 class="class">a.e.ObjectExchange(<span title="object">object</span>) : class documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.exchange.html">exchange</a></span>
-      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L48">View Source</a>
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L51">View Source</a>
       <a href="classIndex.html#antioch.exchange.ObjectExchange">View In Hierarchy</a>
     </p>
     <div>
       
     </div>
-    <div class="undocumented">No class docstring</div>
+    <div>Database transaction layer.</p>
+<p>This class contains all the queries used to interact with the relational
+database. It doesn't take into consideration of who is calling it; that it 
+dealt with by the object model itself.<table class="fieldTable"></table></div>
 
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id94">
+      <table class="children sortable" id="id93">
   
   <tr>
     <th>Line #</th>
@@ -34,385 +37,388 @@
   </tr>
 <tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L51">51</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L62">62</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#__init__">__init__</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Create a new object exchange.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L66">66</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L84">84</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#__enter__">__enter__</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Most interactions with an object exchange should take place in a 
+context.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L72">72</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L93">93</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#begin">begin</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Start a database transaction.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L75">75</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L99">99</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#commit">commit</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Complete a database transaction.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L80">80</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L107">107</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#rollback">rollback</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Roll-back a database transaction.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L83">83</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L113">113</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#__exit__">__exit__</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Ensure that non-UserError exceptions rollback the transaction.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L114">114</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L147">147</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_context">get_context</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Return the user this exchange is acting in the context of.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L117">117</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L153">153</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#load_permissions">load_permissions</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Pre-load the list of existing permissions.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L122">122</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L161">161</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#activate_default_grants">activate_default_grants</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Setup the default grants verb (`set_default_permissions`).</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L137">137</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L179">179</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#instantiate">instantiate</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Instantiate an object either by loading its record by ID from the 
+database, or creating a new one.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L249">249</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L306">306</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#dequeue">dequeue</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="method">
-    
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L258">258</a></td>
-    <td>Method</td>
-    <td><a href="antioch.exchange.ObjectExchange.html#load">load</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="method">
-    
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L277">277</a></td>
-    <td>Method</td>
-    <td><a href="antioch.exchange.ObjectExchange.html#save">save</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Clear and save the cache, and send all pending messages.</span></td>
   </tr><tr class="method">
     
     <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L318">318</a></td>
     <td>Method</td>
-    <td><a href="antioch.exchange.ObjectExchange.html#get_object">get_object</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><a href="antioch.exchange.ObjectExchange.html#load">load</a></td>
+    <td><span>Load a specific object from the database.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L358">358</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L340">340</a></td>
+    <td>Method</td>
+    <td><a href="antioch.exchange.ObjectExchange.html#save">save</a></td>
+    <td><span>Save the provided model back into the database.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L384">384</a></td>
+    <td>Method</td>
+    <td><a href="antioch.exchange.ObjectExchange.html#get_object">get_object</a></td>
+    <td><span>Return the object specified by the provided key.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L430">430</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_aliases">get_aliases</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Return all aliases for the given object ID.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L362">362</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L437">437</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#add_alias">add_alias</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Add an aliases for the provided object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L365">365</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L443">443</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_alias">remove_alias</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Remove an aliases for the provided object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L368">368</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L449">449</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_observers">get_observers</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Get a list of objects currently observing the provided object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L379">379</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L463">463</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_observing">get_observing</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Get the object that the provided object is observing.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L390">390</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L477">477</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#clear_observers">clear_observers</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Make all current observers stop paying attention to the provided 
+object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L393">393</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L483">483</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#add_observer">add_observer</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Add an observer for the provided object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L396">396</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L489">489</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_observer">remove_observer</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Remove an observer for the provided object.</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L399">399</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L495">495</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_parents">get_parents</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L426">426</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L522">522</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#has_parent">has_parent</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L450">450</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L546">546</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_parent">remove_parent</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L455">455</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L551">551</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#add_parent">add_parent</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L460">460</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L556">556</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#has">has</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L499">499</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L595">595</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_ancestor_with">get_ancestor_with</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L534">534</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L630">630</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_verb">get_verb</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L564">564</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L660">660</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_verb">remove_verb</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L569">569</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L665">665</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_verb_list">get_verb_list</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L579">579</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L675">675</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_property_list">get_property_list</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L587">587</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L683">683</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_verb_names">get_verb_names</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L591">591</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L687">687</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#add_verb_name">add_verb_name</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L594">594</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L690">690</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_verb_name">remove_verb_name</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L597">597</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L693">693</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_property">get_property</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L626">626</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L722">722</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove_property">remove_property</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L631">631</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L727">727</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#refs">refs</a></td>
     <td><span>How many objects in the store share the name given?</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L638">638</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L734">734</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#is_unique_name">is_unique_name</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L645">645</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L741">741</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#remove">remove</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L649">649</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L745">745</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#is_player">is_player</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L653">653</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L749">749</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#is_wizard">is_wizard</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L657">657</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L753">753</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#is_connected_player">is_connected_player</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L666">666</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L762">762</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#set_player">set_player</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L687">687</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L783">783</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#login_player">login_player</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L690">690</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L786">786</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#logout_player">logout_player</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L693">693</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L789">789</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_contents">get_contents</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L711">711</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L807">807</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#find">find</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L738">738</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L834">834</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#contains">contains</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L766">766</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L862">862</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_access">get_access</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L775">775</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L871">871</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#update_access">update_access</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L820">820</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L916">916</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#is_allowed">is_allowed</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L852">852</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L948">948</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#allow">allow</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L855">855</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L951">951</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#deny">deny</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L883">883</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L979">979</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#validate_password">validate_password</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L896">896</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L992">992</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#iterate_task">iterate_task</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L924">924</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1020">1020</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#register_task">register_task</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L935">935</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1031">1031</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_task">get_task</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L939">939</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1035">1035</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#get_tasks">get_tasks</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method private">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L188">188</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L233">233</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#_mkobject">_mkobject</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Instantiate a model.Object</span></td>
   </tr><tr class="method private">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L198">198</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L246">246</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#_mkverb">_mkverb</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Instantiate a model.Verb</span></td>
   </tr><tr class="method private">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L210">210</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L261">261</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#_mkproperty">_mkproperty</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Instantiate a model.Property</span></td>
   </tr><tr class="method private">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L224">224</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L278">278</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#_mkpermission">_mkpermission</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Instantiate a model.Permission</span></td>
   </tr><tr class="method private">
     
-    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L858">858</a></td>
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L954">954</a></td>
     <td>Method</td>
     <td><a href="antioch.exchange.ObjectExchange.html#_grant">_grant</a></td>
     <td><span class="undocumented">Undocumented</span></td>
@@ -437,14 +443,17 @@
     
     def
     __init__(self, pool, queue=None, ctx=None):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L51" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L62" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Create a new object exchange.</p>
+<p>The result is attached to the provided ConnectionPool and MessageQueue, 
+and if the object context (`ctx`) is passed along, ensures rights 
+enforcement for all objects.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.__enter__">
@@ -457,14 +466,15 @@
     
     def
     __enter__(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L66" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L84" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Most interactions with an object exchange should take place in a 
+context.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.begin">
@@ -477,14 +487,14 @@
     
     def
     begin(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L72" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L93" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Start a database transaction.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.commit">
@@ -497,14 +507,14 @@
     
     def
     commit(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L75" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L99" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Complete a database transaction.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.rollback">
@@ -517,14 +527,14 @@
     
     def
     rollback(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L80" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L107" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Roll-back a database transaction.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.__exit__">
@@ -537,14 +547,14 @@
     
     def
     __exit__(self, etype, e, trace):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L83" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L113" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Ensure that non-UserError exceptions rollback the transaction.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_context">
@@ -557,14 +567,14 @@
     
     def
     get_context(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L114" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L147" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Return the user this exchange is acting in the context of.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.load_permissions">
@@ -577,14 +587,14 @@
     
     def
     load_permissions(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L117" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L153" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Pre-load the list of existing permissions.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.activate_default_grants">
@@ -597,14 +607,14 @@
     
     def
     activate_default_grants(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L122" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L161" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Setup the default grants verb (`set_default_permissions`).<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.instantiate">
@@ -617,14 +627,15 @@
     
     def
     instantiate(self, obj_type, *additions, record=None, **fields):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L137" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L179" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Instantiate an object either by loading its record by ID from the 
+database, or creating a new one.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange._mkobject">
@@ -637,14 +648,14 @@
     
     def
     _mkobject(self, record):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L188" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L233" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Instantiate a model.Object<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange._mkverb">
@@ -657,14 +668,14 @@
     
     def
     _mkverb(self, record):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L198" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L246" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Instantiate a model.Verb<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange._mkproperty">
@@ -677,14 +688,14 @@
     
     def
     _mkproperty(self, record):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L210" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L261" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Instantiate a model.Property<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange._mkpermission">
@@ -697,14 +708,14 @@
     
     def
     _mkpermission(self, record):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L224" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L278" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Instantiate a model.Permission<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.dequeue">
@@ -717,14 +728,14 @@
     @defer.inlineCallbacks<br />
     def
     dequeue(self):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L249" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L306" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Clear and save the cache, and send all pending messages.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.load">
@@ -737,14 +748,14 @@
     
     def
     load(self, obj_type, obj_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L258" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L318" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Load a specific object from the database.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.save">
@@ -757,14 +768,14 @@
     
     def
     save(self, obj):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L277" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L340" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Save the provided model back into the database.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_object">
@@ -777,14 +788,16 @@
     
     def
     get_object(self, key, return_list=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L318" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L384" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Return the object specified by the provided key.</p>
+<p>If return_list is True, ambiguous object keys will return a list of 
+matching objects.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_aliases">
@@ -797,14 +810,14 @@
     
     def
     get_aliases(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L358" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L430" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Return all aliases for the given object ID.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.add_alias">
@@ -817,14 +830,14 @@
     
     def
     add_alias(self, object_id, alias):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L362" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L437" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Add an aliases for the provided object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.remove_alias">
@@ -837,14 +850,14 @@
     
     def
     remove_alias(self, object_id, alias):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L365" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L443" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Remove an aliases for the provided object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_observers">
@@ -857,14 +870,14 @@
     
     def
     get_observers(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L368" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L449" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Get a list of objects currently observing the provided object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_observing">
@@ -877,14 +890,14 @@
     
     def
     get_observing(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L379" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L463" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Get the object that the provided object is observing.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.clear_observers">
@@ -897,14 +910,15 @@
     
     def
     clear_observers(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L390" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L477" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Make all current observers stop paying attention to the provided 
+object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.add_observer">
@@ -917,14 +931,14 @@
     
     def
     add_observer(self, object_id, observer_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L393" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L483" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Add an observer for the provided object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.remove_observer">
@@ -937,14 +951,14 @@
     
     def
     remove_observer(self, object_id, observer_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L396" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L489" class="functionSourceLink">
       
       (source)
     </a>
   </div>
   <div class="functionBody">
     
-    <div class="undocumented">Undocumented</div>
+    <div>Remove an observer for the provided object.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.exchange.ObjectExchange.get_parents">
@@ -957,7 +971,7 @@
     
     def
     get_parents(self, object_id, recurse=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L399" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L495" class="functionSourceLink">
       
       (source)
     </a>
@@ -977,7 +991,7 @@
     
     def
     has_parent(self, child_id, parent_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L426" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L522" class="functionSourceLink">
       
       (source)
     </a>
@@ -997,7 +1011,7 @@
     
     def
     remove_parent(self, child_id, parent_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L450" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L546" class="functionSourceLink">
       
       (source)
     </a>
@@ -1017,7 +1031,7 @@
     
     def
     add_parent(self, child_id, parent_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L455" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L551" class="functionSourceLink">
       
       (source)
     </a>
@@ -1037,7 +1051,7 @@
     
     def
     has(self, origin_id, item_type, name, recurse=True, unrestricted=True):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L460" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L556" class="functionSourceLink">
       
       (source)
     </a>
@@ -1057,7 +1071,7 @@
     
     def
     get_ancestor_with(self, descendent_id, attribute_type, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L499" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L595" class="functionSourceLink">
       
       (source)
     </a>
@@ -1077,7 +1091,7 @@
     
     def
     get_verb(self, origin_id, name, recurse=True):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L534" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L630" class="functionSourceLink">
       
       (source)
     </a>
@@ -1097,7 +1111,7 @@
     
     def
     remove_verb(self, origin_id, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L564" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L660" class="functionSourceLink">
       
       (source)
     </a>
@@ -1117,7 +1131,7 @@
     
     def
     get_verb_list(self, origin_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L569" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L665" class="functionSourceLink">
       
       (source)
     </a>
@@ -1137,7 +1151,7 @@
     
     def
     get_property_list(self, origin_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L579" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L675" class="functionSourceLink">
       
       (source)
     </a>
@@ -1157,7 +1171,7 @@
     
     def
     get_verb_names(self, verb_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L587" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L683" class="functionSourceLink">
       
       (source)
     </a>
@@ -1177,7 +1191,7 @@
     
     def
     add_verb_name(self, verb_id, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L591" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L687" class="functionSourceLink">
       
       (source)
     </a>
@@ -1197,7 +1211,7 @@
     
     def
     remove_verb_name(self, verb_id, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L594" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L690" class="functionSourceLink">
       
       (source)
     </a>
@@ -1217,7 +1231,7 @@
     
     def
     get_property(self, origin_id, name, recurse=True):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L597" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L693" class="functionSourceLink">
       
       (source)
     </a>
@@ -1237,7 +1251,7 @@
     
     def
     remove_property(self, origin_id, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L626" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L722" class="functionSourceLink">
       
       (source)
     </a>
@@ -1257,7 +1271,7 @@
     
     def
     refs(self, key):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L631" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L727" class="functionSourceLink">
       
       (source)
     </a>
@@ -1277,7 +1291,7 @@
     
     def
     is_unique_name(self, key):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L638" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L734" class="functionSourceLink">
       
       (source)
     </a>
@@ -1297,7 +1311,7 @@
     
     def
     remove(self, obj_type, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L645" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L741" class="functionSourceLink">
       
       (source)
     </a>
@@ -1317,7 +1331,7 @@
     
     def
     is_player(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L649" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L745" class="functionSourceLink">
       
       (source)
     </a>
@@ -1337,7 +1351,7 @@
     
     def
     is_wizard(self, object_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L653" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L749" class="functionSourceLink">
       
       (source)
     </a>
@@ -1357,7 +1371,7 @@
     
     def
     is_connected_player(self, avatar_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L657" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L753" class="functionSourceLink">
       
       (source)
     </a>
@@ -1377,7 +1391,7 @@
     
     def
     set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L666" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L762" class="functionSourceLink">
       
       (source)
     </a>
@@ -1397,7 +1411,7 @@
     
     def
     login_player(self, avatar_id, session_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L687" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L783" class="functionSourceLink">
       
       (source)
     </a>
@@ -1417,7 +1431,7 @@
     
     def
     logout_player(self, avatar_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L690" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L786" class="functionSourceLink">
       
       (source)
     </a>
@@ -1437,7 +1451,7 @@
     
     def
     get_contents(self, container_id, recurse=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L693" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L789" class="functionSourceLink">
       
       (source)
     </a>
@@ -1457,7 +1471,7 @@
     
     def
     find(self, container_id, name):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L711" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L807" class="functionSourceLink">
       
       (source)
     </a>
@@ -1477,7 +1491,7 @@
     
     def
     contains(self, container_id, object_id, recurse=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L738" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L834" class="functionSourceLink">
       
       (source)
     </a>
@@ -1497,7 +1511,7 @@
     
     def
     get_access(self, object_id, type):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L766" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L862" class="functionSourceLink">
       
       (source)
     </a>
@@ -1517,7 +1531,7 @@
     
     def
     update_access(self, access_id, rule, access, accessor, permission, weight, subject, deleted):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L775" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L871" class="functionSourceLink">
       
       (source)
     </a>
@@ -1537,7 +1551,7 @@
     
     def
     is_allowed(self, accessor, permission, subject):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L820" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L916" class="functionSourceLink">
       
       (source)
     </a>
@@ -1557,7 +1571,7 @@
     
     def
     allow(self, subject, accessor, permission, create=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L852" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L948" class="functionSourceLink">
       
       (source)
     </a>
@@ -1577,7 +1591,7 @@
     
     def
     deny(self, subject, accessor, permission, create=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L855" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L951" class="functionSourceLink">
       
       (source)
     </a>
@@ -1597,7 +1611,7 @@
     
     def
     _grant(self, rule, subject, accessor, permission, create=False):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L858" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L954" class="functionSourceLink">
       
       (source)
     </a>
@@ -1617,7 +1631,7 @@
     
     def
     validate_password(self, object_id, password):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L883" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L979" class="functionSourceLink">
       
       (source)
     </a>
@@ -1637,7 +1651,7 @@
     
     def
     iterate_task(self, responder):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L896" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L992" class="functionSourceLink">
       
       (source)
     </a>
@@ -1657,7 +1671,7 @@
     
     def
     register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L924" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1020" class="functionSourceLink">
       
       (source)
     </a>
@@ -1677,7 +1691,7 @@
     
     def
     get_task(self, task_id):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L935" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1031" class="functionSourceLink">
       
       (source)
     </a>
@@ -1697,7 +1711,7 @@
     
     def
     get_tasks(self, user_id=None):
-    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L939" class="functionSourceLink">
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/exchange.py#L1035" class="functionSourceLink">
       
       (source)
     </a>
@@ -1708,7 +1722,7 @@
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 15:04:24.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 15:11:17.
     </address>
   </body>
 </html>
