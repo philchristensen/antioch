@@ -1,5 +1,7 @@
 #!/bin/sh
 
+git submodule init
+git submodule update
 pydoctor --add-package=source/src/antioch --make-html --project-name=antioch \
 	--project-url=http://philchristensen.github.com/antioch \
 	--project-base-dir=/philchristensen/antioch/raw/master/ \
