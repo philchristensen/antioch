@@ -32,6 +32,9 @@ salt = list(string.printable[:])
 profile_exchange = False
 
 def extract_id(literal):
+	"""
+	Given an object literal, return the object ID.
+	"""
 	if(isinstance(literal, basestring) and literal.startswith('#')):
 		end = literal.find("(")
 		if(end == -1):
@@ -46,9 +49,24 @@ def extract_id(literal):
 	return None
 
 class ObjectExchange(object):
+	"""
+	Database transaction layer.
+	
+	This class contains all the queries used to interact with the relational
+	database. It doesn't take into consideration of who is calling it; that it
+	dealt with by the object model itself.
+	"""
+	
 	permission_list = None
 	
 	def __init__(self, pool, queue=None, ctx=None):
+		"""
+		Create a new object exchange.
+		
+		The result is attached to the provided ConnectionPool and MessageQueue, 
+		and if the object context (`ctx`) is passed along, ensures rights
+		enforcement for all objects.
+		"""
 		self.cache = util.OrderedDict()
 		self.pool = pool
 		self.queue = queue
@@ -64,23 +82,38 @@ class ObjectExchange(object):
 			self.ctx = self.get_object(ctx)
 	
 	def __enter__(self):
+		"""
+		Most interactions with an object exchange should take place in a context.
+		"""
 		self.begin()
 		if(profile_exchange):
 			self.transaction_started = time.time()
 		return self
 	
 	def begin(self):
+		"""
+		Start a database transaction.
+		"""
 		self.pool.runOperation('BEGIN')
 	
 	def commit(self):
+		"""
+		Complete a database transaction.
+		"""
 		if(profile_exchange):
 			print '[exchange] transaction took %s seconds' % (time.time() - self.transaction_started)
 		self.pool.runOperation('COMMIT')
 	
 	def rollback(self):
+		"""
+		Roll-back a database transaction.
+		"""
 		self.pool.runOperation('ROLLBACK')
 	
 	def __exit__(self, etype, e, trace):
+		"""
+		Ensure that non-UserError exceptions rollback the transaction.
+		"""
 		try:
 			if(etype is errors.TestError):
 				self.commit()
@@ -112,14 +145,23 @@ class ObjectExchange(object):
 			self.dequeue()
 	
 	def get_context(self):
+		"""
+		Return the user this exchange is acting in the context of.
+		"""
 		return self.ctx
 	
 	def load_permissions(self):
+		"""
+		Pre-load the list of existing permissions.
+		"""
 		if not(ObjectExchange.permission_list):
 			results = self.pool.runQuery(sql.build_select('permission'))
 			ObjectExchange.permission_list = dict([(x['name'], x['id']) for x in results])
 	
 	def activate_default_grants(self):
+		"""
+		Setup the default grants verb (`set_default_permissions`).
+		"""
 		if(self.default_grants_active):
 			return
 		system = self.instantiate('object', default_permissions=False, id=1)
@@ -135,6 +177,9 @@ class ObjectExchange(object):
 		self.default_grants_active = True
 	
 	def instantiate(self, obj_type, record=None, *additions, **fields):
+		"""
+		Instantiate an object either by loading its record by ID from the database, or creating a new one.
+		"""
 		records = []
 		if(record):
 			records.append(record)
@@ -186,6 +231,9 @@ class ObjectExchange(object):
 		return results
 	
 	def _mkobject(self, record):
+		"""
+		Instantiate a model.Object
+		"""
 		obj = model.Object(self)
 		
 		obj._name = record.get('name', '')
@@ -196,6 +244,9 @@ class ObjectExchange(object):
 		return obj
 	
 	def _mkverb(self, record):
+		"""
+		Instantiate a model.Verb
+		"""
 		origin = self.instantiate('object', id=record['origin_id'])
 		v = model.Verb(origin)
 		
@@ -208,6 +259,9 @@ class ObjectExchange(object):
 		return v
 	
 	def _mkproperty(self, record):
+		"""
+		Instantiate a model.Property
+		"""
 		origin = self.instantiate('object', id=record['origin_id'])
 		p = model.Property(origin)
 		
@@ -222,6 +276,9 @@ class ObjectExchange(object):
 		return p
 	
 	def _mkpermission(self, record):
+		"""
+		Instantiate a model.Permission
+		"""
 		origin = None
 		for origin_type in ('object', 'verb', 'property'):
 			origin_id = record.get('%s_id' % origin_type, None)
@@ -247,6 +304,9 @@ class ObjectExchange(object):
 	
 	@defer.inlineCallbacks
 	def dequeue(self):
+		"""
+		Clear and save the cache, and send all pending messages.
+		"""
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
@@ -256,6 +316,9 @@ class ObjectExchange(object):
 				pass
 	
 	def load(self, obj_type, obj_id):
+		"""
+		Load a specific object from the database.
+		"""
 		obj_key = '%s-%s' % (obj_type, obj_id)
 		if(obj_key in self.cache):
 			return self.cache[obj_key]
@@ -275,6 +338,9 @@ class ObjectExchange(object):
 		return obj
 	
 	def save(self, obj):
+		"""
+		Save the provided model back into the database.
+		"""
 		obj_type = type(obj).__name__.lower()
 		obj_id = obj.get_id()
 		
@@ -316,6 +382,12 @@ class ObjectExchange(object):
 			self.cache[object_key] = obj
 	
 	def get_object(self, key, return_list=False):
+		"""
+		Return the object specified by the provided key.
+		
+		If return_list is True, ambiguous object keys will return a list
+		of matching objects.
+		"""
 		if(isinstance(key, basestring)):
 			key = key.strip()
 		try:
@@ -356,16 +428,28 @@ class ObjectExchange(object):
 			raise ValueError("Invalid key type: %r" % repr(key))
 	
 	def get_aliases(self, object_id):
+		"""
+		Return all aliases for the given object ID.
+		"""
 		result = self.pool.runQuery(sql.interp("SELECT alias FROM object_alias WHERE object_id = %s", object_id))
 		return [x['alias'] for x in result] 
 	
 	def add_alias(self, object_id, alias):
+		"""
+		Add an aliases for the provided object.
+		"""
 		self.pool.runOperation(sql.build_insert('object_alias', object_id=object_id, alias=alias));
 	
 	def remove_alias(self, object_id, alias):
+		"""
+		Remove an aliases for the provided object.
+		"""
 		self.pool.runOperation(sql.build_delete('object_alias', object_id=object_id, alias=alias));
 	
 	def get_observers(self, object_id):
+		"""
+		Get a list of objects currently observing the provided object.
+		"""
 		result = self.instantiate('object', *self.pool.runQuery(sql.interp(
 			"""SELECT o.*
 				FROM object o
@@ -377,6 +461,9 @@ class ObjectExchange(object):
 		return result
 	
 	def get_observing(self, object_id):
+		"""
+		Get the object that the provided object is observing.
+		"""
 		result = self.instantiate('object', *self.pool.runQuery(sql.interp(
 			"""SELECT o.*
 				FROM object o
@@ -388,12 +475,21 @@ class ObjectExchange(object):
 		return result
 	
 	def clear_observers(self, object_id):
+		"""
+		Make all current observers stop paying attention to the provided object.
+		"""
 		self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id));
 	
 	def add_observer(self, object_id, observer_id):
+		"""
+		Add an observer for the provided object.
+		"""
 		self.pool.runOperation(sql.build_insert('object_observer', object_id=object_id, observer_id=observer_id));
 	
 	def remove_observer(self, object_id, observer_id):
+		"""
+		Remove an observer for the provided object.
+		"""
 		self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id, observer_id=observer_id));
 	
 	def get_parents(self, object_id, recurse=False):

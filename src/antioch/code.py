@@ -69,11 +69,17 @@ def r_exec(src, environment, runtype="exec"):
 		return environment["returnValue"]
 
 def restricted_import(name, gdict, ldict, fromlist, level=-1):
+	"""
+	Used to drastically limit the importable modules.
+	"""
 	if(name in allowed_modules):
 		return __builtins__['__import__'](name, gdict, ldict, fromlist, level)
 	raise ImportError('Restricted: %s' % name)
 
 def get_restricted_environment():
+	"""
+	Get a dictionary of the special environment needed for RestrictedPython.
+	"""
 	def _print_(s):
 		write(caller, s)
 	safe_builtins['__import__'] = restricted_import
