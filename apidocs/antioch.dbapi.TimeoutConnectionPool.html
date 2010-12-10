@@ -3,14 +3,14 @@
   "DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>API docs for &ldquo;antioch.dbapi.TimeoutConnectionPool&rdquo;</title>
+    <title>antioch.dbapi.TimeoutConnectionPool : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
     
     
   </head>
   <body>
-    <h1 class="class">Class a.d.TimeoutConnectionPool(<span title="twisted.enterprise.adbapi.ConnectionPool">adbapi.ConnectionPool</span>):</h1>
+    <h1 class="class">a.d.TimeoutConnectionPool(<a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html">adbapi.ConnectionPool</a>) : class documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.dbapi.html">dbapi</a></span>
       
@@ -25,7 +25,7 @@ timeout value.<table class="fieldTable"></table></div>
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id16">
+      <table class="children sortable" id="id51">
   
   
 <tr class="method">
@@ -33,7 +33,7 @@ timeout value.<table class="fieldTable"></table></div>
     
     <td>Method</td>
     <td><a href="antioch.dbapi.TimeoutConnectionPool.html#__init__">__init__</a></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span>Create a new ConnectionPool.</span></td>
   </tr><tr class="method">
     
     
@@ -63,6 +63,94 @@ connections in this pool.</span></td>
   
 </table>
       
+        <p>
+          Inherited from <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html">ConnectionPool</a>:
+        </p>
+        <table class="children sortable" id="id52">
+  
+  
+<tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#start">start</a></td>
+    <td><span>Start the connection pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runWithConnection">runWithConnection</a></td>
+    <td><span>Execute a function with a database connection and return the result.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runInteraction">runInteraction</a></td>
+    <td><span>Interact with the database and return the result.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#close">close</a></td>
+    <td><span>Close all pool connections and shutdown the pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#finalClose">finalClose</a></td>
+    <td><span>This should only be called by the shutdown trigger.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#disconnect">disconnect</a></td>
+    <td><span>Disconnect a database connection associated with this pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__getstate__">__getstate__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__setstate__">__setstate__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_start">_start</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runWithConnection">_runWithConnection</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_close">_close</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runQuery">_runQuery</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runOperation">_runOperation</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+  
+</table>
+      
       
     </div>
     
@@ -83,8 +171,26 @@ connections in this pool.</span></td>
     
   </div>
   <div class="functionBody">
-    <div class="interfaceinfo">overridden in <a href="antioch.dbapi.SynchronousConnectionPool.html">antioch.dbapi.SynchronousConnectionPool</a></div>
-    <div class="undocumented">Undocumented</div>
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__init__">twisted.enterprise.adbapi.ConnectionPool.__init__</a></div><div class="interfaceinfo">overridden in <a href="antioch.dbapi.SynchronousConnectionPool.html">antioch.dbapi.SynchronousConnectionPool</a></div>
+    <div>Create a new ConnectionPool.</p>
+<p>Any positional or keyword arguments other than those documented here are
+passed to the DB-API object when connecting. Use these arguments to pass 
+database names, usernames, passwords, etc.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">dbapiName</td><td>an import string to use to obtain a DB-API compatible module (e.g. 
+'pyPgSQL.PgSQL')
+</td></tr><tr><td></td><td class="fieldArg">cp_min</td><td>the minimum number of connections in pool (default 3)
+</td></tr><tr><td></td><td class="fieldArg">cp_max</td><td>the maximum number of connections in pool (default 5)
+</td></tr><tr><td></td><td class="fieldArg">cp_noisy</td><td>generate informational log messages during operation (default False)
+</td></tr><tr><td></td><td class="fieldArg">cp_openfun</td><td>a callback invoked after every connect() on the underlying DB-API object. 
+The callback is passed a new DB-API connection object.  This callback can 
+setup per-connection state such as charset, timezone, etc.
+</td></tr><tr><td></td><td class="fieldArg">cp_reconnect</td><td>detect connections which have failed and reconnect (default False). Failed 
+connections may result in ConnectionLost exceptions, which indicate the 
+query may need to be re-sent.
+</td></tr><tr><td></td><td class="fieldArg">cp_good_sql</td><td>an sql query which should always succeed and change no state (default 
+'select 1')
+</td></tr><tr><td></td><td class="fieldArg">cp_reactor</td><td>use this reactor instead of the global reactor (added in Twisted 10.2).
+ (type: <code>IReactorCore</code> provider
+)</td></tr></table></div>
   </div>
 </div><div class="function">
   <a name="antioch.dbapi.TimeoutConnectionPool.connect">
@@ -100,7 +206,7 @@ connections in this pool.</span></td>
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#connect">twisted.enterprise.adbapi.ConnectionPool.connect</a></div>
     <div>Ask the ConnectionPool for a connection.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
@@ -117,7 +223,7 @@ connections in this pool.</span></td>
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runOperation">twisted.enterprise.adbapi.ConnectionPool.runOperation</a></div>
     <div>Trivial override to provide debugging support.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
@@ -134,7 +240,7 @@ connections in this pool.</span></td>
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runQuery">twisted.enterprise.adbapi.ConnectionPool.runQuery</a></div>
     <div>Trivial override to provide debugging support.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
@@ -151,7 +257,7 @@ connections in this pool.</span></td>
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runInteraction">twisted.enterprise.adbapi.ConnectionPool._runInteraction</a></div>
     <div>An internal function to run a SQL statement through one of the 
 connections in this pool.</p>
 <p>This version of the method ensures that all drivers return a 
@@ -160,7 +266,7 @@ column-&gt;value dict. This can also be handled by the driver layer itself
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
     </address>
   </body>
 </html>

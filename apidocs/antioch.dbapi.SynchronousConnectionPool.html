@@ -3,14 +3,14 @@
   "DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>API docs for &ldquo;antioch.dbapi.SynchronousConnectionPool&rdquo;</title>
+    <title>antioch.dbapi.SynchronousConnectionPool : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
     
     
   </head>
   <body>
-    <h1 class="class">Class a.d.SynchronousConnectionPool(<a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>):</h1>
+    <h1 class="class">a.d.SynchronousConnectionPool(<a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>) : class documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.dbapi.html">dbapi</a></span>
       
@@ -25,7 +25,7 @@ object so that it may be used from within a syncronous application<table class="
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id18">
+      <table class="children sortable" id="id54">
   
   
 <tr class="method">
@@ -59,7 +59,7 @@ object so that it may be used from within a syncronous application<table class="
         <p>
           Inherited from <a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>:
         </p>
-        <table class="children sortable" id="id19">
+        <table class="children sortable" id="id55">
   
   
 <tr class="basemethod">
@@ -87,6 +87,76 @@ object so that it may be used from within a syncronous application<table class="
     <td><a href="antioch.dbapi.TimeoutConnectionPool.html#_runInteraction">_runInteraction</a></td>
     <td><span>An internal function to run a SQL statement through one of the 
 connections in this pool.</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html">ConnectionPool</a> (via <a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>):
+        </p>
+        <table class="children sortable" id="id56">
+  
+  
+<tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#start">start</a></td>
+    <td><span>Start the connection pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#close">close</a></td>
+    <td><span>Close all pool connections and shutdown the pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#finalClose">finalClose</a></td>
+    <td><span>This should only be called by the shutdown trigger.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#disconnect">disconnect</a></td>
+    <td><span>Disconnect a database connection associated with this pool.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__getstate__">__getstate__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__setstate__">__setstate__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_start">_start</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runWithConnection">_runWithConnection</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_close">_close</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runQuery">_runQuery</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
   </tr>
   
 </table>
@@ -130,7 +200,7 @@ started in non-twisted.web-hosted environments.<table class="fieldTable"></table
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#_runOperation">twisted.enterprise.adbapi.ConnectionPool._runOperation</a></div>
     <div>Return the results of an operation.<table class="fieldTable"></table></div>
   </div>
 </div><div class="function">
@@ -147,7 +217,7 @@ started in non-twisted.web-hosted environments.<table class="fieldTable"></table
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runInteraction">twisted.enterprise.adbapi.ConnectionPool.runInteraction</a></div>
     <div>Run a function, passing it a cursor from this pool.</p>
 <p>This version of the method does not spawn a thread, and so returns the 
 result directly, instead of a Deferred.<table class="fieldTable"></table></div>
@@ -166,14 +236,14 @@ result directly, instead of a Deferred.<table class="fieldTable"></table></div>
     
   </div>
   <div class="functionBody">
-    
+    <div class="interfaceinfo">overrides <a href="http://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#runWithConnection">twisted.enterprise.adbapi.ConnectionPool.runWithConnection</a></div>
     <div>Run a function, passing it one of the connections in this pool.</p>
 <p>This version of the method does not spawn a thread, and so returns the 
 result directly, instead of a Deferred.<table class="fieldTable"></table></div>
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
     </address>
   </body>
 </html>
