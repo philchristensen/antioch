@@ -464,7 +464,7 @@ class Verb(Entity):
 		env = code.get_environment(default_parser)
 		env['args'] = args
 		env['kwargs'] = kwargs
-		return code.r_exec(self._code, env, name="__method__")
+		return code.r_exec(self._code, env, runtype="method")
 	
 	def __str__(self):
 		"""
@@ -489,7 +489,7 @@ class Verb(Entity):
 		self.check('execute', self)
 		
 		env = code.get_environment(parser)
-		code.r_exec(self._code, env, name="__verb__")
+		code.r_exec(self._code, env, runtype="verb")
 	
 	def add_name(self, name):
 		self.check('write', self)

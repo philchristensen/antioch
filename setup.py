@@ -58,12 +58,13 @@ def autosetup():
 		zip_safe		= False,
 		
 		install_requires = ['%s>=%s' % x for x in dict(
-			twisted		= "10.1.0",
-			nevow		= "0.10",
-			psycopg2	= "2.0.14",
-			simplejson	= "2.1.1",
-			txamqp		= "0.3",
-			ampoule		= "0.1",
+			twisted				= "10.1.0",
+			nevow				= "0.10",
+			psycopg2			= "2.0.14",
+			simplejson			= "2.1.1",
+			txamqp				= "0.3",
+			ampoule				= "0.1",
+			RestrictedPython	= "3.6.0",
 		).items()],
 		
 		# metadata for upload to PyPI

@@ -10,6 +10,9 @@ Verb execution environment
 
 import time, sys
 
+from RestrictedPython import compile_restricted
+from RestrictedPython.Guards import safe_builtins
+
 from antioch import errors, modules, json
 
 allowed_modules = (
@@ -27,44 +30,109 @@ def massage_verb_code(code):
 	code = code.replace('\n\r', '\n')
 	code = code.replace('\r', '\n')
 	code = '\n'.join(
-		['def __verb__():'] +
+		['def verb():'] +
 		['\t' + x for x in code.split('\n') if x.strip()] +
-		['__result__ = __verb__()']
+		['returnValue = verb()']
 	)
 	return code
 
-def r_eval(code, environment, name="__eval__"):
+def r_eval(src, environment, runtype="eval"):
 	"""
 	Evaluate an expression in the provided environment.
 	"""
 	if not(environment):
 		raise RuntimeError('No environment')
-	environment['__name__'] = name
-	sys.meta_path = [MetaImporter()]
+	environment['runtype'] = runtype
+	environment.update(get_restricted_environment())
+	code = compile_restricted(src, '<verb>', 'eval')
 	value =  eval(code, environment)
-	sys.meta_path = []
 	return value
 
-def r_exec(code, environment, name="__exec__"):
+def r_exec(src, environment, runtype="exec"):
 	"""
 	Execute an expression in the provided environment.
 	"""
 	if not(environment):
 		raise RuntimeError('No environment')
 	
-	code = massage_verb_code(code)
+	src = massage_verb_code(src)
 	
 	# t = time.time()
-	environment['__name__'] = name
-	
-	sys.meta_path = [MetaImporter()]
+	environment['runtype'] = runtype
+	environment.update(get_restricted_environment())
+	code = compile_restricted(src, '<verb>', 'exec')
 	exec(code, environment)
-	sys.meta_path = []
 	
 	# print 'execute took %s seconds' % (time.time() - t)
 	
-	if("__result__" in environment):
-		return environment["__result__"]
+	if("returnValue" in environment):
+		return environment["returnValue"]
+
+def restricted_import(name, gdict, ldict, fromlist, level=-1):
+	if(name in allowed_modules):
+		return __builtins__['__import__'](name, gdict, ldict, fromlist, level)
+	raise ImportError('Restricted: %s' % name)
+
+def get_restricted_environment():
+	def _print_(s):
+		write(caller, s)
+	safe_builtins['__import__'] = restricted_import
+	safe_builtins['dict'] = dict
+	env = dict(
+		_print_			= lambda: _print_,
+		_write_			= lambda x: x,
+		_getattr_		= lambda obj, name: getattr(obj, name),
+		_getitem_		= lambda obj, key: obj[key],
+		_getiter_		= lambda obj: iter(obj),
+		__import__		= restricted_import,
+		__builtins__	= safe_builtins,
+	)
+	return env
+
+def get_environment(p):
+	"""
+	Given the provided parser object, construct an environment dictionary.
+	"""
+	env = dict(
+		command			= p.command,
+		caller			= p.caller,
+		dobj			= p.dobj,
+		dobj_str		= p.dobj_str,
+		dobj_spec_str	= p.dobj_spec_str,
+		words			= p.words,
+		prepositions	= p.prepositions,
+		this			= p.this,
+		self			= p.verb,
+		
+		system			= p.exchange.get_object(1),
+		here			= p.caller.get_location() if p.caller else None,
+		
+		get_dobj		= p.get_dobj,
+		get_dobj_str	= p.get_dobj_str,
+		has_dobj		= p.has_dobj,
+		has_dobj_str	= p.has_dobj_str,
+		
+		get_pobj		= p.get_pobj,
+		get_pobj_str 	= p.get_pobj_str,
+		has_pobj 		= p.has_pobj,
+		has_pobj_str 	= p.has_pobj_str,
+	)
+	
+	for mod in modules.iterate():
+		for name, func in mod.get_environment(p).items():
+			func.func_name = name
+			api(func) if callable(func) else None
+	
+	for name, func in api.locals.items():
+		env[name] = func(p)
+	
+	for name in dir(errors):
+		if not(name.endswith('Error')):
+			continue
+		cls = getattr(errors, name)
+		env[name] = cls
+	
+	return env
 
 def api(func):
 	"""
@@ -140,55 +208,3 @@ def create_object(p, name, unique_name=False):
 	Verb API: Create a new object.
 	"""
 	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=p.caller.get_id())
-
-def get_environment(p):
-	"""
-	Given the provided parser object, construct an environment dictionary.
-	"""
-	env = dict(
-		command			= p.command,
-		caller			= p.caller,
-		dobj			= p.dobj,
-		dobj_str		= p.dobj_str,
-		dobj_spec_str	= p.dobj_spec_str,
-		words			= p.words,
-		prepositions	= p.prepositions,
-		this			= p.this,
-		self			= p.verb,
-		
-		system			= p.exchange.get_object(1),
-		here			= p.caller.get_location() if p.caller else None,
-		
-		get_dobj		= p.get_dobj,
-		get_dobj_str	= p.get_dobj_str,
-		has_dobj		= p.has_dobj,
-		has_dobj_str	= p.has_dobj_str,
-		
-		get_pobj		= p.get_pobj,
-		get_pobj_str 	= p.get_pobj_str,
-		has_pobj 		= p.has_pobj,
-		has_pobj_str 	= p.has_pobj_str,
-	)
-	
-	for mod in modules.iterate():
-		for name, func in mod.get_environment(p).items():
-			func.func_name = name
-			api(func) if callable(func) else None
-	
-	for name, func in api.locals.items():
-		env[name] = func(p)
-	
-	for name in dir(errors):
-		if not(name.endswith('Error')):
-			continue
-		cls = getattr(errors, name)
-		env[name] = cls
-	
-	return env
-
-class MetaImporter(object):
-	def find_module(self, fullname, path=None):
-		print fullname
-		if(fullname in allowed_modules):
-			return None
-		raise ImportError('Restricted: %s' % fullname)

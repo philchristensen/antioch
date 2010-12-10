@@ -443,6 +443,7 @@ class ObjectTestCase(unittest.TestCase):
 			has_parent	= lambda p: False,
 			get_id		= lambda: parent.get_id(),
 			get_type	= lambda: 'object',
+			get_owner	= lambda: parent_mock,
 		)
 		
 		child.add_parent(parent_mock)

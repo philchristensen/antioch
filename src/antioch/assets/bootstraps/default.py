@@ -150,7 +150,7 @@ eval_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = False,
 	code = """#!antioch
-write(caller, eval(command[6:].strip()))
+print eval(command[6:].strip())
 """,
 ))
 eval_verb.add_name('@eval')
@@ -211,15 +211,15 @@ sub, alias = result
 if(sub == 'add'):
 	obj = get_pobj('to')
 	obj.add_alias(alias)
-	write(caller, "Alias %r added to %s" % (alias, obj))
+	print "Alias %r added to %s" % (alias, obj)
 elif(sub == 'remove'):
 	obj = get_pobj('from')
 	obj.remove_alias(alias)
-	write(caller, "Alias %r removed from %s" % (alias, obj))
+	print "Alias %r removed from %s" % (alias, obj)
 elif(sub == 'list'):
 	obj = here.find(alias)
 	aliases = obj.get_aliases()
-	write(caller, "%s has the following aliases: %r" % (obj, aliases))
+	print "%s has the following aliases: %r" % (obj, aliases)
 """,
 ))
 alias_verb.add_name('@alias')
@@ -295,7 +295,7 @@ else:
 	description = subject.add_property('description')
 
 description.value = get_pobj_str('as')
-write(caller, 'Description set for %s' % subject)
+print 'Description set for %s' % subject
 subject.notify_observers()
 """,
 ))
@@ -308,7 +308,7 @@ look_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = True,
 	code = """#!antioch
-if(__name__ == '__method__'):
+if(runtype == 'method'):
 	obj = args[0] if args else caller.location
 	target = this
 elif(has_dobj_str()):
@@ -379,7 +379,7 @@ exits = caller.location['exits'].value
 direction = get_dobj_str()
 
 if(direction not in exits):
-	write(caller, "You can't go that way.")
+	print "You can't go that way."
 	return
 
 caller.set_location(exits[direction])
@@ -422,7 +422,7 @@ passwd_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = True,
 	code = """#!antioch
-if(__name__ == '__method__'):
+if(runtype == 'method'):
 	user = get_object(args[0])
 	if(args[1] == 'validate'):
 		#TODO validate passwd
@@ -432,7 +432,7 @@ if(__name__ == '__method__'):
 			write(caller, "The password is incorrect. Please enter your *current* password for " + str(user))
 	else:
 		user.set_player(passwd=args[2])
-		write(caller, "Changed password for " + str(user))
+		print "Changed password for " + str(user)
 	return
 
 if(has_dobj_str()):
