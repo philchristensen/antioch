@@ -8,9 +8,14 @@
 Verb execution environment
 """
 
-import time
+import time, sys
 
 from antioch import errors, modules, json
+
+allowed_modules = (
+	'hashlib',
+	'string',
+)
 
 def massage_verb_code(code):
 	"""
@@ -35,7 +40,10 @@ def r_eval(code, environment, name="__eval__"):
 	if not(environment):
 		raise RuntimeError('No environment')
 	environment['__name__'] = name
-	return eval(code, environment)
+	sys.meta_path = [MetaImporter()]
+	value =  eval(code, environment)
+	sys.meta_path = []
+	return value
 
 def r_exec(code, environment, name="__exec__"):
 	"""
@@ -48,7 +56,11 @@ def r_exec(code, environment, name="__exec__"):
 	
 	# t = time.time()
 	environment['__name__'] = name
+	
+	sys.meta_path = [MetaImporter()]
 	exec(code, environment)
+	sys.meta_path = []
+	
 	# print 'execute took %s seconds' % (time.time() - t)
 	
 	if("__result__" in environment):
@@ -174,3 +186,9 @@ def get_environment(p):
 	
 	return env
 
+class MetaImporter(object):
+	def find_module(self, fullname, path=None):
+		print fullname
+		if(fullname in allowed_modules):
+			return None
+		raise ImportError('Restricted: %s' % fullname)
