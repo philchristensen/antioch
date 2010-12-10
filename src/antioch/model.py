@@ -4,7 +4,7 @@
 #
 # See LICENSE for details
 
-import inspect, os.path, sys
+import os.path, sys
 
 from antioch import errors, code, json
 
