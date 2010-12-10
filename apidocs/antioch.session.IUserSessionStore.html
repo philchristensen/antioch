@@ -6,14 +6,14 @@
     <title>antioch.session.IUserSessionStore : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
-    
-    
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
   </head>
   <body>
     <h1 class="interface">a.s.IUserSessionStore(<span title="zope.interface.Interface">Interface</span>) : interface documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.session.html">session</a></span>
-      
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L191">View Source</a>
       <a href="classIndex.html#antioch.session.IUserSessionStore">View In Hierarchy</a>
     </p>
     <div>
@@ -24,48 +24,53 @@
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id157">
+      <table class="children sortable" id="id187">
   
-  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
 <tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L192">192</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#loadUser">loadUser</a></td>
     <td><span>Return the user object for this user_id.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L202">202</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#verifyLogin">verifyLogin</a></td>
     <td><span>Get the user_id for the provided username and password credentials.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L213">213</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#loadSession">loadSession</a></td>
     <td><span>Return the session record for this user_id.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L224">224</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#verifySession">verifySession</a></td>
     <td><span>Get the user_id for the provided session ID.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L235">235</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#saveSession">saveSession</a></td>
     <td><span>Save the provided session record.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L245">245</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#destroySession">destroySession</a></td>
     <td><span>Remove expired sessions from the database.</span></td>
   </tr><tr class="method">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L250">250</a></td>
     <td>Method</td>
     <td><a href="antioch.session.IUserSessionStore.html#cleanupSessions">cleanupSessions</a></td>
     <td><span>Remove expired sessions from the database.</span></td>
@@ -90,7 +95,10 @@
     
     def
     loadUser(self, avatarId):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L192" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -110,7 +118,10 @@
     
     def
     verifyLogin(self, credentials):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L202" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -131,7 +142,10 @@
     
     def
     loadSession(self, sid):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L213" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -152,7 +166,10 @@
     
     def
     verifySession(self, sid):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L224" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -173,7 +190,10 @@
     
     def
     saveSession(self, session):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L235" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -193,7 +213,10 @@
     
     def
     destroySession(self, sid):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L245" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -210,7 +233,10 @@
     
     def
     cleanupSessions(self):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L250" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -218,7 +244,7 @@
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:53:18.
     </address>
   </body>
 </html>

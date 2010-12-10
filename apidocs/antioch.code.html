@@ -6,14 +6,14 @@
     <title>antioch.code : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
-    
-    
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
   </head>
   <body>
     <h1 class="module">a.code : module documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a></span>
-      
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py">View Source</a>
       
     </p>
     <div>
@@ -24,79 +24,84 @@
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id48">
+      <table class="children sortable" id="id52">
   
-  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
 <tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L20">20</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#massage_verb_code">massage_verb_code</a></td>
     <td><span>Take a given piece of verb code and wrap it in a function.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L36">36</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#r_eval">r_eval</a></td>
     <td><span>Evaluate an expression in the provided environment.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L48">48</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#r_exec">r_exec</a></td>
     <td><span>Execute an expression in the provided environment.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L69">69</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#api">api</a></td>
     <td><span>Mark a function in this module as being part of the verb API.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L84">84</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#task">task</a></td>
     <td><span>Verb API: queue up a new task.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L99">99</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#tasks">tasks</a></td>
     <td><span>Verb API: Return a list of tasks for this user, or all tasks.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L109">109</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#write">write</a></td>
     <td><span>Verb API: Print a string of text to the user's console.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L121">121</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#observe">observe</a></td>
     <td><span>Verb API: Send a dict of observations to the user's client.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L131">131</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#get_object">get_object</a></td>
     <td><span>Verb API: Load an object by its global name or ID.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L138">138</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#create_object">create_object</a></td>
     <td><span>Verb API: Create a new object.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L144">144</a></td>
     <td>Function</td>
     <td><a href="antioch.code.html#get_environment">get_environment</a></td>
     <td><span>Given the provided parser object, construct an environment 
 dictionary.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L189">189</a></td>
     <td>Class</td>
     <td><a href="antioch.code.MetaImporter.html">MetaImporter</a></td>
     <td><span class="undocumented">Undocumented</span></td>
@@ -121,7 +126,10 @@ dictionary.</span></td>
     
     def
     massage_verb_code(code):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L20" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -140,7 +148,10 @@ values.<table class="fieldTable"></table></div>
     
     def
     r_eval(code, environment, name='__eval__'):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L36" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -157,7 +168,10 @@ values.<table class="fieldTable"></table></div>
     
     def
     r_exec(code, environment, name='__exec__'):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L48" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -174,7 +188,10 @@ values.<table class="fieldTable"></table></div>
     
     def
     api(func):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L69" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -191,7 +208,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     task(p, delay, origin, verb_name, *args, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L84" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -208,7 +228,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     tasks(p):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L99" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -225,7 +248,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     write(p, user, text, is_error=False, escape_html=True):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L109" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -242,7 +268,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     observe(p, user, observations):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L121" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -259,7 +288,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     get_object(p, key):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L131" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -276,7 +308,10 @@ values.<table class="fieldTable"></table></div>
     @api<br />
     def
     create_object(p, name, unique_name=False):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L138" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -293,7 +328,10 @@ values.<table class="fieldTable"></table></div>
     
     def
     get_environment(p):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/code.py#L144" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -302,7 +340,7 @@ dictionary.<table class="fieldTable"></table></div>
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:53:18.
     </address>
   </body>
 </html>

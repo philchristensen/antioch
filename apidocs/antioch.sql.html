@@ -6,14 +6,14 @@
     <title>antioch.sql : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
-    
-    
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
   </head>
   <body>
     <h1 class="module">a.sql : module documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a></span>
-      
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py">View Source</a>
       
     </p>
     <div>
@@ -24,114 +24,119 @@
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id164">
+      <table class="children sortable" id="id194">
   
-  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
 <tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L15">15</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#strftime">strftime</a></td>
     <td><span>Format the provided datetime object using the given format string.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L81">81</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_insert">build_insert</a></td>
     <td><span>Given a table name and a dictionary, construct an INSERT query. Keys 
 are</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L119">119</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_set">build_set</a></td>
     <td><span>Given a dictionary, construct a SET clause. Keys are sorted 
 alphabetically</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L141">141</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_update">build_update</a></td>
     <td><span>Given a table name, a dictionary, and a set of constraints, construct an
 UPDATE</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L164">164</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_select">build_select</a></td>
     <td><span>Given a table name and a dictionary, construct a SELECT query. Keys 
 are</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L207">207</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_delete">build_delete</a></td>
     <td><span>Given a table name, and a set of constraints, construct a DELETE 
 query.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L230">230</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#build_where">build_where</a></td>
     <td><span>Given a dictionary, construct a WHERE clause. Keys are sorted 
 alphabetically</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L315">315</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#make_list">make_list</a></td>
     <td><span>Convert a list of things to a string suitable for use with IN.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L323">323</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#escape_sequence">escape_sequence</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L326">326</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#escape_item">escape_item</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L329">329</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#quoted_string_literal">quoted_string_literal</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L337">337</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#mysql_string_literal">mysql_string_literal</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L341">341</a></td>
     <td>Function</td>
     <td><a href="antioch.sql.html#interp">interp</a></td>
     <td><span>Interpolate the provided arguments into the provided query, using</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L361">361</a></td>
     <td>Class</td>
     <td><a href="antioch.sql.RAW.html">RAW</a></td>
     <td><span>Allows RAW SQL to be embedded in constructed queries.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L380">380</a></td>
     <td>Class</td>
     <td><a href="antioch.sql.NOT.html">NOT</a></td>
     <td><span>Allows NOTs to be embedded in constructed queries.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L391">391</a></td>
     <td>Class</td>
     <td><a href="antioch.sql.GT.html">GT</a></td>
     <td><span>Allow for use of a greater-than.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L402">402</a></td>
     <td>Class</td>
     <td><a href="antioch.sql.LT.html">LT</a></td>
     <td><span>Allow for use of a less-than.</span></td>
@@ -156,7 +161,10 @@ alphabetically</span></td>
     
     def
     strftime(dt, fmt):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L15" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -174,7 +182,10 @@ alphabetically</span></td>
     
     def
     build_insert(table, data=None, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L81" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -200,7 +211,10 @@ semantically identical dictionary should be the same every time.</p>
     
     def
     build_set(data=None, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L119" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -223,7 +237,10 @@ identical dictionary should be the same every time.<table class="fieldTable"><tr
     
     def
     build_update(table, data, constraints):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L141" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -252,7 +269,10 @@ time.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Para
     
     def
     build_select(table, data=None, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L164" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -289,7 +309,10 @@ semantically identical dictionary should be the same every time.</p>
     
     def
     build_delete(table, constraints=None, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L207" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -315,7 +338,10 @@ semantically identical dictionary should be the same every time.<table class="fi
     
     def
     build_where(data=None, use_where=True, **kwargs):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L230" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -369,7 +395,10 @@ identical dictionary should be the same every time.</p>
     
     def
     make_list(items):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L315" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -387,7 +416,10 @@ identical dictionary should be the same every time.</p>
     
     def
     escape_sequence(seq, conv):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L323" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -404,7 +436,10 @@ identical dictionary should be the same every time.</p>
     
     def
     escape_item(item, conv):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L326" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -421,7 +456,10 @@ identical dictionary should be the same every time.</p>
     
     def
     quoted_string_literal(s, d):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L329" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -438,7 +476,10 @@ identical dictionary should be the same every time.</p>
     
     def
     mysql_string_literal(s, d):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L337" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -455,7 +496,10 @@ identical dictionary should be the same every time.</p>
     
     def
     interp(query, *args):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/sql.py#L341" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -471,7 +515,7 @@ modu.sql.RAW2Literal<table class="fieldTable"><tr class="fieldStart"><td class="
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:53:18.
     </address>
   </body>
 </html>

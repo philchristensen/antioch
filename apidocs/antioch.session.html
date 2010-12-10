@@ -6,14 +6,14 @@
     <title>antioch.session : API documentation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <link href="apidocs.css" type="text/css" rel="stylesheet" />
-    
-    
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
   </head>
   <body>
     <h1 class="module">a.session : module documentation</h1>
     <p>
       <span id="part">Part of <a href="antioch.html">antioch</a></span>
-      
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py">View Source</a>
       
     </p>
     <div>
@@ -48,80 +48,85 @@ you probably will want to set QUARANTINE_INFANT_SESSIONS to False.<table class="
     
     
     <div id="splitTables">
-      <table class="children sortable" id="id156">
+      <table class="children sortable" id="id186">
   
-  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
 <tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L70">70</a></td>
     <td>Function</td>
     <td><a href="antioch.session.html#createSessionCookie">createSessionCookie</a></td>
     <td><span>Make a number based on current time, pid, remote ip</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L89">89</a></td>
     <td>Function</td>
     <td><a href="antioch.session.html#destroySession">destroySession</a></td>
     <td><span>Destroy the current session for this request.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L104">104</a></td>
     <td>Function</td>
     <td><a href="antioch.session.html#updateSession">updateSession</a></td>
     <td><span>Update the access time and/or user_id for this session.</span></td>
   </tr><tr class="function">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L164">164</a></td>
     <td>Function</td>
     <td><a href="antioch.session.html#getSessionCredentials">getSessionCredentials</a></td>
     <td><span>Given a Nevow context object, return a SessionCredentials object.</span></td>
   </tr><tr class="interface">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L191">191</a></td>
     <td>Interface</td>
     <td><a href="antioch.session.IUserSessionStore.html">IUserSessionStore</a></td>
     <td><span class="undocumented">No interface docstring; 7/7 methods documented</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L255">255</a></td>
     <td>Class</td>
     <td><a href="antioch.session.InMemoryUserSessionStore.html">InMemoryUserSessionStore</a></td>
     <td><span>An IUserSessionStore that does not persist sessions between 
 startups.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L323">323</a></td>
     <td>Class</td>
     <td><a href="antioch.session.TransactionUserSessionStore.html">TransactionUserSessionStore</a></td>
     <td><span>An IUserSessionStore that uses a relational database while supporting 
 custom authenticate verbs.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L406">406</a></td>
     <td>Class</td>
     <td><a href="antioch.session.SessionRealm.html">SessionRealm</a></td>
     <td><span>This Realm will choose the appropriate delegate Resource</span></td>
   </tr><tr class="interface">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L441">441</a></td>
     <td>Interface</td>
     <td><a href="antioch.session.ISessionCredentials.html">ISessionCredentials</a></td>
     <td><span>I represent an opaque value indicating a web session.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L454">454</a></td>
     <td>Class</td>
     <td><a href="antioch.session.SessionCredentials.html">SessionCredentials</a></td>
     <td><span>An opaque value indicating a web session.</span></td>
   </tr><tr class="class">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L477">477</a></td>
     <td>Class</td>
     <td><a href="antioch.session.SessionChecker.html">SessionChecker</a></td>
     <td><span>Validator for web logins.</span></td>
   </tr><tr class="function private">
     
-    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L182">182</a></td>
     <td>Function</td>
     <td><a href="antioch.session.html#_cleanupInfantSessions">_cleanupInfantSessions</a></td>
     <td><span>Iterate through the infant session cache and remove expired 
@@ -147,7 +152,10 @@ sessions.</span></td>
     
     def
     createSessionCookie(request=None):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L70" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -166,7 +174,10 @@ guess.<table class="fieldTable"></table></div>
     @inlineCallbacks<br />
     def
     destroySession(pool, request):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L89" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -184,7 +195,10 @@ guess.<table class="fieldTable"></table></div>
     @inlineCallbacks<br />
     def
     updateSession(pool, request, user=None):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L104" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -213,7 +227,10 @@ href="http%3A//buildbot.divmod.org/apidocs/nevow.appserver.NevowRequest.html"><c
     
     def
     getSessionCredentials(ctx):
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L164" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -238,7 +255,10 @@ href="http%3A//twistedmatrix.com/documents/current/api/twisted.cred.credentials.
     
     def
     _cleanupInfantSessions():
-    
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/session.py#L182" class="functionSourceLink">
+      
+      (source)
+    </a>
   </div>
   <div class="functionBody">
     
@@ -247,7 +267,7 @@ sessions.<table class="fieldTable"></table></div>
   </div>
 </div>
     <address>
-      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:31:46.
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 12:53:18.
     </address>
   </body>
 </html>
