@@ -282,10 +282,10 @@ describe_verb = exchange.instantiate('verb', dict(
 	method = False,
 	code = """#!antioch
 if not(has_dobj_str()):
-	caller.write('What do you want to describe?', is_error=True)
+	write(caller, 'What do you want to describe?', is_error=True)
 	return
 if not(has_pobj_str('as')):
-	caller.write('What do you want to describe that as?', is_error=True)
+	write(caller, 'What do you want to describe that as?', is_error=True)
 	return
 
 subject = get_dobj()
