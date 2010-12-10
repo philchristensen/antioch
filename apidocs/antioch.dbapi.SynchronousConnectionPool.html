@@ -1,0 +1,179 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>API docs for &ldquo;antioch.dbapi.SynchronousConnectionPool&rdquo;</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    
+    
+  </head>
+  <body>
+    <h1 class="class">Class a.d.SynchronousConnectionPool(<a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>):</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.dbapi.html">dbapi</a></span>
+      
+      <a href="classIndex.html#antioch.dbapi.SynchronousConnectionPool">View In Hierarchy</a>
+    </p>
+    <div>
+      
+    </div>
+    <div>This trvial subclass disables thread creation within the ConnectionPool 
+object so that it may be used from within a syncronous application<table class="fieldTable"></table></div>
+
+    
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id18">
+  
+  
+<tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.SynchronousConnectionPool.html#__init__">__init__</a></td>
+    <td><span>Create a new instance of the connection pool.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.SynchronousConnectionPool.html#runInteraction">runInteraction</a></td>
+    <td><span>Run a function, passing it a cursor from this pool.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.SynchronousConnectionPool.html#runWithConnection">runWithConnection</a></td>
+    <td><span>Run a function, passing it one of the connections in this pool.</span></td>
+  </tr><tr class="method private">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.SynchronousConnectionPool.html#_runOperation">_runOperation</a></td>
+    <td><span>Return the results of an operation.</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="antioch.dbapi.TimeoutConnectionPool.html">TimeoutConnectionPool</a>:
+        </p>
+        <table class="children sortable" id="id19">
+  
+  
+<tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.TimeoutConnectionPool.html#connect">connect</a></td>
+    <td><span>Ask the ConnectionPool for a connection.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.TimeoutConnectionPool.html#runOperation">runOperation</a></td>
+    <td><span>Trivial override to provide debugging support.</span></td>
+  </tr><tr class="basemethod">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.TimeoutConnectionPool.html#runQuery">runQuery</a></td>
+    <td><span>Trivial override to provide debugging support.</span></td>
+  </tr><tr class="basemethod private">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.TimeoutConnectionPool.html#_runInteraction">_runInteraction</a></td>
+    <td><span>An internal function to run a SQL statement through one of the 
+connections in this pool.</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    
+    
+    
+
+    <div class="function">
+  <a name="antioch.dbapi.SynchronousConnectionPool.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, dbapiName, *connargs, **connkw):
+    
+  </div>
+  <div class="functionBody">
+    <div class="interfaceinfo">overrides <a href="antioch.dbapi.TimeoutConnectionPool.html#__init__">antioch.dbapi.TimeoutConnectionPool.__init__</a></div>
+    <div>Create a new instance of the connection pool.</p>
+<p>This overridden constructor makes sure the Twisted reactor doesn't get 
+started in non-twisted.web-hosted environments.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.SynchronousConnectionPool._runOperation">
+    
+  </a>
+  <a name="_runOperation">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _runOperation(self, trans, *args, **kw):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Return the results of an operation.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.SynchronousConnectionPool.runInteraction">
+    
+  </a>
+  <a name="runInteraction">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runInteraction(self, interaction, *args, **kw):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a function, passing it a cursor from this pool.</p>
+<p>This version of the method does not spawn a thread, and so returns the 
+result directly, instead of a Deferred.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.SynchronousConnectionPool.runWithConnection">
+    
+  </a>
+  <a name="runWithConnection">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runWithConnection(self, func, *args, **kw):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a function, passing it one of the connections in this pool.</p>
+<p>This version of the method does not spawn a thread, and so returns the 
+result directly, instead of a Deferred.<table class="fieldTable"></table></div>
+  </div>
+</div>
+    <address>
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+    </address>
+  </body>
+</html>

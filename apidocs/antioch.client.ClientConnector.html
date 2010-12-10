@@ -1,0 +1,209 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>API docs for &ldquo;antioch.client.ClientConnector&rdquo;</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    
+    
+  </head>
+  <body>
+    <h1 class="class">Class a.c.ClientConnector(<span title="nevow.athena.LiveElement">athena.LiveElement</span>):</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.client.html">client</a></span>
+      
+      <a href="classIndex.html#antioch.client.ClientConnector">View In Hierarchy</a>
+    </p>
+    <div>
+      
+    </div>
+    <div>Provides the AJAX communication channel with the server.<table class="fieldTable"></table></div>
+
+    
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id12">
+  
+  
+<tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#__init__">__init__</a></td>
+    <td><span>Setup the client connection.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#login">login</a></td>
+    <td><span>Called when the user first connects, runs login verb code, 'look 
+here'</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#logout">logout</a></td>
+    <td><span>Called when the twisted.cred Avatar goes away.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#queue_checker">queue_checker</a></td>
+    <td><span>Continually called by the self.loop LoopingCall,</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#handle_message">handle_message</a></td>
+    <td><span>Handle a single message from the RabbitMQ server.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#task">task</a></td>
+    <td><span>Run a delayed task.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#parse">parse</a></td>
+    <td><span>Parse a command sent by the client.</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    
+    
+    
+
+    <div class="function">
+  <a name="antioch.client.ClientConnector.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, user_id, mind, msg_service, session_id, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Setup the client connection.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.login">
+    
+  </a>
+  <a name="login">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    login(self, mind):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Called when the user first connects, runs login verb code, 'look 
+here'<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.logout">
+    
+  </a>
+  <a name="logout">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    logout(self, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Called when the twisted.cred Avatar goes away.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.queue_checker">
+    
+  </a>
+  <a name="queue_checker">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    queue_checker(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Continually called by the self.loop LoopingCall, this looks for messages
+sent to the user and processes them appropriately.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.handle_message">
+    
+  </a>
+  <a name="handle_message">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    handle_message(self, data):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Handle a single message from the RabbitMQ server.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.task">
+    
+  </a>
+  <a name="task">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    task(self, task_id):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a delayed task.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.parse">
+    
+  </a>
+  <a name="parse">
+    
+  </a>
+  <div class="functionHeader">
+    @athena.expose<br />@defer.inlineCallbacks<br />
+    def
+    parse(self, command):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Parse a command sent by the client.<table class="fieldTable"></table></div>
+  </div>
+</div>
+    <address>
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+    </address>
+  </body>
+</html>

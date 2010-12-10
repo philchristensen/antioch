@@ -1,0 +1,385 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>API docs for &ldquo;antioch.parser.TransactionParser&rdquo;</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    
+    
+  </head>
+  <body>
+    <h1 class="class">Class a.p.TransactionParser(<span title="object">object</span>):</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.parser.html">parser</a></span>
+      
+      <a href="classIndex.html#antioch.parser.TransactionParser">View In Hierarchy</a>
+    </p>
+    <div>
+      
+    </div>
+    <div>The parser instance is created by the avatar. A new instance is created 
+for each remote call to perspective_parse.<table class="fieldTable"></table></div>
+
+    
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id78">
+  
+  
+<tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#__init__">__init__</a></td>
+    <td><span>Create a new parser object for the given command, as issued by</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#find_object">find_object</a></td>
+    <td><span>Look for an object, with the optional specifier, in the area</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_verb">get_verb</a></td>
+    <td><span>Determine the most likely verb for this sentence. There is a search</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#filter_matches">filter_matches</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_pronoun_object">get_pronoun_object</a></td>
+    <td><span>Return the correct object for various pronouns.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_dobj">get_dobj</a></td>
+    <td><span>Get the direct object for this parser. If there was no</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_pobj">get_pobj</a></td>
+    <td><span>Get the object for the given preposition. If there was no</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_dobj_str">get_dobj_str</a></td>
+    <td><span>Get the direct object **string** for this parser. If there was no</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_pobj_str">get_pobj_str</a></td>
+    <td><span>Get the object **string** for the given preposition. If there was no</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#get_pobj_spec_str">get_pobj_spec_str</a></td>
+    <td><span>Get the object **specifier** for the given preposition. If there was 
+no</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#has_dobj">has_dobj</a></td>
+    <td><span>Was a direct object found?</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#has_pobj">has_pobj</a></td>
+    <td><span>Was an object for this preposition found?</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#has_dobj_str">has_dobj_str</a></td>
+    <td><span>Was a direct object string found?</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.parser.TransactionParser.html#has_pobj_str">has_pobj_str</a></td>
+    <td><span>Was a object string for this preposition found?</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    
+    
+    
+
+    <div class="function">
+  <a name="antioch.parser.TransactionParser.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, lexer, caller, exchange):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Create a new parser object for the given command, as issued by the given
+caller, using the registry.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.find_object">
+    
+  </a>
+  <a name="find_object">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    find_object(self, specifier, name):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Look for an object, with the optional specifier, in the area around the 
+person who entered this command. If the posessive form is used (i.e., 
+&quot;Bill's spoon&quot;) and that person is not here, a NoSuchObjectError 
+is thrown for that person.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_verb">
+    
+  </a>
+  <a name="get_verb">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_verb(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <pre>Determine the most likely verb for this sentence. There is a search
+order for verbs, as follows:
+        Caller-&gt;Caller's Contents-&gt;Location-&gt;Items in Location-&gt;
+        Direct Object-&gt;Objects of the Preposition</pre>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.filter_matches">
+    
+  </a>
+  <a name="filter_matches">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    filter_matches(self, possible):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_pronoun_object">
+    
+  </a>
+  <a name="get_pronoun_object">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_pronoun_object(self, pronoun):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Return the correct object for various pronouns. Also, a object number 
+(starting with a #) will return the object for that id.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_dobj">
+    
+  </a>
+  <a name="get_dobj">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_dobj(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Get the direct object for this parser. If there was no direct object 
+found, raise a NoSuchObjectError<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_pobj">
+    
+  </a>
+  <a name="get_pobj">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_pobj(self, prep):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Get the object for the given preposition. If there was no object found, 
+raise a NoSuchObjectError; if the preposition was not found, raise a 
+NoSuchPrepositionError.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_dobj_str">
+    
+  </a>
+  <a name="get_dobj_str">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_dobj_str(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Get the direct object **string** for this parser. If there was no direct
+object **string** found, raise a NoSuchObjectError<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_pobj_str">
+    
+  </a>
+  <a name="get_pobj_str">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_pobj_str(self, prep, return_list=False):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Get the object **string** for the given preposition. If there was no 
+object **string** found, raise a NoSuchObjectError; if the preposition was 
+not found, raise a NoSuchPrepositionError.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.get_pobj_spec_str">
+    
+  </a>
+  <a name="get_pobj_spec_str">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_pobj_spec_str(self, prep, return_list=False):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Get the object **specifier** for the given preposition. If there was no 
+object **specifier** found, return the empty string; if the preposition was
+not found, raise a NoSuchPrepositionError.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.has_dobj">
+    
+  </a>
+  <a name="has_dobj">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    has_dobj(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Was a direct object found?<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.has_pobj">
+    
+  </a>
+  <a name="has_pobj">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    has_pobj(self, prep):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Was an object for this preposition found?<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.has_dobj_str">
+    
+  </a>
+  <a name="has_dobj_str">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    has_dobj_str(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Was a direct object string found?<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.parser.TransactionParser.has_pobj_str">
+    
+  </a>
+  <a name="has_pobj_str">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    has_pobj_str(self, prep):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Was a object string for this preposition found?<table class="fieldTable"></table></div>
+  </div>
+</div>
+    <address>
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+    </address>
+  </body>
+</html>

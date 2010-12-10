@@ -1,0 +1,243 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>API docs for &ldquo;antioch.dbapi.ReplicatedConnectionPool&rdquo;</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    
+    
+  </head>
+  <body>
+    <h1 class="class">Class a.d.ReplicatedConnectionPool(<span title="object">object</span>):</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.dbapi.html">dbapi</a></span>
+      
+      <a href="classIndex.html#antioch.dbapi.ReplicatedConnectionPool">View In Hierarchy</a>
+    </p>
+    <div>
+      
+    </div>
+    <div>A collection of database servers in a replicated environment.</p>
+<p>Queries are examined to see if there are SELECTs, with all reads being 
+sent to the slaves in round-robin mode, and all writes are sent to the 
+master.</p>
+<p>When write_only_master is True, the master server is not used for reads.
+Otherwise it is included in the round-robin of servers to read from.</p>
+<p>If there are no slaves, all queries are sent to the master.<table class="fieldTable"></table></div>
+
+    
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id17">
+  
+  
+<tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#__init__">__init__</a></td>
+    <td><span>Set up a replicated DB connection.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#add_slave">add_slave</a></td>
+    <td><span>Add a ConnectionPool as a slave.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#runOperation">runOperation</a></td>
+    <td><span>Run an operation on the master.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#runQuery">runQuery</a></td>
+    <td><span>Run a query on a slave.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#runInteraction">runInteraction</a></td>
+    <td><span>Run an interaction on the master.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#runWithConnection">runWithConnection</a></td>
+    <td><span>Run a function, providing the connection object for the master.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#getSlave">getSlave</a></td>
+    <td><span>Return the next slave in the round robin.</span></td>
+  </tr><tr class="method">
+    
+    
+    <td>Method</td>
+    <td><a href="antioch.dbapi.ReplicatedConnectionPool.html#getPoolFor">getPoolFor</a></td>
+    <td><span>Return a slave if this is a SELECT query, else return the master.</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    
+    
+    
+
+    <div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, master, write_only_master=False):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Set up a replicated DB connection.</p>
+<p>Given an initial master server, initialize a deque to be used to store 
+slaves and select them via round-robin.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.add_slave">
+    
+  </a>
+  <a name="add_slave">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_slave(self, pool):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Add a ConnectionPool as a slave.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.runOperation">
+    
+  </a>
+  <a name="runOperation">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runOperation(self, query, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run an operation on the master.</p>
+<p>Note that even though 'operations' (e.g., inserts, deletes, updates) 
+should always be on the master, we still check the query, since it could 
+just be a programming error.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.runQuery">
+    
+  </a>
+  <a name="runQuery">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runQuery(self, query, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a query on a slave.</p>
+<p>Note that even though 'queries' (e.g., selects) should always be on a 
+slave, we still check the query, since it could just be a programming 
+error.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.runInteraction">
+    
+  </a>
+  <a name="runInteraction">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runInteraction(self, interaction, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run an interaction on the master.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.runWithConnection">
+    
+  </a>
+  <a name="runWithConnection">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runWithConnection(self, func, *args, **kwargs):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a function, providing the connection object for the master.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.getSlave">
+    
+  </a>
+  <a name="getSlave">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    getSlave(self):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Return the next slave in the round robin.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.dbapi.ReplicatedConnectionPool.getPoolFor">
+    
+  </a>
+  <a name="getPoolFor">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    getPoolFor(self, query):
+    
+  </div>
+  <div class="functionBody">
+    
+    <div>Return a slave if this is a SELECT query, else return the master.<table class="fieldTable"></table></div>
+  </div>
+</div>
+    <address>
+      <a href="index.html">API Documentation</a> for antioch, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-10 11:55:16.
+    </address>
+  </body>
+</html>
