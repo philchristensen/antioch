@@ -29,7 +29,7 @@ class TransactionTestCase(unittest.TestCase):
 	
 	@defer.inlineCallbacks
 	def test_timeout(self):
-		if(transact.code_timeout is None):
+		if(transact.job_timeout is None):
 			raise unittest.SkipTest("Code timeout disabled.")
 		terminated = False
 		user_id = 2 # Wizard ID

@@ -22,7 +22,7 @@ from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modul
 
 __processPools = {}
 default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
-code_timeout = 3
+job_timeout = 3
 
 profile_transactions = False
 
@@ -56,7 +56,7 @@ class WorldTransaction(amp.Command):
 			pool = get_process_pool(transaction_child, db_url)
 		else:
 			pool = get_process_pool(transaction_child)
-		return pool.doWork(cls, _timeout=code_timeout, **kwargs)
+		return pool.doWork(cls, _timeout=job_timeout, **kwargs)
 
 class Authenticate(WorldTransaction):
 	arguments = [
