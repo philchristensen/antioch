@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Web interface support.
+Implement the web interface
 """
 
 import os, os.path, time

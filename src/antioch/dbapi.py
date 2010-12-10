@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Provides synchronous access to the Twisted adbapi DB layer.
+Provide access to the database
 """
 
 import threading, random, sys, time, re, subprocess

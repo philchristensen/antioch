@@ -4,3 +4,6 @@
 #
 # See LICENSE for details
 
+"""
+A highly-customizable, scalable game server for creating virtual worlds.
+"""

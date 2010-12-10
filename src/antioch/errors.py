@@ -5,9 +5,7 @@
 # See LICENSE for details
 
 """
-Errors
-
-These are a variety of Error classes for the antioch server.
+A variety of antioch error classes
 """
 
 class UserError(Exception):

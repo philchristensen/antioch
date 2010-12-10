@@ -4,6 +4,10 @@
 #
 # See LICENSE for details
 
+"""
+Access project assets
+"""
+
 import os.path
 
 import pkg_resources as pkg

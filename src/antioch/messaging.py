@@ -4,6 +4,10 @@
 #
 # See LICENSE for details
 
+"""
+Enable access to the messaging server
+"""
+
 import pkg_resources as pkg
 
 from twisted.application import service

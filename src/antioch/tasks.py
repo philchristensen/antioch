@@ -4,6 +4,10 @@
 #
 # See LICENSE for details
 
+"""
+Manage asynchronous tasks.
+"""
+
 from twisted.application import service
 from twisted.internet import defer, reactor, task
 

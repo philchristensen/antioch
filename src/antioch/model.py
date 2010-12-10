@@ -4,6 +4,10 @@
 #
 # See LICENSE for details
 
+"""
+Represent objects in-universe
+"""
+
 import os.path, sys
 
 from antioch import errors, code, json

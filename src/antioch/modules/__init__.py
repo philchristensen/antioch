@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Base package for module configuration discovery.
+Modules add additional client or server functionality
 """
 
 import os, sys

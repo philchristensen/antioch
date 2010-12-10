@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Bootstrap support code.
+Create a fresh database
 """
 
 from __future__ import with_statement

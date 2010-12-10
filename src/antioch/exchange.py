@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-ObjectExchange
+Connect the verb environment to the database
 
 This is the connecting thread between the database and verb code
 during a transaction. it is responsible for loading and saving objects,

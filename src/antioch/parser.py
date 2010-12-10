@@ -5,11 +5,10 @@
 # See LICENSE for details
 
 """
-Parser
+Parse command strings sent by the client. 
 
-
-This class parses command strings send by the user. It can understand a variety
-of phrases, but they are all represented by the (BNF?) form:
+This parser can understand a variety of phrases, but they are all represented
+by the (BNF?) form:
 
 <verb>[[[<dobj spec> ]<direct-object> ]+[<prep> [<pobj spec> ]<object-of-the-preposition>]*]
 

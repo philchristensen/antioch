@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Authentication support.
+Authenticate against the relational database
 """
 
 from zope.interface import implements

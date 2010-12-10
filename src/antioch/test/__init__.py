@@ -3,6 +3,10 @@
 #
 # See LICENSE for details
 
+"""
+Provide testing for the codebase
+"""
+
 from antioch import bootstrap, dbapi, assets, transact
 
 psql_path = 'psql'

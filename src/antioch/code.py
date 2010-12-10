@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Verb execution environment
+Provide the verb execution environment
 """
 
 import time, sys

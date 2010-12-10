@@ -4,6 +4,10 @@
 #
 # See LICENSE for details
 
+"""
+Encode/decode antioch JSON
+"""
+
 import simplejson
 
 def loads(j, exchange=None):

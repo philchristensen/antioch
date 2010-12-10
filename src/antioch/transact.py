@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 """
-Execution layer
+Isolate verb code into individual subprocesses
 """
 
 from __future__ import with_statement
