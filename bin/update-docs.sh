@@ -2,6 +2,7 @@
 
 git submodule init
 git submodule update
+git submodule foreach 'git pull origin master'
 pydoctor --add-package=source/src/antioch --make-html --project-name=antioch \
 	--project-url=http://philchristensen.github.com/antioch \
 	--project-base-dir=/philchristensen/antioch/raw/master/ \
