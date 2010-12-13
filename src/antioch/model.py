@@ -104,19 +104,31 @@ class Entity(object):
 		return object.__setattr__(self, name, value)
 	
 	def __repr__(self):
+		"""
+		Just wrap the string representation in angle brackets.
+		"""
 		return '<%s>' % (self)
 	
 	def set_id(self, id):
+		"""
+		Set the ID of this entity one time.
+		"""
 		if(self._id != 0):
 			raise RuntimeError("Can't redefine a %s's ID." % self.get_type())
 		self._id = id
 	
 	def get_id(self):
+		"""
+		Get the ID of this entity.
+		"""
 		return self._id
 	
 	id = property(get_id)
 	
 	def get_origin(self):
+		"""
+		Get the object where this attribute was located (may not be where it was defined).
+		"""
 		if(self.get_type() == 'object'):
 			return self
 		
@@ -126,6 +138,9 @@ class Entity(object):
 	origin = property(get_origin)
 	
 	def get_source(self):
+		"""
+		Get the object this attribute was defined on.
+		"""
 		if(self.get_type() == 'object'):
 			return self
 		if not hasattr(self, '_source_id'):
@@ -136,24 +151,46 @@ class Entity(object):
 	source = property(get_source)
 	
 	def get_exchange(self):
+		"""
+		Return the ObjectExchange instance used to load this entity.
+		"""
 		return self._ex
 	
 	def get_context(self):
+		"""
+		Get the user responsible for the current runtime, if applicable.
+		"""
 		return self._ex.get_context()
 	
 	def save(self):
+		"""
+		Save this entity back to the database.
+		"""
 		self._ex.save(self)
 	
 	def destroy(self):
+		"""
+		Remove this entity from the database.
+		
+		[ACL] allowed to destroy this
+		"""
 		self.check('destroy', self)
 		self._ex.destroy(self)
 	
 	def set_owner(self, owner):
+		"""
+		Change the owner of this entity.
+		
+		[ACL] allowed to entrust this
+		"""
 		self.check('entrust', self)
 		self._owner_id = owner.get_id()
 		self.save()
 	
 	def get_owner(self):
+		"""
+		Get the owner of this entity.
+		"""
 		#self.check('read', self)
 		if not(self._owner_id):
 			return None
@@ -162,11 +199,17 @@ class Entity(object):
 	owner = property(get_owner, set_owner)
 
 	def check(self, permission, subject):
+		"""
+		Check if the current context has permission for something.
+		"""
 		ctx = self.get_context()
 		if ctx and not(ctx.is_allowed(permission, subject)):
 			raise errors.AccessError(ctx, permission, subject)
 	
 	def allow(self, accessor, permission, create=False):
+		"""
+		Allow a certain object or group to do something on this object.
+		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
 			self._ex.allow(self, accessor.get_id(), permission, create)
@@ -174,6 +217,9 @@ class Entity(object):
 			self._ex.allow(self, accessor, permission, create)
 	
 	def deny(self, accessor, permission, create=False):
+		"""
+		Deny a certain object or group from doing something on this object.
+		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
 			self._ex.deny(self, accessor.get_id(), permission, create)
@@ -181,9 +227,19 @@ class Entity(object):
 			self._ex.deny(self, accessor, permission, create)
 	
 	def get_type(self):
+		"""
+		Return whether this entity is an object, verb, or property.
+		"""
 		return type(self).__name__.lower()
 
 class Object(Entity):
+	"""
+	Objects represent the 'things' of the antioch universe.
+	
+	These models are really just views of a slightly more abstract entity.
+	Their behavior changes based on the user of the ObjectExchange they
+	were created from.
+	"""
 	__slots__ = ['_id', '_ex', '_name', '_unique_name', '_owner_id', '_location_id']
 	
 	def __init__(self, exchange):
@@ -204,6 +260,9 @@ class Object(Entity):
 		return "#%s (%s)" % (self._id, self._name)
 	
 	def __getattr__(self, name):
+		"""
+		Attribute access is loads verbs and executes them in a method context.
+		"""
 		# used for verbs
 		v = self.get_verb(name)
 		if(v is None):
@@ -211,6 +270,9 @@ class Object(Entity):
 		return v
 	
 	def get_details(self):
+		"""
+		Get the essential details about this object.
+		"""
 		return dict(
 			id			= self._id,
 			kind		= self.get_type(),
@@ -223,10 +285,16 @@ class Object(Entity):
 		)
 	
 	def owns(self, subject):
+		"""
+		Do I own the provided subject?
+		"""
 		owner = subject.get_owner()
 		return owner == self
 	
 	def get_verb(self, name, recurse=True):
+		"""
+		Get a verb defined on this or an ancestor of this element.
+		"""
 		# self.check('read', self)
 		v = self._ex.get_verb(self._id, name, recurse=recurse)
 		if(v):
@@ -234,6 +302,9 @@ class Object(Entity):
 		return v
 	
 	def add_verb(self, name):
+		"""
+		Create a new verb object and add it to this object.
+		"""
 		self.check('write', self)
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else None
@@ -244,25 +315,45 @@ class Object(Entity):
 		return v
 	
 	def remove_verb(self, name):
+		"""
+		Remove a verb from this object.
+		"""
 		self.check('write', self)
 		self._ex.remove_verb(origin_id=self._id, name=name)
 	
 	def has_verb(self, name):
+		"""
+		Return True if this or an ancestor of this object has a verb by this name.
+		"""
 		return self._ex.has(self._id, 'verb', name)
 	
 	def has_callable_verb(self, name):
+		"""
+		Return True if this object or an ancestor has a verb executable to the current context.
+		"""
 		return self._ex.has(self._id, 'verb', name, unrestricted=False)
 	
 	def get(self, name, default=None):
+		"""
+		Convenience method for get_property() to allow for providing a default.
+		
+		Also made to match with the dictionary syntax used for properties.
+		"""
 		try:
 			return self[name]
 		except errors.NoSuchPropertyError, e:
 			return PropertyStub(default)
 	
 	def get_ancestor_with(self, type, name):
+		"""
+		Get the ancestor of this object that defines some attribute.
+		"""
 		return self._ex.get_ancestor_with(self._id, type, name)
 	
 	def __getitem__(self, name):
+		"""
+		Item access loads properties.
+		"""
 		if(isinstance(name, (int, long))):
 			raise IndexError(name)
 		# used for properties
@@ -272,9 +363,15 @@ class Object(Entity):
 		return p
 	
 	def __contains__(self, name):
+		"""
+		Containment checks for readable properties.
+		"""
 		return self.has_readable_property(name)
 	
 	def get_property(self, name, recurse=True):
+		"""
+		Return a property defined by this or an ancestor of this object.
+		"""
 		# self.check('read', self)
 		p = self._ex.get_property(self._id, name, recurse=recurse)
 		if(p):
@@ -284,6 +381,9 @@ class Object(Entity):
 		return p
 	
 	def add_property(self, name, **kwargs):
+		"""
+		Create and return a new property defined on this object.
+		"""
 		self.check('write', self)
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
@@ -294,31 +394,58 @@ class Object(Entity):
 		return p
 	
 	def remove_property(self, name):
+		"""
+		Remove a property directly defined on this object.
+		"""
 		self.check('write', self)
 		self._ex.remove_property(origin_id=self._id, name=name)
 	
 	def has_property(self, name):
+		"""
+		Return True if this or an ancestor of this object defines the given property.
+		"""
 		return self._ex.has(self._id, 'property', name)
 	
 	def has_readable_property(self, name):
+		"""
+		Return True if this object defines a property readable by the current user.
+		"""
 		return self._ex.has(self._id, 'property', name, unrestricted=False)
 	
 	def is_player(self):
+		"""
+		Return True if this is a player's avatar object.
+		"""
 		return self._ex.is_player(self.get_id())
 	
 	def is_wizard(self):
+		"""
+		Return True if this is an administrator's player object.
+		"""
 		return self._ex.is_wizard(self.get_id())
 	
 	def set_player(self, is_player=None, is_wizard=None, passwd=None):
+		"""
+		Set player-specific attributes of this object.
+		"""
 		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
 	
 	def validate_password(self, passwd):
+		"""
+		Validate this avatar's password.
+		"""
 		return self._ex.validate_password(self.get_id(), passwd)
 	
 	def is_connected_player(self):
+		"""
+		Return True if this is a currently logged-in player.
+		"""
 		return self._ex.is_connected_player(self.get_id())
 	
 	def set_name(self, name, real=False):
+		"""
+		Set the name of this object.
+		"""
 		self.check('write', self)
 		if(real):
 			if(self._name != name and self._ex.is_unique_name(name)):
@@ -336,14 +463,23 @@ class Object(Entity):
 				p.value = name
 	
 	def add_alias(self, alias):
+		"""
+		Add an alias used by find() and other code to locate objects by name.
+		"""
 		self.check('write', self)
 		self._ex.add_alias(self.get_id(), alias)
 	
 	def remove_alias(self, alias):
+		"""
+		Remove an alias used by find() and other code to locate objects by name.
+		"""
 		self.check('write', self)
 		self._ex.remove_alias(self.get_id(), alias)
 	
 	def get_aliases(self):
+		"""
+		Get a list of aliases used by find() and other code to locate objects by name.
+		"""
 		self.check('develop', self)
 		return self._ex.get_aliases(self.get_id())
 	

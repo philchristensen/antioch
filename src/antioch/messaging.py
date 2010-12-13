@@ -23,6 +23,12 @@ from antioch import assets, json
 
 profile_messages = False
 
+AMQP_HOST = 'localhost'
+AMQP_PORT = 5672
+AMQP_VHOST = '/'
+AMQP_USER = 'guest'
+AMQP_PASS = 'guest'
+
 class MessageService(service.Service):
 	"""
 	Provides a service that holds a reference to the active
@@ -33,15 +39,21 @@ class MessageService(service.Service):
 		Create a service with the given connection.
 		"""
 		s = spec.loadString(pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml')
-		self.factory = ClientCreator(reactor, protocol.AMQClient, delegate=TwistedDelegate(), vhost='/', spec=s)
+		self.factory = ClientCreator(reactor, protocol.AMQClient, delegate=TwistedDelegate(), vhost=AMQP_VHOST, spec=s)
 		self.connection = None
 		self.channel_counter = 0
 	
 	def get_queue(self):
+		"""
+		Get a queue object that stores up messages until committed.
+		"""
 		return MessageQueue(self)
 	
 	@defer.inlineCallbacks
 	def setup_client_channel(self, user_id):
+		"""
+		Instantiate the client channel for a given user.
+		"""
 		chan = yield self.open_channel()
 		
 		exchange = 'user-exchange'
@@ -58,22 +70,31 @@ class MessageService(service.Service):
 	
 	@defer.inlineCallbacks
 	def connect(self):
+		"""
+		Connect to the AMQP server.
+		"""
 		if(self.connection):
 			defer.returnValue(self.connection)
 		else:
-			print 'connecting %s' % self
-			self.connection = yield self.factory.connectTCP('localhost', 5672)
-			yield self.connection.authenticate('guest', 'guest')
+			# print 'connecting %s' % self
+			self.connection = yield self.factory.connectTCP(AMQP_HOST, AMQP_PORT)
+			yield self.connection.authenticate(AMQP_USER, AMQP_PASS)
 	
 	@defer.inlineCallbacks
 	def disconnect(self):
-		print 'disconnecting %s' % self
+		"""
+		Disconnect from the AMQP server.
+		"""
+		# print 'disconnecting %s' % self
 		if(self.connection):
 			chan0 = yield self.connection.channel(0)
 			yield chan0.connection_close()
 	
 	@defer.inlineCallbacks
 	def open_channel(self):
+		"""
+		Open a new channel to send messages.
+		"""
 		self.channel_counter += 1
 		chan = yield self.connection.channel(self.channel_counter)
 		#print 'opened channel %s on %s' % (chan, self)
@@ -81,15 +102,27 @@ class MessageService(service.Service):
 		defer.returnValue(chan)
 
 class MessageQueue(object):
+	"""
+	Encapsulate and queue messages during a database transaction.
+	"""
 	def __init__(self, service):
+		"""
+		Create a new queue for the provided service.
+		"""
 		self.service = service
 		self.queue = []
 	
 	def send(self, user_id, msg):
+		"""
+		Send a message to a certain user.
+		"""
 		self.queue.append((user_id, msg))
 	
 	@defer.inlineCallbacks
 	def commit(self):
+		"""
+		Send all queued messages and close the channel.
+		"""
 		t = time.time()
 		
 		yield self.service.connect()
