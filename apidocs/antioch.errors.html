@@ -1,0 +1,133 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>antioch.errors : API documentation</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1 class="module">a.errors : module documentation</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a></span>
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py">View Source</a>
+      
+    </p>
+    <div>
+      
+    </div>
+    <div>A variety of antioch error classes<table class="fieldTable"></table></div>
+
+    
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id62">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L11">11</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.UserError.html">UserError</a></td>
+    <td><span>This is the superclass for all Errors that may be generated which</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L31">31</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.TestError.html">TestError</a></td>
+    <td><span>Special error used by tests.</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L48">48</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.AmbiguousObjectError.html">AmbiguousObjectError</a></td>
+    <td><span>When this class is raised, it means that at some point a single</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L71">71</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.AmbiguousVerbError.html">AmbiguousVerbError</a></td>
+    <td><span>When this class is raised, it means that when searching for a verb,</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L92">92</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.PermissionError.html">PermissionError</a></td>
+    <td><span>The user tried to do something he doesn't have permission for. 
+(duh?)</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L97">97</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.AccessError.html">AccessError</a></td>
+    <td><span>A more specific kind of PermissionError.</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L108">108</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.RecursiveError.html">RecursiveError</a></td>
+    <td><span>Raised if the user attempts to put a container inside one of its 
+contents,</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L117">117</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.QuotaError.html">QuotaError</a></td>
+    <td><span>Raised if the user tries to create objects he does not have enough quota
+for.</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L123">123</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.NoSuchObjectError.html">NoSuchObjectError</a></td>
+    <td><span>Most often raised by the parser when a verb requests an object that is 
+not</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L132">132</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.NoSuchPrepositionError.html">NoSuchPrepositionError</a></td>
+    <td><span>Raised by the parser when the programmer attempts to retreive the 
+object</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L140">140</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.NoSuchVerbError.html">NoSuchVerbError</a></td>
+    <td><span>Raised by the parser when it cannot find a verb for a sentence.</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L147">147</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.NoSuchPropertyError.html">NoSuchPropertyError</a></td>
+    <td><span>Raised by the system when it cannot find a needed property.</span></td>
+  </tr><tr class="class">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/errors.py#L154">154</a></td>
+    <td>Class</td>
+    <td><a href="antioch.errors.ExecutionError.html">ExecutionError</a></td>
+    <td><span>Raised when user code causes some kind of exception.</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    
+    
+    
+
+    
+    <address>
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-12 12:38:31.
+    </address>
+  </body>
+</html>

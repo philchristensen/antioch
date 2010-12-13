@@ -1,0 +1,671 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>antioch.client.ClientConnector : API documentation</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="apidocs.css" type="text/css" rel="stylesheet" />
+    <script src="sorttable.js" type="text/javascript"></script>
+    <script src="pydoctor.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1 class="class">a.c.ClientConnector(<a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">athena.LiveElement</a>) : class documentation</h1>
+    <p>
+      <span id="part">Part of <a href="antioch.html">antioch</a>.<a href="antioch.client.html">client</a></span>
+      <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L237">View Source</a>
+      <a href="classIndex.html#antioch.client.ClientConnector">View In Hierarchy</a>
+    </p>
+    <div>
+      
+    </div>
+    <div>Provides the AJAX communication channel with the server.<table class="fieldTable"></table></div>
+
+    <p>
+      <a href="#" id="showSplitLink" onclick="showSplit()" class="jslink">Split Table into Classes</a>
+      <a href="#" id="showBigLink" onclick="showBig()" class="jslink">Show Methods in One Table</a>
+    </p>
+    
+    <div id="splitTables">
+      <table class="children sortable" id="id45">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L249">249</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#__init__">__init__</a></td>
+    <td><span>Setup the client connection.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L268">268</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#login">login</a></td>
+    <td><span>Called when the user first connects, runs login verb code, 'look 
+here'</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L283">283</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#logout">logout</a></td>
+    <td><span>Called when the twisted.cred Avatar goes away.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L299">299</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#queue_checker">queue_checker</a></td>
+    <td><span>Continually called by the self.loop LoopingCall,</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L313">313</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#handle_message">handle_message</a></td>
+    <td><span>Handle a single message from the RabbitMQ server.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L332">332</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#task">task</a></td>
+    <td><span>Run a delayed task.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L340">340</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#parse">parse</a></td>
+    <td><span>Parse a command sent by the client.</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">LiveElement</a>:
+        </p>
+        <table class="children sortable" id="id46">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="basemethod">
+    
+    <td class="lineno">1983</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html#render">render</a></td>
+    <td><span>Hook into the rendering process in order to check preconditions and</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html">_LiveMixin</a> (via <a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">LiveElement</a>):
+        </p>
+        <table class="children sortable" id="id47">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="basemethod">
+    
+    <td class="lineno">1603</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#page">page</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1619</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#getInitialArguments">getInitialArguments</a></td>
+    <td><span>Return a <code>tuple</code> or <code>list</code> of arguments to be 
+passed to this</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1649</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#setFragmentParent">setFragmentParent</a></td>
+    <td><span>Sets the <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.LiveFragment.html"><code>LiveFragment</code></a>
+(or <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.LivePage.html"><code>LivePage</code></a>)
+which is the logical parent</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1728</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#liveElement">liveElement</a></td>
+    <td><span>Render framework-level boilerplate for making sure the Widget for 
+this</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1776</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#render_liveFragment">render_liveFragment</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1780</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#getImportStan">getImportStan</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1784</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#locateMethod">locateMethod</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1791</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#callRemote">callRemote</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1820</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detach">detach</a></td>
+    <td><span>Remove this from its parent after notifying the client that this is</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1836</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detached">detached</a></td>
+    <td><span>Application-level callback invoked when <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detach"><code>detach</code></a>
+succeeds or when the</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1848</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#connectionMade">connectionMade</a></td>
+    <td><span>Callback invoked when the transport is first available to this 
+widget.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1856</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#connectionLost">connectionLost</a></td>
+    <td><span>Callback invoked once the transport is no longer available to this</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1633</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_prepare">_prepare</a></td>
+    <td><span>Check for clearly incorrect settings of <code>self.jsClass</code> 
+and</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1676</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_flatten">_flatten</a></td>
+    <td><span>Synchronously flatten <code>what</code> and return the result as a 
+<code>str</code>.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1690</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_structured">_structured</a></td>
+    <td><span>Retrieve an opaque object which may be usable to construct the</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1799</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_athenaDetachServer">_athenaDetachServer</a></td>
+    <td><span>Locally remove this from its parent.</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasJSClass.html">_HasJSClass</a> (via <a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">LiveElement</a>, <a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html">_LiveMixin</a>):
+        </p>
+        <table class="children sortable" id="id48">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="basemethod private">
+    
+    <td class="lineno">904</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasJSClass.html#_getModuleForClass">_getModuleForClass</a></td>
+    <td><span>Get a <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.JSModule.html"><code>JSModule</code></a>
+object for the class specified by this object's</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">912</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasJSClass.html#_getRequiredModules">_getRequiredModules</a></td>
+    <td><span>Return a list of two-tuples containing module names and URLs at 
+which</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasCSSModule.html">_HasCSSModule</a> (via <a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">LiveElement</a>, <a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html">_LiveMixin</a>):
+        </p>
+        <table class="children sortable" id="id49">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="basemethod">
+    
+    <td class="lineno">961</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasCSSModule.html#getStylesheetStan">getStylesheetStan</a></td>
+    <td><span>Get some stan which will include the given modules.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">946</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasCSSModule.html#_getRequiredCSSModules">_getRequiredCSSModules</a></td>
+    <td><span>Return a list of CSS module URLs.</span></td>
+  </tr>
+  
+</table>
+      
+        <p>
+          Inherited from <a href="http://buildbot.divmod.org/apidocs/nevow.page.Element.html">Element</a> (via <a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html">LiveElement</a>):
+        </p>
+        <table class="children sortable" id="id50">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="basemethod">
+    
+    <td class="lineno">85</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.page.Element.html#renderer">renderer</a></td>
+    <td><span>Get the named render method using <code>nevow.page.renderer</code>.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">110</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.page.Element.html#rend">rend</a></td>
+    <td><span>Backwards compatibility stub.  This is only here so that derived</span></td>
+  </tr>
+  
+</table>
+      
+      
+    </div>
+    <div id="bigTable">
+    <table class="children sortable" id="id51">
+  
+  <tr>
+    <th>Line #</th>
+    <th>Kind</th>
+    <th>Name</th>
+    <th>Docs</th>
+  </tr>
+<tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L249">249</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#__init__">__init__</a></td>
+    <td><span>Setup the client connection.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1791</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#callRemote">callRemote</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1856</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#connectionLost">connectionLost</a></td>
+    <td><span>Callback invoked once the transport is no longer available to this</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1848</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#connectionMade">connectionMade</a></td>
+    <td><span>Callback invoked when the transport is first available to this 
+widget.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1820</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detach">detach</a></td>
+    <td><span>Remove this from its parent after notifying the client that this is</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1836</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detached">detached</a></td>
+    <td><span>Application-level callback invoked when <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#detach"><code>detach</code></a>
+succeeds or when the</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1780</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#getImportStan">getImportStan</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1619</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#getInitialArguments">getInitialArguments</a></td>
+    <td><span>Return a <code>tuple</code> or <code>list</code> of arguments to be 
+passed to this</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">961</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasCSSModule.html#getStylesheetStan">getStylesheetStan</a></td>
+    <td><span>Get some stan which will include the given modules.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L313">313</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#handle_message">handle_message</a></td>
+    <td><span>Handle a single message from the RabbitMQ server.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1728</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#liveElement">liveElement</a></td>
+    <td><span>Render framework-level boilerplate for making sure the Widget for 
+this</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1784</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#locateMethod">locateMethod</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L268">268</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#login">login</a></td>
+    <td><span>Called when the user first connects, runs login verb code, 'look 
+here'</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L283">283</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#logout">logout</a></td>
+    <td><span>Called when the twisted.cred Avatar goes away.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1603</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#page">page</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L340">340</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#parse">parse</a></td>
+    <td><span>Parse a command sent by the client.</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L299">299</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#queue_checker">queue_checker</a></td>
+    <td><span>Continually called by the self.loop LoopingCall,</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">110</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.page.Element.html#rend">rend</a></td>
+    <td><span>Backwards compatibility stub.  This is only here so that derived</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1983</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena.LiveElement.html#render">render</a></td>
+    <td><span>Hook into the rendering process in order to check preconditions and</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1776</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#render_liveFragment">render_liveFragment</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">85</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.page.Element.html#renderer">renderer</a></td>
+    <td><span>Get the named render method using <code>nevow.page.renderer</code>.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td class="lineno">1649</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#setFragmentParent">setFragmentParent</a></td>
+    <td><span>Sets the <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.LiveFragment.html"><code>LiveFragment</code></a>
+(or <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.LivePage.html"><code>LivePage</code></a>)
+which is the logical parent</span></td>
+  </tr><tr class="method">
+    
+    <td class="lineno"><a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L332">332</a></td>
+    <td>Method</td>
+    <td><a href="antioch.client.ClientConnector.html#task">task</a></td>
+    <td><span>Run a delayed task.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1799</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_athenaDetachServer">_athenaDetachServer</a></td>
+    <td><span>Locally remove this from its parent.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1676</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_flatten">_flatten</a></td>
+    <td><span>Synchronously flatten <code>what</code> and return the result as a 
+<code>str</code>.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">904</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasJSClass.html#_getModuleForClass">_getModuleForClass</a></td>
+    <td><span>Get a <a 
+href="http%3A//buildbot.divmod.org/apidocs/nevow.athena.JSModule.html"><code>JSModule</code></a>
+object for the class specified by this object's</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">946</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasCSSModule.html#_getRequiredCSSModules">_getRequiredCSSModules</a></td>
+    <td><span>Return a list of CSS module URLs.</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">912</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._HasJSClass.html#_getRequiredModules">_getRequiredModules</a></td>
+    <td><span>Return a list of two-tuples containing module names and URLs at 
+which</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1633</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_prepare">_prepare</a></td>
+    <td><span>Check for clearly incorrect settings of <code>self.jsClass</code> 
+and</span></td>
+  </tr><tr class="basemethod private">
+    
+    <td class="lineno">1690</td>
+    <td>Method</td>
+    <td><a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#_structured">_structured</a></td>
+    <td><span>Retrieve an opaque object which may be usable to construct the</span></td>
+  </tr>
+  
+</table></div>
+    
+    
+
+    <div class="function">
+  <a name="antioch.client.ClientConnector.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, user_id, mind, msg_service, session_id, *args, **kwargs):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L249" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    <div class="interfaceinfo">overrides <a href="http://buildbot.divmod.org/apidocs/nevow.athena._LiveMixin.html#__init__">nevow.athena._LiveMixin.__init__</a></div>
+    <div>Setup the client connection.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.login">
+    
+  </a>
+  <a name="login">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    login(self, mind):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L268" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Called when the user first connects, runs login verb code, 'look 
+here'<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.logout">
+    
+  </a>
+  <a name="logout">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    logout(self, *args, **kwargs):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L283" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Called when the twisted.cred Avatar goes away.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.queue_checker">
+    
+  </a>
+  <a name="queue_checker">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    queue_checker(self):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L299" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Continually called by the self.loop LoopingCall, this looks for messages
+sent to the user and processes them appropriately.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.handle_message">
+    
+  </a>
+  <a name="handle_message">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    handle_message(self, data):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L313" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Handle a single message from the RabbitMQ server.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.task">
+    
+  </a>
+  <a name="task">
+    
+  </a>
+  <div class="functionHeader">
+    @defer.inlineCallbacks<br />
+    def
+    task(self, task_id):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L332" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Run a delayed task.<table class="fieldTable"></table></div>
+  </div>
+</div><div class="function">
+  <a name="antioch.client.ClientConnector.parse">
+    
+  </a>
+  <a name="parse">
+    
+  </a>
+  <div class="functionHeader">
+    @athena.expose<br />@defer.inlineCallbacks<br />
+    def
+    parse(self, command):
+    <a href="https://github.com/philchristensen/antioch/blob/master/src/antioch/client.py#L340" class="functionSourceLink">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div>Parse a command sent by the client.<table class="fieldTable"></table></div>
+  </div>
+</div>
+    <address>
+      <a href="index.html">API Documentation</a> for <a href="http://philchristensen.github.com/antioch">antioch</a>, generated by <a href="http://codespeak.net/~mwh/pydoctor/">pydoctor</a> at 2010-12-12 12:38:31.
+    </address>
+  </body>
+</html>
