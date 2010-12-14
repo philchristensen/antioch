@@ -13,7 +13,7 @@ import threading, random, sys, time, re, subprocess
 from twisted.enterprise import adbapi
 
 debug = False
-profile_debug = True
+profile_debug = False
 debug_stream = sys.stderr
 debug_syntax_highlighting = True
 
