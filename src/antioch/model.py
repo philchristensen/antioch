@@ -27,54 +27,6 @@ default_permissions = (
 	'develop',
 )
 
-# This should be left alone
-protection_enabled = True
-
-def isLocal():
-	"""
-	Used by get/setattr to delegate access.
-	
-	Returns True if the call to __getattribute__ or __setattr__ originated
-	in either the exchange, test, or bootstrap modules.
-	
-	Previously this used inspect, which made it super slow. The only potential
-	issue with using _getframe() is that it's not guaranteed to be there in
-	non CPython implementations.
-	"""
-	if not(protection_enabled):
-		return True
-	
-	f = sys._getframe(1)
-	c1 = f.f_code
-	c2 = f.f_back.f_code
-	try:
-		# check for same file
-		if(c1.co_filename == c2.co_filename):
-			return True
-		
-		from antioch import exchange
-		exchange_source_path = os.path.abspath(exchange.__file__)
-		if(exchange_source_path.endswith('pyc')):
-			exchange_source_path = exchange_source_path[:-1]
-		if(c2.co_filename == exchange_source_path):
-			return True
-		
-		from antioch import test
-		test_source_path = os.path.abspath(os.path.dirname(test.__file__))
-		if(c2.co_filename.startswith(test_source_path)):
-			return True
-		
-		from antioch import assets
-		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
-		if(c2.co_filename.startswith(bootstrap_source_path)):
-			return True
-		
-		return False
-	finally:
-		del c2
-		del c1
-		del f
-
 class PropertyStub(object):
 	"""
 	A convenience class to allow `obj.get('property', 'default').value`
@@ -86,23 +38,6 @@ class Entity(object):
 	"""
 	Entities are the base class for all Objects, Verbs, and Properties.
 	"""
-	
-	def __getattribute__(self, name):
-		"""
-		Private attribute protection using isLocal().
-		"""
-		if(name.startswith('_') and not isLocal()):
-			raise AttributeError(name)
-		return object.__getattribute__(self, name)
-	
-	def __setattr__(self, name, value):
-		"""
-		Private attribute protection using isLocal().
-		"""
-		if(name.startswith('_') and not isLocal()):
-			raise AttributeError(name)
-		return object.__setattr__(self, name, value)
-	
 	def __repr__(self):
 		"""
 		Just wrap the string representation in angle brackets.

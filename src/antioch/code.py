@@ -92,7 +92,7 @@ def get_environment(p):
 	env = dict(
 		_print_			= lambda: _print_(),
 		_write_			= lambda x: x,
-		_getattr_		= lambda obj, name: getattr(obj, name),
+		_getattr_		= getattr,
 		_getitem_		= lambda obj, key: obj[key],
 		_getiter_		= lambda obj: iter(obj),
 		__import__		= restricted_import,

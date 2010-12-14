@@ -57,9 +57,6 @@ class TransactionTestCase(unittest.TestCase):
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
 	
 	def test_protected_attribute_access(self):
-		if not(model.protection_enabled):
-			raise unittest.SkipTest("Model protection disabled.")
-			
 		user_id = 2 # Wizard ID
 		with self.exchange as x:
 			wizard = x.get_object(user_id)
@@ -70,9 +67,9 @@ class TransactionTestCase(unittest.TestCase):
 			eval_verb = x.get_verb(user_id, '@eval')
 			
 			# since this will raise AttributeError, the model will attempt to find a verb by that name
-			self.failUnlessRaises(errors.NoSuchVerbError, getattr, wizard, '_location_id')
-			
-			self.failUnlessRaises(AttributeError, getattr, eval_verb, '_origin_id')
-			self.failUnlessRaises(AttributeError, getattr, eval_verb, '__dict__')
-			self.failUnlessRaises(AttributeError, getattr, eval_verb, '__slots__')
-		
+			p = parser.get_default_parser(eval_verb)
+			from antioch import code
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._owner_id', code.get_environment(p))
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._origin_id', code.get_environment(p))
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__dict__', code.get_environment(p))
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__slots__', code.get_environment(p))
