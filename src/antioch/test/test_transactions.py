@@ -34,7 +34,7 @@ class TransactionTestCase(unittest.TestCase):
 		terminated = False
 		user_id = 2 # Wizard ID
 		try:
-			result = yield transact.Parse.run(user_id=user_id, sentence='@exec import time; time.sleep(20)')
+			result = yield transact.Parse.run(user_id=user_id, sentence='@exec while(True):\n\tpass')
 		except error.ProcessTerminated, e:
 			terminated = True
 		
@@ -49,7 +49,7 @@ class TransactionTestCase(unittest.TestCase):
 				parser.parse(caller, '@exec create_object("Test Object")')
 				if(x.get_object('Test Object')):
 					created = True
-				parser.parse(caller, '@exec raise RuntimeError()')
+				parser.parse(caller, '@exec nosuchobject()')
 		except:
 			pass
 		

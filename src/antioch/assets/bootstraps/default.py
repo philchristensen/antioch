@@ -138,7 +138,7 @@ exec_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = False,
 	code = """#!antioch
-exec(command[6:].strip())
+execute(command[6:].strip())
 """,
 ))
 exec_verb.add_name('@exec')
@@ -150,7 +150,7 @@ eval_verb = exchange.instantiate('verb', dict(
 	ability = True,
 	method = False,
 	code = """#!antioch
-print eval(command[6:].strip())
+print evaluate(command[6:].strip())
 """,
 ))
 eval_verb.add_name('@eval')

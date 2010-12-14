@@ -34,6 +34,48 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		self.exchange.queue.send = send
 		v.execute(p)
 	
+	def test_player_eval(self):
+		caller = self.exchange.get_object('wizard')
+		
+		l = parser.Lexer('@eval "test"')
+		p = parser.TransactionParser(l, caller, self.exchange)
+		
+		v = p.get_verb()
+		self.failUnlessEqual(p.this, caller)
+		
+		self._test_player_eval_ran = False
+		
+		def send(user_id, msg):
+			self._test_player_eval_ran = True
+			self.failUnlessEqual(user_id, 2L)
+			self.failUnlessEqual(msg['text'], 'test')
+		
+		self.exchange.queue.send = send
+		v.execute(p)
+		
+		self.failUnlessEqual(self._test_player_eval_ran, True)
+	
+	def test_player_write(self):
+		caller = self.exchange.get_object('wizard')
+		
+		l = parser.Lexer('@exec write(caller, "test")')
+		p = parser.TransactionParser(l, caller, self.exchange)
+		
+		v = p.get_verb()
+		self.failUnlessEqual(p.this, caller)
+		
+		self._test_player_write_ran = False
+		
+		def send(user_id, msg):
+			self._test_player_write_ran = True
+			self.failUnlessEqual(user_id, 2L)
+			self.failUnlessEqual(msg['text'], 'test')
+		
+		self.exchange.queue.send = send
+		v.execute(p)
+		
+		self.failUnlessEqual(self._test_player_write_ran, True)
+	
 	def test_player_multiparent_look(self):
 		caller = self.exchange.get_object('phil')
 		random = self.exchange.instantiate('object', name='random')

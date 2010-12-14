@@ -43,8 +43,9 @@ def r_eval(src, environment, runtype="eval"):
 	if not(environment):
 		raise RuntimeError('No environment')
 	environment['runtype'] = runtype
-	environment.update(get_restricted_environment())
-	code = compile_restricted(src, '<verb>', 'eval')
+	
+	code = compile_restricted(src, '<%s>' % environment['self'], 'eval')
+	
 	value =  eval(code, environment)
 	return value
 
@@ -59,8 +60,8 @@ def r_exec(src, environment, runtype="exec"):
 	
 	# t = time.time()
 	environment['runtype'] = runtype
-	environment.update(get_restricted_environment())
-	code = compile_restricted(src, '<verb>', 'exec')
+	
+	code = compile_restricted(src, '<%s>' % environment['self'], 'exec')
 	exec(code, environment)
 	
 	# print 'execute took %s seconds' % (time.time() - t)
@@ -76,30 +77,27 @@ def restricted_import(name, gdict, ldict, fromlist, level=-1):
 		return __builtins__['__import__'](name, gdict, ldict, fromlist, level)
 	raise ImportError('Restricted: %s' % name)
 
-def get_restricted_environment():
+def get_environment(p):
 	"""
-	Get a dictionary of the special environment needed for RestrictedPython.
+	Given the provided parser object, construct an environment dictionary.
 	"""
-	def _print_(s):
-		write(caller, s)
+	class _print_(object):
+		def write(self, s):
+			if(s.strip()):
+				write(p)(p.caller, s)
+	
 	safe_builtins['__import__'] = restricted_import
 	safe_builtins['dict'] = dict
+	
 	env = dict(
-		_print_			= lambda: _print_,
+		_print_			= lambda: _print_(),
 		_write_			= lambda x: x,
 		_getattr_		= lambda obj, name: getattr(obj, name),
 		_getitem_		= lambda obj, key: obj[key],
 		_getiter_		= lambda obj: iter(obj),
 		__import__		= restricted_import,
 		__builtins__	= safe_builtins,
-	)
-	return env
-
-def get_environment(p):
-	"""
-	Given the provided parser object, construct an environment dictionary.
-	"""
-	env = dict(
+		
 		command			= p.command,
 		caller			= p.caller,
 		dobj			= p.dobj,
@@ -168,6 +166,21 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 		args		= json.dumps(args),
 		kwargs		= json.dumps(kwargs),
 	))
+
+@api
+def execute(p, code):
+	"""
+	Verb API: Execute the code in place.
+	"""
+	return r_exec(code, get_environment(p))
+
+
+@api
+def evaluate(p, code):
+	"""
+	Verb API: Evalue the expression in place.
+	"""
+	return r_eval(code, get_environment(p))
 
 @api
 def tasks(p):
