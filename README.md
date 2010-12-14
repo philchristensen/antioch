@@ -1,4 +1,4 @@
-antioch 2.0
+antioch 1.0
 ===========
 
 17 September 2010

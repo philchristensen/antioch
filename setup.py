@@ -38,7 +38,7 @@ def autosetup():
 	
 	dist = setup(
 		name			= "antioch",
-		version			= "2.0",
+		version			= "1.0",
 		
 		packages		= find_packages('src') + ['twisted.plugins', 'nevow.plugins'],
 		package_dir		= {
