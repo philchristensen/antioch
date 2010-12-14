@@ -8,7 +8,7 @@
 Provide the verb execution environment
 """
 
-import time, sys
+import time, sys, os.path
 
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
@@ -19,6 +19,55 @@ allowed_modules = (
 	'hashlib',
 	'string',
 )
+
+def isLocal():
+	"""
+	Used by get/setattr to delegate access.
+	
+	Returns True if the call to __getattribute__ or __setattr__ originated
+	in either the exchange, test, or bootstrap modules.
+	
+	Previously this used inspect, which made it super slow. The only potential
+	issue with using _getframe() is that it's not guaranteed to be there in
+	non CPython implementations.
+	"""
+	f = sys._getframe(1)
+	c1 = f.f_back.f_code
+	c2 = f.f_back.f_back.f_code
+	try:
+		from antioch import model
+		model_source_path = os.path.abspath(model.__file__)
+		if(model_source_path.endswith('pyc')):
+			model_source_path = model_source_path[:-1]
+		if(c2.co_filename == model_source_path):
+			#print '%r =(1)= %r' % (c2.co_filename, model_source_path)
+			return True
+		
+		from antioch import exchange
+		exchange_source_path = os.path.abspath(exchange.__file__)
+		if(exchange_source_path.endswith('pyc')):
+			exchange_source_path = exchange_source_path[:-1]
+		if(c2.co_filename == exchange_source_path):
+			#print '%r =(2)= %r' % (c2.co_filename, exchange_source_path)
+			return True
+		
+		from antioch import test
+		test_source_path = os.path.abspath(os.path.dirname(test.__file__))
+		if(c2.co_filename.startswith(test_source_path)):
+			#print '%r 1startswith %r' % (c2.co_filename, test_source_path)
+			return True
+		
+		from antioch import assets
+		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
+		if(c2.co_filename.startswith(bootstrap_source_path)):
+			#print '%r 2startswith %r' % (c2.co_filename, bootstrap_source_path)
+			return True
+		
+		return False
+	finally:
+		del c2
+		del c1
+		del f
 
 def massage_verb_code(code):
 	"""
@@ -77,6 +126,16 @@ def restricted_import(name, gdict, ldict, fromlist, level=-1):
 		return __builtins__['__import__'](name, gdict, ldict, fromlist, level)
 	raise ImportError('Restricted: %s' % name)
 
+def get_protected_attribute(obj, name, g=getattr):
+	if(name.startswith('_') and not isLocal()):
+		raise AttributeError(name)
+	return g(obj, name)
+
+def set_protected_attribute(obj, name, value, s=setattr):
+	if(name.startswith('_') and not isLocal()):
+		raise AttributeError(name)
+	return s(obj, name, value)
+
 def get_environment(p):
 	"""
 	Given the provided parser object, construct an environment dictionary.
@@ -86,13 +145,25 @@ def get_environment(p):
 			if(s.strip()):
 				write(p)(p.caller, s)
 	
+	class _write_(object):
+		def __init__(obj):
+			self.obj = obj
+		
+		def __setattr__(self, name, value):
+			"""
+			Private attribute protection using isLocal().
+			"""
+			set_protected_attribute(self.obj, name, value)
+	
 	safe_builtins['__import__'] = restricted_import
-	safe_builtins['dict'] = dict
+	
+	for name in ['dict', 'getattr', 'hasattr']:
+		safe_builtins[name] = __builtins__[name]
 	
 	env = dict(
 		_print_			= lambda: _print_(),
-		_write_			= lambda x: x,
-		_getattr_		= getattr,
+		_write_			= _write_,
+		_getattr_		= get_protected_attribute,
 		_getitem_		= lambda obj, key: obj[key],
 		_getiter_		= lambda obj: iter(obj),
 		__import__		= restricted_import,

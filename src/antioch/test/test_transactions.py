@@ -69,7 +69,14 @@ class TransactionTestCase(unittest.TestCase):
 			# since this will raise AttributeError, the model will attempt to find a verb by that name
 			p = parser.get_default_parser(eval_verb)
 			from antioch import code
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._owner_id', code.get_environment(p))
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._origin_id', code.get_environment(p))
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__dict__', code.get_environment(p))
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__slots__', code.get_environment(p))
+			env = code.get_environment(p)
+			
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._owner_id', env)
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._origin_id', env)
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__dict__', env)
+			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__slots__', env)
+			
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "_owner_id")', env)
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "_origin_id")', env)
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "__dict__")', env)
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "__slots__")', env)

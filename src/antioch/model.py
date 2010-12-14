@@ -8,8 +8,6 @@
 Represent objects in-universe
 """
 
-import os.path, sys
-
 from antioch import errors, code, json
 
 # These are the default list of permissions, auto-created
@@ -38,6 +36,19 @@ class Entity(object):
 	"""
 	Entities are the base class for all Objects, Verbs, and Properties.
 	"""
+	
+	def __getattribute__(self, name):
+		"""
+		Private attribute protection using isLocal().
+		"""
+		return code.get_protected_attribute(self, name, object.__getattribute__)
+	
+	def __setattr__(self, name, value):
+		"""
+		Private attribute protection using isLocal().
+		"""
+		return code.set_protected_attribute(self, name, value, object.__setattr__)
+	
 	def __repr__(self):
 		"""
 		Just wrap the string representation in angle brackets.
