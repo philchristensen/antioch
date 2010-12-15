@@ -155,6 +155,8 @@ class Entity(object):
 	def allow(self, accessor, permission, create=False):
 		"""
 		Allow a certain object or group to do something on this object.
+		
+		[ACL] allowed to grant on this
 		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
@@ -165,6 +167,8 @@ class Entity(object):
 	def deny(self, accessor, permission, create=False):
 		"""
 		Deny a certain object or group from doing something on this object.
+		
+		[ACL] allowed to grant on this
 		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
@@ -250,6 +254,8 @@ class Object(Entity):
 	def add_verb(self, name):
 		"""
 		Create a new verb object and add it to this object.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		ctx = self._ex.get_context()
@@ -263,6 +269,8 @@ class Object(Entity):
 	def remove_verb(self, name):
 		"""
 		Remove a verb from this object.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		self._ex.remove_verb(origin_id=self._id, name=name)
@@ -329,6 +337,8 @@ class Object(Entity):
 	def add_property(self, name, **kwargs):
 		"""
 		Create and return a new property defined on this object.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		ctx = self._ex.get_context()
@@ -342,6 +352,8 @@ class Object(Entity):
 	def remove_property(self, name):
 		"""
 		Remove a property directly defined on this object.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		self._ex.remove_property(origin_id=self._id, name=name)
@@ -391,6 +403,8 @@ class Object(Entity):
 	def set_name(self, name, real=False):
 		"""
 		Set the name of this object.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		if(real):
@@ -411,6 +425,8 @@ class Object(Entity):
 	def add_alias(self, alias):
 		"""
 		Add an alias used by find() and other code to locate objects by name.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		self._ex.add_alias(self.get_id(), alias)
@@ -418,6 +434,8 @@ class Object(Entity):
 	def remove_alias(self, alias):
 		"""
 		Remove an alias used by find() and other code to locate objects by name.
+		
+		[ACL] allowed to write on this
 		"""
 		self.check('write', self)
 		self._ex.remove_alias(self.get_id(), alias)
@@ -425,36 +443,79 @@ class Object(Entity):
 	def get_aliases(self):
 		"""
 		Get a list of aliases used by find() and other code to locate objects by name.
+		
+		[ACL] allowed to develop on this
 		"""
 		self.check('develop', self)
 		return self._ex.get_aliases(self.get_id())
 	
 	def add_observer(self, observer):
+		"""
+		Add an object to be notified when this object changes its appearance.
+		
+		[ACL] allowed to read on this
+		[ACL] allowed to write on observer
+		"""
 		self.check('read', self)
 		self.check('write', observer)
 		self._ex.add_observer(self.get_id(), observer.get_id())
 	
 	def remove_observer(self, observer):
+		"""
+		Remove an observer from this object's list.
+		
+		[ACL] allowed to write on observer
+		"""
 		self.check('write', observer)
 		self._ex.remove_observer(self.get_id(), observer.get_id())
 	
 	def get_observers(self):
+		"""
+		Return a list of observers for this object.
+		
+		[ACL] allowed to read on this
+		"""
 		self.check('read', self)
 		return self._ex.get_observers(self.get_id())
 	
 	def get_observing(self):
+		"""
+		Get the object this object is currently observing.
+		
+		[ACL] allowed to read on this
+		"""
 		self.check('read', self)
 		return self._ex.get_observing(self.get_id())
 	
 	def notify_observers(self):
+		"""
+		Tell all observers to refresh their view of this object.
+		
+		[ACL] allowed to write on this
+		"""
+		self.check('write', self)
 		for observer in self.get_observers():
 			if(observer.has_callable_verb('look')):
 				observer.look(self)
 	
 	def clear_observers(self):
+		"""
+		Clear the list of observers.
+		
+		[ACL] allowed to write on this
+		"""
+		self.check('write', self)
 		self._ex.clear_observers(self.get_id())
 	
 	def get_name(self, real=False):
+		"""
+		Get the name of this object.
+		
+		If it exists, return the property called 'name' first.
+		If real is True, return the actual name only.
+		
+		[ACL] allowed to read on this
+		"""
 		self.check('read', self)
 		if(real or 'name' not in self):
 			return self._name
@@ -462,15 +523,31 @@ class Object(Entity):
 			return self['name'].value
 	
 	def find(self, name):
+		"""
+		Find a object contained directly inside by name.
+		"""
 		return self._ex.find(self.get_id(), name)
 	
 	def contains(self, subject, recurse=True):
+		"""
+		Is the provided object inside this one.
+		
+		Optionally supply recurse=True to recurse through nested objects.
+		"""
 		return self._ex.contains(self.get_id(), subject.get_id(), recurse)
 	
 	def get_contents(self):
+		"""
+		Get a list of objects immediately inside this one.
+		"""
 		return self._ex.get_contents(self.get_id())
 	
 	def set_location(self, location):
+		"""
+		Set this object's location to the provided object.
+		
+		[ACL] allowed to move this
+		"""
 		self.check('move', self)
 		if(location and self.contains(location)):
 			raise errors.RecursiveError("Sorry, '%s' already contains '%s'" % (self, location))
@@ -491,23 +568,49 @@ class Object(Entity):
 		self.save()
 	
 	def get_location(self):
+		"""
+		Get this object's location.
+		
+		[ACL] allowed to read on this
+		"""
 		self.check('read', self)
 		if not(self._location_id):
 			return None
 		return self._ex.instantiate('object', id=self._location_id)
 	
 	def has_parent(self, parent):
+		"""
+		Return true if the provided object is a parent of this object.
+		"""
 		return self._ex.has_parent(self.get_id(), parent.get_id())
 	
 	def get_parents(self, recurse=False):
+		"""
+		Get a list of immediate parents to this object.
+		
+		Optionally, supply recurse=True to get *all* parents.
+		
+		[ACL] allowed to read on this
+		"""
 		self.check('read', self)
 		return self._ex.get_parents(self._id, recurse)
 	
 	def remove_parent(self, parent):
+		"""
+		Remove a parent from this object.
+		
+		[ACL] allowed to transmute this
+		"""
 		self.check('transmute', self)
 		self._ex.remove_parent(parent.get_id(), self.get_id())
 	
 	def add_parent(self, parent):
+		"""
+		Add a parent to this object.
+		
+		[ACL] allowed to transmute this
+		[ACL] allowed to derive from parent
+		"""
 		self.check('transmute', self)
 		self.check('derive', parent)
 		
@@ -516,6 +619,9 @@ class Object(Entity):
 		self._ex.add_parent(self.get_id(), parent.get_id())
 	
 	def is_allowed(self, permission, subject):
+		"""
+		Is this object allowed to do `permission` on `subject`?
+		"""
 		ctx = self.get_context()
 		# if ctx and ctx.is_wizard() and permission == 'grant':
 		if ctx and ctx.owns(subject):
@@ -526,6 +632,10 @@ class Object(Entity):
 	location = property(get_location, set_location)
 
 class Verb(Entity):
+	"""
+	Verbs encapsulate in-game Python code with ownership and access rules.
+	"""
+	
 	__slots__ = ['_id', '_origin_id', '_source_id', '_ex', '_code', '_owner_id', '_ability', '_method']
 	
 	def __init__(self, origin):
@@ -542,6 +652,11 @@ class Verb(Entity):
 		self._method = False
 	
 	def __call__(self, *args, **kwargs):
+		"""
+		Call this verb as a method.
+		
+		[ACL] allowed to execute this
+		"""
 		if not(self._method):
 			raise RuntimeError("%s is not a method." % self)
 		self.check('execute', self)
@@ -561,6 +676,9 @@ class Verb(Entity):
 		)
 	
 	def get_details(self):
+		"""
+		Get the essential details about this verb.
+		"""
 		return dict(
 			id			= self.get_id(),
 			kind		= self.get_type(),
@@ -572,55 +690,107 @@ class Verb(Entity):
 		)
 	
 	def execute(self, parser):
+		"""
+		Execute this verb, called by the provided parser instance.
+		
+		[ACL] allowed to execute this
+		"""
 		self.check('execute', self)
 		
 		code.r_exec(parser.caller, self._code, parser.get_environment(), filename=repr(self), runtype="verb")
 	
 	def add_name(self, name):
+		"""
+		Add a name or alias for this verb.
+		
+		[ACL] allowed to write to this
+		"""
 		self.check('write', self)
 		return self._ex.add_verb_name(self.get_id(), name)
 	
 	def remove_name(self, name):
+		"""
+		Remove a name or alias for this verb.
+		
+		[ACL] allowed to write to this
+		"""
 		self.check('write', self)
 		return self._ex.remove_verb_name(self.get_id(), name)
 	
 	def get_names(self):
+		"""
+		Get a list of names for this verb.
+		"""
 		# self.check('read', self)
 		return self._ex.get_verb_names(self.get_id())
 	
 	def set_names(self, given_names):
+		"""
+		Update the list of names for this verb.
+		"""
 		old_names = self.get_names()
 		[self.remove_name(n) for n in old_names if n not in given_names]
 		[self.add_name(n) for n in given_names if n not in old_names]
 	
 	def set_code(self, code):
+		"""
+		Set the Python code for this verb.
+		
+		[ACL] allowed to develop this
+		"""
 		self.check('develop', self)
 		self._code = code
 		self.save()
 	
 	def get_code(self):
+		"""
+		Get the Python code for this verb
+		
+		[ACL] allowed to read this
+		"""
 		self.check('read', self)
 		return self._code
 	
 	def set_ability(self, ability):
+		"""
+		Mark this verb as an ability (only parseable by origin).
+		
+		[ACL] allowed to develop this
+		"""
 		self.check('develop', self)
 		self._ability = bool(ability)
 		self.save()
 	
 	def is_ability(self):
+		"""
+		Is this verb an ability?
+		"""
 		# self.check('read', self)
 		return self._ability
 	
 	def set_method(self, method):
+		"""
+		Allow this verb to be called by method syntax.
+		
+		[ACL] allowed to develop this
+		"""
 		self.check('develop', self)
 		self._method = bool(method)
 		self.save()
 	
 	def is_method(self):
+		"""
+		Is this verb callable as a method?
+		"""
 		# self.check('read', self)
 		return self._method
 	
 	def is_executable(self):
+		"""
+		Is this verb executable?
+		
+		[ACL] allowed to execute this
+		"""
 		try:
 			self.check('execute', self)
 		except errors.PermissionError, e:
@@ -628,6 +798,9 @@ class Verb(Entity):
 		return True
 	
 	def performable_by(self, caller):
+		"""
+		Is this verb executable by a particular caller?
+		"""
 		# if(self.is_method()):
 		# 	return False
 		if not(caller.is_allowed('execute', self)):
@@ -646,6 +819,13 @@ class Verb(Entity):
 	executable = property(is_executable)
 
 class Property(Entity):
+	"""
+	Properties encapsulate in-game Python values with ownership and access rules.
+	
+	Properties can store any value than can be encoded to JSON, including object,
+	verb, and property references, which are handled by a customized parser.
+	"""
+	
 	__slots__ = ['_id', '_origin_id', '_source_id', '_ex', '_name', '_value', '_type', '_owner_id']
 	
 	def __init__(self, origin):
@@ -668,6 +848,9 @@ class Property(Entity):
 		return 'Property %r {#%s on %s}' % (self._name, self._id, self.origin)
 	
 	def get_details(self):
+		"""
+		Get the essential details about this property.
+		"""
 		value = self._value
 		value = json.dumps(self._value) if not isinstance(self._value, basestring) else self._value
 		return dict(
@@ -681,6 +864,9 @@ class Property(Entity):
 		)
 	
 	def is_readable(self):
+		"""
+		Is this property readable?
+		"""
 		try:
 			self.check('read', self)
 		except errors.PermissionError, e:
@@ -688,21 +874,41 @@ class Property(Entity):
 		return True
 	
 	def set_name(self, name):
+		"""
+		Set this property's name.
+		
+		[ACL] allowed to write to this
+		"""
 		self.check('write', self)
 		self._name = name
 		self.save()
 	
 	def get_name(self):
+		"""
+		Get this property's name.
+		
+		[ACL] allowed to read from this
+		"""
 		self.check('read', self)
 		return self._name
 	
 	def set_value(self, value, type='string'):
+		"""
+		Set this property's value.
+		
+		[ACL] allowed to write to this
+		"""
 		self.check('write', self)
 		self._value = value
 		self._type = type
 		self.save()
 	
 	def get_value(self):
+		"""
+		Get this property's value.
+		
+		[ACL] allowed to read from this
+		"""
 		self.check('read', self)
 		return self._value
 	

@@ -249,6 +249,9 @@ class TransactionParser(object):
 			self.dobj_str = None
 	
 	def get_environment(self):
+		"""
+		Return a dictionary of environment variables supplied by the parser results.
+		"""
 		return dict(
 			parser			= self,
 			

@@ -1096,7 +1096,11 @@ class ObjectExchange(object):
 	
 	def iterate_task(self, responder):
 		"""
-		Check for waiting tasks using the given ampoule TransactionChild
+		Check for waiting tasks using the given ampoule TransactionChild.
+		
+		Returns False if there's no task waiting
+		Returns None if an exception occurs
+		Returns True if it processes a task
 		"""
 		next_task = self.pool.runQuery(
 			"""SELECT t.*

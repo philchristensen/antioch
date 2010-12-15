@@ -27,6 +27,12 @@ job_timeout = 3
 profile_transactions = False
 
 def get_process_pool(child=None, *args):
+	"""
+	Get the process pool belonging to the specified child.
+	
+	Optionally pass a custom TransactionChild 
+	Optionally pass additional args to the TransactionChild
+	"""
 	if(child is None):
 		child = DefaultTransactionChild
 	
@@ -41,6 +47,9 @@ def get_process_pool(child=None, *args):
 
 @defer.inlineCallbacks
 def shutdown(child=None):
+	"""
+	Shutdown the process pool.
+	"""
 	if(child is None):
 		child = DefaultTransactionChild
 	
@@ -50,6 +59,9 @@ def shutdown(child=None):
 		del __processPools[child.__name__]
 
 class WorldTransaction(amp.Command):
+	"""
+	All amp.Commands used in antioch can find their own process pool.
+	"""
 	@classmethod
 	def run(cls, transaction_child=None, db_url='', **kwargs):
 		if(db_url):
@@ -59,6 +71,9 @@ class WorldTransaction(amp.Command):
 		return pool.doWork(cls, _timeout=job_timeout, **kwargs)
 
 class Authenticate(WorldTransaction):
+	"""
+	Return the user id for the username/password combo, if valid.
+	"""
 	arguments = [
 		('username', amp.String()),
 		('password', amp.String()),
@@ -71,6 +86,9 @@ class Authenticate(WorldTransaction):
 	}
 
 class Login(WorldTransaction):
+	"""
+	Register a login for the provided user_id.
+	"""
 	arguments = [
 		('user_id', amp.Integer()),
 		('session_id', amp.String()),
@@ -79,12 +97,18 @@ class Login(WorldTransaction):
 	response = [('response', amp.Boolean())]
 
 class Logout(WorldTransaction):
+	"""
+	Register a logout for the provided user_id.
+	"""
 	arguments = [
 		('user_id', amp.Integer()),
 	]
 	response = [('response', amp.Boolean())]
 
 class Parse(WorldTransaction):
+	"""
+	Parse a command sentence for the provided user_id.
+	"""
 	arguments = [
 		('user_id', amp.Integer()),
 		('sentence', amp.String()),
@@ -92,6 +116,9 @@ class Parse(WorldTransaction):
 	response = [('response', amp.Boolean())]
 
 class RegisterTask(WorldTransaction):
+	"""
+	Register a delayed task for the provided user_id.
+	"""
 	arguments = [
 		('user_id', amp.Integer()),
 		('delay', amp.Integer()),
@@ -103,6 +130,9 @@ class RegisterTask(WorldTransaction):
 	response = [('task_id', amp.Integer())]
 
 class RunTask(WorldTransaction):
+	"""
+	Run a task for a particular user.
+	"""
 	arguments = [
 		('user_id', amp.Integer()),
 		('task_id', amp.Integer()),
@@ -110,19 +140,28 @@ class RunTask(WorldTransaction):
 	response = [('response', amp.Boolean())]
 
 class IterateTasks(WorldTransaction):
+	"""
+	Run one waiting task, if possible.
+	"""
 	arguments = [
 	]
 	response = [('response', amp.Boolean())]
 
 class TransactionChild(child.AMPChild):
 	"""
+	Handle transactions for the game server.
+	
 	Even though a transaction child is technically supposed to be asynchronous,
 	we're allowing for ampoule calls to be synchronous. This will require a larger
 	process pool size, but in return it will allow verbs to continue to be written
 	in a synchronous manner, while still meeting all other design goals.
 	"""
-
 	def __init__(self, db_url=''):
+		"""
+		Create a new TransactionChild.
+		
+		Optionally supply db_url to specify the database to connect to.
+		"""
 		if not(db_url):
 			db_url = default_db_url
 		
@@ -134,14 +173,23 @@ class TransactionChild(child.AMPChild):
 		self.msg_service = messaging.MessageService()
 	
 	def get_exchange(self, ctx=None):
+		"""
+		Get an ObjectExchange instance for the provided context.
+		"""
 		if(ctx):
 			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
 		else:
 			return exchange.ObjectExchange(self.pool)
 	
 class DefaultTransactionChild(TransactionChild):
+	"""
+	Provide fundamental antioch transaction methods.
+	"""
 	@Authenticate.responder
 	def authenticate(self, username, password):
+		"""
+		Return the user id for the username/password combo, if valid.
+		"""
 		with self.get_exchange() as x:
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):
@@ -166,6 +214,9 @@ class DefaultTransactionChild(TransactionChild):
 	
 	@Login.responder
 	def login(self, user_id, session_id, ip_address):
+		"""
+		Register a login for the provided user_id.
+		"""
 		print 'user #%s logged in from %s' % (user_id, ip_address)
 		
 		with self.get_exchange() as x:
@@ -183,6 +234,9 @@ class DefaultTransactionChild(TransactionChild):
 	
 	@Logout.responder
 	def logout(self, user_id):
+		"""
+		Register a logout for the provided user_id.
+		"""
 		print 'user #%s logged out' % (user_id,)
 		
 		with self.get_exchange(user_id) as x:
@@ -197,6 +251,9 @@ class DefaultTransactionChild(TransactionChild):
 	
 	@Parse.responder
 	def parse(self, user_id, sentence):
+		"""
+		Parse a command sentence for the provided user_id.
+		"""
 		with self.get_exchange(user_id) as x:
 			caller = x.get_object(user_id)
 			
@@ -206,12 +263,18 @@ class DefaultTransactionChild(TransactionChild):
 	
 	@RegisterTask.responder
 	def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
+		"""
+		Register a delayed task for the provided user_id.
+		"""
 		with self.get_exchange(user_id) as x:
 			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
 		return {'task_id': task_id}
 	
 	@RunTask.responder
 	def run_task(self, user_id, task_id):
+		"""
+		Run a task for a particular user.
+		"""
 		with self.get_exchange(user_id) as x:
 			task = x.get_task(task_id)
 			if(not task or task['killed']):
@@ -228,6 +291,9 @@ class DefaultTransactionChild(TransactionChild):
 	
 	@IterateTasks.responder
 	def iterate_tasks(self):
+		"""
+		Run one waiting task, if possible.
+		"""
 		# note this is a 'superuser exchange'
 		# should be fine, since all iterate_task does
 		# is create another subprocess for the proper user
