@@ -39,13 +39,13 @@ class Entity(object):
 	
 	def __getattribute__(self, name):
 		"""
-		Private attribute protection using isLocal().
+		Private attribute protection using code.is_frame_access_allowed().
 		"""
 		return code.get_protected_attribute(self, name, object.__getattribute__)
 	
 	def __setattr__(self, name, value):
 		"""
-		Private attribute protection using isLocal().
+		Private attribute protection using code.is_frame_access_allowed().
 		"""
 		return code.set_protected_attribute(self, name, value, object.__setattr__)
 	
@@ -547,17 +547,17 @@ class Verb(Entity):
 		self.check('execute', self)
 		from antioch import parser
 		default_parser = parser.get_default_parser(self)
-		env = code.get_environment(default_parser)
+		env = default_parser.get_environment()
 		env['args'] = args
 		env['kwargs'] = kwargs
-		return code.r_exec(self._code, env, runtype="method")
+		return code.r_exec(default_parser.caller, self._code, env, filename=repr(self), runtype="method")
 	
 	def __str__(self):
 		"""
 		Return a string representation of this class.
 		"""
-		return "%s #%s on %s" % (
-			[['Verb', 'Ability'][self._ability], 'Method'][self._method], self._id, self.origin
+		return "Verb %s%s%s {#%s on %s}" % (
+			['', '@'][self._ability], ['', '()'][self._method], self.name, self._id, self.origin
 		)
 	
 	def get_details(self):
@@ -574,8 +574,7 @@ class Verb(Entity):
 	def execute(self, parser):
 		self.check('execute', self)
 		
-		env = code.get_environment(parser)
-		code.r_exec(self._code, env, runtype="verb")
+		code.r_exec(parser.caller, self._code, parser.get_environment(), filename=repr(self), runtype="verb")
 	
 	def add_name(self, name):
 		self.check('write', self)
@@ -666,7 +665,7 @@ class Property(Entity):
 		"""
 		Return a string representation of this class.
 		"""
-		return 'property #%s (%s) on %s' % (self._id, self._name, self.origin)
+		return 'Property %r {#%s on %s}' % (self._name, self._id, self.origin)
 	
 	def get_details(self):
 		value = self._value

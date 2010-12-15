@@ -6,7 +6,7 @@
 from twisted.trial import unittest
 from twisted.internet import defer, error
 
-from antioch import test, errors, exchange, dbapi, parser, transact, model
+from antioch import test, errors, exchange, dbapi, parser, transact, model, code
 
 class TransactionTestCase(unittest.TestCase):
 	def setUp(self):
@@ -67,16 +67,12 @@ class TransactionTestCase(unittest.TestCase):
 			eval_verb = x.get_verb(user_id, '@eval')
 			
 			# since this will raise AttributeError, the model will attempt to find a verb by that name
-			p = parser.get_default_parser(eval_verb)
-			from antioch import code
-			env = code.get_environment(p)
+			self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller._owner_id')
+			self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller._origin_id')
+			self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller.__dict__')
+			self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller.__slots__')
 			
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._owner_id', env)
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller._origin_id', env)
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__dict__', env)
-			self.failUnlessRaises(SyntaxError, code.r_eval, 'caller.__slots__', env)
-			
-			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "_owner_id")', env)
-			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "_origin_id")', env)
-			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "__dict__")', env)
-			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, 'getattr(caller, "__slots__")', env)
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_owner_id")')
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_origin_id")')
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__dict__")')
+			self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__slots__")')

@@ -80,6 +80,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
+			[dict(name='set_default_permissions', id=1, origin_id=1, method=True, code='pass')],
 		]
 		def runQuery(query, *a, **kw):
 			if(query.startswith('SELECT')):

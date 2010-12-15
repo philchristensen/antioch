@@ -34,7 +34,7 @@ class AskModule(object):
 	name = u'ask'
 	script_url = u'/plugin/ask/assets/js/ask-plugin.js'
 	
-	def get_environment(self, p):
+	def get_environment(self):
 		return dict(
 			ask = ask,
 		)

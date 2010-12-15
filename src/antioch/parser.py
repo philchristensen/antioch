@@ -248,6 +248,34 @@ class TransactionParser(object):
 			self.dobj = None
 			self.dobj_str = None
 	
+	def get_environment(self):
+		return dict(
+			parser			= self,
+			
+			command			= self.command,
+			caller			= self.caller,
+			dobj			= self.dobj,
+			dobj_str		= self.dobj_str,
+			dobj_spec_str	= self.dobj_spec_str,
+			words			= self.words,
+			prepositions	= self.prepositions,
+			this			= self.this,
+			self			= self.verb,
+		
+			system			= self.exchange.get_object(1),
+			here			= self.caller.get_location() if self.caller else None,
+		
+			get_dobj		= self.get_dobj,
+			get_dobj_str	= self.get_dobj_str,
+			has_dobj		= self.has_dobj,
+			has_dobj_str	= self.has_dobj_str,
+		
+			get_pobj		= self.get_pobj,
+			get_pobj_str 	= self.get_pobj_str,
+			has_pobj 		= self.has_pobj,
+			has_pobj_str 	= self.has_pobj_str,
+		)
+	
 	def find_object(self, specifier, name):
 		"""
 		Look for an object, with the optional specifier, in the area

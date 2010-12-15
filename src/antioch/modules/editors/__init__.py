@@ -50,7 +50,7 @@ class AccessEditorModule(object):
 	name = u'access'
 	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
 	
-	def get_environment(self, p):
+	def get_environment(self):
 		return dict(
 			access			= access,
 		)
@@ -87,7 +87,7 @@ class EditorModule(object):
 	name = u'editor'
 	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
 	
-	def get_environment(self, p):
+	def get_environment(self):
 		return dict(
 			edit			= edit,
 		)

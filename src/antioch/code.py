@@ -20,7 +20,7 @@ allowed_modules = (
 	'string',
 )
 
-def isLocal():
+def is_frame_access_allowed():
 	"""
 	Used by get/setattr to delegate access.
 	
@@ -85,38 +85,42 @@ def massage_verb_code(code):
 	)
 	return code
 
-def r_eval(src, environment, runtype="eval"):
+def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
 	"""
 	Evaluate an expression in the provided environment.
 	"""
-	if not(environment):
-		raise RuntimeError('No environment')
-	environment['runtype'] = runtype
+	def _writer(s):
+		if(s.strip()):
+			write(environment.get('parser'))(caller, s)
 	
-	code = compile_restricted(src, '<%s>' % environment['self'], 'eval')
+	env = get_restricted_environment(_writer, environment.get('parser'))
+	env['runtype'] = runtype
+	env['caller'] = caller
+	env.update(environment)
 	
-	value =  eval(code, environment)
+	code = compile_restricted(src, filename, 'eval')
+	value =  eval(code, env)
 	return value
 
-def r_exec(src, environment, runtype="exec"):
+def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
 	"""
 	Execute an expression in the provided environment.
 	"""
-	if not(environment):
-		raise RuntimeError('No environment')
-	
-	src = massage_verb_code(src)
+	def _writer(s):
+		if(s.strip()):
+			write(environment.get('parser'))(caller, s)
 	
 	# t = time.time()
-	environment['runtype'] = runtype
+	env = get_restricted_environment(_writer, environment.get('parser'))
+	env['runtype'] = runtype
+	env['caller'] = caller
+	env.update(environment)
 	
-	code = compile_restricted(src, '<%s>' % environment['self'], 'exec')
-	exec(code, environment)
-	
+	code = compile_restricted(massage_verb_code(src), filename, 'exec')
+	exec code in env
 	# print 'execute took %s seconds' % (time.time() - t)
-	
-	if("returnValue" in environment):
-		return environment["returnValue"]
+	if("returnValue" in env):
+		return env["returnValue"]
 
 def restricted_import(name, gdict, ldict, fromlist, level=-1):
 	"""
@@ -127,23 +131,22 @@ def restricted_import(name, gdict, ldict, fromlist, level=-1):
 	raise ImportError('Restricted: %s' % name)
 
 def get_protected_attribute(obj, name, g=getattr):
-	if(name.startswith('_') and not isLocal()):
+	if(name.startswith('_') and not is_frame_access_allowed()):
 		raise AttributeError(name)
 	return g(obj, name)
 
 def set_protected_attribute(obj, name, value, s=setattr):
-	if(name.startswith('_') and not isLocal()):
+	if(name.startswith('_') and not is_frame_access_allowed()):
 		raise AttributeError(name)
 	return s(obj, name, value)
 
-def get_environment(p):
+def get_restricted_environment(writer, p=None):
 	"""
 	Given the provided parser object, construct an environment dictionary.
 	"""
 	class _print_(object):
 		def write(self, s):
-			if(s.strip()):
-				write(p)(p.caller, s)
+			writer(s)
 	
 	class _write_(object):
 		def __init__(obj):
@@ -151,7 +154,7 @@ def get_environment(p):
 		
 		def __setattr__(self, name, value):
 			"""
-			Private attribute protection using isLocal().
+			Private attribute protection using is_frame_access_allowed()
 			"""
 			set_protected_attribute(self.obj, name, value)
 	
@@ -168,33 +171,10 @@ def get_environment(p):
 		_getiter_		= lambda obj: iter(obj),
 		__import__		= restricted_import,
 		__builtins__	= safe_builtins,
-		
-		command			= p.command,
-		caller			= p.caller,
-		dobj			= p.dobj,
-		dobj_str		= p.dobj_str,
-		dobj_spec_str	= p.dobj_spec_str,
-		words			= p.words,
-		prepositions	= p.prepositions,
-		this			= p.this,
-		self			= p.verb,
-		
-		system			= p.exchange.get_object(1),
-		here			= p.caller.get_location() if p.caller else None,
-		
-		get_dobj		= p.get_dobj,
-		get_dobj_str	= p.get_dobj_str,
-		has_dobj		= p.has_dobj,
-		has_dobj_str	= p.has_dobj_str,
-		
-		get_pobj		= p.get_pobj,
-		get_pobj_str 	= p.get_pobj_str,
-		has_pobj 		= p.has_pobj,
-		has_pobj_str 	= p.has_pobj_str,
 	)
 	
 	for mod in modules.iterate():
-		for name, func in mod.get_environment(p).items():
+		for name, func in mod.get_environment().items():
 			func.func_name = name
 			api(func) if callable(func) else None
 	
@@ -243,7 +223,7 @@ def execute(p, code):
 	"""
 	Verb API: Execute the code in place.
 	"""
-	return r_exec(code, get_environment(p))
+	return r_exec(p.caller, code, p.get_environment())
 
 
 @api
@@ -251,7 +231,7 @@ def evaluate(p, code):
 	"""
 	Verb API: Evalue the expression in place.
 	"""
-	return r_eval(code, get_environment(p))
+	return r_eval(p.caller, code, p.get_environment())
 
 @api
 def tasks(p):
