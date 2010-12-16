@@ -307,9 +307,10 @@ class TransactionParser(object):
 	def get_verb(self):
 		"""
 		Determine the most likely verb for this sentence. There is a search
-		order for verbs, as follows:
-			Caller->Caller's Contents->Location->Items in Location->
-			Direct Object->Objects of the Preposition
+		order for verbs, as follows::
+		
+		    Caller->Caller's Contents->Location->Items in Location->
+		    Direct Object->Objects of the Preposition
 		"""
 		if not(self.words):
 			raise NoSuchVerbError('parser: ' + self.command)

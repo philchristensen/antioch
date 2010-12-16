@@ -8,11 +8,11 @@
 Encode/decode antioch JSON
 
 antioch-flavored JSON contains object references, where objects are
-saved in the format:
+saved in the format::
 
-	{'o#1':'ObjectName'}
-	{'v#1':'VerbName'}
-	{'p#1':'PropertyName'}
+    {'o#1':'ObjectName'}
+    {'v#1':'VerbName'}
+    {'p#1':'PropertyName'}
 
 These will be converted transparently by the dumps/loads functions
 in this module.

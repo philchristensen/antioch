@@ -49,7 +49,7 @@ class RootDelegatePage(rend.Page):
 		Create a new root delegate page connected to the given session pool and portal.
 		
 		@param spool: the current session store
-		@type spool: L{antioch.client.web.session.IUserSessionStore}
+		@type spool: L{antioch.session.IUserSessionStore}
 		
 		@param portal: the current auth portal
 		@param portal: L{twisted.cred.portal.Portal}

@@ -117,8 +117,8 @@ def updateSession(pool, request, user=None):
 	@param request: the current request.
 	@type request: L{nevow.appserver.NevowRequest}
 	
-	@param user: the current user, if any
-	@type user: L{txopenid.user.User}
+	@param user: the current user record, if any
+	@type user: dict
 	"""
 	sid = request.getCookie(COOKIE_KEY)
 	if not(sid):
@@ -427,7 +427,7 @@ class SessionRealm(object):
 		"""
 		@see: L{twisted.cred.portal.IRealm}
 		
-		@param avatarId: the authenticated user ID, or L{twisted.cred.checkers.ANONYMOUS}
+		@param avatarId: the authenticated user ID, or C{twisted.cred.checkers.ANONYMOUS}
 		"""
 		if inevow.IResource not in interfaces:
 			raise NotImplementedError("no appropriate interface found")
@@ -537,7 +537,7 @@ class SessionChecker(object):
 		Return the user_id assigned to the provided session credentials.
 		
 		@param creds: the current session's credentials.
-		@type creds: L{twisted.cred.checkers.IUsernamePassword}
+		@type creds: L{twisted.cred.credentials.IUsernamePassword}
 		
 		@return: user_id of the authenticated user
 		@rtype: int
