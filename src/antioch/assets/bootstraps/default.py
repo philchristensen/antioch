@@ -12,9 +12,14 @@ from __future__ import with_statement
 
 from antioch import model, sql
 
-def getsource(fn):
+def get_verb_path(filename):
 	from antioch import assets
-	with open(assets.get('bootstraps/default-verbs', fn), 'r') as f:
+	return assets.get('bootstraps/default-verbs', filename)
+
+def get_source(filename):
+	from antioch import assets
+	verb_path = assets.get('bootstraps/default-verbs', filename)
+	with open(verb_path) as f:
 		return f.read()
 
 for name in model.default_permissions:
@@ -25,7 +30,7 @@ exchange.load_permissions()
 system = exchange.instantiate('object', name='System Object')
 set_default_permissions_verb = model.Verb(system)
 set_default_permissions_verb._method = True
-set_default_permissions_verb._code = getsource('system_set_default_permissions.py')
+set_default_permissions_verb._code = get_source('system_set_default_permissions.py')
 exchange.save(set_default_permissions_verb)
 set_default_permissions_verb.add_name('set_default_permissions')
 
@@ -93,73 +98,73 @@ wizard.set_player(True, is_wizard=True, passwd='wizard')
 phil.set_player(True, passwd='phil')
 
 wizard_class.add_verb('@edit', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('wizard_class_edit.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('wizard_class_edit.py')
 ))
 
 wizard_class.add_verb('@exec', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('wizard_class_exec.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('wizard_class_exec.py')
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('@eval', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('wizard_class_eval.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('wizard_class_eval.py')
 )).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('author_class_alias.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('author_class_alias.py')
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@dig', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('author_class_dig.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('author_class_dig.py')
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@tunnel', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('author_class_tunnel.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('author_class_tunnel.py')
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@describe', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('author_class_describe.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('author_class_describe.py')
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@set', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('player_class_set.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('player_class_set.py')
 )).allow('everyone', 'execute')
 
 player_class.add_verb('look', **dict(
-	ability	= True,
-	method	= True,
-	code	= getsource('player_class_look.py')
+	ability		= True,
+	method		= True,
+	filename	= get_verb_path('player_class_look.py')
 )).allow('everyone', 'execute')
 
 player_class.add_verb('go', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('player_class_go.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('player_class_go.py')
 )).allow('everyone', 'execute')
 
 player_class.add_verb('say', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('player_class_say.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('player_class_say.py')
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@passwd', **dict(
-	ability	= True,
-	method	= False,
-	code	= getsource('player_class_passwd.py')
+	ability		= True,
+	method		= False,
+	filename	= get_verb_path('player_class_passwd.py')
 )).allow('everyone', 'execute')

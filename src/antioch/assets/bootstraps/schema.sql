@@ -59,6 +59,7 @@ CREATE INDEX object_observer_key ON object_observer (observer_id);
 CREATE TABLE verb (
 	id bigserial,
 	code text NOT NULL,
+	filename varchar(255),
 	owner_id bigint REFERENCES object ON DELETE SET NULL,
 	origin_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	ability boolean NOT NULL,

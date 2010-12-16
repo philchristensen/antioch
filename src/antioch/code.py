@@ -278,3 +278,4 @@ def create_object(p, name, unique_name=False):
 	Verb API: Create a new object.
 	"""
 	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=p.caller.get_id())
+

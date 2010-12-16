@@ -648,6 +648,7 @@ class Verb(Entity):
 		self._ex = origin.get_exchange()
 		
 		self._code = ''
+		self._filename = None
 		self._owner_id = None
 		self._ability = False
 		self._method = False
@@ -666,7 +667,7 @@ class Verb(Entity):
 		env = default_parser.get_environment()
 		env['args'] = args
 		env['kwargs'] = kwargs
-		return code.r_exec(default_parser.caller, self._code, env, filename=repr(self), runtype="method")
+		return code.r_exec(default_parser.caller, self.get_code(), env, filename=repr(self), runtype="method")
 	
 	def __str__(self):
 		"""
@@ -698,7 +699,7 @@ class Verb(Entity):
 		"""
 		self.check('execute', self)
 		
-		code.r_exec(parser.caller, self._code, parser.get_environment(), filename=repr(self), runtype="verb")
+		code.r_exec(parser.caller, self.get_code(), parser.get_environment(), filename=repr(self), runtype="verb")
 	
 	def add_name(self, name):
 		"""
@@ -750,6 +751,10 @@ class Verb(Entity):
 		[ACL] allowed to read this
 		"""
 		self.check('read', self)
+		if self._filename and not self._code:
+			with open(self._filename, 'r') as f:
+				self._code = f.read()
+				self.save()
 		return self._code
 	
 	def set_ability(self, ability):

@@ -251,6 +251,7 @@ class ObjectExchange(object):
 		v = model.Verb(origin)
 		
 		v._code = record.get('code', '')
+		v._filename = record.get('filename', '')
 		v._owner_id = record.get('owner_id', None)
 		v._ability = record.get('ability', False)
 		v._method = record.get('method', False)
@@ -354,6 +355,7 @@ class ObjectExchange(object):
 		elif(obj_type == 'verb'):
 			attribs = dict(
 				code		= obj._code,
+				filename	= obj._filename,
 				owner_id	= obj._owner_id,
 				origin_id	= obj._origin_id,
 				ability		= ('f', 't')[obj._ability],
