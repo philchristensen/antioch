@@ -97,6 +97,12 @@ box.set_location(room)
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 phil.set_player(True, passwd='phil')
 
+wizard_class.add_verb('@reload', **dict(
+	ability		= True,
+	method		= False,
+	code		= 'reload_filesystem_verbs()\nprint "Filesystem-based verbs will be reloaded from disk."',
+))
+
 wizard_class.add_verb('@edit', **dict(
 	ability		= True,
 	method		= False,

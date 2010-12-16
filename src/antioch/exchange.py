@@ -176,6 +176,12 @@ class ObjectExchange(object):
 		self.instantiate('verb', default_permissions=False, *result)
 		self.default_grants_active = True
 	
+	def reload_filesystem_verbs(self):
+		"""
+		Clear out the code field for any verb with a filename attached.
+		"""
+		self.pool.runOperation("UPDATE verb SET code = '' WHERE COALESCE(filename, 'none') = filename")
+	
 	def instantiate(self, obj_type, record=None, *additions, **fields):
 		"""
 		Instantiate an object either by loading its record by ID from the database, or creating a new one.
