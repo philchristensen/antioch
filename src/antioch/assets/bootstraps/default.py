@@ -92,122 +92,74 @@ box.set_location(room)
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 phil.set_player(True, passwd='phil')
 
-edit_verb = exchange.instantiate('verb', dict(
-	owner_id = wizard.get_id(),
-	origin_id = wizard_class.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('wizard_class_edit.py'),
-))
-edit_verb.add_name('@edit')
-
-exec_verb = exchange.instantiate('verb', dict(
-	owner_id = wizard.get_id(),
-	origin_id = wizard_class.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('wizard_class_exec.py'),
-))
-exec_verb.add_name('@exec')
-exec_verb.allow('wizards', 'execute')
-
-eval_verb = exchange.instantiate('verb', dict(
-	owner_id = wizard.get_id(),
-	origin_id = wizard_class.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('wizard_class_eval.py'),
-))
-eval_verb.add_name('@eval')
-eval_verb.allow('wizards', 'execute')
-
-set_verb = exchange.instantiate('verb', dict(
-	owner_id = wizard.get_id(),
-	origin_id = player_class.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('player_class_set.py'),
-))
-set_verb.add_name('@set')
-set_verb.allow('everyone', 'execute')
-
-alias_verb = exchange.instantiate('verb', dict(
-	origin_id = author_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('author_class_alias.py'),
-))
-alias_verb.add_name('@alias')
-alias_verb.allow('everyone', 'execute')
-
-dig_verb = exchange.instantiate('verb', dict(
-	origin_id = author_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('author_class_dig.py'),
-))
-dig_verb.add_name('@dig')
-dig_verb.allow('everyone', 'execute')
-
-tunnel_verb = exchange.instantiate('verb', dict(
-	origin_id = author_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('author_class_tunnel.py'),
-))
-tunnel_verb.add_name('@tunnel')
-tunnel_verb.allow('everyone', 'execute')
-
-describe_verb = exchange.instantiate('verb', dict(
-	origin_id = author_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('author_class_describe.py'),
-))
-describe_verb.add_name('@describe')
-describe_verb.allow('everyone', 'execute')
-
-look_verb = exchange.instantiate('verb', dict(
-	origin_id = player_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = True,
-	code = getsource('player_class_look.py'),
-))
-look_verb.add_name('look')
-look_verb.allow('everyone', 'execute')
-
-go_verb = exchange.instantiate('verb', dict(
-	origin_id = player_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('player_class_go.py'),
-))
-go_verb.add_name('go')
-go_verb.allow('everyone', 'execute')
-
-say_verb = exchange.instantiate('verb', dict(
-	origin_id = player_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = False,
-	code = getsource('player_class_say.py'),
-))
-say_verb.add_name('say')
-say_verb.allow('everyone', 'execute')
-
-passwd_verb = exchange.instantiate('verb', dict(
-	origin_id = player_class.get_id(),
-	owner_id = wizard.get_id(),
-	ability = True,
-	method = True,
-	code = getsource('player_class_passwd.py'),
+wizard_class.add_verb('@edit', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('wizard_class_edit.py')
 ))
 
-passwd_verb.add_name('@passwd')
-passwd_verb.allow('everyone', 'execute')
+wizard_class.add_verb('@exec', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('wizard_class_exec.py')
+)).allow('wizards', 'execute')
+
+wizard_class.add_verb('@eval', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('wizard_class_eval.py')
+)).allow('wizards', 'execute')
+
+author_class.add_verb('@alias', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('author_class_alias.py')
+)).allow('everyone', 'execute')
+
+author_class.add_verb('@dig', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('author_class_dig.py')
+)).allow('everyone', 'execute')
+
+author_class.add_verb('@tunnel', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('author_class_tunnel.py')
+)).allow('everyone', 'execute')
+
+author_class.add_verb('@describe', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('author_class_describe.py')
+)).allow('everyone', 'execute')
+
+player_class.add_verb('@set', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('player_class_set.py')
+)).allow('everyone', 'execute')
+
+player_class.add_verb('look', **dict(
+	ability	= True,
+	method	= True,
+	code	= getsource('player_class_look.py')
+)).allow('everyone', 'execute')
+
+player_class.add_verb('go', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('player_class_go.py')
+)).allow('everyone', 'execute')
+
+player_class.add_verb('say', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('player_class_say.py')
+)).allow('everyone', 'execute')
+
+player_class.add_verb('@passwd', **dict(
+	ability	= True,
+	method	= False,
+	code	= getsource('player_class_passwd.py')
+)).allow('everyone', 'execute')
