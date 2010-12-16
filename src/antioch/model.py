@@ -251,7 +251,7 @@ class Object(Entity):
 			v._source_id = self.get_id()
 		return v
 	
-	def add_verb(self, name):
+	def add_verb(self, name, **kwargs):
 		"""
 		Create a new verb object and add it to this object.
 		
@@ -259,9 +259,10 @@ class Object(Entity):
 		"""
 		self.check('write', self)
 		ctx = self._ex.get_context()
-		owner_id = ctx.get_id() if ctx else None
-		
-		v = self._ex.instantiate('verb', origin_id=self._id, owner_id=owner_id)
+		owner_id = ctx.get_id() if ctx else self._owner_id
+		kw = dict(origin_id=self._id, owner_id=owner_id)
+		kwargs.update(kw)
+		v = self._ex.instantiate('verb', **kwargs)
 		v.add_name(name)
 		v._source_id = self.get_id()
 		return v
@@ -344,8 +345,8 @@ class Object(Entity):
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
 		kw = dict(origin_id=self._id, owner_id=owner_id)
-		kw.update(kwargs)
-		p = self._ex.instantiate('property', name=name, **kw)
+		kwargs.update(kw)
+		p = self._ex.instantiate('property', name=name, **kwargs)
 		p._source_id = self.get_id()
 		return p
 	
