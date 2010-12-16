@@ -149,8 +149,8 @@ def get_restricted_environment(writer, p=None):
 			writer(s)
 	
 	class _write_(object):
-		def __init__(obj):
-			self.obj = obj
+		def __init__(self, obj):
+			object.__setattr__(self, 'obj', obj)
 		
 		def __setattr__(self, name, value):
 			"""
