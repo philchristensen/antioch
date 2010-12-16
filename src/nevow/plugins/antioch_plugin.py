@@ -1,3 +1,13 @@
+# antioch
+# Copyright (c) 1999-2010 Phil Christensen
+#
+#
+# See LICENSE for details
+
+"""
+Implements Athena support on the client.
+"""
+
 from nevow import athena
 from antioch import assets
 

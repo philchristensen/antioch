@@ -15,7 +15,7 @@ from twisted.enterprise import adbapi
 debug = False
 profile_debug = False
 debug_stream = sys.stderr
-debug_syntax_highlighting = True
+debug_syntax_highlighting = False
 
 pools = {}
 async_pools = {}

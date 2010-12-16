@@ -17,6 +17,12 @@ from antioch import exchange, dbapi
 def get_dsn(db_url):
 	"""
 	Convert the provided db_url to a dictionary.
+	
+	@param db_url: the database connection string
+	@type db_url: str
+	
+	@return: a dictionary of URL parts
+	@rtype: dict
 	"""
 	match = dbapi.URL_RE.match(db_url)
 	if not(match):
@@ -28,6 +34,18 @@ def get_dsn(db_url):
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	"""
 	Initialize a new database and user specified by the provided db_url.
+	
+	@param psql_path: the path to the `psql` binary
+	@type psql_path: str
+	
+	@param db_url: the database connection string
+	@type db_url: str
+	
+	@param psql_args: additional args to pass to `psql`
+	@type psql_args: [str]
+	
+	@param quiet: if True, suppress stdout and stderr messages
+	@type quiet: bool (default: True)
 	"""
 	dsn = get_dsn(db_url)
 	
@@ -56,9 +74,18 @@ def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
 	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 
-def load_schema(psql_path, db_url, schema_path, create=False):
+def load_schema(psql_path, db_url, schema_path):
 	"""
 	Load a provided schema into the specified database.
+	
+	@param psql_path: the path to the `psql` binary
+	@type psql_path: str
+	
+	@param db_url: the database connection string
+	@type db_url: str
+	
+	@param schema_path: path to the database schema to load
+	@type schema_path: str
 	"""
 	dsn = get_dsn(db_url)
 	
@@ -76,6 +103,9 @@ def load_schema(psql_path, db_url, schema_path, create=False):
 def load_python(pool, python_path):
 	"""
 	Execute a provided Python bootstrap file against the provided database.
+	
+	@param pool: the current database connection
+	@type pool: L{antioch.dbapi.SynchronousConnectionPool}
 	"""
 	with exchange.ObjectExchange(pool) as x:
 		execfile(python_path, globals(), dict(exchange=x))

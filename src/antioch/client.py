@@ -34,6 +34,11 @@ class Mind(object):
 	def __init__(self, request, credentials):
 		"""
 		Hold on to IP address info for the client.
+		
+		@param request: the current web request
+		@type request: L{twisted.web.http.Request}
+		
+		@param credentials: the supplied user credentials
 		"""
 		self.addr = request.transport.client
 		self.remote_host = self.addr[0]
@@ -66,6 +71,13 @@ class RootDelegatePage(rend.Page):
 	def locateChild(self, ctx, segments):
 		"""
 		Take care of authentication while returning Resources or redirecting.
+		
+		@param ctx: request context
+		
+		@param segments: list of remaining path segments
+		@type segments: tuple
+		
+		@return: child resource
 		"""
 		user, sid = yield self.authenticate(ctx)
 		
@@ -108,6 +120,10 @@ class RootDelegatePage(rend.Page):
 	def renderHTTP(self, ctx):
 		"""
 		Redirect either to the client interface or a login form.
+
+		@param ctx: request context
+		
+		@return: empty string unless we're going to redirect, which we always do
 		"""
 		result = yield self.authRedirect(ctx)
 		if not(result):
@@ -119,6 +135,11 @@ class RootDelegatePage(rend.Page):
 	def authenticate(self, ctx):
 		"""
 		Authenticate the current session.
+		
+		@param ctx: request context
+		
+		@return: the user object and session ID
+		@rtype: tuple(dict, str)
 		"""
 		request = inevow.IRequest(ctx)
 
@@ -137,6 +158,11 @@ class RootDelegatePage(rend.Page):
 	def authRedirect(self, ctx):
 		"""
 		Authenticate the current session, redirecting to login if necessary.
+		
+		@param ctx: request context
+		
+		@return: False if the user is already authenticated, redirects if not.
+		@rtype: bool
 		"""
 		user, sid = yield self.authenticate(ctx)
 		if(user is None):
@@ -158,6 +184,9 @@ class ClientLogin(rend.Page):
 	def __init__(self, spool, portal):
 		"""
 		Provide the necessary objects to handle session saving.
+		
+		@param spool: connection to the session database pool
+		@type spool: L{session.TransactionUserSessionStore}
 		"""
 		super(ClientLogin, self).__init__()
 		self.docFactory = loaders.xmlstr(pkg.resource_string('antioch.assets', 'templates/client-login.xml'))
@@ -168,6 +197,8 @@ class ClientLogin(rend.Page):
 	def renderHTTP(self, ctx):
 		"""
 		Present the login form and handle login on POST.
+		
+		@param ctx: request context
 		"""
 		request = inevow.IRequest(ctx)
 		if(request.fields is not None):
@@ -206,6 +237,15 @@ class ClientInterface(athena.LivePage):
 	def __init__(self, user, mind, msg_service, session_id):
 		"""
 		Setup the client interface.
+		
+		@param user: user record from player table
+		@type user: dict
+		
+		@param mind: opaque object with ip_address and other info
+		@type mind: C{Mind}
+		
+		@param msg_service: reference to the current process' message service
+		@type msg_server: L{message.MessageService}
 		"""
 		super(ClientInterface, self).__init__()
 		
@@ -219,6 +259,9 @@ class ClientInterface(athena.LivePage):
 		self.notifyOnDisconnect().errback = self.logout
 	
 	def logout(self, *args, **kwargs):
+		"""
+		Window closed, logout from the connection.
+		"""
 		if(self.connector):
 			self.connector.logout(*args, **kwargs)
 		else:
@@ -228,6 +271,13 @@ class ClientInterface(athena.LivePage):
 	def render_ClientConnector(self, ctx, data):
 		"""
 		Render the Athena connection element.
+		
+		@param ctx: request context
+		
+		@param data: rendering data
+		
+		@return: the client connector rendering
+		@rtype: ClientConnector
 		"""
 		yield defer.maybeDeferred(self.msg_service.connect)
 		self.connector = ClientConnector(self.user_id, self.mind, self.msg_service, self.session_id)
@@ -249,6 +299,18 @@ class ClientConnector(athena.LiveElement):
 	def __init__(self, user_id, mind, msg_service, session_id, *args, **kwargs):
 		"""
 		Setup the client connection.
+		
+		@param user_id: user ID of the logged-in player
+		@type user_id: long
+		
+		@param mind: opaque object with ip_address and other info
+		@type mind: C{Mind}
+		
+		@param msg_service: reference to the current process' message service
+		@type msg_server: L{message.MessageService}
+		
+		@param session_id: user ID of the logged-in player
+		@type session_id: long
 		"""
 		self.session_id = session_id
 		self.user_id = user_id
@@ -268,6 +330,9 @@ class ClientConnector(athena.LiveElement):
 	def login(self, mind):
 		"""
 		Called when the user first connects, runs login verb code, 'look here'
+		
+		@param mind: opaque object with ip_address and other info
+		@type mind: C{Mind}
 		"""
 		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		

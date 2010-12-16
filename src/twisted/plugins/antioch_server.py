@@ -4,6 +4,12 @@
 #
 # See LICENSE for details
 
+"""
+twistd plugin support
+
+This module adds a 'antioch' server type to the twistd service list.
+"""
+
 from zope.interface import classProvides
 
 from twisted import plugin
@@ -16,12 +22,19 @@ from twisted.application import internet, service
 from antioch import auth, dbapi, messaging, tasks
 
 class antiochServer(object):
+	"""
+	The antioch application server startup class.
+	"""
+	
 	classProvides(service.IServiceMaker, plugin.IPlugin)
 	
 	tapname = "antioch"
 	description = "Run a set of antioch servers."
 	
 	class options(usage.Options):
+		"""
+		Implement option-parsing for the antioch twistd plugin.
+		"""
 		optParameters = [
 						 ["port", "p", 8080, "Port to use for web server.", int],
 						 ["accesslog", "l", '-', "Path to access log.", str],
@@ -34,6 +47,9 @@ class antiochServer(object):
 	
 	@classmethod
 	def makeService(cls, config):
+		"""
+		Setup the necessary network services for the application server.
+		"""
 		if(config['debug-sql']):
 			dbapi.debug = True
 		if(config['debug-sql-writes']):
@@ -63,6 +79,9 @@ class antiochServer(object):
 	
 	@classmethod
 	def makeWebFactory(cls, checker, msg_service, accesslog):
+		"""
+		Setup the web factory for the application server.
+		"""
 		from nevow import guard, appserver
 		from antioch import client, session
 		

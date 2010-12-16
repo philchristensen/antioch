@@ -30,6 +30,9 @@ class TransactionChecker(object):
 	def __init__(self, db_url=None):
 		"""
 		Check credentials against the database specified by the provided db_url.
+		
+		@param db_url: the database connection string in the form C{moduleName://user:pass@hostname/databaseName}
+		@type db_url: str
 		"""
 		self.db_url = db_url
 	
@@ -39,6 +42,9 @@ class TransactionChecker(object):
 		This function is called after the user has submitted
 		authentication credentials (in this case, a user name
 		and password).
+		
+		@param creds: the credentials of the authenticating user
+		@type creds: L{twisted.cred.credentials.IUsernamePassword} implementor
 		"""
 		if(credentials.IUsernamePassword.providedBy(creds)):
 			result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password)
