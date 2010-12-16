@@ -14,11 +14,11 @@ from antioch import model, sql
 
 def get_verb_path(filename):
 	from antioch import assets
-	return assets.get('bootstraps/default-verbs', filename)
+	return assets.get('bootstraps/default_verbs', filename)
 
 def get_source(filename):
 	from antioch import assets
-	verb_path = assets.get('bootstraps/default-verbs', filename)
+	verb_path = assets.get('bootstraps/default_verbs', filename)
 	with open(verb_path) as f:
 		return f.read()
 
