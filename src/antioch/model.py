@@ -25,6 +25,23 @@ default_permissions = (
 	'develop',
 )
 
+# True if usable, None if restricted, False if unusable
+add_verb_kwargs = dict(
+	code		= True,
+	ability		= True,
+	method		= True,
+	filename	= None,
+	owner_id	= None,
+	origin_id	= False,
+)
+
+add_property_kwargs = dict(
+	value		= True,
+	type		= True,
+	owner_id	= None,
+	origin_id	= False,
+)
+
 class PropertyStub(object):
 	"""
 	A convenience class to allow `obj.get('property', 'default').value`
@@ -260,8 +277,16 @@ class Object(Entity):
 		self.check('write', self)
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
+
 		kw = dict(origin_id=self._id, owner_id=owner_id)
 		kwargs.update(kw)
+		for key, value in kwargs.items():
+			access = add_verb_kwargs.get(key, False)
+			if access is None and ctx:
+				raise ValueError("Restricted keyword %r" % key)
+			elif access is False:
+				raise ValueError("Invalid keyword %r" % key)
+
 		v = self._ex.instantiate('verb', **kwargs)
 		v.add_name(name)
 		v._source_id = self.get_id()
@@ -344,8 +369,16 @@ class Object(Entity):
 		self.check('write', self)
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
+		
 		kw = dict(origin_id=self._id, owner_id=owner_id)
 		kwargs.update(kw)
+		for key, value in kwargs.items():
+			access = add_property_kwargs.get(key, False)
+			if access is None and ctx:
+				raise ValueError("Restricted keyword %r" % key)
+			elif access is False:
+				raise ValueError("Invalid keyword %r" % key)
+		
 		p = self._ex.instantiate('property', name=name, **kwargs)
 		p._source_id = self.get_id()
 		return p
