@@ -30,7 +30,7 @@ exchange.load_permissions()
 system = exchange.instantiate('object', name='System Object')
 set_default_permissions_verb = model.Verb(system)
 set_default_permissions_verb._method = True
-set_default_permissions_verb._code = get_source('system_set_default_permissions.py')
+set_default_permissions_verb._code = get_source('system_set_default_permissions.py'),
 exchange.save(set_default_permissions_verb)
 set_default_permissions_verb.add_name('set_default_permissions')
 
@@ -99,78 +99,77 @@ phil.set_player(True, passwd='phil')
 
 wizard_class.add_verb('@reload', **dict(
 	ability		= True,
-	method		= False,
 	code		= 'reload_filesystem_verbs()\nprint "Filesystem-based verbs will be reloaded from disk."',
 ))
 
+# system.add_verb('authenticate', **dict(
+# 	method		= True,
+# 	filename	= get_verb_path('system_authenticate.py'),
+# )).allow('anyone', 'execute')
+
 wizard_class.add_verb('@edit', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('wizard_class_edit.py')
+	filename	= get_verb_path('wizard_class_edit.py'),
 ))
 
 wizard_class.add_verb('@exec', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('wizard_class_exec.py')
+	filename	= get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('@eval', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('wizard_class_eval.py')
+	filename	= get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
+
+# wizard_class.add_verb('@adduser', **dict(
+# 	ability		= True,
+# 	filename	= get_verb_path('wizard_class_adduser.py'),
+# )).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('author_class_alias.py')
+	filename	= get_verb_path('author_class_alias.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@dig', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('author_class_dig.py')
+	filename	= get_verb_path('author_class_dig.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@tunnel', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('author_class_tunnel.py')
+	filename	= get_verb_path('author_class_tunnel.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@describe', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('author_class_describe.py')
+	filename	= get_verb_path('author_class_describe.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@set', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('player_class_set.py')
+	filename	= get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('look', **dict(
 	ability		= True,
 	method		= True,
-	filename	= get_verb_path('player_class_look.py')
+	filename	= get_verb_path('player_class_look.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('go', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('player_class_go.py')
+	filename	= get_verb_path('player_class_go.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('say', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('player_class_say.py')
+	filename	= get_verb_path('player_class_say.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@passwd', **dict(
 	ability		= True,
-	method		= False,
-	filename	= get_verb_path('player_class_passwd.py')
+	method		= True,
+	filename	= get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')
