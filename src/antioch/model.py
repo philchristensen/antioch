@@ -278,14 +278,14 @@ class Object(Entity):
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
 
-		kw = dict(origin_id=self._id, owner_id=owner_id)
-		kwargs.update(kw)
 		for key, value in kwargs.items():
 			access = add_verb_kwargs.get(key, False)
 			if access is None and ctx:
 				raise ValueError("Restricted keyword %r" % key)
 			elif access is False:
 				raise ValueError("Invalid keyword %r" % key)
+		kw = dict(origin_id=self._id, owner_id=owner_id)
+		kwargs.update(kw)
 
 		v = self._ex.instantiate('verb', **kwargs)
 		v.add_name(name)
@@ -370,14 +370,14 @@ class Object(Entity):
 		ctx = self._ex.get_context()
 		owner_id = ctx.get_id() if ctx else self._owner_id
 		
-		kw = dict(origin_id=self._id, owner_id=owner_id)
-		kwargs.update(kw)
 		for key, value in kwargs.items():
 			access = add_property_kwargs.get(key, False)
 			if access is None and ctx:
 				raise ValueError("Restricted keyword %r" % key)
 			elif access is False:
 				raise ValueError("Invalid keyword %r" % key)
+		kw = dict(origin_id=self._id, owner_id=owner_id)
+		kwargs.update(kw)
 		
 		p = self._ex.instantiate('property', name=name, **kwargs)
 		p._source_id = self.get_id()
