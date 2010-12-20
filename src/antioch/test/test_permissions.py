@@ -14,7 +14,7 @@ from antioch import errors, exchange, test, dbapi
 
 class PermissionsTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(PermissionsTestCase)
+		self.pool = test.init_database(self.__class__)
 		self.exchange = exchange.ObjectExchange(self.pool)
 		
 		self.wizard = self.exchange.get_object('wizard')

@@ -10,8 +10,7 @@ from antioch import test, errors, exchange, dbapi, parser, transact, model, code
 
 class TransactionTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(TransactionTestCase)
-		self.exchange = exchange.ObjectExchange(self.pool)
+		self.pool = test.init_database(self.__class__)
 	
 	@defer.inlineCallbacks
 	def tearDown(self):
@@ -19,7 +18,7 @@ class TransactionTestCase(unittest.TestCase):
 	
 	def test_basic_rollback(self):
 		try:
-			with self.exchange as x:
+			with exchange.ObjectExchange(self.pool) as x:
 				x.instantiate('object', name="Test Object")
 				raise RuntimeError()
 		except:
@@ -27,24 +26,20 @@ class TransactionTestCase(unittest.TestCase):
 		
 		self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
 	
-	@defer.inlineCallbacks
 	def test_timeout(self):
 		if(transact.job_timeout is None):
 			raise unittest.SkipTest("Code timeout disabled.")
-		terminated = False
+
 		user_id = 2 # Wizard ID
-		try:
-			result = yield transact.Parse.run(user_id=user_id, sentence='@exec while(True):\n\tpass')
-		except error.ProcessTerminated, e:
-			terminated = True
-		
-		self.failUnless(terminated, "Pool did not throw ProcessTerminated")
+		d = transact.Parse.run(db_url=test.get_test_db_url(), user_id=user_id, sentence='@exec while(True): pass')
+		self.assertFailure(d, error.ProcessTerminated)
+		return d
 	
 	def test_parser_rollback(self):
 		created = False
 		user_id = 2 # Wizard ID
 		try:
-			with self.exchange as x:
+			with exchange.ObjectExchange(self.pool) as x:
 				caller = x.get_object(user_id)
 				parser.parse(caller, '@exec create_object("Test Object")')
 				if(x.get_object('Test Object')):
@@ -58,7 +53,7 @@ class TransactionTestCase(unittest.TestCase):
 	
 	def test_protected_attribute_access(self):
 		user_id = 2 # Wizard ID
-		with self.exchange as x:
+		with exchange.ObjectExchange(self.pool) as x:
 			wizard = x.get_object(user_id)
 			self.failUnlessEqual(wizard._location_id, wizard.get_location().get_id())
 		

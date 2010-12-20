@@ -9,7 +9,7 @@ from antioch import parser, errors, exchange, test
 
 class ParserTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(ParserTestCase)
+		self.pool = test.init_database(self.__class__)
 		self.exchange = exchange.ObjectExchange(self.pool)
 	
 	def tearDown(self):

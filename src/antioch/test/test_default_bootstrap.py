@@ -9,7 +9,7 @@ from antioch import parser, exchange, test
 
 class DefaultBootstrapTestCase(unittest.TestCase):
 	def setUp(self):
-		self.pool = test.init_database(DefaultBootstrapTestCase, dataset='default')
+		self.pool = test.init_database(self.__class__, dataset='default')
 		self.exchange = exchange.ObjectExchange(self.pool)
 		self.exchange.queue = test.Anything(
 			commit	= lambda: None,
