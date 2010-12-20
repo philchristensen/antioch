@@ -252,6 +252,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		expected_query = """UPDATE verb 
 							SET ability = 't', 
 								code = '', 
+								filename = NULL, 
 								method = 'f', 
 								origin_id = 0, 
 								owner_id = NULL 
