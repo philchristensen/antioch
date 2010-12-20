@@ -12,7 +12,7 @@ from antioch import exchange, test, auth, transact, errors
 class AuthenticationTestCase(unittest.TestCase):
 	def setUp(self):
 		self.pool = test.init_database(self.__class__)
-		self.test_db_url = test.get_test_db_url(self.__class__.__name__.lower())
+		self.test_db_url = test.get_test_db_url()
 	
 	@defer.inlineCallbacks
 	def tearDown(self):

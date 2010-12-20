@@ -11,23 +11,25 @@ from antioch import bootstrap, dbapi, assets, transact
 
 psql_path = 'psql'
 
-initialized = {}
 pool = {}
 
 #dbapi.debug = True
 
-def get_test_db_url(suffix=''):
+def get_test_db_url():
 	url = transact.default_db_url.split('/')
-	url[-1] = 'antioch_test' + suffix
+	url[-1] = 'antioch_test'
 	return '/'.join(url)
 
 def init_database(dbid, dataset='minimal', autocommit=False):
-	global initialized, pool
-	if(initialized.get(dbid)):
-		return pool.get(dbid)
-	initialized[dbid] = True
+	global pool
+	if(dbid not in pool and len(pool) == 1):
+		key, p = pool.items()[0]
+		p.close()
+		del pool[key]
+	elif(dbid in pool):
+		return pool[dbid]
 	
-	db_url = get_test_db_url(dbid.__name__.lower())
+	db_url = get_test_db_url()
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	

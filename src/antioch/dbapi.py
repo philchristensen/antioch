@@ -370,6 +370,13 @@ class SynchronousConnectionPool(TimeoutConnectionPool):
 		from twisted.internet import reactor
 		if(self.startID):
 			reactor.removeSystemEventTrigger(self.startID)
+			self.startID = None
+	
+	def close(self):
+		"""
+		Close all pool connections and shutdown the pool.
+		"""
+		self.finalClose()
 	
 	def _runOperation(self, trans, *args, **kw):
 		"""
