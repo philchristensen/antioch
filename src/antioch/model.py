@@ -707,7 +707,7 @@ class Verb(Entity):
 		Return a string representation of this class.
 		"""
 		return "Verb %s%s%s {#%s on %s}" % (
-			['', '@'][self._ability], ['', '()'][self._method], self.name, self._id, self.origin
+			['', '@'][self._ability], self.name, ['', '()'][self._method], self._id, self.origin
 		)
 	
 	def get_details(self):
