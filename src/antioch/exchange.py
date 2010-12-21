@@ -368,9 +368,16 @@ class ObjectExchange(object):
 				method		= ('f', 't')[obj._method],
 			)
 		elif(obj_type == 'property'):
+			def check(v):
+				if(v is None):
+					return False
+				elif(v is ""):
+					return False
+				return True
+			
 			attribs = dict(
 				name		= obj._name,
-				value		= json.dumps(obj._value) if obj._value else obj._value,
+				value		= json.dumps(obj._value) if check(obj._value) else obj._value,
 				owner_id	= obj._owner_id,
 				origin_id	= obj._origin_id,
 				type		= obj._type,
@@ -838,6 +845,8 @@ class ObjectExchange(object):
 			if(passwd):
 				random.shuffle(salt)
 				attribs['crypt'] = crypt.crypt(passwd, test_salt or ''.join(salt[0:2]))
+			else:
+				attribs['crypt'] = '!'
 			if(wizard is not None):
 				attribs['wizard'] = wizard
 			if(self.is_player(object_id)):
@@ -845,8 +854,6 @@ class ObjectExchange(object):
 					return
 				self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
 			else:
-				if not(attribs.get('crypt')):
-					raise ValueError('You must provide a password for the account.')
 				attribs['wizard'] = wizard or False
 				self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
 		else:
