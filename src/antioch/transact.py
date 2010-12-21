@@ -195,7 +195,7 @@ class DefaultTransactionChild(TransactionChild):
 			if(authentication):
 				u = authentication(username, password)
 				if(u):
-					defer.returnValue({'user_id': u.get_id()})
+					return {'user_id': u.get_id()}
 			try:
 				u = x.get_object(username)
 				if not(u):
