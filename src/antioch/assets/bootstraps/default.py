@@ -66,22 +66,32 @@ wizard_class.add_parent(programmer_class)
 wizard_class.set_location(bag_of_holding)
 wizard.add_parent(wizard_class)
 
-room_class = exchange.instantiate('object', name='room class')
+room_class = exchange.instantiate('object', name='laboratory class')
 room_class.set_owner(wizard)
 room_class.set_location(bag_of_holding)
 
-room = exchange.instantiate('object', name='The Laboratory')
-room.set_owner(wizard)
-room.add_parent(room_class)
-room.add_property('description', **dict(
+laboratory = exchange.instantiate('object', name='The Laboratory', unique_name=True)
+laboratory.set_owner(wizard)
+laboratory.add_parent(room_class)
+laboratory.add_property('description', **dict(
 	owner_id = wizard.get_id(),
-	value = """A cavernous room filled with gadgetry of every kind,
+	value = """A cavernous laboratory filled with gadgetry of every kind,
 this seems like a dumping ground for every piece of dusty forgotten
 equipment a mad scientist might require.
 """,
 ))
 
-bag_of_holding.set_location(room)
+lobby = exchange.instantiate('object', name='The Lobby', unique_name=True)
+lobby.set_owner(wizard)
+lobby.add_parent(room_class)
+lobby.add_property('description', **dict(
+	owner_id = wizard.get_id(),
+	value = """A dusty old waiting area, every minute spent in this room
+feels like an eternity.
+""",
+))
+
+bag_of_holding.set_location(laboratory)
 
 phil = exchange.instantiate('object', name= 'Phil', unique_name=True)
 phil.set_owner(phil)
@@ -90,9 +100,9 @@ phil.add_parent(player_class)
 box = exchange.instantiate('object', name='box')
 box.set_owner(phil)
 
-wizard.set_location(room)
-phil.set_location(room)
-box.set_location(room)
+wizard.set_location(laboratory)
+phil.set_location(laboratory)
+box.set_location(laboratory)
 
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 phil.set_player(True, passwd='phil')
@@ -102,10 +112,10 @@ wizard_class.add_verb('@reload', **dict(
 	code		= 'reload_filesystem_verbs()\nprint "Filesystem-based verbs will be reloaded from disk."',
 ))
 
-# system.add_verb('authenticate', **dict(
-# 	method		= True,
-# 	filename	= get_verb_path('system_authenticate.py'),
-# )).allow('anyone', 'execute')
+system.add_verb('authenticate', **dict(
+	method		= True,
+	filename	= get_verb_path('system_authenticate.py'),
+)).allow('everyone', 'execute')
 
 wizard_class.add_verb('@edit', **dict(
 	ability		= True,
