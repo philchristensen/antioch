@@ -157,6 +157,12 @@ def get_restricted_environment(writer, p=None):
 			Private attribute protection using is_frame_access_allowed()
 			"""
 			set_protected_attribute(self.obj, name, value)
+		
+		def __setitem__(self, key, value):
+			"""
+			Passthrough property access.
+			"""
+			self.obj[key] = value
 	
 	safe_builtins['__import__'] = restricted_import
 	
@@ -266,6 +272,13 @@ def observe(p, user, observations):
 	))
 
 @api
+def count_named(p, key):
+	"""
+	Verb API: Get the total number of objects sharing a global name or ID.
+	"""
+	return p.exchange.refs(key)
+
+@api
 def get_object(p, key):
 	"""
 	Verb API: Load an object by its global name or ID.
@@ -277,7 +290,8 @@ def create_object(p, name, unique_name=False):
 	"""
 	Verb API: Create a new object.
 	"""
-	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=p.caller.get_id())
+	owner_id = p.caller.get_id() if p.caller else None
+	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=owner_id)
 
 @api
 def reload_filesystem_verbs(p):
