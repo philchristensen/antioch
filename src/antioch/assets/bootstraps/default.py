@@ -30,7 +30,7 @@ exchange.load_permissions()
 system = exchange.instantiate('object', name='System Object')
 set_default_permissions_verb = model.Verb(system)
 set_default_permissions_verb._method = True
-set_default_permissions_verb._code = get_source('system_set_default_permissions.py'),
+set_default_permissions_verb._code = get_source('system_set_default_permissions.py')
 exchange.save(set_default_permissions_verb)
 set_default_permissions_verb.add_name('set_default_permissions')
 
