@@ -872,6 +872,13 @@ class ObjectExchange(object):
 		"""
 		self.pool.runOperation(sql.build_update('player', dict(last_logout=sql.RAW('now()')), dict(avatar_id=avatar_id)))
 	
+	def get_last_client_ip(self, avatar_id):
+		"""
+		Get the last IP used to login as this player.
+		"""
+		result = self.pool.runQuery(sql.build_select('session', user_id=avatar_id))
+		return result[0]['last_client_ip'] if result else None
+	
 	def get_contents(self, container_id, recurse=False):
 		"""
 		Get the immediate contents of a provided object.

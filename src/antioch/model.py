@@ -23,6 +23,7 @@ default_permissions = (
 	'transmute',
 	'derive',
 	'develop',
+	'administer',
 )
 
 # True if usable, None if restricted, False if unusable
@@ -166,8 +167,9 @@ class Entity(object):
 		Check if the current context has permission for something.
 		"""
 		ctx = self.get_context()
-		if ctx and not(ctx.is_allowed(permission, subject)):
-			raise errors.AccessError(ctx, permission, subject)
+		if ctx:
+			ctx.is_allowed(permission, subject, fatal=True)
+			
 	
 	def allow(self, accessor, permission, create=False):
 		"""
@@ -652,15 +654,18 @@ class Object(Entity):
 			raise errors.RecursiveError("Sorry, '%s' is already parent to '%s'" % (self, parent))
 		self._ex.add_parent(self.get_id(), parent.get_id())
 	
-	def is_allowed(self, permission, subject):
+	def is_allowed(self, permission, subject, fatal=False):
 		"""
 		Is this object allowed to do `permission` on `subject`?
 		"""
-		ctx = self.get_context()
-		# if ctx and ctx.is_wizard() and permission == 'grant':
-		if ctx and ctx.owns(subject):
-			return True
-		return self._ex.is_allowed(self, permission, subject)
+		# ctx = self.get_context()
+		# # if ctx and ctx.is_wizard() and permission == 'grant':
+		# if ctx and ctx.owns(subject):
+		# 	return True
+		access = self._ex.is_allowed(self, permission, subject)
+		if(not access and fatal):
+			raise errors.AccessError(self, permission, subject)
+		return access
 	
 	name = property(get_name, set_name)
 	location = property(get_location, set_location)

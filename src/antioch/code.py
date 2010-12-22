@@ -290,12 +290,27 @@ def create_object(p, name, unique_name=False):
 	"""
 	Verb API: Create a new object.
 	"""
+	# this method can be run from system.authenticate() to implement
+	# guest support, so it has to work when p.caller == None
 	owner_id = p.caller.get_id() if p.caller else None
 	return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=owner_id)
 
 @api
 def reload_filesystem_verbs(p):
+	"""
+	Verb API: Reload the set of verbs initialized from the filesystem.
+	"""
 	if not(p.caller.is_wizard()):
-		raise errors.PermissionError("Only wizards can reset the verb cache.")
+		raise errors.PermissionError("Only wizards can reload filesystem verbs.")
 	
 	p.exchange.reload_filesystem_verbs()
+
+@api
+def get_last_client_ip(p, player):
+	"""
+	Verb API: Get the last IP address used by the given player.
+	
+	[ACL] allowed to administer player
+	"""
+	p.caller.is_allowed('administer', player, fatal=True)
+	return p.exchange.get_last_client_ip(player.get_id())

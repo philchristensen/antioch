@@ -150,6 +150,7 @@ def updateSession(pool, request, user=None):
 			INFANT_SESSIONS[sid] = session
 	
 	session['accessed'] = datetime.datetime.now()
+	session['last_client_ip'] = request.getClientIP()
 	if(user):
 		session['user_id'] = user['avatar_id']
 	

@@ -162,6 +162,7 @@ CREATE INDEX player_session_key ON player (session_id);
 CREATE TABLE session (
 	id varchar(255),
 	user_id bigint REFERENCES object ON DELETE CASCADE,
+	last_client_ip inet,
 	created timestamp default NOW(),
 	accessed timestamp default NOW(),
 	timeout int default 86400,
