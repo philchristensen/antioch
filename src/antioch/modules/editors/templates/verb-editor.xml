@@ -4,18 +4,25 @@
 	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
 	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
 	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/verb-editor.css"/>
-	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-	<script type="text/javascript">
-		google.load('jquery', '1.4.2');
-		google.load('jqueryui', '1.8.4');
-		google.setOnLoadCallback(function(){
-			init();
-		}, true);
-	</script>
 	<script type="text/javascript" src="/assets/js/global.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/verb-editor.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/editor-plugin-support.js"></script>
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+		if(typeof(google) != 'undefined'){
+			google.load('jquery', '1.4.2');
+			google.load('jqueryui', '1.8.4');
+			google.setOnLoadCallback(function(){
+				init();
+			}, true);
+		}
+		else{
+			document.write(unescape("%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/assets/js/jquery-1.4.2.js%22%3E%3C/script%3E"));
+			document.write(unescape("%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/assets/js/jquery.ui-1.8.4.js%22%3E%3C/script%3E"));
+			window.onload = init;
+		}
+	</script>
 </head>
 <body>
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
