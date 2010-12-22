@@ -222,8 +222,6 @@ class ObjectExchange(object):
 							set_default_permissions = system.set_default_permissions
 						except (errors.NoSuchObjectError, errors.NoSuchVerbError), e:
 							set_default_permissions = lambda *a: None
-						finally:
-							default_permissions = False
 						
 						set_default_permissions(obj)
 				else:
@@ -343,7 +341,8 @@ class ObjectExchange(object):
 		
 		maker = getattr(self, '_mk%s' % obj_type, fail)
 		obj = maker(items[0])
-		obj.set_id(obj_id)
+		if not(obj.get_id()):
+			obj.set_id(obj_id)
 		self.cache[obj_key] = obj
 		
 		return obj

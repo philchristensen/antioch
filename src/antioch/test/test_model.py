@@ -181,15 +181,6 @@ class ObjectTestCase(unittest.TestCase):
 		self.failUnlessEqual(o.get_verb('look', recurse=False), v)
 	
 	def test_add_verb(self):
-		class _VerbAdded(Exception):
-			pass
-		
-		def _err(name):
-			raise _VerbAdded(name)
-		
-		v = test.Anything(
-			add_name	= lambda name: _err(name),
-		)
 		x = test.Anything(
 			get_id		= lambda: -1,
 		)
@@ -201,8 +192,9 @@ class ObjectTestCase(unittest.TestCase):
 			is_wizard	= lambda *a: False,
 		)
 		o = model.Object(e)
+		v = model.Verb(o)
 		
-		self.failUnlessRaises(_VerbAdded, o.add_verb, 'look')
+		self.failUnlessEqual(o.add_verb('look'), v)
 	
 	def test_has_verb(self):
 		e = test.Anything(

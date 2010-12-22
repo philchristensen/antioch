@@ -28,7 +28,7 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		self.failUnlessEqual(p.this, caller)
 		
 		def send(user_id, msg):
-			self.failUnlessEqual(user_id, 10L)
+			self.failUnlessEqual(user_id, caller.get_id())
 			self.failUnlessEqual(msg['observations']['name'], 'The Laboratory')
 		
 		self.exchange.queue.send = send
@@ -88,7 +88,7 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		self.failUnlessEqual(p.this, caller)
 		
 		def send(user_id, msg):
-			self.failUnlessEqual(user_id, 10L)
+			self.failUnlessEqual(user_id, caller.get_id())
 			self.failUnlessEqual(msg['observations']['name'], 'The Laboratory')
 		
 		self.exchange.queue.send = send

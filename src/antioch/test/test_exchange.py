@@ -47,25 +47,31 @@ class ObjectExchangeTestCase(unittest.TestCase):
 	
 	def test_activate_default_grants(self):
 		queries = [
-			'SELECT * FROM object WHERE id = 1024',
+			'',
+			"INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
+			"INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('f', '', '', DEFAULT, 'f', 1, NULL) RETURNING id",
 			'SELECT * FROM verb WHERE id = 2048',
 			"SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
 			'SELECT * FROM object WHERE id = 1',
 		]
 		
 		results = [
-			[dict(id=1024, name='System Object')],
-			[dict(id=2048, origin_id=1024, name='set_default_permissions')],
-			[dict(id=2048, origin_id=1024, name='set_default_permissions')],
-			[dict(id=1024, name='System Object')],
+			[dict(id=1)],
+			[dict(id=2048, origin_id=1, name='set_default_permissions')],
+			[dict(id=2048, origin_id=1, name='set_default_permissions')],
+			[dict(id=1, name='System Object')],
 		]
 		
 		def runQuery(q, *a, **kw):
 			self.failUnlessEqual(rmws(q), queries.pop())
 			return results.pop()
 		
+		def runOperation(q, *a, **kw):
+			self.failUnlessEqual(rmws(q), queries.pop())
+		
 		pool = test.Anything(
-			runQuery = runQuery
+			runQuery = runQuery,
+			runOperation = runOperation,
 		)
 		
 		ex = exchange.ObjectExchange(pool)
@@ -101,10 +107,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		obj = ex.instantiate('object', name="wizard", unique_name=True)
+		obj = ex.instantiate('object', name="wizard", unique_name=True, default_permissions=False)
 		self.failUnlessEqual(obj.get_name(real=True), 'wizard')
 		
-		obj2 = ex.instantiate('object', id=obj.get_id())
+		obj2 = ex.instantiate('object', id=obj.get_id(), default_permissions=False)
 		self.failUnless(obj == obj2)
 	
 	def test_mkobject(self):

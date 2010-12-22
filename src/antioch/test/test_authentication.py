@@ -22,6 +22,7 @@ class AuthenticationTestCase(unittest.TestCase):
 	def test_checker_failed(self):
 		checker = auth.TransactionChecker(db_url=self.test_db_url)
 		creds = credentials.UsernamePassword('asdfgasd', 'adsfgsdfg')
+		creds.ip_address = '127.0.0.1'
 		
 		failed = False
 		try:
@@ -44,5 +45,6 @@ class AuthenticationTestCase(unittest.TestCase):
 		
 		checker = auth.TransactionChecker(db_url=self.test_db_url)
 		creds = credentials.UsernamePassword('test_checker_passed_user', 'test_checker_passed_password')
+		creds.ip_address = '127.0.0.1'
 		avatar_id = yield checker.requestAvatarId(creds)
 		self.failUnlessEqual(avatar_id, user_id)
