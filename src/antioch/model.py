@@ -658,10 +658,6 @@ class Object(Entity):
 		"""
 		Is this object allowed to do `permission` on `subject`?
 		"""
-		# ctx = self.get_context()
-		# # if ctx and ctx.is_wizard() and permission == 'grant':
-		# if ctx and ctx.owns(subject):
-		# 	return True
 		access = self._ex.is_allowed(self, permission, subject)
 		if(not access and fatal):
 			raise errors.AccessError(self, permission, subject)
