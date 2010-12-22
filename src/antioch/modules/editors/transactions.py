@@ -118,8 +118,6 @@ class EditorTransactionChild(transact.TransactionChild):
 				item = getattr(x, 'get_' + type)(object_id, name)
 				if(item is None):
 					item = x.instantiate(type, owner_id=user_id, origin_id=object_id, name=name)
-					if(type == 'verb'):
-						item.add_name(name)
 			caller = x.get_object(user_id)
 			p = parser.TransactionParser(parser.Lexer(''), caller, x)
 			from antioch.modules import editors

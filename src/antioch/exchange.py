@@ -224,8 +224,8 @@ class ObjectExchange(object):
 							set_default_permissions = lambda *a: None
 						finally:
 							default_permissions = False
-					
-					set_default_permissions(obj)
+						
+						set_default_permissions(obj)
 				else:
 					obj = self.load(obj_type, object_id)
 			
@@ -262,6 +262,10 @@ class ObjectExchange(object):
 		v._ability = record.get('ability', False)
 		v._method = record.get('method', False)
 		v._origin_id = record['origin_id']
+		
+		if('name' in record):
+			self.save(v)
+			v.add_name(record['name'])
 		
 		return v
 	

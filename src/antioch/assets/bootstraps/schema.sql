@@ -81,7 +81,7 @@ CREATE TABLE property (
 	id bigserial,
 	name varchar(255) NOT NULL,
 	type eval_type NOT NULL,
-	value text NOT NULL,
+	value text,
 	owner_id bigint REFERENCES object ON DELETE SET NULL,
 	origin_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	PRIMARY KEY (id)

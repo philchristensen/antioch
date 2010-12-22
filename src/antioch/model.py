@@ -286,11 +286,10 @@ class Object(Entity):
 				raise ValueError("Restricted keyword %r" % key)
 			elif access is False:
 				raise ValueError("Invalid keyword %r" % key)
-		kw = dict(origin_id=self._id, owner_id=owner_id)
+		kw = dict(origin_id=self._id, owner_id=owner_id, name=name)
 		kwargs.update(kw)
 
 		v = self._ex.instantiate('verb', **kwargs)
-		v.add_name(name)
 		v._source_id = self.get_id()
 		return v
 	
@@ -379,10 +378,12 @@ class Object(Entity):
 			elif access is False:
 				raise ValueError("Invalid keyword %r" % key)
 		kw = dict(origin_id=self._id, owner_id=owner_id)
+		value = kwargs.pop('value', None)
 		kwargs.update(kw)
 		
 		p = self._ex.instantiate('property', name=name, **kwargs)
 		p._source_id = self.get_id()
+		p.value = value
 		return p
 	
 	def remove_property(self, name):
