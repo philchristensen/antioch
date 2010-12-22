@@ -697,6 +697,7 @@ class ObjectExchange(object):
 		
 		v = self._mkverb(v[0])
 		v.set_id(verb_id)
+		v._source_id = origin_id
 		return v
 	
 	def remove_verb(self, origin_id, name):
@@ -780,6 +781,7 @@ class ObjectExchange(object):
 		
 		p = self._mkproperty(p[0])
 		p.set_id(property_id)
+		p._source_id = origin_id
 		return p
 	
 	def remove_property(self, origin_id, name):

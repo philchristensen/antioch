@@ -47,7 +47,7 @@ class TransactionChecker(object):
 		@type creds: L{twisted.cred.credentials.IUsernamePassword} implementor
 		"""
 		if(credentials.IUsernamePassword.providedBy(creds)):
-			result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password)
+			result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password, ip_address=creds.ip_address)
 			if(result['user_id'] == -1):
 				defer.returnValue(failure.Failure(error.UnauthorizedLogin(result['error'])))
 			defer.returnValue(result['user_id'])

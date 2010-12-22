@@ -62,6 +62,11 @@ class WorldTransaction(amp.Command):
 	"""
 	All amp.Commands used in antioch can find their own process pool.
 	"""
+	errors = {
+		errors.AccessError : 'ACCESS_ERROR',
+		errors.PermissionError : 'PERMISSION_ERROR',
+	}
+	
 	@classmethod
 	def run(cls, transaction_child=None, db_url='', **kwargs):
 		if(db_url):
@@ -77,13 +82,11 @@ class Authenticate(WorldTransaction):
 	arguments = [
 		('username', amp.String()),
 		('password', amp.String()),
+		('ip_address', amp.String()),
 	]
 	response = [
 		('user_id', amp.Integer()),
 	]
-	errors = {
-		errors.PermissionError : 'PERMISSION_ERROR',
-	}
 
 class Login(WorldTransaction):
 	"""
@@ -186,14 +189,18 @@ class DefaultTransactionChild(TransactionChild):
 	Provide fundamental antioch transaction methods.
 	"""
 	@Authenticate.responder
-	def authenticate(self, username, password):
+	def authenticate(self, username, password, ip_address):
 		"""
 		Return the user id for the username/password combo, if valid.
 		"""
 		with self.get_exchange() as x:
+			connect = x.get_verb(1, 'connect')
+			if(connect):
+				connect(ip_address)
+			
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):
-				u = authentication(username, password)
+				u = authentication(username, password, ip_address)
 				if(u):
 					return {'user_id': u.get_id()}
 			try:
@@ -204,10 +211,10 @@ class DefaultTransactionChild(TransactionChild):
 				raise errors.PermissionError("Invalid login credentials. (3)")
 			except errors.AmbiguousObjectError, e:
 				raise errors.PermissionError("Invalid login credentials. (4)")
-	
+
 			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
 				raise errors.PermissionError('User is already logged in.')
-	
+
 			if not(u.validate_password(password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
 		return {'user_id': u.get_id()}
@@ -221,10 +228,6 @@ class DefaultTransactionChild(TransactionChild):
 		
 		with self.get_exchange() as x:
 			x.login_player(user_id, session_id)
-			
-			system = x.get_object(1)
-			if(system.has_verb('connect') and not system.connect(ip_address)):
-				raise errors.PermissionError("System connect script denied access.")
 			
 			user = x.get_object(user_id)
 			if(system.has_verb("login")):

@@ -210,6 +210,7 @@ class ClientLogin(rend.Page):
 				password = request.fields['password'].value
 			
 			creds = credentials.UsernamePassword(username, password)
+			creds.ip_address = request.getClientIP()
 			
 			iface, user, logout = yield self.portal.login(creds, None, inevow.IResource)
 			yield session.updateSession(self.spool, request, user)
