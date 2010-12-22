@@ -226,12 +226,12 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		print 'user #%s logged in from %s' % (user_id, ip_address)
 		
-		with self.get_exchange() as x:
+		with self.get_exchange(user_id) as x:
 			x.login_player(user_id, session_id)
 			
-			user = x.get_object(user_id)
+			system = x.get_object(1)
 			if(system.has_verb("login")):
-				system.login(user)
+				system.login()
 		
 		return {'response': True}
 	
@@ -246,9 +246,8 @@ class DefaultTransactionChild(TransactionChild):
 			x.logout_player(user_id)
 			
 			system = x.get_object(1)
-			user = x.get_object(user_id)
 			if(system.has_verb("logout")):
-				system.logout(user)
+				system.logout()
 		
 		return {'response': True}
 	

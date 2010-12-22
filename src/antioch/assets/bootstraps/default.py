@@ -124,6 +124,16 @@ system.add_verb('connect', **dict(
 	filename	= get_verb_path('system_connect.py'),
 )).allow('everyone', 'execute')
 
+system.add_verb('login', **dict(
+	method		= True,
+	filename	= get_verb_path('system_login.py'),
+)).allow('everyone', 'execute')
+
+system.add_verb('logout', **dict(
+	method		= True,
+	filename	= get_verb_path('system_logout.py'),
+)).allow('everyone', 'execute')
+
 wizard_class.add_verb('@edit', **dict(
 	ability		= True,
 	filename	= get_verb_path('wizard_class_edit.py'),

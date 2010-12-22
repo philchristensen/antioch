@@ -262,6 +262,19 @@ def write(p, user, text, is_error=False, escape_html=True):
 	))
 
 @api
+def broadcast(p, text, escape_html=True):
+	"""
+	Verb API: Print a string to the console of everyone nearby.
+	"""
+	for obj in p.caller.location:
+		p.exchange.queue.send(obj.get_id(), dict(
+			command		= 'write',
+			text		= str(text),
+			is_error	= False,
+			escape_html	= escape_html,
+		))
+
+@api
 def observe(p, user, observations):
 	"""
 	Verb API: Send a dict of observations to the user's client.

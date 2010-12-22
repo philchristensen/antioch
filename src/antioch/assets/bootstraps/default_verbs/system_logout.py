@@ -1,0 +1,10 @@
+#!antioch
+
+if('last_location' in caller):
+	caller['last_location'].value = caller.location
+else:
+	caller.add_property('last_location', value=caller.location)
+
+broadcast("%s vanished suddenly, as if suddenly dead of boredom.")
+
+caller.set_location(None)
