@@ -168,14 +168,14 @@ class Entity(object):
 		"""
 		ctx = self.get_context()
 		if ctx:
-			ctx.is_allowed(permission, subject, fatal=True)
-			
+			if(permission != 'grant' or not ctx.owns(subject)):
+				ctx.is_allowed(permission, subject, fatal=True)
 	
 	def allow(self, accessor, permission, create=False):
 		"""
 		Allow a certain object or group to do something on this object.
 		
-		[ACL] allowed to grant on this
+		[ACL] allowed to grant on this (or owner of this)
 		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
@@ -187,7 +187,7 @@ class Entity(object):
 		"""
 		Deny a certain object or group from doing something on this object.
 		
-		[ACL] allowed to grant on this
+		[ACL] allowed to grant on this (or owner of this)
 		"""
 		self.check('grant', self)
 		if(isinstance(accessor, Object)):
@@ -608,7 +608,10 @@ class Object(Entity):
 		if(location):
 			location.notify_observers()
 		if(self.is_player() and old_location is not location):
-			self.set_observing(location)
+			if(old_location):
+				old_location.remove_observer(self)
+			if(location):
+				location.add_observer(self)
 	
 	def get_location(self):
 		"""
