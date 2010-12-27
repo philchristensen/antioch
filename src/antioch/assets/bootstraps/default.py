@@ -149,10 +149,10 @@ wizard_class.add_verb('@eval', **dict(
 	filename	= get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
-# wizard_class.add_verb('@adduser', **dict(
-# 	ability		= True,
-# 	filename	= get_verb_path('wizard_class_adduser.py'),
-# )).allow('wizards', 'execute')
+wizard_class.add_verb('@adduser', **dict(
+	ability		= True,
+	filename	= get_verb_path('wizard_class_adduser.py'),
+)).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(
 	ability		= True,

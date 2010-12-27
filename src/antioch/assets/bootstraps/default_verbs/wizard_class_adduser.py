@@ -7,9 +7,8 @@ if not(has_dobj_str()):
 user = create_object(get_dobj_str())
 user.set_player(True)
 
-player_class = system.get_property('default_player_class', None).value
-if(player_class):
-	user.add_parent(player_class)
+player_class = get_object('player class')
+user.add_parent(player_class)
 
 user.owner = user
 user.location = caller.location
