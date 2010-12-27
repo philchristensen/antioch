@@ -393,6 +393,8 @@ class ClientConnector(athena.LiveElement):
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
 			d = self.callRemote('write', data['text'], data['is_error'], data.get('escape_html', True))
+		
+		d.addErrback(log.err)
 	
 	@defer.inlineCallbacks
 	def task(self, task_id):
