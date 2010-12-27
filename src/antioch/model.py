@@ -603,6 +603,12 @@ class Object(Entity):
 		if(old_location and old_location.has_verb('exit')):
 			old_location.exit(self)
 		self.save()
+		if(old_location):
+			old_location.notify_observers()
+		if(location):
+			location.notify_observers()
+		if(self.is_player() and old_location is not location):
+			self.set_observing(location)
 	
 	def get_location(self):
 		"""
