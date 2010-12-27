@@ -15,7 +15,7 @@ during a single verb transaction.
 import crypt, string, random, time
 
 from twisted.internet import defer
-from twisted.python import util
+from twisted.python import util, log
 
 from txamqp.client import Closed
 
@@ -29,6 +29,7 @@ group_definitions = dict(
 
 salt = list(string.printable[:])
 
+rollback_after_fatal_errors = True
 profile_exchange = False
 
 def extract_id(literal):
@@ -128,7 +129,10 @@ class ObjectExchange(object):
 					))
 					return True
 			elif(etype is not None):
-				self.rollback()
+				if(rollback_after_fatal_errors):
+					self.rollback()
+				else:
+					self.commit()
 				import traceback, StringIO
 				io = StringIO.StringIO()
 				traceback.print_exception(etype, e, trace, None, io)
@@ -142,7 +146,8 @@ class ObjectExchange(object):
 			else:
 				self.commit()
 		finally:
-			self.dequeue()
+			d = self.dequeue()
+			d.addErrback(log.err)
 	
 	def get_context(self):
 		"""
