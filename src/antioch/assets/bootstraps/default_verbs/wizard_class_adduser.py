@@ -13,4 +13,4 @@ user.add_parent(player_class)
 user.owner = user
 user.location = caller.location
 
-caller.write("The user %s has been created. Now set a password with @passwd." % [str(user)])
+write(caller, "The user %s has been created. Now set a password with @passwd." % str(user))
