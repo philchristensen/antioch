@@ -428,7 +428,10 @@ class ObjectExchange(object):
 			else:
 				items = self.pool.runQuery(sql.build_select('object', name=sql.RAW(sql.interp('LOWER(%%s) = LOWER(%s)', key))))
 				if(len(items) == 0):
-					raise errors.NoSuchObjectError(key)
+					if(return_list):
+						return []
+					else:
+						raise errors.NoSuchObjectError(key)
 				elif(len(items) > 1):
 					if(return_list):
 						return self.instantiate('object', *items)

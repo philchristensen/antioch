@@ -292,11 +292,11 @@ def count_named(p, key):
 	return p.exchange.refs(key)
 
 @api
-def get_object(p, key):
+def get_object(p, key, return_list=False):
 	"""
 	Verb API: Load an object by its global name or ID.
 	"""
-	return p.exchange.get_object(key)
+	return p.exchange.get_object(key, return_list=return_list)
 
 @api
 def create_object(p, name, unique_name=False):
