@@ -598,6 +598,7 @@ class Object(Entity):
 		if(location and location.has_verb('enter')):
 			location.enter(self)
 		self._location_id = location.get_id() if location else None
+		self.save()
 		if(location is not old_location):
 			self.clear_observers()
 		if(old_location and old_location.has_verb('exit')):

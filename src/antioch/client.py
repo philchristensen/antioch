@@ -337,7 +337,7 @@ class ClientConnector(athena.LiveElement):
 		"""
 		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		
-		self.chan = self.msg_service.setup_client_channel(self.user_id)
+		self.chan = yield self.msg_service.setup_client_channel(self.user_id)
 		self.queue = yield self.msg_service.connection.queue("user-%s-consumer" % self.user_id)
 		
 		yield transact.Parse.run(user_id=self.user_id, sentence='look here')

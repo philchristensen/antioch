@@ -211,9 +211,11 @@ class DefaultTransactionChild(TransactionChild):
 				raise errors.PermissionError("Invalid login credentials. (3)")
 			except errors.AmbiguousObjectError, e:
 				raise errors.PermissionError("Invalid login credentials. (4)")
-
-			if(u.is_connected_player() and u.is_allowed('multi_login', u)):
-				raise errors.PermissionError('User is already logged in.')
+			
+			multilogin_accounts = x.get_property(1, 'multilogin_accounts')
+			if(u.is_connected_player()):
+				if(not multilogin_accounts or u not in multilogin_accounts.value):
+					raise errors.PermissionError('User is already logged in.')
 
 			if not(u.validate_password(password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
@@ -224,8 +226,6 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		Register a login for the provided user_id.
 		"""
-		print 'user #%s logged in from %s' % (user_id, ip_address)
-		
 		with self.get_exchange(user_id) as x:
 			x.login_player(user_id, session_id)
 			
@@ -233,6 +233,7 @@ class DefaultTransactionChild(TransactionChild):
 			if(system.has_verb("login")):
 				system.login()
 		
+		print 'user #%s logged in from %s' % (user_id, ip_address)
 		return {'response': True}
 	
 	@Logout.responder
@@ -240,15 +241,17 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		Register a logout for the provided user_id.
 		"""
-		print 'user #%s logged out' % (user_id,)
-		
+		# we want to make sure to logout the user even
+		# if the logout verb fails
 		with self.get_exchange(user_id) as x:
 			x.logout_player(user_id)
-			
+		
+		with self.get_exchange(user_id) as x:
 			system = x.get_object(1)
 			if(system.has_verb("logout")):
 				system.logout()
 		
+		print 'user #%s logged out' % (user_id,)
 		return {'response': True}
 	
 	@Parse.responder
