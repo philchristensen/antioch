@@ -141,7 +141,7 @@ class MessageQueue(object):
 			routing_key = 'user-%s' % user_id
 			data = json.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
-			chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
+			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
 		if(profile_messages):
 			print '[messages] purging queue took %s seconds' % (time.time() - t)
