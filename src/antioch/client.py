@@ -319,7 +319,7 @@ class ClientConnector(athena.LiveElement):
 		
 		def _init_eb():
 			log.err()
-			self.logout()
+			return self.logout()
 		
 		self.login(mind).errback = _init_eb
 		
