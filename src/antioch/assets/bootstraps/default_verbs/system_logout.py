@@ -5,6 +5,6 @@ if('last_location' in caller):
 else:
 	caller.add_property('last_location', value=caller.location)
 
-broadcast("%s vanished suddenly, as if suddenly dead of boredom.")
+broadcast("%s vanishes, as if suddenly dead of boredom." % caller.get_name())
 
 caller.set_location(None)

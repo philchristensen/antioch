@@ -266,7 +266,7 @@ def broadcast(p, text, escape_html=True):
 	"""
 	Verb API: Print a string to the console of everyone nearby.
 	"""
-	for obj in p.caller.location:
+	for obj in p.caller.location.get_contents():
 		p.exchange.queue.send(obj.get_id(), dict(
 			command		= 'write',
 			text		= str(text),
