@@ -10,17 +10,7 @@ Default database bootstrap.
 
 from __future__ import with_statement
 
-from antioch import model, sql
-
-def get_verb_path(filename):
-	from antioch import assets
-	return assets.get('bootstraps/default_verbs', filename)
-
-def get_source(filename):
-	from antioch import assets
-	verb_path = assets.get('bootstraps/default_verbs', filename)
-	with open(verb_path) as f:
-		return f.read()
+from antioch import model, sql, bootstrap
 
 for name in model.default_permissions:
 	exchange.pool.runOperation(sql.build_insert('permission', name=name))
@@ -30,7 +20,7 @@ exchange.load_permissions()
 system = exchange.instantiate('object', name='System Object')
 set_default_permissions_verb = model.Verb(system)
 set_default_permissions_verb._method = True
-set_default_permissions_verb._code = get_source('system_set_default_permissions.py')
+set_default_permissions_verb._code = bootstrap.get_source('system_set_default_permissions.py')
 exchange.save(set_default_permissions_verb)
 set_default_permissions_verb.add_name('set_default_permissions')
 
@@ -39,12 +29,8 @@ set_default_permissions_verb(system)
 
 wizard = exchange.instantiate('object', name='Wizard', unique_name=True)
 wizard.set_owner(wizard)
-
 system.set_owner(wizard)
-
 set_default_permissions_verb.set_owner(wizard)
-set_default_permissions_verb.allow('everyone', 'execute')
-set_default_permissions_verb.allow('wizards', 'anything')
 
 bag_of_holding = exchange.instantiate('object', name='bag of holding')
 bag_of_holding.set_owner(wizard)
@@ -118,87 +104,87 @@ wizard_class.add_verb('@reload', **dict(
 
 system.add_verb('authenticate', **dict(
 	method		= True,
-	filename	= get_verb_path('system_authenticate.py'),
+	filename	= bootstrap.get_verb_path('system_authenticate.py'),
 ))
 
 system.add_verb('connect', **dict(
 	method		= True,
-	filename	= get_verb_path('system_connect.py'),
+	filename	= bootstrap.get_verb_path('system_connect.py'),
 )).allow('everyone', 'execute')
 
 system.add_verb('login', **dict(
 	method		= True,
-	filename	= get_verb_path('system_login.py'),
+	filename	= bootstrap.get_verb_path('system_login.py'),
 )).allow('everyone', 'execute')
 
 system.add_verb('logout', **dict(
 	method		= True,
-	filename	= get_verb_path('system_logout.py'),
+	filename	= bootstrap.get_verb_path('system_logout.py'),
 )).allow('everyone', 'execute')
 
 wizard_class.add_verb('@edit', **dict(
 	ability		= True,
-	filename	= get_verb_path('wizard_class_edit.py'),
+	filename	= bootstrap.get_verb_path('wizard_class_edit.py'),
 ))
 
 wizard_class.add_verb('@exec', **dict(
 	ability		= True,
-	filename	= get_verb_path('wizard_class_exec.py'),
+	filename	= bootstrap.get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('@eval', **dict(
 	ability		= True,
-	filename	= get_verb_path('wizard_class_eval.py'),
+	filename	= bootstrap.get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('@adduser', **dict(
 	ability		= True,
-	filename	= get_verb_path('wizard_class_adduser.py'),
+	filename	= bootstrap.get_verb_path('wizard_class_adduser.py'),
 )).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(
 	ability		= True,
-	filename	= get_verb_path('author_class_alias.py'),
+	filename	= bootstrap.get_verb_path('author_class_alias.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@dig', **dict(
 	ability		= True,
-	filename	= get_verb_path('author_class_dig.py'),
+	filename	= bootstrap.get_verb_path('author_class_dig.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@tunnel', **dict(
 	ability		= True,
-	filename	= get_verb_path('author_class_tunnel.py'),
+	filename	= bootstrap.get_verb_path('author_class_tunnel.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('@describe', **dict(
 	ability		= True,
-	filename	= get_verb_path('author_class_describe.py'),
+	filename	= bootstrap.get_verb_path('author_class_describe.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@set', **dict(
 	ability		= True,
-	filename	= get_verb_path('player_class_set.py'),
+	filename	= bootstrap.get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('look', **dict(
 	ability		= True,
 	method		= True,
-	filename	= get_verb_path('player_class_look.py'),
+	filename	= bootstrap.get_verb_path('player_class_look.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('go', **dict(
 	ability		= True,
-	filename	= get_verb_path('player_class_go.py'),
+	filename	= bootstrap.get_verb_path('player_class_go.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('say', **dict(
 	ability		= True,
-	filename	= get_verb_path('player_class_say.py'),
+	filename	= bootstrap.get_verb_path('player_class_say.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('@passwd', **dict(
 	ability		= True,
 	method		= True,
-	filename	= get_verb_path('player_class_passwd.py'),
+	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')

@@ -12,7 +12,7 @@ from __future__ import with_statement
 
 import traceback, subprocess
 
-from antioch import exchange, dbapi
+from antioch import exchange, dbapi, assets
 
 def get_dsn(db_url):
 	"""
@@ -109,3 +109,12 @@ def load_python(pool, python_path):
 	"""
 	with exchange.ObjectExchange(pool) as x:
 		execfile(python_path, globals(), dict(exchange=x))
+
+def get_verb_path(filename, dataset='default'):
+	return assets.get('bootstraps/%s_verbs' % dataset, filename)
+
+def get_source(filename, dataset='default'):
+	verb_path = assets.get('bootstraps/%s_verbs' % dataset, filename)
+	with open(verb_path) as f:
+		return f.read()
+
