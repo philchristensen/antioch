@@ -528,9 +528,20 @@ class Object(Entity):
 		"""
 		Tell all observers to refresh their view of this object.
 		
-		[ACL] allowed to write on this
+		It's uncertain whether constraints should be placed on calling
+		this method. First of all, the previous restriction was unworkable,
+		because non-privileged objects can still be allowed to enter and
+		leave another object freely, and will need to call the corresponding
+		locations.
+		
+		It might be better to just make the notification happen inside the
+		enter and leave verbs, but they'd still need to be changed so that
+		they are run with different permissions than the active user, something
+		that's probably wise to avoid.
+		
+		    # [ACL] allowed to write on this
 		"""
-		self.check('write', self)
+		# self.check('write', self)
 		for observer in self.get_observers():
 			if(observer.has_callable_verb('look')):
 				observer.look(self)
@@ -712,7 +723,7 @@ class Verb(Entity):
 		env = default_parser.get_environment()
 		env['args'] = args
 		env['kwargs'] = kwargs
-		return code.r_exec(default_parser.caller, self.get_code(), env, filename=repr(self), runtype="method")
+		return code.r_exec(default_parser.caller, self._get_code(), env, filename=repr(self), runtype="method")
 	
 	def __str__(self):
 		"""
@@ -744,7 +755,7 @@ class Verb(Entity):
 		"""
 		self.check('execute', self)
 		
-		code.r_exec(parser.caller, self.get_code(), parser.get_environment(), filename=repr(self), runtype="verb")
+		code.r_exec(parser.caller, self._get_code(), parser.get_environment(), filename=repr(self), runtype="verb")
 	
 	def add_name(self, name):
 		"""
@@ -796,6 +807,9 @@ class Verb(Entity):
 		[ACL] allowed to read this
 		"""
 		self.check('read', self)
+		return self._get_code()
+	
+	def _get_code(self):
 		if self._filename and not self._code:
 			with open(self._filename, 'r') as f:
 				self._code = f.read()
