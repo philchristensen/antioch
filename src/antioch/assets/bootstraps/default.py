@@ -33,6 +33,8 @@ set_default_permissions_verb._method = True
 set_default_permissions_verb._code = get_source('system_set_default_permissions.py')
 exchange.save(set_default_permissions_verb)
 set_default_permissions_verb.add_name('set_default_permissions')
+
+set_default_permissions_verb(set_default_permissions_verb)
 set_default_permissions_verb(system)
 
 wizard = exchange.instantiate('object', name='Wizard', unique_name=True)
