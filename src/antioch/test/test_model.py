@@ -363,6 +363,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context	= lambda: subject,
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
+			is_player	= lambda *a: False,
 			save		= lambda s: True,
 			clear_observers	= lambda s: None,
 		)
@@ -370,6 +371,7 @@ class ObjectTestCase(unittest.TestCase):
 		room_mock = test.Anything(
 			get_id	= lambda: 1024,
 			has_verb = lambda v: None,
+			notify_observers = lambda: None,
 		)
 		subject = model.Object(e)
 		
