@@ -31,21 +31,21 @@ function editor_plugin_init(info){
 	if(info['kind'] == 'object'){
 		return plugin_init(info, {
 			scrollbars:	'no',
-			width:		'465',
+			width:		'500',
 			height:		'535',
 		});
 	}
 	else if(info['kind'] == 'property'){
 		return plugin_init(info, {
 			scrollbars:	'no',
-			width:		'630',
+			width:		'690',
 			height:		'525',
 		});
 	}
 	else if(info['kind'] == 'verb'){
 		return plugin_init(info, {
 			scrollbars:	'no',
-			width:		'970',
+			width:		'1000',
 			height:		'600',
 		});
 	}
@@ -55,7 +55,7 @@ function access_plugin_init(info){
 	info['kind'] = 'access';
 	return plugin_init(info, {
 		scrollbars:	'auto',
-		width:		'750',
+		width:		'770',
 		height:		'295',
 	});
 }
