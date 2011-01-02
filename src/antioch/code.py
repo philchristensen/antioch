@@ -127,7 +127,7 @@ def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
 		exec code in env
 	except errors.UsageError, e:
 		if(caller):
-			_writer(str(e)), is_error=True)
+			_writer(str(e), is_error=True)
 		else:
 			raise e
 	
