@@ -20,7 +20,7 @@ def ask(p, question, callback, *args, **kwargs):
 		question	= question,
 	)
 	p.exchange.queue.send(p.caller.get_id(), dict(
-		command		= 'ask',
+		plugin		= 'ask',
 		details		= details,
 		origin_id	= callback.get_origin().get_id(),
 		verb_name	= callback.get_names()[0],

@@ -380,7 +380,8 @@ class ClientConnector(athena.LiveElement):
 		"""
 		Handle a single message from the RabbitMQ server.
 		"""
-		mod = modules.get(data['command'])
+		mod = modules.get(data.get('plugin', None))
+		d = None
 		
 		if(mod):
 			d = mod.handle_message(data, self)
@@ -393,6 +394,8 @@ class ClientConnector(athena.LiveElement):
 			d = self.callRemote('setObservations', data['observations'])
 		elif(data['command'] == 'write'):
 			d = self.callRemote('write', data['text'], data['is_error'], data.get('escape_html', True))
+		else:
+			log.msg("Unknown command '%s'" % data)
 		
 		if(d):
 			d.addErrback(log.err)

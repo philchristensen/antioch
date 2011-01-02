@@ -20,7 +20,7 @@ from antioch.modules.editors import resource, transactions
 
 def edit(p, item):
 	p.exchange.queue.send(p.caller.get_id(), dict(
-		command		= 'editor',
+		plugin		= 'editor',
 		details		= item.get_details(),
 	))
 
@@ -40,7 +40,7 @@ def access(p, item):
 	)
 	
 	p.exchange.queue.send(p.caller.get_id(), dict(
-		command			= 'access',
+		plugin			= 'access',
 		details			= details,
 	))
 
