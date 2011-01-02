@@ -89,9 +89,9 @@ def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
 	"""
 	Evaluate an expression in the provided environment.
 	"""
-	def _writer(s):
+	def _writer(s, is_error=False):
 		if(s.strip()):
-			write(environment.get('parser'))(caller, s)
+			write(environment.get('parser'))(caller, s, is_error=is_error)
 	
 	env = get_restricted_environment(_writer, environment.get('parser'))
 	env['runtype'] = runtype
@@ -103,7 +103,7 @@ def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
 		value =  eval(code, env)
 	except errors.UsageError, e:
 		if(caller):
-			_writer(str(e))
+			_writer(str(e), is_error=True)
 		else:
 			raise e
 	
@@ -113,9 +113,9 @@ def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
 	"""
 	Execute an expression in the provided environment.
 	"""
-	def _writer(s):
+	def _writer(s, is_error=False):
 		if(s.strip()):
-			write(environment.get('parser'))(caller, s)
+			write(environment.get('parser'))(caller, s, is_error=is_error)
 	
 	env = get_restricted_environment(_writer, environment.get('parser'))
 	env['runtype'] = runtype
@@ -127,7 +127,7 @@ def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
 		exec code in env
 	except errors.UsageError, e:
 		if(caller):
-			_writer(str(e))
+			_writer(str(e)), is_error=True)
 		else:
 			raise e
 	
