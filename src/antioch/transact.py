@@ -73,7 +73,9 @@ class WorldTransaction(amp.Command):
 			pool = get_process_pool(transaction_child, db_url)
 		else:
 			pool = get_process_pool(transaction_child)
-		return pool.doWork(cls, _timeout=job_timeout, **kwargs)
+		d = pool.doWork(cls, _timeout=job_timeout, **kwargs)
+		d.addErrback(log.err)
+		return d
 
 class Authenticate(WorldTransaction):
 	"""
