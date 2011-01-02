@@ -99,7 +99,14 @@ def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
 	env.update(environment)
 	
 	code = compile_restricted(src, filename, 'eval')
-	value =  eval(code, env)
+	try:
+		value =  eval(code, env)
+	except errors.UsageError, e:
+		if(caller):
+			_writer(str(e))
+		else:
+			raise e
+	
 	return value
 
 def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
@@ -110,15 +117,20 @@ def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
 		if(s.strip()):
 			write(environment.get('parser'))(caller, s)
 	
-	# t = time.time()
 	env = get_restricted_environment(_writer, environment.get('parser'))
 	env['runtype'] = runtype
 	env['caller'] = caller
 	env.update(environment)
 	
 	code = compile_restricted(massage_verb_code(src), filename, 'exec')
-	exec code in env
-	# print 'execute took %s seconds' % (time.time() - t)
+	try:
+		exec code in env
+	except errors.UsageError, e:
+		if(caller):
+			_writer(str(e))
+		else:
+			raise e
+	
 	if("returnValue" in env):
 		return env["returnValue"]
 

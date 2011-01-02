@@ -45,6 +45,12 @@ class TestError(Exception):
 			data += ("\n    " + str(self.data))
 		return str(self._message) + data
 
+class UsageError(UserError):
+	"""
+	This exception is available as a convenience to verbs that
+	wish to print an error message and exit (rolling back any changes).
+	"""
+
 class AmbiguousObjectError(UserError):
 	"""
 	When this class is raised, it means that at some point a single
