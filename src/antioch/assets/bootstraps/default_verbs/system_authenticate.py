@@ -7,7 +7,7 @@ if(username != 'guest'):
 	return None
 
 room = get_object("The Lobby")
-player_class = get_object('player class')
+guest_class = get_object('guest class')
 
 # get the list of available guest names, which
 # also sets the total number of possible guests
@@ -36,7 +36,7 @@ for name in guest_names:
 		guest_object = guestbook[name] = create_object(name, unique_name=True)
 		guest_object.location = room
 		guest_object.set_player(True)
-		guest_object.add_parent(player_class)
+		guest_object.add_parent(guest_class)
 		guest_object.set_owner(guest_object)
 		break
 else:

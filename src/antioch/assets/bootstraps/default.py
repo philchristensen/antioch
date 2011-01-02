@@ -40,6 +40,11 @@ player_class = exchange.instantiate('object', name='player class')
 player_class.set_location(bag_of_holding)
 player_class.set_owner(wizard)
 
+guest_class = exchange.instantiate('object', name='guest class')
+guest_class.set_owner(wizard)
+guest_class.add_parent(player_class)
+guest_class.set_location(bag_of_holding)
+
 author_class = exchange.instantiate('object', name='author class')
 author_class.set_owner(wizard)
 author_class.add_parent(player_class)
@@ -56,9 +61,8 @@ wizard_class.add_parent(programmer_class)
 wizard_class.set_location(bag_of_holding)
 wizard.add_parent(wizard_class)
 
-room_class = exchange.instantiate('object', name='laboratory class')
+room_class = exchange.instantiate('object', name='room class')
 room_class.set_owner(wizard)
-room_class.set_location(bag_of_holding)
 
 laboratory = exchange.instantiate('object', name='The Laboratory', unique_name=True)
 laboratory.set_owner(wizard)
@@ -83,19 +87,9 @@ feels like an eternity.
 
 bag_of_holding.set_location(laboratory)
 
-phil = exchange.instantiate('object', name= 'Phil', unique_name=True)
-phil.set_owner(phil)
-phil.add_parent(player_class)
-
-box = exchange.instantiate('object', name='box')
-box.set_owner(phil)
-
 wizard.set_location(laboratory)
-phil.set_location(laboratory)
-box.set_location(laboratory)
 
 wizard.set_player(True, is_wizard=True, passwd='wizard')
-phil.set_player(True, passwd='phil')
 
 wizard_class.add_verb('@reload', **dict(
 	ability		= True,
@@ -161,6 +155,17 @@ author_class.add_verb('@describe', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_describe.py'),
 )).allow('everyone', 'execute')
+
+guest_class.add_verb('@register', **dict(
+	ability		= True,
+	filename	= bootstrap.get_verb_path('guest_class_register.py'),
+)).allow('everyone', 'execute')
+
+#for testing
+wizard_class.add_verb('@register', **dict(
+	ability		= True,
+	filename	= bootstrap.get_verb_path('guest_class_register.py'),
+))
 
 player_class.add_verb('@set', **dict(
 	ability		= True,
