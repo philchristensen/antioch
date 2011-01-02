@@ -45,10 +45,14 @@ class RegistrationModule(object):
 	def handle_message(self, data, client):
 		if(data['command'] == 'update-schema'):
 			transactions.UpdateSchema.run(
-				transaction_child	= transactions.RegistrationTransactionChild
+				transaction_child	= transactions.RegistrationTransactionChild,
 			)
 		elif(data['command'] == 'request-account'):
-			pass
+			transactions.RegisterPlayer.run(
+				transaction_child	= transactions.RegistrationTransactionChild,
+				name				= data['details']['name'],
+				email				= data['details']['email'],
+			)
 	
 	def get_environment(self):
 		return dict(

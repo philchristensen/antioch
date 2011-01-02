@@ -33,3 +33,9 @@ class RegistrationTransactionChild(transact.TransactionChild):
 				from antioch.modules import registration
 				system['registration-version'].value = registration.VERSION
 		return {'result':True}
+	
+	@RequestAccount.responder
+	def request_account(self, name, email):
+		with self.get_exchange() as x:
+			pass
+		return {'result':True}
