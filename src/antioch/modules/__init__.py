@@ -26,8 +26,8 @@ def iterate():
 def get(name):
 	import antioch.modules
 	for module in plugin.getPlugins(IModule, antioch.modules):
-		m = module()
-		if(m.name == name):
+		if(module.name == name):
+			m = module()
 			return m
 	return None
 
