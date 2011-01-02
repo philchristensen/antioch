@@ -34,7 +34,15 @@ set_default_permissions_verb.set_owner(wizard)
 
 bag_of_holding = exchange.instantiate('object', name='bag of holding')
 bag_of_holding.set_owner(wizard)
-bag_of_holding.set_name('bag')
+bag_of_holding.set_location(wizard)
+
+author_hammer = exchange.instantiate('object', name='author hammer', unique_name=True)
+author_hammer.set_owner(wizard)
+author_hammer.set_location(bag_of_holding)
+
+wizard_hammer = exchange.instantiate('object', name='wizard hammer', unique_name=True)
+wizard_hammer.set_owner(wizard)
+wizard_hammer.set_location(bag_of_holding)
 
 player_class = exchange.instantiate('object', name='player class')
 player_class.set_location(bag_of_holding)
@@ -85,8 +93,6 @@ feels like an eternity.
 """,
 ))
 
-bag_of_holding.set_location(laboratory)
-
 wizard.set_location(laboratory)
 
 wizard.set_player(True, is_wizard=True, passwd='wizard')
@@ -134,6 +140,11 @@ wizard_class.add_verb('@eval', **dict(
 wizard_class.add_verb('@adduser', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_adduser.py'),
+)).allow('wizards', 'execute')
+
+wizard_hammer.add_verb('add_user', **dict(
+	method		= True,
+	filename	= bootstrap.get_verb_path('wizard_hammer_adduser.py'),
 )).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(

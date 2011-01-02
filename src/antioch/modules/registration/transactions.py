@@ -4,6 +4,8 @@
 #
 # See LICENSE for details
 
+import hashlib
+
 from twisted.protocols import amp
 
 from antioch import transact, parser, json, sql
@@ -36,6 +38,12 @@ class RegistrationTransactionChild(transact.TransactionChild):
 	
 	@RequestAccount.responder
 	def request_account(self, name, email):
+		passwd = hashlib.md5(email).hexdigest()[:8]
 		with self.get_exchange() as x:
-			pass
+			hammer = x.get_object('wizard hammer')
+			user = hammer.add_user(dict(
+				name	= name,
+				passwd	= passwd,
+			))
+			x.pool.runOperation(sql.build_update('player', dict(email=email), dict(avatar_id=user.get_id())))
 		return {'result':True}

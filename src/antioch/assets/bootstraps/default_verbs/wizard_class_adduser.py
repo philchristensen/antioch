@@ -1,16 +1,12 @@
 #!antioch
 
-if not(has_dobj_str()):
-	caller.write("Usage: @adduser [name]", is_error=True)
-	return
+if not(has_dobj_str() and has_pobj_str('for')):
+	raise UsageError("Usage: @adduser [name] for [email]")
 
-user = create_object(get_dobj_str())
-user.set_player(True)
-
-player_class = get_object('player class')
-user.add_parent(player_class)
-
-user.owner = user
-user.location = caller.location
+hammer = get_object('wizard hammer')
+user = hammer.add_user(dict(
+	name		= get_dobj_str(),
+	location	= caller.location,
+))
 
 write(caller, "The user %s has been created. Now set a password with @passwd." % str(user))

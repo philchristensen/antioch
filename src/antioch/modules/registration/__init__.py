@@ -12,8 +12,6 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-# from nevow import athena
-
 from antioch import modules, errors
 
 from antioch.modules.registration import transactions
@@ -48,16 +46,13 @@ class RegistrationModule(object):
 				transaction_child	= transactions.RegistrationTransactionChild,
 			)
 		elif(data['command'] == 'request-account'):
-			transactions.RegisterPlayer.run(
+			transactions.RequestAccount.run(
 				transaction_child	= transactions.RegistrationTransactionChild,
-				name				= data['details']['name'],
-				email				= data['details']['email'],
+				name				= data['details']['name'].encode('utf8'),
+				email				= data['details']['email'].encode('utf8'),
 			)
 	
 	def get_environment(self):
 		return dict(
 			request_account			= request_account,
 		)
-	
-	def get_resource(self, user):
-		pass
