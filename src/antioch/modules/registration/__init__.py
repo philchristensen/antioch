@@ -14,9 +14,9 @@ from twisted import plugin
 
 from antioch import modules, errors
 
-from antioch.modules.registration import transactions
+from antioch.modules.registration import transactions, resource
 
-VERSION = 1
+VERSION = 2
 
 def request_account(p, name, email):
 	current_version = p.exchange.get_property(1, 'registration-version')
@@ -39,6 +39,9 @@ class RegistrationModule(object):
 	classProvides(plugin.IPlugin, modules.IModule)
 	
 	name = u'registration'
+	
+	def get_resource(self, user):
+		return resource.AccountConfirmationPage()
 	
 	def handle_message(self, data, client):
 		if(data['command'] == 'update-schema'):
