@@ -12,6 +12,7 @@ from nevow import loaders, rend
 
 class AccountConfirmationPage(rend.Page):
 	def locateChild(self, ctx, segments):
+		print segments
 		if(len(segments) != 2):
 			return super(rend.Page, self).locateChild(ctx, segments)
 

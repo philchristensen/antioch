@@ -21,7 +21,7 @@ def get_user_email(user):
 	if(not isinstance(user, model.Object)):
 		raise ValueError('Expecting player Object, got %r instead' % user)
 	elif(user == system):
-		return system.get('system_email', 'daemon@antioch.local').value
+		return system.get('admin_email', 'daemon@antioch.local').value
 	elif(not user.is_player()):
 		raise ValueError('Expecting player Object, got %s instead' % user)
 	
