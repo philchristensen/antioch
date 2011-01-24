@@ -5,6 +5,7 @@
 # See LICENSE for details
 
 import smtplib, email, re, sys
+from email import generator
 
 try:
 	from cStringIO import StringIO
@@ -73,7 +74,7 @@ def create_message(source, dest, subject, body):
 	msg['Subject'] = subject
 	
 	fp = StringIO()
-	g = email.generator.Generator(fp, mangle_from_=False, maxheaderlen=60)
+	g = generator.Generator(fp, mangle_from_=False, maxheaderlen=60)
 	g.flatten(msg)
 	
 	return fp.getvalue()

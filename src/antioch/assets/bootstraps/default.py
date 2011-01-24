@@ -144,7 +144,7 @@ wizard_class.add_verb('@adduser', **dict(
 
 wizard_hammer.add_verb('add_user', **dict(
 	method		= True,
-	filename	= bootstrap.get_verb_path('wizard_hammer_adduser.py'),
+	filename	= bootstrap.get_verb_path('wizard_hammer_add_user.py'),
 )).allow('wizards', 'execute')
 
 author_class.add_verb('@alias', **dict(

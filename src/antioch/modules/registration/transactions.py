@@ -10,7 +10,7 @@ from twisted.protocols import amp
 
 from antioch import transact, parser, json, sql, errors, session
 
-from antioch.modules.registration import email
+from antioch.modules.registration import mailer
 
 def send_registration_message(user, auth_token):
 	x = user.get_exchange()
@@ -31,7 +31,7 @@ def send_registration_message(user, auth_token):
 		auth_token	= auth_token,
 	)
 	
-	email.send_user_message(x.get_object(1), user, subject, content)
+	mailer.send_user_message(x.get_object(1), user, subject, content)
 
 class UpdateSchema(transact.WorldTransaction):
 	arguments = []
@@ -64,23 +64,25 @@ class RegistrationTransactionChild(transact.TransactionChild):
 					system.add_property('registration_version')
 				from antioch.modules import registration
 				system['registration_version'].value = registration.VERSION
+		return {}
 	
 	@RequestAccount.responder
 	def request_account(self, name, email):
 		passwd = session.createSessionCookie()[:8]
 		auth_token = session.createSessionCookie()
 		with self.get_exchange() as x:
-			existing = x.get_object(name)
+			existing = x.get_object(name, return_list=True)
 			if(existing):
 				raise errors.AmbiguousObjectError(name, existing)
 			
 			hammer = x.get_object('wizard hammer')
 			user = hammer.add_user(dict(
-				name	= name,
-				passwd	= passwd,
+				name		= name,
+				passwd		= passwd,
 			))
 			x.pool.runOperation(sql.build_update('player', 
 									dict(email=email, auth_token=auth_token),
 									dict(avatar_id=user.get_id())))
 			
 			send_registration_message(user, auth_token)
+		return {}
