@@ -41,7 +41,7 @@ class RegistrationModule(object):
 	name = u'registration'
 	
 	def get_resource(self, user):
-		return resource.AccountConfirmationPage()
+		return resource.RegistrationPage(user)
 	
 	def handle_message(self, data, client):
 		if(data['command'] == 'update-schema'):
