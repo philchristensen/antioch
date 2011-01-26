@@ -7,8 +7,7 @@
 	<body>
 		<div class="login-form">
 		<h1><img src="/assets/images/logo-medium.png" />login to antioch</h1>
-		<p>Please enter your username and password. To login as a guest, use
-		credentials <tt>guest/guest</tt>.</p>
+		<div nevow:render="messages"></div>
 		<form method="post">
 			<label>Username:</label><input type="text" name="username" size="25"/>
 			<label>Password:</label><input type="password" name="password" size="25"/>

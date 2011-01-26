@@ -16,7 +16,6 @@ from zope.interface import implements
 
 from twisted.application import service, internet
 from twisted.internet import reactor, defer, task
-from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.cred import credentials
 from twisted.python import failure, log
 
@@ -67,7 +66,7 @@ class RootDelegatePage(rend.Page):
 		#assets.enable_assets(self, assets)
 		assets.enable_assets(self)
 	
-	@inlineCallbacks
+	@defer.inlineCallbacks
 	def locateChild(self, ctx, segments):
 		"""
 		Take care of authentication while returning Resources or redirecting.
@@ -91,32 +90,32 @@ class RootDelegatePage(rend.Page):
 						client = self.connections[sid]
 					else:
 						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service, sid)
-					returnValue((client, segments[1:]))
+					defer.returnValue((client, segments[1:]))
 				elif(len(segments) > 1 and segments[0] == 'plugin'):
 					mod = modules.get(segments[1])
 					if(mod):
-						returnValue((mod.get_resource(user), segments[2:]))
+						defer.returnValue((mod.get_resource(user), segments[2:]))
 				elif(segments[0] == 'logout'):
 					self.spool.logoutUser(sid)
 					if(sid in self.connections):
 						del self.connections[sid]
 					request = inevow.IRequest(ctx)
 					request.redirect('/login')
-					returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
+					defer.returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 			# not logged in, at login page
 			elif(segments[0] == 'login'):
-				returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
+				defer.returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 			# usually because server restarted or was bookmarked
 			# redirect to the login page for convenience
 			elif(segments[0] in ('logout', 'universe')):
 				request = inevow.IRequest(ctx)
 				request.redirect('/login')
-				returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
+				defer.returnValue((ClientLogin(self.spool, self.portal), segments[1:]))
 		
 		# let renderHTTP take care of the redirect to /login or /universe
-		returnValue(super(RootDelegatePage, self).locateChild(ctx, segments))
+		defer.returnValue(super(RootDelegatePage, self).locateChild(ctx, segments))
 	
-	@inlineCallbacks
+	@defer.inlineCallbacks
 	def renderHTTP(self, ctx):
 		"""
 		Redirect either to the client interface or a login form.
@@ -129,9 +128,9 @@ class RootDelegatePage(rend.Page):
 		if not(result):
 			request = inevow.IRequest(ctx)
 			request.redirect('/universe')
-		returnValue('')
+		defer.returnValue('')
 	
-	@inlineCallbacks
+	@defer.inlineCallbacks
 	def authenticate(self, ctx):
 		"""
 		Authenticate the current session.
@@ -152,9 +151,9 @@ class RootDelegatePage(rend.Page):
 		else:
 			sid = None
 		
-		returnValue((user, sid))
+		defer.returnValue((user, sid))
 	
-	@inlineCallbacks
+	@defer.inlineCallbacks
 	def authRedirect(self, ctx):
 		"""
 		Authenticate the current session, redirecting to login if necessary.
@@ -168,11 +167,20 @@ class RootDelegatePage(rend.Page):
 		if(user is None):
 			request = inevow.IRequest(ctx)
 			request.redirect('/login')
-			returnValue(True)
-		returnValue(False)
+			defer.returnValue(True)
+		defer.returnValue(False)
 	
+class DefaultAccountPage(rend.Page):
+	def render_messages(self, ctx, data):
+		if(self.messages):
+			return tags.ul()[[tags.li()[x] for x in self.messages]]
+		else:
+			return tags.p()[[
+				'Please enter your username and password. To login as a guest, use credentials ',
+				tags.tt()['guest/guest'], '.'
+			]]
 
-class ClientLogin(rend.Page):
+class ClientLogin(DefaultAccountPage):
 	"""
 	The primary login form.
 	
@@ -188,12 +196,12 @@ class ClientLogin(rend.Page):
 		@param spool: connection to the session database pool
 		@type spool: L{session.TransactionUserSessionStore}
 		"""
-		super(ClientLogin, self).__init__()
 		self.docFactory = loaders.xmlstr(pkg.resource_string('antioch.assets', 'templates/client-login.xml'))
 		self.portal = portal
 		self.spool = spool
+		self.messages = []
 	
-	@inlineCallbacks	
+	@defer.inlineCallbacks	
 	def renderHTTP(self, ctx):
 		"""
 		Present the login form and handle login on POST.
@@ -211,16 +219,17 @@ class ClientLogin(rend.Page):
 			
 			creds = credentials.UsernamePassword(username, password)
 			creds.ip_address = request.getClientIP()
-			
-			iface, user, logout = yield self.portal.login(creds, None, inevow.IResource)
-			yield session.updateSession(self.spool, request, user)
-			
-			if(user):
-				request.redirect('/universe')
-				returnValue('')
-			
-		result = yield super(ClientLogin, self).renderHTTP(ctx)
-		returnValue(result)
+			try:
+				iface, user, logout = yield self.portal.login(creds, None, inevow.IResource)
+				yield session.updateSession(self.spool, request, user)
+				if(user):
+					request.redirect('/universe')
+					defer.returnValue('')
+			except Exception, e:
+				self.messages.append("Couldn't login: %s" % e)
+		
+		result = yield defer.maybeDeferred(super(ClientLogin, self).renderHTTP, ctx)
+		defer.returnValue(result)
 	
 
 class ClientInterface(athena.LivePage):

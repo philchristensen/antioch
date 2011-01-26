@@ -15,7 +15,7 @@ from twisted.cred import error
 from twisted.internet import defer
 from twisted.python import failure
 
-from antioch import transact
+from antioch import transact, errors
 
 class TransactionChecker(object):
 	"""
@@ -47,7 +47,8 @@ class TransactionChecker(object):
 		@type creds: L{twisted.cred.credentials.IUsernamePassword} implementor
 		"""
 		if(credentials.IUsernamePassword.providedBy(creds)):
-			result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password, ip_address=creds.ip_address)
-			if(result['user_id'] == -1):
-				defer.returnValue(failure.Failure(error.UnauthorizedLogin(result['error'])))
+			try:
+				result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password, ip_address=creds.ip_address)
+			except errors.PermissionError, e:
+				raise error.UnauthorizedLogin(str(e))
 			defer.returnValue(result['user_id'])

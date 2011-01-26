@@ -74,7 +74,10 @@ class WorldTransaction(amp.Command):
 		else:
 			pool = get_process_pool(transaction_child)
 		d = pool.doWork(cls, _timeout=job_timeout, **kwargs)
-		d.addErrback(log.err)
+		def _log_err(failure):
+			log.err(failure)
+			return failure
+		d.addErrback(_log_err)
 		return d
 
 class Authenticate(WorldTransaction):
