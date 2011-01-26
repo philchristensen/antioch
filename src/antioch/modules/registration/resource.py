@@ -13,6 +13,7 @@ from twisted.internet import defer
 from nevow import loaders, rend, inevow, tags
 
 from antioch import assets, errors
+from antioch.client import DefaultAccountPage
 from antioch.modules.registration import transactions
 
 PAGE_CODES = ['reset-password', 'change-password']
@@ -41,12 +42,27 @@ class RegistrationPage(rend.Page):
 		
 		defer.returnValue(result)
 
-class ResetPasswordPage(rend.Page):
-	docFactory = loaders.xmlstr(pkg.resource_string('antioch.modules.registration', 'templates/reset-password.xml'))
-	
+class DefaultRegistrationPage(DefaultAccountPage):
 	def __init__(self, user):
 		self.user = user
 		self.messages = []
+	
+	@defer.inlineCallbacks
+	def render_messages(self, ctx, data):
+		if(self.messages):
+			defer.returnValue(tags.ul()[[tags.li()[x] for x in self.messages]])
+		else:
+			result = yield transactions.GetAccountName.run(
+				transaction_child	= transactions.RegistrationTransactionChild,
+				user_id				= self.user['avatar_id'],
+			)
+			if(self.__class__ is ChangePasswordPage):
+				defer.returnValue(tags.p()[['Change the password for ', tags.strong()[result['account_name']]]])
+			else:
+				defer.returnValue(tags.p()[['Set the password for ', tags.strong()[result['account_name']]]])
+
+class ResetPasswordPage(DefaultRegistrationPage):
+	docFactory = loaders.xmlstr(pkg.resource_string('antioch.modules.registration', 'templates/reset-password.xml'))
 	
 	@defer.inlineCallbacks	
 	def renderHTTP(self, ctx):
@@ -76,17 +92,8 @@ class ResetPasswordPage(rend.Page):
 		result = yield defer.maybeDeferred(super(ResetPasswordPage, self).renderHTTP, ctx)
 		defer.returnValue(result)
 	
-	def render_messages(self, ctx, data):
-		if not(self.messages):
-			return ''
-		return tags.ul()[[tags.li()[x] for x in self.messages]]
-
-class ChangePasswordPage(rend.Page):
+class ChangePasswordPage(DefaultRegistrationPage):
 	docFactory = loaders.xmlstr(pkg.resource_string('antioch.modules.registration', 'templates/change-password.xml'))
-	
-	def __init__(self, user):
-		self.user = user
-		self.messages = []
 	
 	@defer.inlineCallbacks	
 	def renderHTTP(self, ctx):
@@ -119,7 +126,3 @@ class ChangePasswordPage(rend.Page):
 		result = yield defer.maybeDeferred(super(ChangePasswordPage, self).renderHTTP, ctx)
 		defer.returnValue(result)
 	
-	def render_messages(self, ctx, data):
-		if not(self.messages):
-			return ''
-		return tags.ul()[[tags.li()[x] for x in self.messages]]

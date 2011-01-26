@@ -83,6 +83,15 @@ class ChangePassword(transact.WorldTransaction):
 		('result', amp.Boolean()),
 	]
 
+class GetAccountName(transact.WorldTransaction):
+	arguments = [
+		('user_id', amp.Integer()),
+	]
+	
+	response = [
+		('account_name', amp.String()),
+	]
+
 class RegistrationTransactionChild(transact.TransactionChild):
 	@UpdateSchema.responder
 	def update_schema(self):
@@ -130,13 +139,19 @@ class RegistrationTransactionChild(transact.TransactionChild):
 				raise errors.NoSuchObjectError(auth_token)
 			elif(len(user) > 1):
 				raise errors.AmbiguousObjectError(message="Ambiguous auth token %s" % auth_token)
+			
 		return dict(avatar_id=user[0]['avatar_id'])
 	
 	@ChangePassword.responder
 	def change_password(self, user_id, new_password, old_password=None):
-		with self.get_exchange(user_id) as x:
+		with self.get_exchange() as x:
 			if(old_password and not x.validate_password(user_id, old_password)):
 				raise errors.PermissionError("Current password is incorrect.")
-			
-			x.ctx.set_player(passwd=new_password)
+			user = x.get_object(user_id)
+			user.set_player(passwd=new_password)
 		return dict(result=True)
+	
+	@GetAccountName.responder
+	def get_account_name(self, user_id):
+		with self.get_exchange(user_id) as x:
+			return dict(account_name=str(x.ctx))
