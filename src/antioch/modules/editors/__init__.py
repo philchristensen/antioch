@@ -12,11 +12,7 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from nevow import athena
-
 from antioch import modules
-
-from antioch.modules.editors import resource, transactions
 
 def edit(p, item):
 	p.exchange.queue.send(p.caller.get_id(), dict(
@@ -56,10 +52,12 @@ class AccessEditorModule(object):
 		)
 	
 	def get_resource(self, user):
+		from antioch.modules.editors import resource
 		return resource.EditorDelegatePage(user)
 	
 	def handle_message(self, data, client):
 		def _cb_accessedit(result):
+			from antioch.modules.editors import transactions
 			return transactions.ModifyAccess.run(
 				transaction_child	= transactions.EditorTransactionChild,
 				user_id		= client.user_id,
@@ -93,9 +91,11 @@ class EditorModule(object):
 		)
 	
 	def get_resource(self, user):
+		from antioch.modules.editors import resource
 		return resource.EditorDelegatePage(user)
 	
 	def handle_message(self, data, client):
+		from antioch.modules.editors import transactions
 		if(data['details']['kind'] == 'object'):
 			def _cb_objedit(result):
 				return transactions.ModifyObject.run(
@@ -141,6 +141,8 @@ class EditorModule(object):
 	
 	def activate_athena_commands(self, child):
 		from antioch.modules.editors.client import EditorRemoteReference
+		from nevow import athena
+		
 		for name, value in EditorRemoteReference.__dict__.items():
 			if(callable(value)):
 				setattr(child.__class__, name, athena.expose(value))

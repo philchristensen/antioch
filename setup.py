@@ -7,16 +7,14 @@
 import ez_setup
 ez_setup.use_setuptools()
 
-import sys, os, os.path
+import sys, os, os.path, subprocess
 
 try:
 	from twisted import plugin
-	from twisted.python.reflect import namedAny
 except ImportError, e:
 	print >>sys.stderr, "setup.py requires Twisted to create a proper antioch installation. Please install it before continuing."
 	sys.exit(1)
 
-from setuptools import setup, find_packages
 from setuptools.command import easy_install
 import pkg_resources as pkgrsrc
 
@@ -27,16 +25,17 @@ log.set_threshold(log.INFO)
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
-import setup_git
+postgenerate_cache_commands = ('build', 'build_py', 'build_ext',
+	'build_clib', 'build_scripts', 'install', 'install_lib', 
+	'install_headers', 'install_scripts', 'install_data', 
+	'develop', 'easy_install')
+
+pregenerate_cache_commands = ('sdist', 'bdist', 'bdist_dumb', 
+	'bdist_rpm', 'bdist_wininst', 'upload', 'bdist_egg', 'test')
 
 def autosetup():
-	pluginPackages = ['twisted.plugins', 'nevow.plugins', 'antioch.modules']
-	
-	dist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src')
-	sys.path.insert(0, dist_dir)
-	regeneratePluginCache(pluginPackages)
-	
-	dist = setup(
+	from setuptools import setup, find_packages
+	return setup(
 		name			= "antioch",
 		version			= "1.0",
 		
@@ -48,7 +47,7 @@ def autosetup():
 		
 		entry_points	= {
 			'setuptools.file_finders'	: [
-				'git = setup_git:find_files_for_git',
+				'git = antioch.setup:find_files_for_git',
 			]
 		},
 		
@@ -79,35 +78,22 @@ def autosetup():
 								Begun as a MOO-like system for building virtual worlds, the goal was to 
 								take the LambdaMOO approach to creating online worlds, and update it in hopes 
 								of attracting new players to an old idea.
-							""".replace('\t', '').replace('\n', '')
+							""".replace('\t', '').replace('\n', ''),
 	)
-	
-	return dist
 
-def pluginModules(moduleNames):
-	for moduleName in moduleNames:
-		try:
-			yield namedAny(moduleName)
-		except ImportError:
-			pass
-		except ValueError, ve:
-			if ve.args[0] != 'Empty module name':
-				import traceback
-				traceback.print_exc()
-		except:
-			import traceback
-			traceback.print_exc()
-
-def regeneratePluginCache(pluginPackages):
-	print 'Regenerating plugin cache...'
-	for pluginModule in pluginModules(pluginPackages):
-		plugin_gen = plugin.getPlugins(plugin.IPlugin, pluginModule)
-		try:
-			plugin_gen.next()
-		except StopIteration, e:
-			pass
-		except TypeError, e:
-			print 'TypeError: %s' % e
 
 if(__name__ == '__main__'):
-	__dist__ = autosetup()
+	if(sys.argv[-1] in pregenerate_cache_commands):
+		dist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src')
+		if(dist_dir not in sys.path):
+			sys.path.insert(0, dist_dir)
+		
+		from antioch import setup
+		print 'Regenerating plugin cache...'
+		setup.regeneratePluginCache()
+	
+	dist = autosetup()
+	if(sys.argv[-1] in postgenerate_cache_commands):
+		subprocess.Popen(
+			[sys.executable, '-c', 'from antioch import setup; setup.regeneratePluginCache(); print "Regenerating plugin cache..."'],
+		).wait()

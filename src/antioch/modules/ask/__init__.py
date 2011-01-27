@@ -11,9 +11,7 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from nevow import athena
-
-from antioch import modules, transact, json
+from antioch import modules
 
 def ask(p, question, callback, *args, **kwargs):
 	details = dict(
@@ -45,6 +43,7 @@ class AskModule(object):
 	
 	def handle_message(self, data, client):
 		def _cb_ask(result):
+			from antioch import transact, json
 			transact.RegisterTask.run(
 				user_id		= client.user_id,
 				origin_id	= str(data['origin_id']),
