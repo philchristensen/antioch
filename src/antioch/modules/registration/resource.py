@@ -16,8 +16,6 @@ from antioch import assets, errors
 from antioch.client import DefaultAccountPage
 from antioch.modules.registration import transactions
 
-PAGE_CODES = ['reset-password', 'change-password']
-
 class RegistrationPage(rend.Page):
 	def __init__(self, user):
 		self.user = user
@@ -27,6 +25,7 @@ class RegistrationPage(rend.Page):
 	
 	@defer.inlineCallbacks
 	def locateChild(self, ctx, segments):
+		result = None
 		if(segments):
 			if(len(segments) == 2 and segments[0] == 'reset-password'):
 				user = yield transactions.ValidateAuthToken.run(
@@ -36,7 +35,6 @@ class RegistrationPage(rend.Page):
 				result = (ResetPasswordPage(user), segments[2:])
 			elif(self.user and segments[0] == 'change-password'):
 				result = (ChangePasswordPage(self.user), segments[1:])
-		
 		if not(result):
 			result = super(RegistrationPage, self).locateChild(ctx, segments)
 		

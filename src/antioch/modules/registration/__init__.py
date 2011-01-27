@@ -35,10 +35,17 @@ def request_account(p, name, email):
 		),
 	))
 
+def change_caller_password(p):
+	p.exchange.queue.send(p.caller.get_id(), dict(
+		plugin			= 'registration',
+		command			= 'change-password',
+	))
+
 class RegistrationModule(object):
 	classProvides(plugin.IPlugin, modules.IModule)
 	
 	name = u'registration'
+	script_url = u'/plugin/registration/assets/js/registration-plugin.js'
 	
 	def get_resource(self, user):
 		return resource.RegistrationPage(user)
@@ -54,8 +61,11 @@ class RegistrationModule(object):
 				name				= data['details']['name'].encode('utf8'),
 				email				= data['details']['email'].encode('utf8'),
 			)
+		elif(data['command'] == 'change-password'):
+			client.callRemote('plugin', self.name, self.script_url, {u'kind':u'change-password'})
 	
 	def get_environment(self):
 		return dict(
 			request_account			= request_account,
+			change_caller_password	= change_caller_password,
 		)

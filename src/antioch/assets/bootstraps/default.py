@@ -142,6 +142,17 @@ wizard_class.add_verb('@adduser', **dict(
 	filename	= bootstrap.get_verb_path('wizard_class_adduser.py'),
 )).allow('wizards', 'execute')
 
+wizard_class.add_verb('@passwd', **dict(
+	ability		= True,
+	method		= True,
+	filename	= bootstrap.get_verb_path('wizard_class_passwd.py'),
+)).allow('everyone', 'execute')
+
+wizard_class.add_verb('@register', **dict(
+	ability		= True,
+	filename	= bootstrap.get_verb_path('guest_class_register.py'),
+))
+
 wizard_hammer.add_verb('add_user', **dict(
 	method		= True,
 	filename	= bootstrap.get_verb_path('wizard_hammer_add_user.py'),
@@ -172,11 +183,10 @@ guest_class.add_verb('@register', **dict(
 	filename	= bootstrap.get_verb_path('guest_class_register.py'),
 )).allow('everyone', 'execute')
 
-#for testing
-wizard_class.add_verb('@register', **dict(
+guest_class.add_verb('@passwd', **dict(
 	ability		= True,
-	filename	= bootstrap.get_verb_path('guest_class_register.py'),
-))
+	code		= 'write(caller, "Guests cannot change their passwords.")',
+)).allow('everyone', 'execute')
 
 player_class.add_verb('@set', **dict(
 	ability		= True,
@@ -201,6 +211,5 @@ player_class.add_verb('say', **dict(
 
 player_class.add_verb('@passwd', **dict(
 	ability		= True,
-	method		= True,
 	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')
