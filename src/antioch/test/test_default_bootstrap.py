@@ -19,7 +19,7 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		return self.exchange.dequeue()
 	
 	def test_player_look(self):
-		caller = self.exchange.get_object('phil')
+		caller = self.exchange.get_object('wizard')
 		
 		l = parser.Lexer('look here')
 		p = parser.TransactionParser(l, caller, self.exchange)
@@ -77,7 +77,7 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		self.failUnlessEqual(self._test_player_write_ran, True)
 	
 	def test_player_multiparent_look(self):
-		caller = self.exchange.get_object('phil')
+		caller = self.exchange.get_object('wizard')
 		random = self.exchange.instantiate('object', name='random')
 		caller.add_parent(random)
 		

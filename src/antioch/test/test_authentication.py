@@ -5,7 +5,7 @@
 
 from twisted.trial import unittest
 from twisted.internet import defer
-from twisted.cred import credentials
+from twisted.cred import credentials, error
 
 from antioch import exchange, test, auth, transact, errors
 
@@ -24,13 +24,12 @@ class AuthenticationTestCase(unittest.TestCase):
 		creds = credentials.UsernamePassword('asdfgasd', 'adsfgsdfg')
 		creds.ip_address = '127.0.0.1'
 		
-		failed = False
 		try:
 			avatar_id = yield checker.requestAvatarId(creds)
-		except errors.PermissionError, e:
-			failed = True
-		
-		self.failUnless(failed, "Didn't raise errors.PermissionError")
+		except error.UnauthorizedLogin, e:
+			pass
+		else:
+			self.fail("Didn't raise error.UnauthorizedLogin")
 	
 	@defer.inlineCallbacks
 	def test_checker_passed(self):

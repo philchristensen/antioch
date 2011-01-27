@@ -49,6 +49,6 @@ class TransactionChecker(object):
 		if(credentials.IUsernamePassword.providedBy(creds)):
 			try:
 				result = yield transact.Authenticate.run(db_url=self.db_url, username=creds.username, password=creds.password, ip_address=creds.ip_address)
+				defer.returnValue(result['user_id'])
 			except errors.PermissionError, e:
 				raise error.UnauthorizedLogin(str(e))
-			defer.returnValue(result['user_id'])
