@@ -1,6 +1,6 @@
 var editorDetails = {};
 
-function plugin_init(info, attribs){
+function plugin_run(info, attribs){
 	var resultDeferred = new Divmod.Defer.Deferred();
 	var window_name = 'editor-plugin-' + info['kind'] + '-' + info['id'];
 	var type = info['kind'];
@@ -27,23 +27,26 @@ function plugin_init(info, attribs){
 	return resultDeferred;
 }
 
-function editor_plugin_init(info){
+function editor_init(){
+}
+
+function editor_run(info){
 	if(info['kind'] == 'object'){
-		return plugin_init(info, {
+		return plugin_run(info, {
 			scrollbars:	'no',
 			width:		'500',
 			height:		'535',
 		});
 	}
 	else if(info['kind'] == 'property'){
-		return plugin_init(info, {
+		return plugin_run(info, {
 			scrollbars:	'no',
 			width:		'690',
 			height:		'525',
 		});
 	}
 	else if(info['kind'] == 'verb'){
-		return plugin_init(info, {
+		return plugin_run(info, {
 			scrollbars:	'no',
 			width:		'1000',
 			height:		'600',
@@ -51,9 +54,12 @@ function editor_plugin_init(info){
 	}
 }
 
-function access_plugin_init(info){
+function access_init(){
+}
+
+function access_run(info){
 	info['kind'] = 'access';
-	return plugin_init(info, {
+	return plugin_run(info, {
 		scrollbars:	'auto',
 		width:		'770',
 		height:		'295',

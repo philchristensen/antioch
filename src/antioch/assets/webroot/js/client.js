@@ -6,7 +6,12 @@ antioch.ClientConnector.methods(
 	function plugin(self, name, plugin_script_url, args){
 		var resultDeferred = new Divmod.Defer.Deferred();
 		function initialize_plugin(){
-			var result = eval(name + '_plugin_init(args);');
+			eval(name + '_init();');
+			run_plugin();
+		}
+		
+		function run_plugin(){
+			var result = eval(name + '_run(args);');
 			if(result.addCallback){
 				result.addCallback(function(r){
 					resultDeferred.callback(r);
@@ -19,11 +24,10 @@ antioch.ClientConnector.methods(
 		}
 		
 		if(plugin_installs[plugin_script_url]){
-			initialize_plugin();
+			jQuery.getScript(plugin_script_url, run_plugin);
 		}
 		else{
 			jQuery.getScript(plugin_script_url, initialize_plugin);
-			plugin_installs[plugin_script_url] = 1;
 		}
 		
 		return resultDeferred;

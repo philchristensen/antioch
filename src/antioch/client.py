@@ -83,7 +83,11 @@ class RootDelegatePage(rend.Page):
 		# some path specified
 		if(segments):
 			# session is logged in
-			if(user):
+			if(segments[0] == 'plugin'):
+				mod = modules.get(segments[1])
+				if(mod):
+					defer.returnValue((mod.get_resource(user), segments[2:]))
+			elif(user):
 				if(segments[0] == 'universe'):
 					mind = Mind(inevow.IRequest(ctx), None)
 					if(len(segments) > 1):
@@ -91,10 +95,6 @@ class RootDelegatePage(rend.Page):
 					else:
 						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service, sid)
 					defer.returnValue((client, segments[1:]))
-				elif(len(segments) > 1 and segments[0] == 'plugin'):
-					mod = modules.get(segments[1])
-					if(mod):
-						defer.returnValue((mod.get_resource(user), segments[2:]))
 				elif(segments[0] == 'logout'):
 					self.spool.logoutUser(sid)
 					if(sid in self.connections):

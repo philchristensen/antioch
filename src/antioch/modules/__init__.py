@@ -33,6 +33,7 @@ def get(name):
 
 class IModule(interface.Interface):
 	name = interface.Attribute('Name of this module.')
+	script_url = interface.Attribute('Plugin script URL.')
 	
 	def get_environment(self, parser):
 		"""
