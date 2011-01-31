@@ -99,7 +99,7 @@ wizard.set_player(True, is_wizard=True, passwd='wizard')
 
 wizard_class.add_verb('@reload', **dict(
 	ability		= True,
-	code		= 'reload_filesystem_verbs()\nprint "Filesystem-based verbs will be reloaded from disk."',
+	filename	= bootstrap.get_verb_path('wizard_class_reload.py'),
 ))
 
 system.add_verb('authenticate', **dict(
