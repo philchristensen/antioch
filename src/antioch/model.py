@@ -687,6 +687,9 @@ class Object(Entity):
 	
 	name = property(get_name, set_name)
 	location = property(get_location, set_location)
+	contents = property(get_contents)
+	parents = property(get_parents)
+	observers = property(get_observers)
 
 class Verb(Entity):
 	"""
