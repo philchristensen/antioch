@@ -115,11 +115,12 @@ class ObjectExchange(object):
 		"""
 		Ensure that non-UserError exceptions rollback the transaction.
 		"""
+		show_all_traces = self.ctx and self.ctx.get('show_all_traces', False).value
 		try:
 			if(etype is errors.TestError):
 				self.commit()
 				return False
-			elif(etype is errors.UserError):
+			elif(isinstance(e, errors.UserError) and not show_all_traces):
 				self.commit()
 				if(self.queue):
 					self.queue.send(self.ctx.get_id(), dict(
