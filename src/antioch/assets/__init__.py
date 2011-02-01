@@ -14,7 +14,16 @@ import pkg_resources as pkg
 
 from twisted.python import filepath
 
-from nevow import static, dirlist
+from nevow import static, dirlist, tags
+
+def render_jquery_tags():
+	jsapi = tags.script(type='text/javascript', src='http://www.google.com/jsapi')['']
+	loader = tags.script(type='text/javascript')["""
+		google.load('jquery', '1.4.2');
+		google.load('jqueryui', '1.8.4');
+		google.setOnLoadCallback(init, true);
+	"""]
+	return jsapi, loader
 
 def enable_assets(rsrc, assets_path=None, name='assets'):
 	"""

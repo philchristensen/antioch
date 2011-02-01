@@ -277,6 +277,9 @@ class ClientInterface(athena.LivePage):
 		else:
 			raise RuntimeError("Logout called before LiveElement was rendered.")
 	
+	def render_jquery(self, ctx, data):
+		return assets.render_jquery_tags()
+	
 	@defer.inlineCallbacks
 	def render_ClientConnector(self, ctx, data):
 		"""

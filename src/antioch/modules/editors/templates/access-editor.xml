@@ -7,21 +7,7 @@
 	<script type="text/javascript" src="/assets/js/global.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/access-editor.js"></script>
 	<script type="text/javascript" src="/plugin/editor/assets/js/editor-plugin-support.js"></script>
-	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-	<script type="text/javascript">
-		if(typeof(google) != 'undefined'){
-			google.load('jquery', '1.4.2');
-			google.load('jqueryui', '1.8.4');
-			google.setOnLoadCallback(function(){
-				init();
-			}, true);
-		}
-		else{
-			document.write(unescape("%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/assets/js/jquery-1.4.2.js%22%3E%3C/script%3E"));
-			document.write(unescape("%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/assets/js/jquery.ui-1.8.4.min.js%22%3E%3C/script%3E"));
-			document.addEventListener("DOMContentLoaded", init, false);
-		}
-	</script>
+	<nevow:invisible nevow:render="jquery"></nevow:invisible>
 </head>
 <body>
 	<div id="editor" class="ui-widget-content ui-corner-all">
