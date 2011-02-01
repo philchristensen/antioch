@@ -312,7 +312,7 @@ class TransactionParser(object):
 			return result
 		elif(return_list):
 			return result
-		elif(len(result) == 0):
+		elif(not result):
 			return None
 		else:
 			raise errors.AmbiguousObjectError(name, result)
