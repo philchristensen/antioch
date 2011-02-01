@@ -192,13 +192,11 @@ function init(){
 	$('#access-button').button().click(requestAccessEditor);
 	
 	$('#verbs-select').dblclick(function(){
-		var details = getEditorDetails(window);
-		requestVerbEditor(details.info['id'], $('#verbs-select').val());
+		requestVerbEditor($('#id-field').val(), $('#verbs-select').val());
 	});
 	
 	$('#properties-select').dblclick(function(){
-		var details = getEditorDetails(window);
-		requestPropertyEditor(details.info['id'], $('#properties-select').val());
+		requestPropertyEditor($('#id-field').val(), $('#properties-select').val());
 	});
 	
 	$('#add-verb').button({icons:{primary:'ui-icon-plusthick'}}).click(addVerb);
