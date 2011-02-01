@@ -72,6 +72,18 @@ function look(item){
 
 function init(){
 	jQuery.getScript('/assets/js/jquery.scrollTo-1.4.2-min.js');
+	jQuery.getScript('/assets/js/jquery.dimensions-1.1.2-min.js', function(data, status){
+		jQuery.getScript('/assets/js/jquery.splitter-1.5.1.js', function(data, status){
+			$('#client-wrapper').splitter({
+				type: 'h',
+				anchorToWindow: true,
+				sizeTop: true
+			});
+			$('#bottom-pane').splitter({
+				type: 'h',
+			});
+		});
+	});
 	
 	$('.client-prompt').keyup(handleKeyEvent);
 	

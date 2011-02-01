@@ -37,7 +37,7 @@ antioch.ClientConnector.methods(
 		 * Send a command to the server.
 		 */
 		self.callRemote('parse', text);
-		var actions = $('.actions');
+		var actions = $('#actions');
 		actions.append('<br/><span class="issued-command">' + text + '</span>')
 		actions.scrollTo('max');
 	},
@@ -116,7 +116,7 @@ antioch.ClientConnector.methods(
 		/*
 		 * Called by the server to output a line to the action pane.
 		 */
-		var actions = $('.actions');
+		var actions = $('#actions');
 		
 		if(typeof(escape) == 'undefined'){
 			escape = true;

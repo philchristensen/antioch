@@ -5,21 +5,83 @@ body {
 }
 
 #client {
-	position: relative;
 	text-align: left;
 	width: 100%;
 	height: 100%;
 }
 
 #client-wrapper {
-	position: relative;
 	text-align: left;
-	width: 100%;
-	height: 100%;
 }
 
 #top-pane {
-	height: 65%;
+	min-height: 100px;
+	height: 300px;
+}
+
+#contents-area {
+	width: 300px;
+	float: right;
+	background-color: #ccc;
+	padding: 5px;
+	overflow: auto;
+	height: 100%;
+}
+
+#contents-area ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#contents-area li {
+	padding-left: 5px;
+	padding-top: 5px;
+	padding-bottom: 3px;
+	clear: both;
+}
+
+#contents-area li:hover {
+	background-color: #ddd;
+	cursor: pointer;
+}
+
+#actions {
+	background-color: black;
+	color: #d0d0d0;
+	font-family: Andale Mono, Courier, Courier New;
+	overflow: auto;
+	width: 100%;
+	min-height: 100px;
+}
+
+.issued-command {
+	color: #f5ff88;
+}
+
+.error-response {
+	color: #d36b7f;
+}
+
+#prompt-area input {
+	width: 100%;
+	margin-top: 0px;
+	font: 1.5em Courier, Courier New;
+	font-weight: bold;
+}
+
+#players-list li {
+	height: 66px;
+}
+
+#players-list {
+	margin-bottom: 20px;
+}
+
+.hsplitbar {
+	height: 5px;
+	background: #aaa;
+	cursor: pointer;
 }
 
 .name {
@@ -32,41 +94,6 @@ body {
 	overflow: auto;
 	padding: 5px;
 	height: 100%;
-}
-
-.contents-area {
-	width: 300px;
-	float: right;
-	background-color: #ccc;
-	padding: 5px;
-	overflow: auto;
-	height: 100%;
-}
-
-.contents-area ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-}
-
-.contents-area li {
-	padding-left: 5px;
-	padding-top: 5px;
-	padding-bottom: 3px;
-	clear: both;
-}
-
-.contents-area li:hover {
-	background-color: #ddd;
-	cursor: pointer;
-}
-
-#players-list li {
-	height: 66px;
-}
-
-#players-list {
-	margin-bottom: 20px;
 }
 
 .player-name {
@@ -90,26 +117,3 @@ body {
 	height: auto;
 }
 
-.actions {
-	min-height: 100px;
-	max-height: 150px;
-	height: 100%;
-	clear: both;
-	background-color: black;
-	color: #d0d0d0;
-	font-family: Andale Mono, Courier, Courier New;
-	padding: 5px;
-	overflow: auto;
-}
-
-.prompt-area input {
-	width: 100%;
-}
-
-.issued-command {
-	color: #f5ff88;
-}
-
-.error-response {
-	color: #d36b7f;
-}
