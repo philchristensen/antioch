@@ -21,7 +21,31 @@ function inspect(obj){
 }
 
 function alertFailure(failure){
-	alert(failure.error);
+	if(failure.error.stack){
+        var frames = failure.parseStack();
+        var ret = [];
+        for (var i = 0; i < frames.length; ++i) {
+            var f = frames[i];
+            if (f.fname == "" && f.lineNumber == 0) {
+                // ret.pop();
+                continue;
+            }
+            else if(f.func.indexOf('_startRunCallbacks') != -1) {
+                continue;
+            }
+            else if(f.func.indexOf('_runCallbacks') != -1) {
+                continue;
+            }
+            var parts = f.fname.split('/');
+            f.fname = parts.slice(parts.length - 2).join('/');
+            
+            ret.push(f);
+        }
+		alert(failure.toPrettyText(ret));
+	}
+	else{
+		alert(failure.toString() + ' (No traceback available)');
+	}
 }
 
 function buildWindowString(attribs){
