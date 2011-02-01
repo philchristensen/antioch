@@ -18,7 +18,7 @@ There are a long list of prepositions supported, some of which are interchangeab
 import sys, time, re, string, types
 
 from antioch.errors import *
-from antioch import exchange, dbapi
+from antioch import exchange, dbapi, model, errors
 
 #Here are all our supported prepositions
 preps = [['with', 'using'],
@@ -279,7 +279,7 @@ class TransactionParser(object):
 			has_pobj_str 	= self.has_pobj_str,
 		)
 	
-	def find_object(self, specifier, name):
+	def find_object(self, specifier, name, return_list=False):
 		"""
 		Look for an object, with the optional specifier, in the area
 		around the person who entered this command. If the posessive
@@ -302,7 +302,14 @@ class TransactionParser(object):
 		if(name and search):
 			result = search.find(name)
 		
-		return result
+		if(isinstance(result, model.Object)):
+			return result
+		elif(return_list):
+			return result
+		elif(len(result) == 0):
+			return None
+		else:
+			raise errors.AmbiguousObjectError(name, result)
 	
 	def get_verb(self):
 		"""

@@ -546,9 +546,7 @@ class ObjectExchange(object):
 				recurse = False
 		
 		result = self.instantiate('object', *parent_ids)
-		if not(isinstance(result, (list, tuple))):
-			result = [result]
-		return result
+		return [result] if isinstance(result, model.Object) else result
 	
 	def has_parent(self, child_id, object_id):
 		"""
@@ -913,7 +911,8 @@ class ObjectExchange(object):
 				nested_location_ids.extend(location_ids)
 			else:
 				recurse = False
-		return self.instantiate('object', *nested_location_ids)
+		result = self.instantiate('object', *nested_location_ids)
+		return [result] if isinstance(result, model.Object) else result
 	
 	def find(self, container_id, name):
 		"""

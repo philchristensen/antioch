@@ -3,12 +3,13 @@
 if(runtype == 'method'):
 	obj = args[0] if args else caller.location
 	target = this
-elif(has_dobj_str()):
-	obj = get_dobj()
-	target = caller
 else:
-	obj = caller.get_location()
-	target = caller
+	if(has_dobj_str()):
+		obj = get_dobj()
+		target = caller
+	else:
+		obj = caller.get_location()
+		target = caller
 
 current = target.get_observing()
 if(current and current is not obj):
@@ -47,4 +48,5 @@ else:
 		description		= 'A featureless expanse of gray nothingness.',
 		contents		= [],
 	)
+
 observe(target, observations)
