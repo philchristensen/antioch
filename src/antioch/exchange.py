@@ -115,7 +115,11 @@ class ObjectExchange(object):
 		"""
 		Ensure that non-UserError exceptions rollback the transaction.
 		"""
-		show_all_traces = self.ctx and self.ctx.get('show_all_traces', False).value
+		try:
+			show_all_traces = self.ctx and self.ctx.get('show_all_traces', False).value
+		except:
+			show_all_traces = False
+		
 		try:
 			if(etype is errors.TestError):
 				self.commit()
