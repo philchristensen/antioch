@@ -57,6 +57,9 @@ MULTI_WORD = re.compile(r'((\"|\').+?(?!\\).\2)|(\S+)')
 profile_command_parser = False
 
 def parse(caller, sentence):
+	"""
+	For a given user, execute a command.
+	"""
 	t = dict(time=time.time())
 	def _profile(name):
 		if(profile_command_parser):
@@ -82,6 +85,9 @@ def parse(caller, sentence):
 	_profile('execution')
 
 def get_default_parser(v):
+	"""
+	A default parser is used by Verbs to support __call__ usage
+	"""
 	x = v.get_exchange()
 	l = Lexer(v.name)
 	p = TransactionParser(l, x.get_context(), x)
