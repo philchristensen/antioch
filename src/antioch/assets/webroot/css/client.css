@@ -96,8 +96,8 @@ body {
 	height: 100%;
 	clear: both;
 	background-color: black;
-	color: white;
-	font-family: Courier, Courier New;
+	color: #d0d0d0;
+	font-family: Andale Mono, Courier, Courier New;
 	padding: 5px;
 	overflow: auto;
 }
@@ -107,9 +107,9 @@ body {
 }
 
 .issued-command {
-	color: yellow;
+	color: #f5ff88;
 }
 
 .error-response {
-	color: red;
+	color: #d36b7f;
 }
