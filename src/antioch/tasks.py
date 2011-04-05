@@ -10,6 +10,7 @@ Manage asynchronous tasks.
 
 from twisted.application import service
 from twisted.internet import defer, reactor, task
+from twisted.python import log
 
 from antioch import transact
 
@@ -51,10 +52,10 @@ class TaskService(service.Service):
 		if(self.stopped):
 			return
 		d = transact.IterateTasks.run()
-		d.addBoth(self.__check_cb)
+		d.addCallbacks(self._check_cb, self._check_eb)
 		return d
 	
-	def __check_cb(self, result):
+	def _check_cb(self, result):
 		"""
 		Adjust the check interval based on the result.
 		"""
@@ -64,3 +65,10 @@ class TaskService(service.Service):
 			self.loop.interval = self.loop.interval / 2 if result is None else self.loop.interval * 2
 			if(self.loop.interval > MAX_DELAY):
 				self.loop.interval = MAX_DELAY
+	
+	def _check_eb(self, failure):
+		"""
+		Adjust the check interval based on the result.
+		"""
+		log.err("TaskService LoopingCall failed, delayed tasks will not be run.")
+		self.loop.stop()

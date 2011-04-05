@@ -16,6 +16,9 @@ from twisted.python import log
 from twisted.internet import defer
 from twisted.protocols import amp
 
+import warnings
+warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
+
 from ampoule import child, pool, main, util
 
 from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json

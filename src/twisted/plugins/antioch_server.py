@@ -12,6 +12,9 @@ This module adds a 'antioch' server type to the twistd service list.
 
 from zope.interface import classProvides
 
+import warnings
+warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
+
 from twisted import plugin
 from twisted.python import usage
 
