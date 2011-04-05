@@ -21,7 +21,7 @@ warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
 from ampoule import child, pool, main, util
 
-from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json
+from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json, logging
 
 __processPools = {}
 default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
@@ -175,6 +175,8 @@ class TransactionChild(child.AMPChild):
 		"""
 		if not(db_url):
 			db_url = default_db_url
+		
+		logging.customizeLogs()
 		
 		t = time.time()
 		self.pool = dbapi.connect(db_url, autocommit=False)

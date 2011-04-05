@@ -64,6 +64,7 @@ def autosetup():
 			txamqp				= "0.3",
 			ampoule				= "0.1",
 			RestrictedPython	= "3.6.0",
+			termcolor			= "1.1.0",
 		).items()],
 		
 		# metadata for upload to PyPI

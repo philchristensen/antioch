@@ -16,13 +16,13 @@ import warnings
 warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
 from twisted import plugin
-from twisted.python import usage
+from twisted.python import usage, log
 
 from twisted.cred import portal, checkers, credentials
 from twisted.internet import reactor, defer
 from twisted.application import internet, service
 
-from antioch import auth, dbapi, messaging, tasks
+from antioch import auth, dbapi, messaging, tasks, logging
 
 class antiochServer(object):
 	"""
@@ -60,6 +60,8 @@ class antiochServer(object):
 		if(config['debug-sql-highlighting']):
 			dbapi.debug_syntax_highlighting = True
 		
+		reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
+
 		master_service = service.MultiService()
 		
 		msg_service = messaging.MessageService()
