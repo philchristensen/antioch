@@ -170,7 +170,10 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 		"""
 		Ask the ConnectionPool for a connection.
 		"""
-		conn = adbapi.ConnectionPool.connect(self, *args, **kwargs)
+		try:
+			conn = adbapi.ConnectionPool.connect(self, *args, **kwargs)
+		except Exception, e:
+			raise EnvironmentError("Couldn't connect to PostgreSQL server: %s" % e)
 		
 		if(self.timeout > 3600):
 			tid = self.threadID()

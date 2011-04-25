@@ -68,6 +68,7 @@ class WorldTransaction(amp.Command):
 	errors = {
 		errors.AccessError : 'ACCESS_ERROR',
 		errors.PermissionError : 'PERMISSION_ERROR',
+		EnvironmentError : 'ENVIRONMENT_ERROR',
 	}
 	
 	@classmethod
@@ -180,6 +181,7 @@ class TransactionChild(child.AMPChild):
 		
 		t = time.time()
 		self.pool = dbapi.connect(db_url, autocommit=False)
+		
 		if(profile_transactions):
 			print "[transact] db connection took %s seconds" % (time.time() - t)
 		

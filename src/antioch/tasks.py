@@ -70,5 +70,5 @@ class TaskService(service.Service):
 		"""
 		Adjust the check interval based on the result.
 		"""
-		log.err("TaskService LoopingCall failed, delayed tasks will not be run.")
+		log.msg("TaskService LoopingCall failed, delayed tasks will not be run.")
 		self.loop.stop()

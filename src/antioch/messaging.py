@@ -11,6 +11,7 @@ Enable access to the messaging server
 import pkg_resources as pkg
 
 from twisted.application import service
+from twisted.python import log
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
 
@@ -77,8 +78,11 @@ class MessageService(service.Service):
 			defer.returnValue(self.connection)
 		else:
 			# print 'connecting %s' % self
-			self.connection = yield self.factory.connectTCP(AMQP_HOST, AMQP_PORT)
-			yield self.connection.authenticate(AMQP_USER, AMQP_PASS)
+			try:
+				self.connection = yield self.factory.connectTCP(AMQP_HOST, AMQP_PORT)
+				yield self.connection.authenticate(AMQP_USER, AMQP_PASS)
+			except Exception, e:
+				raise EnvironmentError("Couldn't connect to RabbitMQ server on %s:%s, exception: %s" % (AMQP_HOST, AMQP_PORT, e))
 	
 	@defer.inlineCallbacks
 	def disconnect(self):
@@ -97,7 +101,6 @@ class MessageService(service.Service):
 		"""
 		self.channel_counter += 1
 		chan = yield self.connection.channel(self.channel_counter)
-		#print 'opened channel %s on %s' % (chan, self)
 		yield chan.channel_open()
 		defer.returnValue(chan)
 
@@ -126,6 +129,7 @@ class MessageQueue(object):
 		t = time.time()
 		
 		yield self.service.connect()
+		
 		if(profile_messages):
 			print '[messages] connect took %s seconds' % (time.time() - t)
 			t = time.time()
