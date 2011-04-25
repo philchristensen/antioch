@@ -70,5 +70,8 @@ class TaskService(service.Service):
 		"""
 		Adjust the check interval based on the result.
 		"""
-		log.msg("TaskService LoopingCall failed, delayed tasks will not be run.")
 		self.loop.stop()
+		# an EnvironmentError Exception during IterateTasks will have already printed itself
+		# if it's something else, though, make sure we print something.
+		if not(failure.check(EnvironmentError)):
+			raise EnvironmentError("delayed tasks will not be run: %s" % failure.getErrorMessage())

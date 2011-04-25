@@ -124,6 +124,9 @@ class ObjectExchange(object):
 			if(etype is errors.TestError):
 				self.commit()
 				return False
+			elif(etype is EnvironmentError):
+				self.rollback()
+				return False
 			elif(isinstance(e, errors.UserError) and not show_all_traces):
 				self.commit()
 				err = str(e)
