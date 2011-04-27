@@ -1,0 +1,11 @@
+{
+	"job-timeout":3,
+	"default-db-url":"psycopg2://antioch:moavmic7@localhost/antioch",
+	
+	"debug-sql":true,
+	"debug-sql-writes":false,
+	"debug-sql-syntax":false,
+	
+	"profile-transactions":false,
+	"profile-db":false
+}
