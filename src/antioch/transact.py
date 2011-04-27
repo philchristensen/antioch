@@ -23,7 +23,7 @@ from ampoule import child, pool, main, util
 
 from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json, logging
 
-__processPools = {}
+processPools = {}
 default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
 job_timeout = 3
 
@@ -39,14 +39,17 @@ def get_process_pool(child=None, *args):
 	if(child is None):
 		child = DefaultTransactionChild
 	
-	global __processPools
-	if(child.__name__ in __processPools):
-		return __processPools[child.__name__]
+	if(child.__name__ in processPools):
+		return processPools[child.__name__]
 	
-	starter = main.ProcessStarter(packages=("twisted", "ampoule", "antioch"))
-	__processPools[child.__name__] = pool.ProcessPool(child, name='antioch-process-pool', starter=starter, ampChildArgs=args)
+	pool = processPools[child.__name__] = pool.ProcessPool(
+		child,
+		name 	= 'antioch-process-pool',
+		starter	= main.ProcessStarter(packages=("twisted", "ampoule", "antioch")),
+		ampChildArgs = args
+	)
 	
-	return __processPools.get(child.__name__, None)
+	return pool
 
 @defer.inlineCallbacks
 def shutdown(child=None):
@@ -56,19 +59,18 @@ def shutdown(child=None):
 	if(child is None):
 		child = DefaultTransactionChild
 	
-	global __processPools
-	if(child.__name__ in __processPools):
-		yield __processPools[child.__name__].stop()
-		del __processPools[child.__name__]
+	if(child.__name__ in processPools):
+		yield processPools[child.__name__].stop()
+		del processPools[child.__name__]
 
 class WorldTransaction(amp.Command):
 	"""
 	All amp.Commands used in antioch can find their own process pool.
 	"""
 	errors = {
+		EnvironmentError : 'ENVIRONMENT_ERROR',
 		errors.AccessError : 'ACCESS_ERROR',
 		errors.PermissionError : 'PERMISSION_ERROR',
-		EnvironmentError : 'ENVIRONMENT_ERROR',
 	}
 	
 	@classmethod
