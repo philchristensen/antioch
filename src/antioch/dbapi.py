@@ -11,11 +11,14 @@ Provide access to the database
 import threading, random, sys, time, re, subprocess
 
 from twisted.enterprise import adbapi
+from twisted.python import log
 
-debug = False
-profile_debug = False
-debug_stream = sys.stderr
-debug_syntax_highlighting = False
+from antioch import conf
+
+debug_sql = conf.get('debug-sql')
+debug_sql_writes = conf.get('debug-sql-writes')
+debug_sql_syntax = conf.get('debug-sql-syntax')
+profile_debug = conf.get('profile-db')
 
 pools = {}
 async_pools = {}
@@ -52,7 +55,7 @@ def sql_debug(query, args, kwargs, runtime=0):
 	global total_query_time
 	total_query_time += runtime
 	original_query = query
-	if(debug):
+	if(debug_sql):
 		query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 6) if runtime and profile_debug else '',
 								re.sub(RE_WS, ' ', query),
 								('', '\n')[bool(args or kwargs)],
@@ -60,8 +63,8 @@ def sql_debug(query, args, kwargs, runtime=0):
 								('', repr(kwargs))[bool(kwargs)],
 							)
 		
-		global debug_syntax_highlighting
-		if(debug_syntax_highlighting):
+		global debug_sql_syntax
+		if(debug_sql_syntax):
 			command = 'source-highlight -s sql -f esc'
 			sub = subprocess.Popen(command,
 				stdin	= subprocess.PIPE,
@@ -77,16 +80,16 @@ def sql_debug(query, args, kwargs, runtime=0):
 				if(sub.returncode):
 					raise RuntimeError("syntax highlighter subprocess returned %s" % sub.returncode)
 			except:
-				debug_syntax_highlighting = False
+				debug_sql_syntax = False
 				if(error):
-					print >>debug_stream, error.strip()
+					log.err(error.strip())
 			else:
 				query = output
 	
-	if(debug is True):
-		print >>debug_stream, query
-	elif(debug and not original_query.lower().startswith('select')):
-		print >>debug_stream, query
+	if(debug_sql):
+		log.msg(query)
+	elif(debug_sql_writes and not original_query.lower().startswith('select')):
+		log.msg(query)
 
 def connect(db_urls=None, async=False, *args, **kwargs):
 	"""

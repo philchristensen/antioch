@@ -22,7 +22,7 @@ from twisted.cred import portal, checkers, credentials
 from twisted.internet import reactor, defer
 from twisted.application import internet, service
 
-from antioch import auth, dbapi, messaging, tasks, logging
+from antioch import auth, dbapi, messaging, tasks, logging, conf
 
 class antiochServer(object):
 	"""
@@ -41,25 +41,14 @@ class antiochServer(object):
 		optParameters = [
 						 ["port", "p", 8080, "Port to use for web server.", int],
 						 ["accesslog", "l", '-', "Path to access log.", str],
+						 ["conf", "f", conf.DEFAULT_CONF_PATH, "Path to configuration file, if any.", str],
 						]
-		optFlags = [
-					['debug-sql', 'd', 'Debug database queries.'],
-					['debug-sql-writes', 'w', 'Debug database writes only.'],
-					['debug-sql-highlighting', 'H', 'Enable SQL syntax highlighting in debug.'],
-					]
 	
 	@classmethod
 	def makeService(cls, config):
 		"""
 		Setup the necessary network services for the application server.
 		"""
-		if(config['debug-sql']):
-			dbapi.debug = True
-		if(config['debug-sql-writes']):
-			dbapi.debug = 1
-		if(config['debug-sql-highlighting']):
-			dbapi.debug_syntax_highlighting = True
-		
 		reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
 
 		master_service = service.MultiService()

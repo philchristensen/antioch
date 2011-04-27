@@ -21,13 +21,14 @@ warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
 from ampoule import child, pool, main, util
 
-from antioch import dbapi, exchange, errors, parser, messaging, sql, code, modules, json, logging
+from antioch import dbapi, exchange, errors, parser, conf
+from antioch import messaging, sql, code, modules, json, logging
 
 processPools = {}
-default_db_url = 'psycopg2://antioch:moavmic7@localhost/antioch'
-job_timeout = 3
+default_db_url = conf.get('default-db-url')
+job_timeout = conf.get('job-timeout')
 
-profile_transactions = False
+profile_transactions = conf.get('profile-transactions')
 
 def get_process_pool(child=None, *args):
 	"""
@@ -42,7 +43,7 @@ def get_process_pool(child=None, *args):
 	if(child.__name__ in processPools):
 		return processPools[child.__name__]
 	
-	pool = processPools[child.__name__] = pool.ProcessPool(
+	p = processPools[child.__name__] = pool.ProcessPool(
 		child,
 		name 			= 'antioch-process-pool',
 		starter			= main.ProcessStarter(
@@ -50,8 +51,7 @@ def get_process_pool(child=None, *args):
 		),
 		ampChildArgs	= args
 	)
-	
-	return pool
+	return p
 
 @defer.inlineCallbacks
 def shutdown(child=None):
