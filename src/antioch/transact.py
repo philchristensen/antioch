@@ -44,9 +44,11 @@ def get_process_pool(child=None, *args):
 	
 	pool = processPools[child.__name__] = pool.ProcessPool(
 		child,
-		name 	= 'antioch-process-pool',
-		starter	= main.ProcessStarter(packages=("twisted", "ampoule", "antioch")),
-		ampChildArgs = args
+		name 			= 'antioch-process-pool',
+		starter			= main.ProcessStarter(
+			packages		= ("twisted", "ampoule", "antioch")
+		),
+		ampChildArgs	= args
 	)
 	
 	return pool
