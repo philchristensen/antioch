@@ -17,7 +17,7 @@ from twisted.internet.protocol import ClientCreator
 
 import time
 
-from txamqp import spec, protocol, content
+from txamqp import spec, protocol, content, client
 from txamqp.client import TwistedDelegate
 
 from antioch import assets, json, parser
@@ -31,8 +31,10 @@ class MessageService(service.Service):
 		"""
 		Create a service with the given connection.
 		"""
-		self.profile = profile
 		self.url = parser.URL(queue_url)
+		if(url['scheme'] != 'rabbitmq'):
+			raise RuntimeError("Unsupported scheme %r" % url['scheme'])
+		
 		self.factory = ClientCreator(reactor, protocol.AMQClient,
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
@@ -40,6 +42,7 @@ class MessageService(service.Service):
 				pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
 			),
 		)
+		self.profile = profile
 		self.connection = None
 		self.channel_counter = 0
 	
