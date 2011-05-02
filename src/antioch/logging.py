@@ -4,7 +4,7 @@ import termcolor
 
 from twisted.python import log
 
-child_msg = re.compile(r'^FROM (?P<child_id>\d+): (.*?) \[-\] (?P<msg>.*?)$')
+child_msg = re.compile(r'^FROM (?P<child_id>\d+)(:.*?)(?P<msg>\[(.*?)\] .*?)$')
 
 def customizeLogs():
 	log.originalTextFromEventDict = log.textFromEventDict
@@ -16,11 +16,16 @@ def colorizeChild(child_id, msg):
 
 def textFromEventDict(e):
 	try:
-		if(e['message']):
+		msg = e['message']
+		if(msg):
 			match = child_msg.match(e['message'][0])
-			if(match):
-				child_id = int(match.group('child_id'))
-				e['message'] = colorizeChild(child_id, str(child_id) + ': ' + match.group('msg')),
+			if not(match):
+				return log.originalTextFromEventDict(e)
+			child_id = int(match.group('child_id'))
+			msg = match.group('msg')
+			if(msg.startswith('[-] ')):
+				msg = msg[4:]
+			e['message'] = colorizeChild(child_id, str(child_id) + ': ' + msg),
 		return log.originalTextFromEventDict(e)
 	except Exception, e:
 		import traceback

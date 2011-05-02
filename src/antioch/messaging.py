@@ -131,13 +131,13 @@ class MessageQueue(object):
 		yield self.service.connect()
 		
 		if(self.profile):
-			log.info('connect took %s seconds' % (time.time() - t))
+			log.msg('connect took %s seconds' % (time.time() - t))
 			t = time.time()
 		
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
 		if(self.profile):
-			print '[messages] channel open took %s seconds' % (time.time() - t)
+			log.msg('channel open took %s seconds' % (time.time() - t))
 			t = time.time()
 		# yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
 		while(self.queue):
@@ -148,7 +148,7 @@ class MessageQueue(object):
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
 		if(self.profile):
-			print '[messages] purging queue took %s seconds' % (time.time() - t)
+			log.msg('purging queue took %s seconds' % (time.time() - t))
 			t = time.time()
 	
 	
