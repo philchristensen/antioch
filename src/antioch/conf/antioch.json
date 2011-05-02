@@ -7,11 +7,11 @@
 
 	"psql-path":"psql",
 
-	"debug-sql":false,
+	"debug-sql":true,
 	"debug-sql-writes":false,
 	"debug-sql-syntax":false,
 	
 	"profile-transactions":false,
 	"profile-queue":false,
-	"profile-db":false
+	"profile-db":true
 }

@@ -51,7 +51,7 @@ from twisted.cred import portal, checkers, credentials
 
 from nevow import inevow, rend
 
-from antioch import auth, dbapi, transact, sql
+from antioch import auth, dbapi, transact, sql, conf
 
 COOKIE_KEY = 'sid'
 CLEANUP_CHANCE = 100
@@ -328,12 +328,18 @@ class TransactionUserSessionStore(object):
 	
 	implements(IUserSessionStore)
 	
-	def __init__(self, checker):
+	def __init__(self, checker, db_url):
 		"""
 		Create the in-memory session store.
 		"""
 		self.checker = checker
-		self.pool = dbapi.connect(transact.default_db_url, async=True)
+		self.pool = dbapi.connect(db_url, **dict(
+			async			= True,
+			debug			= conf.get('debug-sql'),
+			debug_writes	= conf.get('debug-sql-writes'),
+			debug_syntax	= conf.get('debug-sql-syntax'),
+			profile			= conf.get('profile-db'),
+		))
 	
 	@inlineCallbacks
 	def loadUser(self, avatarId):

@@ -76,7 +76,7 @@ class antiochServer(object):
 		from nevow import guard, appserver
 		from antioch import client, session
 		
-		pool = session.TransactionUserSessionStore(checker)
+		pool = session.TransactionUserSessionStore(checker, conf.get('db-url-default'))
 		
 		web_portal = portal.Portal(session.SessionRealm(pool))
 		web_portal.registerChecker(session.SessionChecker(pool))

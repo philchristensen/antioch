@@ -70,24 +70,23 @@ PHRASE = re.compile(PHRASE_SRC)
 POBJ_TEST = re.compile(PREP_SRC + "\s" + PHRASE_SRC)
 MULTI_WORD = re.compile(r'((\"|\').+?(?!\\).\2)|(\S+)')
 
-profile_command_parser = False
-
-def parse(caller, sentence):
+def parse(caller, sentence, debug=False):
 	"""
 	For a given user, execute a command.
 	"""
+	db = caller.get_exchange().pool
+
 	t = dict(time=time.time())
 	def _profile(name):
-		if(profile_command_parser):
+		if(debug):
 			query_seconds = dbapi.get_total_query_time()
-			print "[parser] %s took %4f seconds, %4f query seconds" % (
+			log.msg("%s took %4f seconds, %4f query seconds" % (
 				name, time.time() - t['time'], query_seconds
-			)
-			dbapi.reset_total_query_time()
+			))
+			db.reset_total_query_time()
 			t['time'] = time.time()
 	
-	
-	dbapi.reset_total_query_time()
+	db.reset_total_query_time()
 	l = Lexer(sentence)
 	_profile('lexer')
 	

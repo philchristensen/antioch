@@ -181,7 +181,13 @@ class TransactionChild(child.AMPChild):
 		logging.customizeLogs()
 		
 		t = time.time()
-		self.pool = dbapi.connect(db_url, autocommit=False)
+		self.pool = dbapi.connect(db_url, **dict(
+			autocommit		= False,
+			debug			= conf.get('debug-sql'),
+			debug_writes	= conf.get('debug-sql-writes'),
+			debug_syntax	= conf.get('debug-sql-syntax'),
+			profile			= conf.get('profile-db'),
+		))
 		
 		if(profile_transactions):
 			print "[transact] db connection took %s seconds" % (time.time() - t)

@@ -15,76 +15,13 @@ from twisted.python import log
 
 from antioch import conf
 
-debug_sql = conf.get('debug-sql')
-debug_sql_writes = conf.get('debug-sql-writes')
-debug_sql_syntax = conf.get('debug-sql-syntax')
-profile_debug = conf.get('profile-db')
-
 pools = {}
 async_pools = {}
 pools_lock = threading.BoundedSemaphore()
 
 RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
 
-total_query_time = 0
-
-def get_total_query_time():
-	"""
-	Profiler: Return total query time since last reset.
-	"""
-	return total_query_time
-
-def reset_total_query_time():
-	"""
-	Profiler: Reset total query time.
-	"""
-	global total_query_time
-	total_query_time = 0
-
-def sql_debug(query, args, kwargs, runtime=0):
-	"""
-	Debug: Print the current SQL query, optionally highlighted.
-	"""
-	global total_query_time
-	total_query_time += runtime
-	original_query = query
-	if(debug_sql):
-		query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 6) if runtime and profile_debug else '',
-								re.sub(RE_WS, ' ', query),
-								('', '\n')[bool(args or kwargs)],
-								('', repr(args))[bool(args)],
-								('', repr(kwargs))[bool(kwargs)],
-							)
-		
-		global debug_sql_syntax
-		if(debug_sql_syntax):
-			command = 'source-highlight -s sql -f esc'
-			sub = subprocess.Popen(command,
-				stdin	= subprocess.PIPE,
-				stdout	= subprocess.PIPE,
-				stderr	= subprocess.PIPE,
-				shell	= True,
-				universal_newlines = True
-			)
-			
-			error = ''
-			try:
-				output, error = sub.communicate(input=query)
-				if(sub.returncode):
-					raise RuntimeError("syntax highlighter subprocess returned %s" % sub.returncode)
-			except:
-				debug_sql_syntax = False
-				if(error):
-					log.err(error.strip())
-			else:
-				query = output
-	
-	if(debug_sql):
-		log.msg(query)
-	elif(debug_sql_writes and not original_query.lower().startswith('select')):
-		log.msg(query)
-
-def connect(db_urls=None, async=False, *args, **kwargs):
+def connect(db_urls=None, *args, **kwargs):
 	"""
 	Get a new connection pool for a particular db_url.
 	
@@ -118,6 +55,7 @@ def connect(db_urls=None, async=False, *args, **kwargs):
 		
 		args += ('host=%s dbname=%s user=%s password=%s' % (dsn['host'], dsn['path'][1:], dsn['user'], dsn['passwd']),)
 		
+		async = kwargs.pop('async', False)
 		kwargs.update(dict(
 			cp_reconnect	= True,
 			cp_noisy		= False,
@@ -158,9 +96,14 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 	This ConnectionPool will automatically expire connections according to a timeout value.
 	"""
 	def __init__(self, *args, **kwargs):
-		self.timeout = kwargs.pop('timeout', 21600)
-		self.conn_lasttime = {}
 		self.autocommit = kwargs.pop('autocommit', True)
+		self.timeout = kwargs.pop('timeout', 21600)
+		self.debug = kwargs.pop('debug', False)
+		self.debug_writes = kwargs.pop('debug_writes', False)
+		self.debug_syntax = kwargs.pop('debug_syntax', False)
+		self.profile = kwargs.pop('profile', False)
+		self.total_query_time = 0
+		self.conn_lasttime = {}
 		adbapi.ConnectionPool.__init__(self, *args, **kwargs)
 	
 	def connect(self, *args, **kwargs):
@@ -193,7 +136,7 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 		"""
 		t = time.time()
 		result = adbapi.ConnectionPool.runOperation(self, query, *args, **kwargs)
-		sql_debug(query, args, kwargs, time.time() - t)
+		self.debug_query(query, args, kwargs, time.time() - t)
 		return result
 	
 	def runQuery(self, query, *args, **kwargs):
@@ -202,7 +145,7 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 		"""
 		t = time.time()
 		result = adbapi.ConnectionPool.runQuery(self, query, *args, **kwargs)
-		sql_debug(query, args, kwargs, time.time() - t)
+		self.debug_query(query, args, kwargs, time.time() - t)
 		return result
 	
 	def _runInteraction(self, interaction, *args, **kw):
@@ -227,6 +170,60 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 			if(self.autocommit):
 				conn.rollback()
 			raise
+	
+	def get_total_query_time(self):
+		"""
+		Profiler: Return total query time since last reset.
+		"""
+		return self.total_query_time
+
+	def reset_total_query_time(self):
+		"""
+		Profiler: Reset total query time.
+		"""
+		self.total_query_time = 0
+
+	def debug_query(self, query, args, kwargs, runtime=0):
+		"""
+		Debug: Print the current SQL query, optionally highlighted.
+		"""
+		self.total_query_time += runtime
+		original_query = query
+		if(self.debug or self.debug_writes):
+			query = '%s%s%s%s%s' % ('%s : ' % round(runtime, 6) if runtime and self.profile else '',
+									re.sub(RE_WS, ' ', query),
+									('', '\n')[bool(args or kwargs)],
+									('', repr(args))[bool(args)],
+									('', repr(kwargs))[bool(kwargs)],
+								)
+			
+			if(self.debug_syntax):
+				command = 'source-highlight -s sql -f esc'
+				sub = subprocess.Popen(command,
+					stdin	= subprocess.PIPE,
+					stdout	= subprocess.PIPE,
+					stderr	= subprocess.PIPE,
+					shell	= True,
+					universal_newlines = True
+				)
+				
+				error = ''
+				try:
+					output, error = sub.communicate(input=query)
+					if(sub.returncode):
+						raise RuntimeError("syntax highlighter subprocess returned %s" % sub.returncode)
+				except:
+					self.debug_syntax = False
+					if(error):
+						log.msg(error.strip())
+				else:
+					query = output
+		
+		if(self.debug):
+			log.msg(query)
+		elif(self.debug_writes and not original_query.lower().startswith('select')):
+			log.msg(query)
+
 
 
 class ReplicatedConnectionPool(object):
@@ -280,7 +277,7 @@ class ReplicatedConnectionPool(object):
 				if(pool == self.master):
 					raise e
 				else:
-					print >>sys.stderr, "Expired slave %s during operation because of %s" % (pool.connkw['host'], str(e))
+					log.info("Expired slave %s during operation because of %s" % (pool.connkw['host'], str(e)))
 					try:
 						self.slaves.remove(pool)
 						pool.close()
@@ -303,7 +300,7 @@ class ReplicatedConnectionPool(object):
 				if(pool == self.master):
 					raise e
 				else:
-					print >>sys.stderr, "Expired slave %s during query because of %s" % (pool.connkw['host'], str(e))
+					log.info("Expired slave %s during query because of %s" % (pool.connkw['host'], str(e)))
 					try:
 						self.slaves.remove(pool)
 						pool.close()

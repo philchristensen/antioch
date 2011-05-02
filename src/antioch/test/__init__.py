@@ -29,7 +29,13 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 	schema_path = assets.get('bootstraps/schema.sql')
 	bootstrap.load_schema(psql_path, db_url, schema_path)
 	
-	pool[dbid] = dbapi.connect(db_url, autocommit=autocommit)
+	pool[dbid] = dbapi.connect(db_url, **dict(
+		autocommit		= autocommit,
+		debug			= conf.get('debug-sql'),
+		debug_writes	= conf.get('debug-sql-writes'),
+		debug_syntax	= conf.get('debug-sql-syntax'),
+		profile			= conf.get('profile-db'),
+	))
 	bootstrap_path = assets.get('bootstraps/%s.py' % dataset)
 	bootstrap.load_python(pool[dbid], bootstrap_path)
 
