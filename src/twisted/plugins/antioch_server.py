@@ -12,9 +12,6 @@ This module adds a 'antioch' server type to the twistd service list.
 
 from zope.interface import classProvides
 
-import warnings
-warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
-
 from twisted import plugin
 from twisted.python import usage, log
 
@@ -53,7 +50,7 @@ class antiochServer(object):
 
 		master_service = service.MultiService()
 		
-		msg_service = messaging.MessageService()
+		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
 		

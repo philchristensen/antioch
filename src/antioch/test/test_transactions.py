@@ -6,7 +6,7 @@
 from twisted.trial import unittest
 from twisted.internet import defer, error
 
-from antioch import test, errors, exchange, dbapi, parser, transact, model, code
+from antioch import test, errors, exchange, dbapi, parser, transact, model, code, conf
 
 class TransactionTestCase(unittest.TestCase):
 	def setUp(self):
@@ -31,7 +31,7 @@ class TransactionTestCase(unittest.TestCase):
 			raise unittest.SkipTest("Code timeout disabled.")
 
 		user_id = 2 # Wizard ID
-		d = transact.Parse.run(db_url=test.get_test_db_url(), user_id=user_id, sentence='@exec while(True): pass')
+		d = transact.Parse.run(db_url=conf.get('db-url-test'), user_id=user_id, sentence='@exec while(True): pass')
 		self.assertFailure(d, error.ProcessTerminated)
 		return d
 	

@@ -12,24 +12,7 @@ from __future__ import with_statement
 
 import traceback, subprocess
 
-from antioch import exchange, dbapi, assets
-
-def get_dsn(db_url):
-	"""
-	Convert the provided db_url to a dictionary.
-	
-	@param db_url: the database connection string
-	@type db_url: str
-	
-	@return: a dictionary of URL parts
-	@rtype: dict
-	"""
-	match = dbapi.URL_RE.match(db_url)
-	if not(match):
-		raise ValueError("Invalid db URL: %s" % db_url)
-	dsn = match.groupdict()
-	dsn['db'] = dsn['db'][1:]
-	return dsn
+from antioch import exchange, dbapi, assets, parser
 
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	"""
@@ -47,7 +30,7 @@ def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	@param quiet: if True, suppress stdout and stderr messages
 	@type quiet: bool (default: True)
 	"""
-	dsn = get_dsn(db_url)
+	dsn = parser.URL(db_url)
 	
 	kwargs = {}
 	if(quiet):
@@ -64,14 +47,14 @@ def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
-		'-c', 'DROP DATABASE %(db)s;' % dsn,
+		'-c', 'DROP DATABASE %s;' % dsn['path'][1:],
 	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 	
 	subprocess.Popen([psql_path,
 		'-h', dsn.get('host') or 'localhost',
 		'-p', dsn.get('port') or '5432',
 		'-U', 'postgres',
-		'-c', 'CREATE DATABASE %(db)s WITH OWNER %(user)s;' % dsn,
+		'-c', 'CREATE DATABASE %s WITH OWNER %s;' % (dsn['path'][1:], dsn['user']),
 	] + list(psql_args), stdout=subprocess.PIPE, **kwargs).wait()
 
 def load_schema(psql_path, db_url, schema_path):
@@ -87,14 +70,14 @@ def load_schema(psql_path, db_url, schema_path):
 	@param schema_path: path to the database schema to load
 	@type schema_path: str
 	"""
-	dsn = get_dsn(db_url)
+	dsn = parser.URL(db_url)
 	
 	cmd = [psql_path,
 		'-f', schema_path,
 		'-h', dsn['host'],
 		'-p', dsn.get('port') or '5432',
 		'-U', dsn['user'],
-		dsn['db'],
+		dsn['path'][1:],
 	]
 	
 	child = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)

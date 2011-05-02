@@ -24,13 +24,6 @@ pools = {}
 async_pools = {}
 pools_lock = threading.BoundedSemaphore()
 
-URL_REGEXP = r'(?P<dbapiName>[+a-z0-9]+)\:(\/\/)?'
-URL_REGEXP += r'((?P<user>\w+?)(\:(?P<passwd>\w+?))?\@)?'
-URL_REGEXP += r'(?P<host>[\._\-a-z0-9]+)(\:(?P<port>\d+))?'
-URL_REGEXP += r'(?P<db>/[^\s;?#]*)(;(?P<params>[^\s?#]*))?'
-URL_REGEXP += r'(\?(?P<query>[^\s#]*))?(\#(?P<fragment>[^\s]*))?'
-URL_RE = re.compile(URL_REGEXP, re.IGNORECASE)
-
 RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
 
 total_query_time = 0
@@ -113,16 +106,17 @@ def connect(db_urls=None, async=False, *args, **kwargs):
 	if not(isinstance(db_urls, tuple)):
 		db_urls = (db_urls,)
 	
+	from antioch import parser
+
 	replicated_pool = None
 	for db_url in db_urls:
-		match = URL_RE.match(db_url)
-		dsn = match.groupdict()
+		dsn = parser.URL(db_url)
 		
 		for key in dsn.keys():
 			if(dsn[key] is None):
 				del dsn[key]
 		
-		args += ('host=%s dbname=%s user=%s password=%s' % (dsn['host'], dsn['db'][1:], dsn['user'], dsn['passwd']),)
+		args += ('host=%s dbname=%s user=%s password=%s' % (dsn['host'], dsn['path'][1:], dsn['user'], dsn['passwd']),)
 		
 		kwargs.update(dict(
 			cp_reconnect	= True,
@@ -143,9 +137,9 @@ def connect(db_urls=None, async=False, *args, **kwargs):
 				pool = selected_pools[db_url]
 			else:
 				if(async):
-					pool = TimeoutConnectionPool(dsn['dbapiName'], *args, **kwargs)
+					pool = TimeoutConnectionPool(dsn['scheme'], *args, **kwargs)
 				else:
-					pool = SynchronousConnectionPool(dsn['dbapiName'], *args, **kwargs)
+					pool = SynchronousConnectionPool(dsn['scheme'], *args, **kwargs)
 				selected_pools[db_url] = pool
 		finally:
 			pools_lock.release()

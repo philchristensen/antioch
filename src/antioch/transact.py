@@ -16,16 +16,13 @@ from twisted.python import log
 from twisted.internet import defer
 from twisted.protocols import amp
 
-import warnings
-warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
-
 from ampoule import child, pool, main, util
 
 from antioch import dbapi, exchange, errors, parser, conf
 from antioch import messaging, sql, code, modules, json, logging
 
 processPools = {}
-default_db_url = conf.get('default-db-url')
+default_db_url = conf.get('db-url-default')
 job_timeout = conf.get('job-timeout')
 
 profile_transactions = conf.get('profile-transactions')
@@ -179,7 +176,7 @@ class TransactionChild(child.AMPChild):
 		Optionally supply db_url to specify the database to connect to.
 		"""
 		if not(db_url):
-			db_url = default_db_url
+			db_url = conf.get('db-url-default')
 		
 		logging.customizeLogs()
 		
@@ -189,7 +186,7 @@ class TransactionChild(child.AMPChild):
 		if(profile_transactions):
 			print "[transact] db connection took %s seconds" % (time.time() - t)
 		
-		self.msg_service = messaging.MessageService()
+		self.msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 	
 	def get_exchange(self, ctx=None):
 		"""

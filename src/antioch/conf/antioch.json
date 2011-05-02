@@ -1,11 +1,17 @@
 {
 	"job-timeout":3,
-	"default-db-url":"psycopg2://antioch:moavmic7@localhost/antioch",
+	"db-url-default":"psycopg2://antioch:moavmic7@localhost/antioch",
+	"db-url-test":"psycopg2://antioch:moavmic7@localhost/antioch_test",
 	
-	"debug-sql":true,
+	"queue-url":"rabbitmq://guest:guest@localhost:5672/",
+
+	"psql-path":"psql",
+
+	"debug-sql":false,
 	"debug-sql-writes":false,
 	"debug-sql-syntax":false,
 	
 	"profile-transactions":false,
+	"profile-queue":false,
 	"profile-db":false
 }

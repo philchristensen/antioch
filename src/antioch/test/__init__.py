@@ -7,18 +7,11 @@
 Provide testing for the codebase
 """
 
-from antioch import bootstrap, dbapi, assets, transact
+from antioch import bootstrap, dbapi, assets, transact, conf
 
-psql_path = 'psql'
+psql_path = conf.get('psql-path')
 
 pool = {}
-
-#dbapi.debug = True
-
-def get_test_db_url():
-	url = transact.default_db_url.split('/')
-	url[-1] = 'antioch_test'
-	return '/'.join(url)
 
 def init_database(dbid, dataset='minimal', autocommit=False):
 	global pool
@@ -29,7 +22,7 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 	elif(dbid in pool):
 		return pool[dbid]
 	
-	db_url = get_test_db_url()
+	db_url = conf.get('db-url-test')
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	

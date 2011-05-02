@@ -20,6 +20,22 @@ import sys, time, re, string, types
 from antioch.errors import *
 from antioch import exchange, dbapi, model, errors
 
+URL_REGEXP = r'(?P<scheme>[+a-z0-9]+)\:(\/\/)?'
+URL_REGEXP += r'((?P<user>\w+?)(\:(?P<passwd>\w+?))?\@)?'
+URL_REGEXP += r'(?P<host>[\._\-a-z0-9]+)(\:(?P<port>\d+))?'
+URL_REGEXP += r'(?P<path>/[^\s;?#]*)(;(?P<params>[^\s?#]*))?'
+URL_REGEXP += r'(\?(?P<query>[^\s#]*))?(\#(?P<fragment>[^\s]*))?'
+URL_RE = re.compile(URL_REGEXP, re.IGNORECASE)
+
+class URL(dict):
+	def __init__(self, source):
+		match = URL_RE.match(source)
+		self.update(match.groupdict())
+		self.source = str(source)
+	
+	def __str__(self):
+		return self.source
+
 #Here are all our supported prepositions
 preps = [['with', 'using'],
 		['at', 'to'],

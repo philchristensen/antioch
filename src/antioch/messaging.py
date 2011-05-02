@@ -20,27 +20,26 @@ import time
 from txamqp import spec, protocol, content
 from txamqp.client import TwistedDelegate
 
-from antioch import assets, json
-
-profile_messages = False
-
-AMQP_HOST = 'localhost'
-AMQP_PORT = 5672
-AMQP_VHOST = '/'
-AMQP_USER = 'guest'
-AMQP_PASS = 'guest'
+from antioch import assets, json, parser
 
 class MessageService(service.Service):
 	"""
 	Provides a service that holds a reference to the active
 	AMQP connection.
 	"""
-	def __init__(self):
+	def __init__(self, queue_url, profile=False):
 		"""
 		Create a service with the given connection.
 		"""
-		s = spec.loadString(pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml')
-		self.factory = ClientCreator(reactor, protocol.AMQClient, delegate=TwistedDelegate(), vhost=AMQP_VHOST, spec=s)
+		self.profile = profile
+		self.url = parser.URL(queue_url)
+		self.factory = ClientCreator(reactor, protocol.AMQClient,
+			delegate = TwistedDelegate(),
+			vhost	 = self.url['path'],
+			spec	 = spec.loadString(
+				pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
+			),
+		)
 		self.connection = None
 		self.channel_counter = 0
 	
@@ -48,7 +47,7 @@ class MessageService(service.Service):
 		"""
 		Get a queue object that stores up messages until committed.
 		"""
-		return MessageQueue(self)
+		return MessageQueue(self, self.profile)
 	
 	@defer.inlineCallbacks
 	def setup_client_channel(self, user_id):
@@ -79,10 +78,10 @@ class MessageService(service.Service):
 		else:
 			# print 'connecting %s' % self
 			try:
-				self.connection = yield self.factory.connectTCP(AMQP_HOST, AMQP_PORT)
-				yield self.connection.authenticate(AMQP_USER, AMQP_PASS)
+				self.connection = yield self.factory.connectTCP(self.url['host'], int(self.url['port']))
+				yield self.connection.authenticate(self.url['user'], self.url['passwd'])
 			except Exception, e:
-				raise EnvironmentError("Couldn't connect to RabbitMQ server on %s:%s, exception: %s" % (AMQP_HOST, AMQP_PORT, e))
+				raise EnvironmentError("Couldn't connect to RabbitMQ server on %s, exception: %s" % (self.url, e))
 	
 	@defer.inlineCallbacks
 	def disconnect(self):
@@ -108,10 +107,11 @@ class MessageQueue(object):
 	"""
 	Encapsulate and queue messages during a database transaction.
 	"""
-	def __init__(self, service):
+	def __init__(self, service, profile=False):
 		"""
 		Create a new queue for the provided service.
 		"""
+		self.profile = profile
 		self.service = service
 		self.queue = []
 	
@@ -130,13 +130,13 @@ class MessageQueue(object):
 		
 		yield self.service.connect()
 		
-		if(profile_messages):
-			print '[messages] connect took %s seconds' % (time.time() - t)
+		if(self.profile):
+			log.info('connect took %s seconds' % (time.time() - t))
 			t = time.time()
 		
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
-		if(profile_messages):
+		if(self.profile):
 			print '[messages] channel open took %s seconds' % (time.time() - t)
 			t = time.time()
 		# yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
@@ -147,7 +147,7 @@ class MessageQueue(object):
 			c = content.Content(data, properties={'content type':'application/json'})
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 		yield chan.channel_close()
-		if(profile_messages):
+		if(self.profile):
 			print '[messages] purging queue took %s seconds' % (time.time() - t)
 			t = time.time()
 	

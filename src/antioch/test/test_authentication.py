@@ -7,12 +7,12 @@ from twisted.trial import unittest
 from twisted.internet import defer
 from twisted.cred import credentials, error
 
-from antioch import exchange, test, auth, transact, errors
+from antioch import exchange, test, auth, transact, errors, conf
 
 class AuthenticationTestCase(unittest.TestCase):
 	def setUp(self):
 		self.pool = test.init_database(self.__class__)
-		self.test_db_url = test.get_test_db_url()
+		self.test_db_url = conf.get('db-url-test')
 	
 	@defer.inlineCallbacks
 	def tearDown(self):
