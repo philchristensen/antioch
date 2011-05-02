@@ -20,6 +20,9 @@ import time
 from txamqp import spec, protocol, content, client
 from txamqp.client import TwistedDelegate
 
+from txamqp.client import Closed as ClientClosed
+from txamqp.queue import Closed as QueueClosed
+
 from antioch import assets, json, parser
 
 class MessageService(service.Service):
@@ -32,8 +35,8 @@ class MessageService(service.Service):
 		Create a service with the given connection.
 		"""
 		self.url = parser.URL(queue_url)
-		if(url['scheme'] != 'rabbitmq'):
-			raise RuntimeError("Unsupported scheme %r" % url['scheme'])
+		if(self.url['scheme'] != 'rabbitmq'):
+			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
 		
 		self.factory = ClientCreator(reactor, protocol.AMQClient,
 			delegate = TwistedDelegate(),
@@ -46,11 +49,12 @@ class MessageService(service.Service):
 		self.connection = None
 		self.channel_counter = 0
 	
-	def get_queue(self):
+	def get_queue(self, user_id):
 		"""
 		Get a queue object that stores up messages until committed.
 		"""
-		return MessageQueue(self, self.profile)
+		q = MessageQueue(self, user_id, self.profile)
+		return q
 	
 	@defer.inlineCallbacks
 	def setup_client_channel(self, user_id):
@@ -110,22 +114,45 @@ class MessageQueue(object):
 	"""
 	Encapsulate and queue messages during a database transaction.
 	"""
-	def __init__(self, service, profile=False):
+	def __init__(self, service, user_id, profile=False):
 		"""
 		Create a new queue for the provided service.
 		"""
 		self.profile = profile
 		self.service = service
-		self.queue = []
+		self.user_id = user_id
+		self.messages = []
 	
-	def send(self, user_id, msg):
+	@defer.inlineCallbacks
+	def start(self):
+		self.chan = yield self.service.setup_client_channel(self.user_id)
+		self.queue = yield self.service.connection.queue("user-%s-consumer" % self.user_id)
+	
+	@defer.inlineCallbacks
+	def stop(self):
+		try:
+			yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
+			yield self.chan.channel_close()
+		except ClientClosed, e:
+			pass
+	
+	def push(self, user_id, msg):
 		"""
 		Send a message to a certain user.
 		"""
-		self.queue.append((user_id, msg))
+		self.messages.append((user_id, msg))
 	
 	@defer.inlineCallbacks
-	def commit(self):
+	def pop(self):
+		try:
+			msg = yield self.queue.get()
+			data = json.loads(msg.content.body.decode('utf8'))
+			defer.returnValue(data)
+		except QueueClosed, e:
+			defer.returnValue(None)
+	
+	@defer.inlineCallbacks
+	def flush(self):
 		"""
 		Send all queued messages and close the channel.
 		"""
@@ -143,13 +170,18 @@ class MessageQueue(object):
 			log.msg('channel open took %s seconds' % (time.time() - t))
 			t = time.time()
 		# yield chan.exchange_declare(exchange=exchange, type="direct", durable=False, auto_delete=True)
-		while(self.queue):
-			user_id, msg = self.queue.pop(0)
+		while(self.messages):
+			user_id, msg = self.messages.pop(0)
 			routing_key = 'user-%s' % user_id
 			data = json.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
-		yield chan.channel_close()
+		
+		try:
+			yield chan.channel_close()
+		except ClientClosed, e:
+			pass
+		
 		if(self.profile):
 			log.msg('purging queue took %s seconds' % (time.time() - t))
 			t = time.time()

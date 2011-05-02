@@ -132,7 +132,7 @@ class ObjectExchange(object):
 				err = str(e)
 				log.err('Sending normal exception to user: %s' % err)
 				if(self.queue):
-					self.queue.send(self.ctx.get_id(), dict(
+					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= err,
 						is_error	= True,
@@ -148,7 +148,7 @@ class ObjectExchange(object):
 				traceback.print_exception(etype, e, trace, None, io)
 				log.err('Sending fatal exception to user: %s' % str(e))
 				if(self.queue):
-					self.queue.send(self.ctx.get_id(), dict(
+					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= io.getvalue(),
 						is_error	= True,
@@ -157,7 +157,7 @@ class ObjectExchange(object):
 			else:
 				self.commit()
 		finally:
-			d = self.dequeue()
+			d = self.flush()
 			d.addErrback(log.err)
 	
 	def get_context(self):
@@ -328,17 +328,14 @@ class ObjectExchange(object):
 		return perm
 	
 	@defer.inlineCallbacks
-	def dequeue(self):
+	def flush(self):
 		"""
 		Clear and save the cache, and send all pending messages.
 		"""
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
-			try:
-				yield self.queue.commit()
-			except Closed, e:
-				pass
+			yield self.queue.flush()
 	
 	def load(self, obj_type, obj_id):
 		"""

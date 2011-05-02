@@ -13,7 +13,7 @@ class ParserTestCase(unittest.TestCase):
 		self.exchange = exchange.ObjectExchange(self.pool)
 	
 	def tearDown(self):
-		return self.exchange.dequeue()
+		return self.exchange.flush()
 	
 	def test_parse_verb(self):
 		wizard = self.exchange.get_object('wizard')

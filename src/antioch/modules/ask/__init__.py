@@ -17,7 +17,7 @@ def ask(p, question, callback, *args, **kwargs):
 	details = dict(
 		question	= question,
 	)
-	p.exchange.queue.send(p.caller.get_id(), dict(
+	p.exchange.queue.push(p.caller.get_id(), dict(
 		plugin		= 'ask',
 		details		= details,
 		origin_id	= callback.get_origin().get_id(),

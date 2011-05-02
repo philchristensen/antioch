@@ -15,7 +15,7 @@ from twisted import plugin
 from antioch import modules
 
 def edit(p, item):
-	p.exchange.queue.send(p.caller.get_id(), dict(
+	p.exchange.queue.push(p.caller.get_id(), dict(
 		plugin		= 'editor',
 		details		= item.get_details(),
 	))
@@ -35,7 +35,7 @@ def access(p, item):
 		) for rule in acl]
 	)
 	
-	p.exchange.queue.send(p.caller.get_id(), dict(
+	p.exchange.queue.push(p.caller.get_id(), dict(
 		plugin			= 'access',
 		details			= details,
 	))

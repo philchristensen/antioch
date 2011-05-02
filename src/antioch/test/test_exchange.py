@@ -210,14 +210,14 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		def runOperation(q, *a, **kw):
 			self.failUnlessEqual(q, queries.pop())
 		
-		self.queue_committed = False
-		def commit():
-			self.queue_committed = True
+		self.queue_flushed = False
+		def flush():
+			self.queue_flushed = True
 		
 		pool = test.Anything(
 			runOperation	= runOperation,
 		)
-		queue = test.Anything(commit=commit)
+		queue = test.Anything(flush=flush)
 		ctx = test.Anything()
 		ex = exchange.ObjectExchange(pool, queue, ctx)
 		for index in range(1, 6):
@@ -225,9 +225,9 @@ class ObjectExchangeTestCase(unittest.TestCase):
 			o.set_id(index)
 			ex.cache['object-%s' % index] = o
 		
-		yield ex.dequeue()
+		yield ex.flush()
 		
-		self.failUnlessEqual(self.queue_committed, True)
+		self.failUnlessEqual(self.queue_flushed, True)
 		self.failUnlessEqual(ex.cache, {})
 	
 	def test_save_object(self):

@@ -190,7 +190,7 @@ class TransactionChild(child.AMPChild):
 		))
 		
 		if(profile_transactions):
-			print "[transact] db connection took %s seconds" % (time.time() - t)
+			log.msg("db connection took %s seconds" % (time.time() - t))
 		
 		self.msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 	
@@ -199,7 +199,7 @@ class TransactionChild(child.AMPChild):
 		Get an ObjectExchange instance for the provided context.
 		"""
 		if(ctx):
-			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(), ctx)
+			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(ctx), ctx)
 		else:
 			return exchange.ObjectExchange(self.pool)
 	

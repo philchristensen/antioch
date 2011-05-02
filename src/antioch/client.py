@@ -21,9 +21,6 @@ from twisted.python import failure, log
 
 from nevow import inevow, loaders, athena, guard, rend, tags
 
-from txamqp import content
-from txamqp.queue import Closed
-
 from antioch import errors, assets, transact, session, modules, json
 
 class Mind(object):
@@ -307,8 +304,6 @@ class ClientConnector(athena.LiveElement):
 		tags.div(id='client-connector')
 		])
 	
-	channel_counter = 0
-	
 	def __init__(self, user_id, mind, msg_service, session_id, *args, **kwargs):
 		"""
 		Setup the client connection.
@@ -349,8 +344,8 @@ class ClientConnector(athena.LiveElement):
 		"""
 		yield transact.Login.run(user_id=self.user_id, session_id=self.session_id, ip_address=mind.remote_host)
 		
-		self.chan = yield self.msg_service.setup_client_channel(self.user_id)
-		self.queue = yield self.msg_service.connection.queue("user-%s-consumer" % self.user_id)
+		self.queue = self.msg_service.get_queue(self.user_id)
+		yield self.queue.start()
 		
 		yield transact.Parse.run(user_id=self.user_id, sentence='look here')
 		
@@ -364,10 +359,9 @@ class ClientConnector(athena.LiveElement):
 		"""
 		self.loop.stop()
 		
-		if(hasattr(self, 'chan')):
+		if(hasattr(self, 'queue')):
 			try:
-				yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
-				yield self.chan.channel_close()
+				yield self.queue.stop()
 			except:
 				pass
 		
@@ -380,13 +374,9 @@ class ClientConnector(athena.LiveElement):
 		this looks for messages sent to the user and
 		processes them appropriately.
 		"""
-		try:
-			msg = yield self.queue.get()
-		except Closed, e:
-			defer.returnValue(None)
-		
-		data = json.loads(msg.content.body.decode('utf8'))
-		self.handle_message(data)
+		msg = yield self.queue.pop()
+		if(msg):
+			self.handle_message(msg)
 	
 	def handle_message(self, data):
 		"""

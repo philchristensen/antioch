@@ -12,11 +12,11 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		self.pool = test.init_database(self.__class__, dataset='default')
 		self.exchange = exchange.ObjectExchange(self.pool)
 		self.exchange.queue = test.Anything(
-			commit	= lambda: None,
+			flush	= lambda: None,
 		)
 	
 	def tearDown(self):
-		return self.exchange.dequeue()
+		return self.exchange.flush()
 	
 	def test_player_look(self):
 		caller = self.exchange.get_object('wizard')
@@ -27,11 +27,11 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		v = p.get_verb()
 		self.failUnlessEqual(p.this, caller)
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self.failUnlessEqual(user_id, caller.get_id())
 			self.failUnlessEqual(msg['observations']['name'], 'The Laboratory')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)
 	
 	def test_player_eval(self):
@@ -45,12 +45,12 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		
 		self._test_player_eval_ran = False
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self._test_player_eval_ran = True
 			self.failUnlessEqual(user_id, 2L)
 			self.failUnlessEqual(msg['text'], 'test')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)
 		
 		self.failUnlessEqual(self._test_player_eval_ran, True)
@@ -66,12 +66,12 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		
 		self._test_player_write_ran = False
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self._test_player_write_ran = True
 			self.failUnlessEqual(user_id, 2L)
 			self.failUnlessEqual(msg['text'], 'test')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)
 		
 		self.failUnlessEqual(self._test_player_write_ran, True)
@@ -87,11 +87,11 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		v = p.get_verb()
 		self.failUnlessEqual(p.this, caller)
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self.failUnlessEqual(user_id, caller.get_id())
 			self.failUnlessEqual(msg['observations']['name'], 'The Laboratory')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)
 	
 	def test_wizard_edit(self):
@@ -103,11 +103,11 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		v = p.get_verb()
 		self.failUnlessEqual(p.this, caller)
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self.failUnlessEqual(user_id, 2L)
 			self.failUnlessEqual(msg['details']['name'], 'Wizard')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)
 	
 	def test_wizard_edit_system(self):
@@ -119,10 +119,10 @@ class DefaultBootstrapTestCase(unittest.TestCase):
 		v = p.get_verb()
 		self.failUnlessEqual(p.this, caller)
 		
-		def send(user_id, msg):
+		def push(user_id, msg):
 			self.failUnlessEqual(user_id, 2L)
 			self.failUnlessEqual(msg['details']['id'], 1)
 			self.failUnlessEqual(msg['details']['name'], 'System Object')
 		
-		self.exchange.queue.send = send
+		self.exchange.queue.push = push
 		v.execute(p)

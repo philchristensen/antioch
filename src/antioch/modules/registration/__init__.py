@@ -21,12 +21,12 @@ VERSION = 2
 def request_account(p, name, email):
 	current_version = p.exchange.get_property(1, 'registration-version')
 	if(not current_version or current_version.value < VERSION):
-		p.exchange.queue.send(p.caller.get_id(), dict(
+		p.exchange.queue.push(p.caller.get_id(), dict(
 			plugin			= 'registration',
 			command			= 'update-schema',
 		))
 	
-	p.exchange.queue.send(p.caller.get_id(), dict(
+	p.exchange.queue.push(p.caller.get_id(), dict(
 		plugin			= 'registration',
 		command			= 'request-account',
 		details			= dict(
@@ -36,7 +36,7 @@ def request_account(p, name, email):
 	))
 
 def change_caller_password(p):
-	p.exchange.queue.send(p.caller.get_id(), dict(
+	p.exchange.queue.push(p.caller.get_id(), dict(
 		plugin			= 'registration',
 		command			= 'change-password',
 	))
