@@ -130,7 +130,7 @@ class ObjectExchange(object):
 			elif(isinstance(e, errors.UserError) and not show_all_traces):
 				self.commit()
 				err = str(e)
-				log.err('Sending normal exception to user: %s' % err)
+				log.msg('Sending normal exception to user: %s' % err)
 				if(self.queue):
 					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
@@ -146,7 +146,7 @@ class ObjectExchange(object):
 				import traceback, StringIO
 				io = StringIO.StringIO()
 				traceback.print_exception(etype, e, trace, None, io)
-				log.err('Sending fatal exception to user: %s' % str(e))
+				log.msg('Sending fatal exception to user: %s' % str(e))
 				if(self.queue):
 					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
