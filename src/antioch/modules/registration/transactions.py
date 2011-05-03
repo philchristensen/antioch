@@ -108,6 +108,7 @@ class RegistrationTransactionChild(transact.TransactionChild):
 					system.add_property('registration_version')
 				from antioch.modules import registration
 				system['registration_version'].value = registration.VERSION
+		
 		return dict(result=True)
 	
 	@RequestAccount.responder
@@ -129,6 +130,7 @@ class RegistrationTransactionChild(transact.TransactionChild):
 									dict(avatar_id=user.get_id())))
 			
 			send_registration_message(user, auth_token)
+		
 		return dict(result=True)
 	
 	@ValidateAuthToken.responder
@@ -149,9 +151,12 @@ class RegistrationTransactionChild(transact.TransactionChild):
 				raise errors.PermissionError("Current password is incorrect.")
 			user = x.get_object(user_id)
 			user.set_player(passwd=new_password)
+		
 		return dict(result=True)
 	
 	@GetAccountName.responder
 	def get_account_name(self, user_id):
 		with self.get_exchange(user_id) as x:
-			return dict(account_name=str(x.ctx))
+			account_name = str(x.ctx)
+		
+		return dict(account_name=account_name)

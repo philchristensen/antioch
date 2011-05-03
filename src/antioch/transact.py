@@ -238,6 +238,7 @@ class DefaultTransactionChild(TransactionChild):
 
 			if not(u.validate_password(password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
+		
 		return {'user_id': u.get_id()}
 	
 	@Login.responder
@@ -251,8 +252,8 @@ class DefaultTransactionChild(TransactionChild):
 			system = x.get_object(1)
 			if(system.has_verb("login")):
 				system.login()
+			log.msg('user #%s logged in from %s' % (user_id, ip_address))
 		
-		print 'user #%s logged in from %s' % (user_id, ip_address)
 		return {'response': True}
 	
 	@Logout.responder
@@ -269,8 +270,8 @@ class DefaultTransactionChild(TransactionChild):
 			system = x.get_object(1)
 			if(system.has_verb("logout")):
 				system.logout()
+		 	log.msg('user #%s logged out' % user_id)
 		
-		print 'user #%s logged out' % (user_id,)
 		return {'response': True}
 	
 	@Parse.responder
@@ -283,6 +284,7 @@ class DefaultTransactionChild(TransactionChild):
 			
 			log.msg('%s: %s' % (caller, sentence))
 			parser.parse(caller, sentence)
+		
 		return {'response': True}
 	
 	@RegisterTask.responder
@@ -292,6 +294,7 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		with self.get_exchange(user_id) as x:
 			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+		
 		return {'task_id': task_id}
 	
 	@RunTask.responder
@@ -322,4 +325,6 @@ class DefaultTransactionChild(TransactionChild):
 		# should be fine, since all iterate_task does
 		# is create another subprocess for the proper user
 		with self.get_exchange() as x:
-			return {'response': x.iterate_task(self)}
+			task = x.iterate_task(self)
+		
+		return {'response':task}

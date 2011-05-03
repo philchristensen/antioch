@@ -220,4 +220,6 @@ class EditorTransactionChild(transact.TransactionChild):
 	def get_object_details(self, user_id, object_id):
 		with self.get_exchange(user_id) as x:
 			obj = x.get_object(object_id)
-			return obj.get_details()
+			details = obj.get_details()
+		
+		return details
