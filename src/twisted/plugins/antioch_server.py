@@ -45,8 +45,8 @@ class antiochServer(object):
 		error_log = conf.get('error-log')
 		if(error_log):
 			log.startLogging(open(error_log, 'w'))
-
-		reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
+		else:
+			reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
 
 		master_service = service.MultiService()
 
