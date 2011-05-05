@@ -1,4 +1,9 @@
 {
+	"web-port":8888,
+
+	"access-log":"/dev/null",
+	"error-log":"",
+
 	"db-url-default":"psycopg2://antioch:moavmic7@localhost/antioch",
 	"db-url-test":"psycopg2://antioch:moavmic7@localhost/antioch_test",
 

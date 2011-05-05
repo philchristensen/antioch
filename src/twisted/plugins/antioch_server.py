@@ -14,78 +14,55 @@ from zope.interface import classProvides
 
 from twisted import plugin
 from twisted.python import usage, log
-
-from twisted.cred import portal, checkers, credentials
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import auth, dbapi, messaging, tasks, logging, conf
+from antioch import messaging, tasks, logging, conf, web
 
 class antiochServer(object):
 	"""
 	The antioch application server startup class.
 	"""
-	
+
 	classProvides(service.IServiceMaker, plugin.IPlugin)
-	
+
 	tapname = "antioch"
 	description = "Run a set of antioch servers."
-	
+
 	class options(usage.Options):
 		"""
 		Implement option-parsing for the antioch twistd plugin.
 		"""
 		optParameters = [
-						 ["port", "p", 8080, "Port to use for web server.", int],
-						 ["accesslog", "l", '-', "Path to access log.", str],
 						 ["conf", "f", conf.DEFAULT_CONF_PATH, "Path to configuration file, if any.", str],
 						]
-	
+
 	@classmethod
 	def makeService(cls, config):
 		"""
 		Setup the necessary network services for the application server.
 		"""
+		error_log = conf.get('error-log')
+		if(error_log):
+			log.startLogging(open(error_log, 'w'))
+
 		reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
 
 		master_service = service.MultiService()
-		
+
 		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
-		
+
 		task_service = tasks.TaskService()
 		task_service.setName("task-interface")
 		task_service.setServiceParent(master_service)
-		
-		web_factory = cls.makeWebFactory(auth.TransactionChecker(), msg_service, config['accesslog'])
-		web_service = internet.TCPServer(int(config['port']), web_factory)
-		web_service.setName("client-interface")
+
+		web_service = web.WebService(msg_service)
+		web_service.setName("web-interface")
 		web_service.setServiceParent(master_service)
-		
+
 		reactor.addSystemEventTrigger('before', 'shutdown', msg_service.disconnect)
 		task_service.run()
-		
+
 		return master_service
-	
-	@classmethod
-	def makeWebFactory(cls, checker, msg_service, accesslog):
-		"""
-		Setup the web factory for the application server.
-		"""
-		from nevow import guard, appserver
-		from antioch import client, session
-		
-		pool = session.TransactionUserSessionStore(checker, conf.get('db-url-default'))
-		
-		web_portal = portal.Portal(session.SessionRealm(pool))
-		web_portal.registerChecker(session.SessionChecker(pool))
-		
-		site_root = client.RootDelegatePage(pool, msg_service, web_portal)
-		
-		if(accesslog != '-'):
-			factory = appserver.NevowSite(site_root, logPath=accesslog)
-		else:
-			factory = appserver.NevowSite(site_root)
-		
-		return factory
