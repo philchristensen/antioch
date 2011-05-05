@@ -8,7 +8,7 @@
 JSON configuration file support.
 """
 
-import os.path
+import sys, os.path
 import pkg_resources as pkg
 
 import simplejson
@@ -29,12 +29,24 @@ def get(key):
 	return c[key]
 
 def read_config(path):
+	result = {}
+
+	with pkg.resource_stream('antioch.conf', 'default.json') as f:
+		result.update(_read_config(f))
+
+	if(pkg.resource_exists('antioch.conf', 'local.json')):
+		print >>sys.stderr, "Loading local.json configuration..."
+		with pkg.resource_stream('antioch.conf', 'local.json') as f:
+			result.update(_read_config(f))
+
 	if(os.path.exists(path)):
-		f = open(path)
-	else:
-		path = 'Default config'
-		f = pkg.resource_stream('antioch.conf', 'antioch.json')
-	
+		print >>sys.stderr, "Loading /etc/antioch.json configuration..."
+		with open(path) as f:
+			result.update(_read_config(f))
+
+	return result
+
+def _read_config(f):
 	with f:
 		try:
 			c = simplejson.load(f)
