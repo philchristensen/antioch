@@ -58,7 +58,7 @@ class antiochServer(object):
 		task_service.setName("task-interface")
 		task_service.setServiceParent(master_service)
 
-		web_service = web.WebService(msg_service)
+		web_service = web.WebService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
 		web_service.setName("web-interface")
 		web_service.setServiceParent(master_service)
 
