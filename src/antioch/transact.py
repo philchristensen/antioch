@@ -30,16 +30,16 @@ profile_transactions = conf.get('profile-transactions')
 def get_process_pool(child=None, *args):
 	"""
 	Get the process pool belonging to the specified child.
-	
-	Optionally pass a custom TransactionChild 
+
+	Optionally pass a custom TransactionChild
 	Optionally pass additional args to the TransactionChild
 	"""
 	if(child is None):
 		child = DefaultTransactionChild
-	
+
 	if(child.__name__ in processPools):
 		return processPools[child.__name__]
-	
+
 	p = processPools[child.__name__] = pool.ProcessPool(
 		child,
 		name 			= 'antioch-process-pool',
@@ -57,7 +57,7 @@ def shutdown(child=None):
 	"""
 	if(child is None):
 		child = DefaultTransactionChild
-	
+
 	if(child.__name__ in processPools):
 		yield processPools[child.__name__].stop()
 		del processPools[child.__name__]
@@ -71,13 +71,14 @@ class WorldTransaction(amp.Command):
 		errors.AccessError : 'ACCESS_ERROR',
 		errors.PermissionError : 'PERMISSION_ERROR',
 	}
-	
+
 	@classmethod
-	def run(cls, transaction_child=None, db_url='', **kwargs):
+	def run(cls, transaction_child=None, db_url=None, **kwargs):
 		if(db_url):
 			pool = get_process_pool(transaction_child, db_url)
 		else:
-			pool = get_process_pool(transaction_child)
+			pool = get_process_pool(transaction_child, conf.get('db-url-default'))
+
 		d = pool.doWork(cls, _timeout=job_timeout, **kwargs)
 		def _log_err(failure):
 			log.err(failure)
@@ -163,23 +164,20 @@ class IterateTasks(WorldTransaction):
 class TransactionChild(child.AMPChild):
 	"""
 	Handle transactions for the game server.
-	
+
 	Even though a transaction child is technically supposed to be asynchronous,
 	we're allowing for ampoule calls to be synchronous. This will require a larger
 	process pool size, but in return it will allow verbs to continue to be written
 	in a synchronous manner, while still meeting all other design goals.
 	"""
-	def __init__(self, db_url=''):
+	def __init__(self, db_url):
 		"""
 		Create a new TransactionChild.
-		
+
 		Optionally supply db_url to specify the database to connect to.
 		"""
-		if not(db_url):
-			db_url = conf.get('db-url-default')
-		
 		logging.customizeLogs()
-		
+
 		t = time.time()
 		self.pool = dbapi.connect(db_url, **dict(
 			autocommit		= False,
@@ -188,12 +186,12 @@ class TransactionChild(child.AMPChild):
 			debug_syntax	= conf.get('debug-sql-syntax'),
 			profile			= conf.get('profile-db'),
 		))
-		
+
 		if(profile_transactions):
 			log.msg("db connection took %s seconds" % (time.time() - t))
-		
+
 		self.msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
-	
+
 	def get_exchange(self, ctx=None):
 		"""
 		Get an ObjectExchange instance for the provided context.
@@ -202,7 +200,7 @@ class TransactionChild(child.AMPChild):
 			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(ctx), ctx)
 		else:
 			return exchange.ObjectExchange(self.pool)
-	
+
 class DefaultTransactionChild(TransactionChild):
 	"""
 	Provide fundamental antioch transaction methods.
@@ -216,7 +214,7 @@ class DefaultTransactionChild(TransactionChild):
 			connect = x.get_verb(1, 'connect')
 			if(connect):
 				connect(ip_address)
-			
+
 			authentication = x.get_verb(1, 'authenticate')
 			if(authentication):
 				u = authentication(username, password, ip_address)
@@ -230,7 +228,7 @@ class DefaultTransactionChild(TransactionChild):
 				raise errors.PermissionError("Invalid login credentials. (3)")
 			except errors.AmbiguousObjectError, e:
 				raise errors.PermissionError("Invalid login credentials. (4)")
-			
+
 			multilogin_accounts = x.get_property(1, 'multilogin_accounts')
 			if(u.is_connected_player()):
 				if(not multilogin_accounts or u not in multilogin_accounts.value):
@@ -238,9 +236,9 @@ class DefaultTransactionChild(TransactionChild):
 
 			if not(u.validate_password(password)):
 				raise errors.PermissionError("Invalid login credentials. (6)")
-		
+
 		return {'user_id': u.get_id()}
-	
+
 	@Login.responder
 	def login(self, user_id, session_id, ip_address):
 		"""
@@ -248,14 +246,14 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		with self.get_exchange(user_id) as x:
 			x.login_player(user_id, session_id)
-			
+
 			system = x.get_object(1)
 			if(system.has_verb("login")):
 				system.login()
 			log.msg('user #%s logged in from %s' % (user_id, ip_address))
-		
+
 		return {'response': True}
-	
+
 	@Logout.responder
 	def logout(self, user_id):
 		"""
@@ -265,15 +263,15 @@ class DefaultTransactionChild(TransactionChild):
 		# if the logout verb fails
 		with self.get_exchange(user_id) as x:
 			x.logout_player(user_id)
-		
+
 		with self.get_exchange(user_id) as x:
 			system = x.get_object(1)
 			if(system.has_verb("logout")):
 				system.logout()
 		 	log.msg('user #%s logged out' % user_id)
-		
+
 		return {'response': True}
-	
+
 	@Parse.responder
 	def parse(self, user_id, sentence):
 		"""
@@ -281,12 +279,12 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		with self.get_exchange(user_id) as x:
 			caller = x.get_object(user_id)
-			
+
 			log.msg('%s: %s' % (caller, sentence))
 			parser.parse(caller, sentence)
-		
+
 		return {'response': True}
-	
+
 	@RegisterTask.responder
 	def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
 		"""
@@ -294,9 +292,9 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		with self.get_exchange(user_id) as x:
 			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
-		
+
 		return {'task_id': task_id}
-	
+
 	@RunTask.responder
 	def run_task(self, user_id, task_id):
 		"""
@@ -306,16 +304,16 @@ class DefaultTransactionChild(TransactionChild):
 			task = x.get_task(task_id)
 			if(not task or task['killed']):
 				return {'response': False}
-			
+
 			origin = x.get_object(task['origin_id'])
 			args = json.loads(task['args'])
 			kwargs = json.loads(task['kwargs'])
-			
+
 			v = origin.get_verb(task['verb_name'])
 			v(*args, **kwargs)
-		
+
 		return {'response': True}
-	
+
 	@IterateTasks.responder
 	def iterate_tasks(self):
 		"""
@@ -326,5 +324,5 @@ class DefaultTransactionChild(TransactionChild):
 		# is create another subprocess for the proper user
 		with self.get_exchange() as x:
 			task = x.iterate_task(self)
-		
+
 		return {'response':task}
