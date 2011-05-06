@@ -17,7 +17,7 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import messaging, tasks, logging, conf, web
+from antioch import conf
 
 class antiochServer(object):
 	"""
@@ -42,22 +42,30 @@ class antiochServer(object):
 		"""
 		Setup the necessary network services for the application server.
 		"""
+		if(conf.get('suppress-deprecation-warnings')):
+			import warnings
+			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
+
 		error_log = conf.get('error-log')
 		if(error_log):
 			log.startLogging(open(error_log, 'w'))
 		else:
+			from antioch import logging
 			reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
 
 		master_service = service.MultiService()
 
+		from antioch import messaging
 		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
 
+		from antioch import tasks
 		task_service = tasks.TaskService()
 		task_service.setName("task-interface")
 		task_service.setServiceParent(master_service)
 
+		from antioch import web
 		web_service = web.WebService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
 		web_service.setName("web-interface")
 		web_service.setServiceParent(master_service)

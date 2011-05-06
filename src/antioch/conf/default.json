@@ -13,6 +13,8 @@
 
 	"job-timeout":3,
 
+	"suppress-deprecation-warnings":true,
+
 	"debug-sql":false,
 	"debug-sql-writes":false,
 	"debug-sql-syntax":false,

@@ -40,11 +40,16 @@ def get_process_pool(child=None, *args):
 	if(child.__name__ in processPools):
 		return processPools[child.__name__]
 
+	custom_bootstrap = main.BOOTSTRAP.split('\n')
+	custom_bootstrap.insert(-2, 'from antioch import child')
+	custom_bootstrap.insert(-2, 'child.initialize()')
+
 	p = processPools[child.__name__] = pool.ProcessPool(
 		child,
 		name 			= 'antioch-process-pool',
 		starter			= main.ProcessStarter(
-			packages		= ("twisted", "ampoule", "antioch")
+			packages		= ("twisted", "ampoule", "antioch"),
+			bootstrap		= '\n'.join(custom_bootstrap),
 		),
 		ampChildArgs	= args
 	)
@@ -176,8 +181,6 @@ class TransactionChild(child.AMPChild):
 
 		Optionally supply db_url to specify the database to connect to.
 		"""
-		logging.customizeLogs()
-
 		t = time.time()
 		self.pool = dbapi.connect(db_url, **dict(
 			autocommit		= False,
