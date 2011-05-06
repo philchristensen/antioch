@@ -209,6 +209,11 @@ player_class.add_verb('say', **dict(
 	filename	= bootstrap.get_verb_path('player_class_say.py'),
 )).allow('everyone', 'execute')
 
+player_class.add_verb('hear', **dict(
+	method		= True,
+	filename	= bootstrap.get_verb_path('player_class_hear.py'),
+)).allow('everyone', 'execute')
+
 player_class.add_verb('@passwd', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
