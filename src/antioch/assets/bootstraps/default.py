@@ -218,3 +218,9 @@ player_class.add_verb('@passwd', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')
+
+room_class.add_verb('hear', **dict(
+	method		= True,
+	filename	= bootstrap.get_verb_path('room_class_hear.py'),
+)).allow('everyone', 'execute')
+

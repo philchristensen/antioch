@@ -63,6 +63,22 @@ body {
 	color: #d36b7f;
 }
 
+.target-heard-public {
+	color: #7f91c8;
+}
+
+.target-heard-private {
+	color: #ab3e4c;
+}
+
+.source-said-public {
+	color: #477a67;
+}
+
+.source-said-private {
+	color: #ab3e4c;
+}
+
 #prompt-area input {
 	width: 100%;
 	margin-top: 0px;
