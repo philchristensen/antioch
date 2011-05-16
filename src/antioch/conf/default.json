@@ -7,7 +7,7 @@
 	"db-url-default":"psycopg2://antioch:moavmic7@localhost/antioch",
 	"db-url-test":"psycopg2://antioch:moavmic7@localhost/antioch_test",
 
-	"queue-url":"rabbitmq://guest:guest@localhost:5672/",
+	"queue-url":"restmq://localhost:8889/queue",
 
 	"psql-path":"psql",
 

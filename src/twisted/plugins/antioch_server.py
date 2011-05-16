@@ -56,7 +56,7 @@ class antiochServer(object):
 		master_service = service.MultiService()
 
 		from antioch import messaging
-		msg_service = messaging.RestMQService(conf.get('queue-url'), conf.get('profile-queue'))
+		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
 

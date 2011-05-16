@@ -16,19 +16,64 @@ from zope import interface
 
 from twisted.application import service
 from twisted.python import log
-from twisted.internet import defer, reactor
-from twisted.internet.protocol import ClientCreator
+from twisted.internet import defer, reactor, protocol
+from twisted.web.iweb import IBodyProducer
 
-from txamqp import spec, protocol, content, client
-from txamqp.client import TwistedDelegate
-
-from txamqp.client import Closed as ClientClosed
-from txamqp.queue import Closed as QueueClosed
+import simplejson
 
 from antioch import assets, json, parser
 
+def MessageService(queue_url, profile=False):
+	url = parser.URL(queue_url)
+	if(url['scheme'] == 'restmq'):
+		return RestMQService(queue_url, profile)
+	elif(url['scheme'] == 'rabbitmq'):
+		return RabbitMQService(queue_url, profile)
+	else:
+		raise RuntimeError("Unsupported scheme %r" % url['scheme'])
+
+class BodyCollector(protocol.Protocol):
+	def __init__(self, finished):
+		self.finished = finished
+		self.remaining = 1024 * 10
+		self.buffer = []
+
+	def dataReceived(self, bytes):
+		if self.remaining:
+			display = bytes[:self.remaining]
+			print 'Some data received:'
+			print display
+			self.buffer.append(display)
+			self.remaining -= len(display)
+
+	def connectionLost(self, reason):
+		print 'Finished receiving body:', reason.getErrorMessage()
+		self.finished.callback(''.join(self.buffer))
+
+class StringProducer(object):
+	interface.implements(IBodyProducer)
+
+	def __init__(self, body):
+		self.body = body
+		self.length = len(body)
+
+	def startProducing(self, consumer):
+		consumer.write(self.body)
+		return defer.succeed(None)
+
+	def pauseProducing(self):
+		pass
+
+	def stopProducing(self):
+		pass
+
 class IMessageService(interface.Interface):
+	profile = interface.Attribute('if True, print profiling info for the queue')
+
 	def get_queue(user_id):
+		pass
+
+	def disconnect():
 		pass
 
 class IMessageQueue(interface.Interface):
@@ -74,23 +119,6 @@ class AbstractQueue(object):
 	def flush(self):
 		raise NotImplementedError('AbstractQueue.flush')
 
-class RestMQQueue(AbstractQueue):
-	def start(self):
-		return defer.success()
-
-	def stop(self):
-		return defer.success()
-
-	def pop(self):
-		"""
-		Take one item from this user's queue.
-		"""
-
-	def flush(self):
-		"""
-		Send all queued messages.
-		"""
-
 class RestMQService(service.Service):
 	"""
 	Provides a service that holds a reference to the active
@@ -98,8 +126,7 @@ class RestMQService(service.Service):
 	"""
 	def __init__(self, queue_url, profile=False):
 		self.url = parser.URL(queue_url)
-		if(self.url['scheme'] != 'restmq'):
-			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
+		self.profile = profile
 
 	def get_queue(self, user_id):
 		"""
@@ -107,6 +134,69 @@ class RestMQService(service.Service):
 		"""
 		q = RestMQQueue(self, user_id, self.profile)
 		return q
+
+	def connect(self):
+		return defer.succeed(None)
+
+	def disconnect(self):
+		return defer.succeed(None)
+
+class RestMQQueue(AbstractQueue):
+	def start(self):
+		return defer.succeed(None)
+
+	def stop(self):
+		return defer.succeed(None)
+
+	@defer.inlineCallbacks
+	def pop(self):
+		"""
+		Take one item from this user's queue.
+		"""
+		from twisted.internet import reactor
+		from twisted.web import http_headers, client
+
+		a = client.Agent(reactor)
+		url = str(self.service.url).replace('restmq://', 'http://')
+		response = yield a.request('POST', url, http_headers.Headers(),
+			StringProducer(simplejson.dumps(dict(
+				cmd		= 'take',
+				queue	= 'user-%d' % self.user_id,
+			)))
+		)
+
+		d = defer.Deferred()
+		bc = BodyCollector(d)
+		response.deliverBody(bc)
+
+		body = yield d
+
+		msg = simplejson.loads(body)
+		defer.returnValue(msg['value'])
+
+	def flush(self):
+		"""
+		Send all queued messages.
+		"""
+		from twisted.internet import reactor
+		from twisted.web import http_headers, client
+
+		d = []
+		url = str(self.service.url).replace('restmq://', 'http://')
+
+		while(self.messages):
+			user_id, msg = self.messages.pop(0)
+			a = client.Agent(reactor)
+			d.append(a.request('POST', url, http_headers.Headers(),
+				StringProducer(simplejson.dumps(dict(
+					cmd		= 'add',
+					queue	= 'user-%d' % user_id,
+					value	= simplejson.dumps(msg),
+				)))
+			))
+
+		return defer.DeferredList(d)
+
 
 class RabbitMQService(service.Service):
 	"""
@@ -120,9 +210,10 @@ class RabbitMQService(service.Service):
 		Create a service with the given connection.
 		"""
 		self.url = parser.URL(queue_url)
-		if(self.url['scheme'] != 'rabbitmq'):
-			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
 
+		from twisted.internet.protocol import ClientCreator
+		from txamqp import spec, protocol
+		from txamqp.client import TwistedDelegate
 		self.factory = ClientCreator(reactor, protocol.AMQClient,
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
@@ -203,6 +294,7 @@ class RabbitMQQueue(AbstractQueue):
 
 	@defer.inlineCallbacks
 	def stop(self):
+		from txamqp.client import Closed as ClientClosed
 		try:
 			yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
 			yield self.chan.channel_close()
@@ -211,6 +303,7 @@ class RabbitMQQueue(AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
+		from txamqp.queue import Closed as QueueClosed
 		try:
 			msg = yield self.queue.get()
 			data = json.loads(msg.content.body.decode('utf8'))
@@ -241,9 +334,11 @@ class RabbitMQQueue(AbstractQueue):
 			user_id, msg = self.messages.pop(0)
 			routing_key = 'user-%s' % user_id
 			data = json.dumps(msg)
+			from txamqp import content
 			c = content.Content(data, properties={'content type':'application/json'})
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 
+		from txamqp.client import Closed as ClientClosed
 		try:
 			yield chan.channel_close()
 		except ClientClosed, e:
