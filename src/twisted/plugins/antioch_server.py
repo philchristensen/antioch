@@ -56,9 +56,16 @@ class antiochServer(object):
 		master_service = service.MultiService()
 
 		from antioch import messaging
-		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
+		msg_service = messaging.RestMQService(conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service.setName("message-interface")
 		msg_service.setServiceParent(master_service)
+
+		import restmq.web
+		restmq_service = internet.TCPServer(8889,
+			restmq.web.Application('acl.conf', 'localhost', 6379, 10, 0)
+		)
+		restmq_service.setName("message-server")
+		restmq_service.setServiceParent(master_service)
 
 		from antioch import tasks
 		task_service = tasks.TaskService()

@@ -8,14 +8,16 @@
 Enable access to the messaging server
 """
 
+import time
+
 import pkg_resources as pkg
+
+from zope import interface
 
 from twisted.application import service
 from twisted.python import log
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
-
-import time
 
 from txamqp import spec, protocol, content, client
 from txamqp.client import TwistedDelegate
@@ -25,11 +27,94 @@ from txamqp.queue import Closed as QueueClosed
 
 from antioch import assets, json, parser
 
-class MessageService(service.Service):
+class IMessageService(interface.Interface):
+	def get_queue(user_id):
+		pass
+
+class IMessageQueue(interface.Interface):
+	def pop():
+		pass
+
+	def start():
+		pass
+
+	def stop():
+		pass
+
+class AbstractQueue(object):
+	"""
+	Encapsulate and queue messages during a database transaction.
+	"""
+	interface.implements(IMessageQueue)
+
+	def __init__(self, service, user_id, profile=False):
+		"""
+		Create a new queue for the provided service.
+		"""
+		self.profile = profile
+		self.service = service
+		self.user_id = user_id
+		self.messages = []
+
+	def start(self):
+		raise NotImplementedError('AbstractQueue.start')
+
+	def stop(self):
+		raise NotImplementedError('AbstractQueue.stop')
+
+	def push(self, user_id, msg):
+		"""
+		Send a message to a certain user.
+		"""
+		self.messages.append((user_id, msg))
+
+	def pop(self):
+		raise NotImplementedError('AbstractQueue.pop')
+
+	def flush(self):
+		raise NotImplementedError('AbstractQueue.flush')
+
+class RestMQQueue(AbstractQueue):
+	def start(self):
+		return defer.success()
+
+	def stop(self):
+		return defer.success()
+
+	def pop(self):
+		"""
+		Take one item from this user's queue.
+		"""
+
+	def flush(self):
+		"""
+		Send all queued messages.
+		"""
+
+class RestMQService(service.Service):
 	"""
 	Provides a service that holds a reference to the active
-	AMQP connection.
+	RestMQ connection.
 	"""
+	def __init__(self, queue_url, profile=False):
+		self.url = parser.URL(queue_url)
+		if(self.url['scheme'] != 'restmq'):
+			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
+
+	def get_queue(self, user_id):
+		"""
+		Get a queue object that stores up messages until committed.
+		"""
+		q = RestMQQueue(self, user_id, self.profile)
+		return q
+
+class RabbitMQService(service.Service):
+	"""
+	Provides a service that holds a reference to the active
+	RebbitMQ connection.
+	"""
+	interface.implements(IMessageService)
+
 	def __init__(self, queue_url, profile=False):
 		"""
 		Create a service with the given connection.
@@ -37,7 +122,7 @@ class MessageService(service.Service):
 		self.url = parser.URL(queue_url)
 		if(self.url['scheme'] != 'rabbitmq'):
 			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
-		
+
 		self.factory = ClientCreator(reactor, protocol.AMQClient,
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
@@ -48,33 +133,33 @@ class MessageService(service.Service):
 		self.profile = profile
 		self.connection = None
 		self.channel_counter = 0
-	
+
 	def get_queue(self, user_id):
 		"""
 		Get a queue object that stores up messages until committed.
 		"""
-		q = MessageQueue(self, user_id, self.profile)
+		q = RabbitMQQueue(self, user_id, self.profile)
 		return q
-	
+
 	@defer.inlineCallbacks
 	def setup_client_channel(self, user_id):
 		"""
 		Instantiate the client channel for a given user.
 		"""
 		chan = yield self.open_channel()
-		
+
 		exchange = 'user-exchange'
 		queue = 'user-%s-queue' % user_id
 		consumertag = "user-%s-consumer" % user_id
 		routing_key = 'user-%s' % user_id
-		
+
 		yield chan.exchange_declare(exchange=exchange, type="direct", durable=True, auto_delete=True)
 		yield chan.queue_declare(queue=queue, durable=True, exclusive=False, auto_delete=True)
 		yield chan.queue_bind(queue=queue, exchange=exchange, routing_key=routing_key)
 		yield chan.basic_consume(queue=queue, consumer_tag=consumertag, no_ack=True)
-		
+
 		defer.returnValue(chan)
-	
+
 	@defer.inlineCallbacks
 	def connect(self):
 		"""
@@ -89,7 +174,7 @@ class MessageService(service.Service):
 				yield self.connection.authenticate(self.url['user'], self.url['passwd'])
 			except Exception, e:
 				raise EnvironmentError("Couldn't connect to RabbitMQ server on %s, exception: %s" % (self.url, e))
-	
+
 	@defer.inlineCallbacks
 	def disconnect(self):
 		"""
@@ -99,7 +184,7 @@ class MessageService(service.Service):
 		if(self.connection):
 			chan0 = yield self.connection.channel(0)
 			yield chan0.connection_close()
-	
+
 	@defer.inlineCallbacks
 	def open_channel(self):
 		"""
@@ -110,24 +195,12 @@ class MessageService(service.Service):
 		yield chan.channel_open()
 		defer.returnValue(chan)
 
-class MessageQueue(object):
-	"""
-	Encapsulate and queue messages during a database transaction.
-	"""
-	def __init__(self, service, user_id, profile=False):
-		"""
-		Create a new queue for the provided service.
-		"""
-		self.profile = profile
-		self.service = service
-		self.user_id = user_id
-		self.messages = []
-	
+class RabbitMQQueue(AbstractQueue):
 	@defer.inlineCallbacks
 	def start(self):
 		self.chan = yield self.service.setup_client_channel(self.user_id)
 		self.queue = yield self.service.connection.queue("user-%s-consumer" % self.user_id)
-	
+
 	@defer.inlineCallbacks
 	def stop(self):
 		try:
@@ -135,13 +208,7 @@ class MessageQueue(object):
 			yield self.chan.channel_close()
 		except ClientClosed, e:
 			pass
-	
-	def push(self, user_id, msg):
-		"""
-		Send a message to a certain user.
-		"""
-		self.messages.append((user_id, msg))
-	
+
 	@defer.inlineCallbacks
 	def pop(self):
 		try:
@@ -150,20 +217,20 @@ class MessageQueue(object):
 			defer.returnValue(data)
 		except QueueClosed, e:
 			defer.returnValue(None)
-	
+
 	@defer.inlineCallbacks
 	def flush(self):
 		"""
 		Send all queued messages and close the channel.
 		"""
 		t = time.time()
-		
+
 		yield self.service.connect()
-		
+
 		if(self.profile):
 			log.msg('connect took %s seconds' % (time.time() - t))
 			t = time.time()
-		
+
 		exchange = 'user-exchange'
 		chan = yield self.service.open_channel()
 		if(self.profile):
@@ -176,14 +243,13 @@ class MessageQueue(object):
 			data = json.dumps(msg)
 			c = content.Content(data, properties={'content type':'application/json'})
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
-		
+
 		try:
 			yield chan.channel_close()
 		except ClientClosed, e:
 			pass
-		
+
 		if(self.profile):
 			log.msg('purging queue took %s seconds' % (time.time() - t))
 			t = time.time()
-	
-	
+
