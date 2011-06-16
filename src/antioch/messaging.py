@@ -8,7 +8,7 @@
 Enable access to the messaging server
 """
 
-import time
+import time, urllib
 
 import pkg_resources as pkg
 
@@ -18,6 +18,7 @@ from twisted.application import service
 from twisted.python import log
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
+from twisted.web.client import HTTPClientFactory
 
 from txamqp import spec, protocol, content, client
 from txamqp.client import TwistedDelegate
@@ -25,7 +26,7 @@ from txamqp.client import TwistedDelegate
 from txamqp.client import Closed as ClientClosed
 from txamqp.queue import Closed as QueueClosed
 
-from antioch import assets, json, parser
+from antioch import conf, assets, json, parser
 
 class IMessageService(interface.Interface):
 	def get_queue(user_id):
@@ -76,20 +77,81 @@ class AbstractQueue(object):
 
 class RestMQQueue(AbstractQueue):
 	def start(self):
-		return defer.success()
+		#declare channel with self.user_id
+		return defer.succeed(True)
 
 	def stop(self):
-		return defer.success()
+		#kill channel with self.user_id
+		return defer.succeed(True)
 
+	@defer.inlineCallbacks
 	def pop(self):
 		"""
 		Take one item from this user's queue.
 		"""
+		queue_url = parser.URL(conf.get('queue-url'))
+		url = 'http://%(host)s:%(port)s/queue' % dict(
+			host	= queue_url['host'],
+			port	= queue_url['port'],
+		)
+		
+		client = HTTPClientFactory(url, **dict(
+			method		= 'POST',
+			headers		= {
+				'Content-Type'	: 'application/x-www-form-urlencoded',
+			},
+			postdata	= urllib.urlencode(dict(
+				msg		= json.dumps(dict(
+					cmd		= "take",
+					queue	= 'user-%s' % self.user_id,
+				)),
+			)),
+		))
+		
+		reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
+		response = yield client.deferred
+		response = json.loads(response)
+		
+		if('error' in response):
+			if(response['error'] == 'empty queue'):
+				defer.returnValue(None)
+			else:
+				raise RuntimeError('restmq-pop-error: %s' % response)
+		
+		defer.returnValue(json.loads(response['value'].decode('utf8')))
 
+	@defer.inlineCallbacks
 	def flush(self):
 		"""
 		Send all queued messages.
 		"""
+		queue_url = parser.URL(conf.get('queue-url'))
+		url = 'http://%(host)s:%(port)s/queue' % dict(
+			host	= queue_url['host'],
+			port	= queue_url['port'],
+		)
+		
+		for msg in self.messages:
+			client = HTTPClientFactory(url, **dict(
+				method		= 'POST',
+				headers		= {
+					'Content-Type'	: 'application/x-www-form-urlencoded',
+				},
+				postdata	= urllib.urlencode(dict(
+					msg		= json.dumps(dict(
+						cmd		= 'add',
+						queue	= 'user-%s' % msg[0],
+						value	= json.dumps(msg[1]),
+					)),
+				)),
+			))
+			
+			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
+			response = yield client.deferred
+			response = json.loads(response)
+			
+			if('error' in response):
+				raise RuntimeError('restmq-flush-error: %s' % response)
 
 class RestMQService(service.Service):
 	"""
@@ -97,6 +159,7 @@ class RestMQService(service.Service):
 	RestMQ connection.
 	"""
 	def __init__(self, queue_url, profile=False):
+		self.profile = profile
 		self.url = parser.URL(queue_url)
 		if(self.url['scheme'] != 'restmq'):
 			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
@@ -133,6 +196,8 @@ class RabbitMQService(service.Service):
 		self.profile = profile
 		self.connection = None
 		self.channel_counter = 0
+		
+		reactor.addSystemEventTrigger('before', 'shutdown', self.disconnect)
 
 	def get_queue(self, user_id):
 		"""

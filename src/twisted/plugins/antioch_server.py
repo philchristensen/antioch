@@ -17,7 +17,7 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import conf
+from antioch import conf, parser
 
 class antiochServer(object):
 	"""
@@ -61,10 +61,14 @@ class antiochServer(object):
 		msg_service.setServiceParent(master_service)
 
 		import restmq.web
-		restmq_service = internet.TCPServer(8889,
-			restmq.web.Application('acl.conf', 'localhost', 6379, 10, 0)
+		restmq_url = parser.URL(conf.get('queue-url'))
+		restmq_service = internet.TCPServer(int(restmq_url['port']),
+			restmq.web.Application('acl.conf',
+				conf.get('redis-host'), conf.get('redis-port'),
+				conf.get('redis-pool'), conf.get('redis-db')
+			)
 		)
-		restmq_service.setName("message-server")
+		restmq_service.setName("restmq-interface")
 		restmq_service.setServiceParent(master_service)
 
 		from antioch import tasks
@@ -77,7 +81,6 @@ class antiochServer(object):
 		web_service.setName("web-interface")
 		web_service.setServiceParent(master_service)
 
-		reactor.addSystemEventTrigger('before', 'shutdown', msg_service.disconnect)
 		task_service.run()
 
 		return master_service

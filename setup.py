@@ -67,6 +67,7 @@ def autosetup():
 			ampoule				= "0.1",
 			RestrictedPython	= "3.6.0",
 			termcolor			= "1.1.0",
+			cyclone				= "0.4",
 		).items()],
 
 		# metadata for upload to PyPI

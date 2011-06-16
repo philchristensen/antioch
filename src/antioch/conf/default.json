@@ -1,5 +1,10 @@
 {
 	"web-port":8888,
+	
+	"redis-host":"localhost",
+	"redis-port":6379,
+	"redis-pool":10,
+	"redis-db":0,
 
 	"access-log":"/dev/null",
 	"error-log":"",
@@ -7,7 +12,7 @@
 	"db-url-default":"psycopg2://antioch:moavmic7@localhost/antioch",
 	"db-url-test":"psycopg2://antioch:moavmic7@localhost/antioch_test",
 
-	"queue-url":"rabbitmq://guest:guest@localhost:5672/",
+	"queue-url":"restmq://localhost:8889/",
 
 	"psql-path":"psql",
 
