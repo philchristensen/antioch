@@ -117,6 +117,7 @@ class RabbitMQService(service.Service):
 class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def start(self):
+		conn = yield self.service.connect()
 		self.chan = yield self.service.setup_client_channel(self.user_id)
 		self.queue = yield self.service.connection.queue("user-%s-consumer" % self.user_id)
 
