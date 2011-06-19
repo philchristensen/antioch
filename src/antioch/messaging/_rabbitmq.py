@@ -15,7 +15,7 @@ from txamqp.client import TwistedDelegate
 from txamqp.client import Closed as ClientClosed
 from txamqp.queue import Closed as QueueClosed
 
-from antioch import json, parser
+from antioch import json, parser, messaging
 
 def getService(queue_url, profile=False):
 	rabbitmq_service = RabbitMQService(queue_url, profile=profile)
@@ -30,7 +30,7 @@ class RabbitMQService(service.Service):
 	Provides a service that holds a reference to the active
 	RebbitMQ connection.
 	"""
-	interface.implements(IMessageService)
+	interface.implements(messaging.IMessageService)
 
 	def __init__(self, queue_url, profile=False):
 		"""
@@ -114,7 +114,7 @@ class RabbitMQService(service.Service):
 		yield chan.channel_open()
 		defer.returnValue(chan)
 
-class RabbitMQQueue(AbstractQueue):
+class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def start(self):
 		self.chan = yield self.service.setup_client_channel(self.user_id)
