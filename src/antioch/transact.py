@@ -193,7 +193,7 @@ class TransactionChild(child.AMPChild):
 		if(profile_transactions):
 			log.msg("db connection took %s seconds" % (time.time() - t))
 
-		self.msg_service = messaging.RestMQService(conf.get('queue-url'), conf.get('profile-queue'))
+		self.msg_service = messaging.getService(conf.get('queue-url'), conf.get('profile-queue'))
 
 	def get_exchange(self, ctx=None):
 		"""

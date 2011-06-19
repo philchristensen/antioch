@@ -1,24 +1,13 @@
-# antioch
-# Copyright (c) 1999-2010 Phil Christensen
-#
-#
-# See LICENSE for details
-
-"""
-Enable access to the messaging server
-"""
-
-import time, urllib
+import time
 
 import pkg_resources as pkg
 
 from zope import interface
 
-from twisted.application import service
 from twisted.python import log
+from twisted.application import service
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
-from twisted.web.client import HTTPClientFactory
 
 from txamqp import spec, protocol, content, client
 from txamqp.client import TwistedDelegate
@@ -26,159 +15,15 @@ from txamqp.client import TwistedDelegate
 from txamqp.client import Closed as ClientClosed
 from txamqp.queue import Closed as QueueClosed
 
-from antioch import conf, assets, json, parser
+from antioch import json, parser
 
-def makeService(queue_url, profile=False):
-	url = parser.URL(queue_url)
-	if(url['scheme'] == 'restmq'):
-		return RestMQService(queue_url, profile=profile)
-	elif(url['scheme'] == 'rabbitmq'):
-		return RabbitMQService(queue_url, profile=profile)
-	else:
-		raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
+def getService(queue_url, profile=False):
+	rabbitmq_service = RabbitMQService(queue_url, profile=profile)
+	rabbitmq_service.setName("message-service")
+	return rabbitmq_service
 
-class IMessageService(interface.Interface):
-	def get_queue(user_id):
-		pass
-
-class IMessageQueue(interface.Interface):
-	def pop():
-		pass
-
-	def start():
-		pass
-
-	def stop():
-		pass
-
-class AbstractQueue(object):
-	"""
-	Encapsulate and queue messages during a database transaction.
-	"""
-	interface.implements(IMessageQueue)
-
-	def __init__(self, service, user_id, profile=False):
-		"""
-		Create a new queue for the provided service.
-		"""
-		self.profile = profile
-		self.service = service
-		self.user_id = user_id
-		self.messages = []
-
-	def start(self):
-		raise NotImplementedError('AbstractQueue.start')
-
-	def stop(self):
-		raise NotImplementedError('AbstractQueue.stop')
-
-	def push(self, user_id, msg):
-		"""
-		Send a message to a certain user.
-		"""
-		self.messages.append((user_id, msg))
-
-	def pop(self):
-		raise NotImplementedError('AbstractQueue.pop')
-
-	def flush(self):
-		raise NotImplementedError('AbstractQueue.flush')
-
-class RestMQQueue(AbstractQueue):
-	def start(self):
-		#declare channel with self.user_id
-		return defer.succeed(True)
-
-	def stop(self):
-		#kill channel with self.user_id
-		return defer.succeed(True)
-
-	@defer.inlineCallbacks
-	def pop(self):
-		"""
-		Take one item from this user's queue.
-		"""
-		queue_url = parser.URL(conf.get('queue-url'))
-		url = 'http://%(host)s:%(port)s/queue' % dict(
-			host	= queue_url['host'],
-			port	= queue_url['port'],
-		)
-		
-		client = HTTPClientFactory(url, **dict(
-			method		= 'POST',
-			headers		= {
-				'Content-Type'	: 'application/x-www-form-urlencoded',
-			},
-			postdata	= urllib.urlencode(dict(
-				msg		= json.dumps(dict(
-					cmd		= "take",
-					queue	= 'user-%s' % self.user_id,
-				)),
-			)),
-		))
-		
-		reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-		response = yield client.deferred
-		response = json.loads(response)
-		
-		if('error' in response):
-			if(response['error'] == 'empty queue'):
-				defer.returnValue(None)
-			else:
-				raise RuntimeError('restmq-pop-error: %s' % response)
-		
-		defer.returnValue(json.loads(response['value'].decode('utf8')))
-
-	@defer.inlineCallbacks
-	def flush(self):
-		"""
-		Send all queued messages.
-		"""
-		queue_url = parser.URL(conf.get('queue-url'))
-		url = 'http://%(host)s:%(port)s/queue' % dict(
-			host	= queue_url['host'],
-			port	= queue_url['port'],
-		)
-		
-		for msg in self.messages:
-			client = HTTPClientFactory(url, **dict(
-				method		= 'POST',
-				headers		= {
-					'Content-Type'	: 'application/x-www-form-urlencoded',
-				},
-				postdata	= urllib.urlencode(dict(
-					msg		= json.dumps(dict(
-						cmd		= 'add',
-						queue	= 'user-%s' % msg[0],
-						value	= json.dumps(msg[1]),
-					)),
-				)),
-			))
-			
-			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-			response = yield client.deferred
-			response = json.loads(response)
-			
-			if('error' in response):
-				raise RuntimeError('restmq-flush-error: %s' % response)
-
-class RestMQService(service.Service):
-	"""
-	Provides a service that holds a reference to the active
-	RestMQ connection.
-	"""
-	def __init__(self, queue_url, profile=False):
-		self.profile = profile
-		self.url = parser.URL(queue_url)
-		if(self.url['scheme'] != 'restmq'):
-			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
-
-	def get_queue(self, user_id):
-		"""
-		Get a queue object that stores up messages until committed.
-		"""
-		q = RestMQQueue(self, user_id, self.profile)
-		return q
+def installServices(master_service, queue_url, profile=False):
+	getService(queue_url, profile).setServiceParent(master_service)
 
 class RabbitMQService(service.Service):
 	"""

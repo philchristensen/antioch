@@ -57,25 +57,8 @@ class antiochServer(object):
 		master_service = service.MultiService()
 
 		from antioch import messaging
-		msg_service = messaging.makeService(conf.get('queue-url'), conf.get('profile-queue'))
-		msg_service.setName("message-client")
-		msg_service.setServiceParent(master_service)
-
-		queue_url = parser.URL(conf.get('queue-url'))
-		if(queue_url['scheme'] == 'restmq'):
-			import restmq.web
-			if(queue_url['host'] not in ('localhost', '127.0.0.1', '::1')):
-				warnings.warn("Builtin messaging server not bound to localhost. Shouldn't you be using RabbitMQ instead?")
-		
-			restmq_service = internet.TCPServer(int(queue_url['port']),
-				restmq.web.Application('acl.conf',
-					conf.get('redis-host'), conf.get('redis-port'),
-					conf.get('redis-pool'), conf.get('redis-db')
-				),
-				interface = queue_url['host'],
-			)
-			restmq_service.setName("message-server")
-			restmq_service.setServiceParent(master_service)
+		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))
+		msg_service = master_service.getServiceNamed('message-service')	
 
 		from antioch import tasks
 		task_service = tasks.TaskService()
