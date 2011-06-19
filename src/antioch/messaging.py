@@ -28,6 +28,15 @@ from txamqp.queue import Closed as QueueClosed
 
 from antioch import conf, assets, json, parser
 
+def makeService(queue_url, profile=False):
+	url = parser.URL(queue_url)
+	if(url['scheme'] == 'restmq'):
+		return RestMQService(queue_url, profile=profile)
+	elif(url['scheme'] == 'rabbitmq'):
+		return RabbitMQService(queue_url, profile=profile)
+	else:
+		raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
+
 class IMessageService(interface.Interface):
 	def get_queue(user_id):
 		pass
