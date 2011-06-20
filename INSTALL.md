@@ -74,7 +74,7 @@ global settings file, *default.json*.
 Running the Client
 ------------------
 
-Connect to: <http://localhost:8080>
+Connect to: <http://localhost:8888>
 
 Login with username and password: `wizard/wizard`
 
