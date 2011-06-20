@@ -47,12 +47,15 @@ class antiochServer(object):
 		if(conf.get('suppress-deprecation-warnings')):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
+		from antioch import logging
 		error_log = conf.get('error-log')
 		if(error_log):
 			log.startLogging(open(error_log, 'w'))
-		else:
-			from antioch import logging
 			reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
+		else:
+			def _customizeLogs():
+				logging.customizeLogs(colorize=True)
+			reactor.addSystemEventTrigger('after', 'startup', _customizeLogs)
 
 		master_service = service.MultiService()
 

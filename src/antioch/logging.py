@@ -5,8 +5,11 @@ import termcolor
 from twisted.python import log
 
 child_msg = re.compile(r'^FROM (?P<child_id>\d+)(:.*?)(?P<msg>\[(.*?)\] .*?)$')
+use_color = True
 
-def customizeLogs():
+def customizeLogs(colorize=False):
+	global use_color
+	use_color = colorize
 	log.originalTextFromEventDict = log.textFromEventDict
 	log.textFromEventDict = textFromEventDict
 
@@ -16,6 +19,9 @@ def colorizeChild(child_id, msg):
 
 def textFromEventDict(e):
 	try:
+		if(e['system'] == 'RedisProtocol,client'):
+			return None
+		
 		msg = e['message']
 		if(msg):
 			match = child_msg.match(e['message'][0])
@@ -25,7 +31,8 @@ def textFromEventDict(e):
 			msg = match.group('msg')
 			if(msg.startswith('[-] ')):
 				msg = msg[4:]
-			e['message'] = colorizeChild(child_id, str(child_id) + ': ' + msg),
+			if(use_color):
+				e['message'] = colorizeChild(child_id, str(child_id) + ': ' + msg),
 		return log.originalTextFromEventDict(e)
 	except Exception, e:
 		import traceback

@@ -3,7 +3,7 @@ import urllib
 from zope import interface
 
 from twisted.application import internet, service
-from twisted.internet import defer, reactor
+from twisted.internet import defer, reactor, protocol
 from twisted.web.client import HTTPClientFactory
 
 import restmq.web
@@ -19,7 +19,7 @@ def installServices(master_service, queue_url, profile=False):
 	url = parser.URL(queue_url)
 	if(url['host'] not in ('localhost', '127.0.0.1', '::1')):
 		warnings.warn("Builtin messaging server not bound to localhost. Shouldn't you be using RabbitMQ instead?")
-
+	
 	restmq_server = internet.TCPServer(int(url['port']),
 		restmq.web.Application('acl.conf',
 			conf.get('redis-host'), conf.get('redis-port'),
@@ -86,6 +86,7 @@ class RestMQQueue(messaging.AbstractQueue):
 				)),
 			)),
 		))
+		client.noisy = False
 		
 		reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
 		response = yield client.deferred
@@ -124,6 +125,7 @@ class RestMQQueue(messaging.AbstractQueue):
 					)),
 				)),
 			))
+			client.noisy = False
 			
 			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
 			response = yield client.deferred
