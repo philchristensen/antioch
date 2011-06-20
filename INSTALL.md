@@ -21,10 +21,12 @@ everything else should work, but to be specific:
 * [termcolor         >=  1.1  ](http://pypi.python.org/pypi/termcolor)
 
 If using RabbitMQ for message passing:
+
 * [RabbitMQ       >=  2.4  ](http://www.rabbitmq.com)
 * [txAMQP         >=  0.3  ](https://launchpad.net/txamqp)
 
 If using the built-in server for message passing:
+
 * [RestMQ                  ](https://github.com/gleicon/restmq)
 * [Cyclone        >=  0.4  ](https://github.com/fiorix/cyclone)
 
