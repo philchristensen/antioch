@@ -68,7 +68,12 @@ def autosetup():
 			RestrictedPython	= "3.6.0",
 			termcolor			= "1.1.0",
 			cyclone				= "0.4",
+			# restmq				= "1.0",
 		).items()],
+		
+		# dependency_links = [
+		# 	"http://github.com/philchristensen/restmq/tarball/master#egg=restmq-1.0",
+		# ],
 
 		# metadata for upload to PyPI
 		author			= "Phil Christensen",
