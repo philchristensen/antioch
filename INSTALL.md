@@ -10,15 +10,24 @@ Requirements for Server
 As long as you're using Python 2.5 or better, most recent versions of
 everything else should work, but to be specific:
 
-* [Python         >=  2.5  ](http://www.python.org)
-* [PostgreSQL     >=  8.4  ](http://www.postgresql.org)
-* [RabbitMQ       >=  1.7  ](http://www.rabbitmq.com)
-* [Twisted        >= 10.1  ](http://www.twistedmatrix.com)
-* [Nevow          >=  0.10 ](http://divmod.org/trac/wiki/DivmodNevow)
-* [simplejson     >=  2.1.1](http://pypi.python.org/pypi/simplejson)
-* [psycopg2       >=  2.2.1](http://initd.org/psycopg)
+* [Python            >=  2.5  ](http://www.python.org)
+* [PostgreSQL        >=  8.4  ](http://www.postgresql.org)
+* [Twisted           >= 10.1  ](http://www.twistedmatrix.com)
+* [Nevow             >=  0.10 ](https://launchpad.net/nevow)
+* [simplejson        >=  2.1.1](http://pypi.python.org/pypi/simplejson)
+* [psycopg2          >=  2.2.1](http://initd.org/psycopg)
+* [ampoule           >=  0.1  ](https://launchpad.net/ampoule)
+* [RestrictedPython  >=  3.6.0](https://launchpad.net/ampoule)
+* [termcolor         >=  1.1  ](http://pypi.python.org/pypi/termcolor)
+
+If using RabbitMQ for message passing:
+* [RabbitMQ       >=  2.4  ](http://www.rabbitmq.com)
 * [txAMQP         >=  0.3  ](https://launchpad.net/txamqp)
-* [ampoule        >=  0.1  ](https://launchpad.net/ampoule)
+
+If using the built-in server for message passing:
+* [RestMQ                  ](https://github.com/gleicon/restmq)
+* [Cyclone        >=  0.4  ](https://github.com/fiorix/cyclone)
+
 
 Requirements for Client
 -----------------------
@@ -29,6 +38,7 @@ supported at this time.
 
 * [Firefox](http://www.mozilla.com/firefox)
 * [Safari](http://www.apple.com/safari)
+* [Chrome](http://google.com/chrome)
 
 Running the Server
 -------------------
@@ -38,32 +48,26 @@ the setuptools-based installer.
 
     python setup.py install
 
-Make sure your RabbitMQ server is running. RabbitMQ can usually be installed
-by package on most UNIXes, and via MacPorts on OS X. The default configuration
-will usually suffice. (Details: currently antioch looks for a RabbitMQ server
-running on localhost:5672, connecting as guest/guest to the '/' vhost.)
 
 Next you'll need to create the default database:
 
     mkspace.py
 
 > By default, `mkspace` tries to connect to a PostgreSQL database running on
-> localhost:5432 as the `postgres` super-user. This is configurable by passing
-> additional `psql` arguments to mkspace.
+> localhost:5432 as the `postgres` super-user.
 
 This should have created the `antioch` user and a corresponding database. Next
 you should be able to start up the server with:
 
     twistd -n antioch
 
-The -n will keep it in the foreground. You can redirect the request log to a
-file with `--accesslog` or send it to /dev/null.
+The -n will keep it in the foreground. Configuration options are kept in the 
+global settings file, *default.json*.
 
-> Again, the default is to look for a PostgreSQL server on localhost:5432 and a
-> RabbitMQ on localhost:5672, however the time of this writing these were only
-> configurable via global variables in transact.py and messaging.py
-> respectively.
-
+> The default configuration looks for a PostgreSQL server on localhost:5432 and
+> runs a RestMQ-powered message queue on localhost:8889. However, for  better and
+> scalability, RabbitMQ is recommended. It can usually be installed
+> by package on most UNIXes, and via MacPorts on OS X.
 
 Running the Client
 ------------------
