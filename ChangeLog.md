@@ -1,3 +1,20 @@
+2011-06-19    Phil Christensen <phil@bubblehouse.org>
+* Renamed txspace to antioch
+* Support for in-memory local messaging server
+* Implemented runtime limits and installed Zope's RestrictedPython
+* Verbs can now be backed by files on disk, and reloaded on the fly
+* Added delayed task support to verb environment
+* Created 'ask' plugin, demonstrating out-of-band plugins
+* Registration module for email verified accounts
+* JSON-based external configuration file
+* Guest support for anonymous trial users
+* Banlists and alternate authentication sources
+* Numerous additional verbs in default universe
+* Client Gravatar.com support
+* More documentation work
+* Testing and deployment improvements
+* Colorized log output and removed spurious messages
+
 2010-09-01    Phil Christensen <phil@bubblehouse.org>
 
 * Massive rewrites for most of the codebase.
