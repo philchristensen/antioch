@@ -19,6 +19,8 @@ def getService(queue_url, profile=False):
 		imp = __import__('antioch.messaging', globals(), locals(), [module_name], -1)
 		return getattr(imp,  module_name).getService(queue_url, profile=profile)
 	except ImportError, e:
+		import traceback
+		traceback.print_exc()
 		raise RuntimeError("Unsupported scheme %r" % url['scheme'])
 
 def installServices(master_service, queue_url, profile=False):
@@ -28,6 +30,8 @@ def installServices(master_service, queue_url, profile=False):
 		imp = __import__('antioch.messaging', globals(), locals(), [module_name], -1)
 		getattr(imp,  module_name).installServices(master_service, queue_url, profile=profile)
 	except ImportError, e:
+		import traceback
+		traceback.print_exc()
 		raise RuntimeError("Unsupported scheme %r" % url['scheme'])
 
 class IMessageService(interface.Interface):
