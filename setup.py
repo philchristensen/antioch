@@ -60,7 +60,7 @@ def autosetup():
 
 		install_requires = ['%s>=%s' % x for x in dict(
 			twisted				= "10.1.0",
-			nevow				= "0.10",
+			django				= "1.3",
 			psycopg2			= "2.0.14",
 			simplejson			= "2.1.1",
 			txamqp				= "0.3",
