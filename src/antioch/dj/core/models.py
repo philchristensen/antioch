@@ -8,7 +8,7 @@ class Object(models.Model):
 	name = models.CharField(max_length=255)
 	unique_name = models.BooleanField()
 	owner = models.ForeignKey('self', related_name='+')
-	location = models.ForeignKey('self', related_name='contents')
+	location = models.ForeignKey('self', related_name='contents', null=True)
 	parents = models.ManyToManyField('self', related_name='children', symmetrical=False, through='Relationship')
 	observers = models.ManyToManyField('self', related_name='observing', symmetrical=False, through='Observation')
 	
@@ -34,6 +34,7 @@ class Observation(models.Model):
 
 class Alias(models.Model):
 	class Meta:
+		verbose_name_plural = 'aliases'
 		db_table = 'object_alias'
 		managed = False
 	
@@ -64,9 +65,16 @@ class VerbName(models.Model):
 	
 	verb = models.ForeignKey(Verb, related_name='names')
 	name = models.CharField(max_length=255)
+	
+	def __unicode__(self):
+		return u"%s {#%s on %s}" % (
+			self.name, self.verb.id, self.verb.origin
+		)
+
 
 class Property(models.Model):
 	class Meta:
+		verbose_name_plural = 'properties'
 		db_table = 'property'
 		managed = False
 	
@@ -84,21 +92,45 @@ class Permission(models.Model):
 		managed = False
 	
 	name = models.CharField(max_length=255)
+	
+	def __unicode__(self):
+		return self.name
 
 class Access(models.Model):
 	class Meta:
+		verbose_name_plural = 'access controls'
 		db_table = 'access'
 		managed = False
 	
-	object = models.ForeignKey(Object, related_name='acl')
-	verb = models.ForeignKey(Verb, related_name='acl')
-	property = models.ForeignKey(Property, related_name='acl')
+	object = models.ForeignKey(Object, related_name='acl', null=True)
+	verb = models.ForeignKey(Verb, related_name='acl', null=True)
+	property = models.ForeignKey(Property, related_name='acl', null=True)
 	rule = models.CharField(max_length=5, choices=(('allow', 'allow'), ('deny', 'deny')))
 	permission = models.ForeignKey(Permission, related_name='usage')
 	type = models.CharField(max_length=8, choices=(('accessor', 'accessor'), ('group', 'group')))
 	accessor = models.ForeignKey(Object, related_name='rights')
 	group = models.CharField(max_length=8, choices=(('everyone', 'everyone'), ('owners', 'owners'), ('wizards', 'wizards')))
 	weight = models.IntegerField()
+	
+	def actor(self):
+		return self.accessor if self.type == 'accessor' else self.group
+	
+	def entity(self):
+		return self.object if self.object else self.verb if self.verb else self.property
+	
+	def __unicode__(self):
+		try:
+			return '%(rule)s %(actor)s %(permission)s on %(entity)s (%(weight)s)' % dict(
+				rule		= self.rule,
+				actor		= self.actor(),
+				permission	= self.permission.name,
+				entity		= self.entity(),
+				weight		= self.weight,
+			)
+		except Exception, e:
+			import traceback
+			traceback.print_exc();
+			return str(e)
 
 class Player(models.Model):
 	class Meta:

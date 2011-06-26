@@ -97,7 +97,7 @@ wizard.set_location(laboratory)
 
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 
-wizard_class.add_verb('@reload', **dict(
+wizard_class.add_verb('reload', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_reload.py'),
 ))
@@ -122,33 +122,33 @@ system.add_verb('logout', **dict(
 	filename	= bootstrap.get_verb_path('system_logout.py'),
 )).allow('everyone', 'execute')
 
-wizard_class.add_verb('@edit', **dict(
+wizard_class.add_verb('edit', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_edit.py'),
 ))
 
-wizard_class.add_verb('@exec', **dict(
+wizard_class.add_verb('exec', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
-wizard_class.add_verb('@eval', **dict(
+wizard_class.add_verb('eval', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
-wizard_class.add_verb('@adduser', **dict(
+wizard_class.add_verb('adduser', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_adduser.py'),
 )).allow('wizards', 'execute')
 
-wizard_class.add_verb('@passwd', **dict(
+wizard_class.add_verb('passwd', **dict(
 	ability		= True,
 	method		= True,
 	filename	= bootstrap.get_verb_path('wizard_class_passwd.py'),
 )).allow('everyone', 'execute')
 
-wizard_class.add_verb('@register', **dict(
+wizard_class.add_verb('register', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('guest_class_register.py'),
 ))
@@ -158,37 +158,37 @@ wizard_hammer.add_verb('add_user', **dict(
 	filename	= bootstrap.get_verb_path('wizard_hammer_add_user.py'),
 )).allow('wizards', 'execute')
 
-author_class.add_verb('@alias', **dict(
+author_class.add_verb('alias', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_alias.py'),
 )).allow('everyone', 'execute')
 
-author_class.add_verb('@dig', **dict(
+author_class.add_verb('dig', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_dig.py'),
 )).allow('everyone', 'execute')
 
-author_class.add_verb('@tunnel', **dict(
+author_class.add_verb('tunnel', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_tunnel.py'),
 )).allow('everyone', 'execute')
 
-author_class.add_verb('@describe', **dict(
+author_class.add_verb('describe', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_describe.py'),
 )).allow('everyone', 'execute')
 
-guest_class.add_verb('@register', **dict(
+guest_class.add_verb('register', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('guest_class_register.py'),
 )).allow('everyone', 'execute')
 
-guest_class.add_verb('@passwd', **dict(
+guest_class.add_verb('passwd', **dict(
 	ability		= True,
 	code		= 'write(caller, "Guests cannot change their passwords.")',
 )).allow('everyone', 'execute')
 
-player_class.add_verb('@set', **dict(
+player_class.add_verb('set', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
@@ -214,7 +214,7 @@ player_class.add_verb('hear', **dict(
 	filename	= bootstrap.get_verb_path('player_class_hear.py'),
 )).allow('everyone', 'execute')
 
-player_class.add_verb('@passwd', **dict(
+player_class.add_verb('passwd', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')
