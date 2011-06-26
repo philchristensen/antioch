@@ -32,6 +32,7 @@ CREATE INDEX object_owner_key ON object (owner_id);
 CREATE INDEX object_location_key ON object (location_id);
 
 CREATE TABLE object_relation (
+	id bigserial,
 	parent_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	child_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	weight int NOT NULL DEFAULT 0,
@@ -41,6 +42,7 @@ CREATE INDEX object_relation_parent ON object_relation (parent_id);
 CREATE INDEX object_relation_child ON object_relation (child_id);
 
 CREATE TABLE object_alias (
+	id bigserial,
 	object_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	alias varchar(255) NOT NULL,
 	PRIMARY KEY (object_id, alias),
@@ -49,6 +51,7 @@ CREATE TABLE object_alias (
 CREATE INDEX object_alias_key ON object_alias (alias);
 
 CREATE TABLE object_observer (
+	id bigserial,
 	object_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	observer_id bigint NOT NULL REFERENCES object ON DELETE CASCADE,
 	PRIMARY KEY (object_id, observer_id)
@@ -70,6 +73,7 @@ CREATE INDEX verb_origin_key ON verb (origin_id);
 CREATE INDEX verb_owner_key ON verb (owner_id);
 
 CREATE TABLE verb_name (
+	id bigserial,
 	verb_id bigint NOT NULL REFERENCES verb ON DELETE CASCADE,
 	name varchar(255) NOT NULL,
 	PRIMARY KEY (verb_id, name),
