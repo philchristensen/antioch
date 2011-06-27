@@ -100,6 +100,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+LOGIN_URL = '/client/login'
+LOGIN_REDIRECT_URL = '/client'
+
 ROOT_URLCONF = 'antioch.dj.urls'
 
 TEMPLATE_DIRS = (
@@ -120,6 +123,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 	'antioch.dj.core',
+    'antioch.dj.client',
 )
 
 # A sample logging configuration. The only tangible logging
