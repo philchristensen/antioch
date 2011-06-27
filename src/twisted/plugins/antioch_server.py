@@ -10,6 +10,8 @@ twistd plugin support
 This module adds a 'antioch' server type to the twistd service list.
 """
 
+import warnings
+
 from zope.interface import classProvides
 
 from twisted import plugin
@@ -17,7 +19,7 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import conf
+from antioch import conf, parser
 
 class antiochServer(object):
 	"""
@@ -43,7 +45,6 @@ class antiochServer(object):
 		Setup the necessary network services for the application server.
 		"""
 		if(conf.get('suppress-deprecation-warnings')):
-			import warnings
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
 		error_log = conf.get('error-log')
@@ -56,28 +57,19 @@ class antiochServer(object):
 		master_service = service.MultiService()
 
 		from antioch import messaging
-		msg_service = messaging.MessageService(conf.get('queue-url'), conf.get('profile-queue'))
-		msg_service.setName("message-interface")
-		msg_service.setServiceParent(master_service)
-
-		import restmq.web
-		restmq_service = internet.TCPServer(8889,
-			restmq.web.Application('acl.conf', 'localhost', 6379, 10, 0)
-		)
-		restmq_service.setName("message-server")
-		restmq_service.setServiceParent(master_service)
+		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))
+		msg_service = master_service.getServiceNamed('message-service')	
 
 		from antioch import tasks
 		task_service = tasks.TaskService()
-		task_service.setName("task-interface")
+		task_service.setName("task-daemon")
 		task_service.setServiceParent(master_service)
 
 		from antioch import web
 		web_service = web.WebService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
-		web_service.setName("web-interface")
+		web_service.setName("web-server")
 		web_service.setServiceParent(master_service)
 
-		reactor.addSystemEventTrigger('before', 'shutdown', msg_service.disconnect)
 		task_service.run()
 
 		return master_service

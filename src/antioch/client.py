@@ -289,7 +289,9 @@ class ClientInterface(athena.LivePage):
 		@return: the client connector rendering
 		@rtype: ClientConnector
 		"""
-		yield defer.maybeDeferred(self.msg_service.connect)
+		#yield defer.maybeDeferred(self.msg_service.connect)
+		yield defer.succeed(True)
+		
 		self.connector = ClientConnector(self.user_id, self.mind, self.msg_service, self.session_id)
 		self.connector.setFragmentParent(self)
 		defer.returnValue(ctx.tag[self.connector])

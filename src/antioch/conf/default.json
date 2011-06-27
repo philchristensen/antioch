@@ -1,5 +1,10 @@
 {
 	"web-port":8888,
+	
+	"redis-host":"localhost",
+	"redis-port":6379,
+	"redis-pool":10,
+	"redis-db":0,
 
 	"access-log":"/dev/null",
 	"error-log":"",

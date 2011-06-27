@@ -1,209 +1,32 @@
-# antioch
-# Copyright (c) 1999-2010 Phil Christensen
-#
-#
-# See LICENSE for details
-
-"""
-Enable access to the messaging server
-"""
-
 import time
 
 import pkg_resources as pkg
 
 from zope import interface
 
-from twisted.application import service
 from twisted.python import log
-from twisted.internet import defer, reactor, protocol
-from twisted.web.iweb import IBodyProducer
+from twisted.application import service
+from twisted.internet import defer, reactor
+from twisted.internet.protocol import ClientCreator
 
 import simplejson
 
-from antioch import assets, json, parser
+from antioch import json, parser, messaging
 
-def MessageService(queue_url, profile=False):
-	url = parser.URL(queue_url)
-	if(url['scheme'] == 'restmq'):
-		return RestMQService(queue_url, profile)
-	elif(url['scheme'] == 'rabbitmq'):
-		return RabbitMQService(queue_url, profile)
-	else:
-		raise RuntimeError("Unsupported scheme %r" % url['scheme'])
+def getService(queue_url, profile=False):
+	rabbitmq_service = RabbitMQService(queue_url, profile=profile)
+	rabbitmq_service.setName("message-service")
+	return rabbitmq_service
 
-class BodyCollector(protocol.Protocol):
-	def __init__(self, finished):
-		self.finished = finished
-		self.remaining = 1024 * 10
-		self.buffer = []
-
-	def dataReceived(self, bytes):
-		if self.remaining:
-			display = bytes[:self.remaining]
-			print 'Some data received:'
-			print display
-			self.buffer.append(display)
-			self.remaining -= len(display)
-
-	def connectionLost(self, reason):
-		print 'Finished receiving body:', reason.getErrorMessage()
-		self.finished.callback(''.join(self.buffer))
-
-class StringProducer(object):
-	interface.implements(IBodyProducer)
-
-	def __init__(self, body):
-		self.body = body
-		self.length = len(body)
-
-	def startProducing(self, consumer):
-		consumer.write(self.body)
-		return defer.succeed(None)
-
-	def pauseProducing(self):
-		pass
-
-	def stopProducing(self):
-		pass
-
-class IMessageService(interface.Interface):
-	profile = interface.Attribute('if True, print profiling info for the queue')
-
-	def get_queue(user_id):
-		pass
-
-	def disconnect():
-		pass
-
-class IMessageQueue(interface.Interface):
-	def pop():
-		pass
-
-	def start():
-		pass
-
-	def stop():
-		pass
-
-class AbstractQueue(object):
-	"""
-	Encapsulate and queue messages during a database transaction.
-	"""
-	interface.implements(IMessageQueue)
-
-	def __init__(self, service, user_id, profile=False):
-		"""
-		Create a new queue for the provided service.
-		"""
-		self.profile = profile
-		self.service = service
-		self.user_id = user_id
-		self.messages = []
-
-	def start(self):
-		raise NotImplementedError('AbstractQueue.start')
-
-	def stop(self):
-		raise NotImplementedError('AbstractQueue.stop')
-
-	def push(self, user_id, msg):
-		"""
-		Send a message to a certain user.
-		"""
-		self.messages.append((user_id, msg))
-
-	def pop(self):
-		raise NotImplementedError('AbstractQueue.pop')
-
-	def flush(self):
-		raise NotImplementedError('AbstractQueue.flush')
-
-class RestMQService(service.Service):
-	"""
-	Provides a service that holds a reference to the active
-	RestMQ connection.
-	"""
-	def __init__(self, queue_url, profile=False):
-		self.url = parser.URL(queue_url)
-		self.profile = profile
-
-	def get_queue(self, user_id):
-		"""
-		Get a queue object that stores up messages until committed.
-		"""
-		q = RestMQQueue(self, user_id, self.profile)
-		return q
-
-	def connect(self):
-		return defer.succeed(None)
-
-	def disconnect(self):
-		return defer.succeed(None)
-
-class RestMQQueue(AbstractQueue):
-	def start(self):
-		return defer.succeed(None)
-
-	def stop(self):
-		return defer.succeed(None)
-
-	@defer.inlineCallbacks
-	def pop(self):
-		"""
-		Take one item from this user's queue.
-		"""
-		from twisted.internet import reactor
-		from twisted.web import http_headers, client
-
-		a = client.Agent(reactor)
-		url = str(self.service.url).replace('restmq://', 'http://')
-		response = yield a.request('POST', url, http_headers.Headers(),
-			StringProducer(simplejson.dumps(dict(
-				cmd		= 'take',
-				queue	= 'user-%d' % self.user_id,
-			)))
-		)
-
-		d = defer.Deferred()
-		bc = BodyCollector(d)
-		response.deliverBody(bc)
-
-		body = yield d
-
-		msg = simplejson.loads(body)
-		defer.returnValue(msg['value'])
-
-	def flush(self):
-		"""
-		Send all queued messages.
-		"""
-		from twisted.internet import reactor
-		from twisted.web import http_headers, client
-
-		d = []
-		url = str(self.service.url).replace('restmq://', 'http://')
-
-		while(self.messages):
-			user_id, msg = self.messages.pop(0)
-			a = client.Agent(reactor)
-			d.append(a.request('POST', url, http_headers.Headers(),
-				StringProducer(simplejson.dumps(dict(
-					cmd		= 'add',
-					queue	= 'user-%d' % user_id,
-					value	= simplejson.dumps(msg),
-				)))
-			))
-
-		return defer.DeferredList(d)
-
+def installServices(master_service, queue_url, profile=False):
+	getService(queue_url, profile).setServiceParent(master_service)
 
 class RabbitMQService(service.Service):
 	"""
 	Provides a service that holds a reference to the active
 	RebbitMQ connection.
 	"""
-	interface.implements(IMessageService)
+	interface.implements(messaging.IMessageService)
 
 	def __init__(self, queue_url, profile=False):
 		"""
@@ -224,6 +47,8 @@ class RabbitMQService(service.Service):
 		self.profile = profile
 		self.connection = None
 		self.channel_counter = 0
+		
+		reactor.addSystemEventTrigger('before', 'shutdown', self.disconnect)
 
 	def get_queue(self, user_id):
 		"""
@@ -286,9 +111,10 @@ class RabbitMQService(service.Service):
 		yield chan.channel_open()
 		defer.returnValue(chan)
 
-class RabbitMQQueue(AbstractQueue):
+class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def start(self):
+		conn = yield self.service.connect()
 		self.chan = yield self.service.setup_client_channel(self.user_id)
 		self.queue = yield self.service.connection.queue("user-%s-consumer" % self.user_id)
 
