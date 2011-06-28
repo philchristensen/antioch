@@ -116,7 +116,24 @@ class Access(models.Model):
 		return self.accessor if self.type == 'accessor' else self.group
 	
 	def entity(self):
-		return self.object if self.object else self.verb if self.verb else self.property
+		if self.object:
+			return 'self'
+		elif self.verb:
+			return ''.join([
+				['', '@'][self.verb.ability],
+				self.verb.names.all()[:1][0].name,
+				['', '()'][self.verb.method],
+			])
+		else:
+			return self.property.name
+
+	def origin(self):
+		if self.object:
+			return self.object 
+		elif self.verb:
+			return self.verb.origin
+		else:
+			return self.property.origin
 	
 	def __unicode__(self):
 		try:

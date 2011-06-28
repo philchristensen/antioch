@@ -23,5 +23,8 @@ class ControlResource(jsonrpc.JSONRPC):
 		jsonrpc.JSONRPC.__init__(self)
 		jsonrpc.addIntrospection(self)
 	
+	def render(self, request):
+		return jsonrpc.JSONRPC.render(self, request)
+	
 	def jsonrpc_parse(self, user_id, command):
 		yield transact.Parse.run(user_id=user_id, sentence=command.encode('utf8'))
