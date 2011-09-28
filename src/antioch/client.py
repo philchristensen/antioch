@@ -21,7 +21,7 @@ from twisted.python import failure, log
 
 from nevow import inevow, loaders, athena, guard, rend, tags
 
-from antioch import errors, assets, transact, session, modules, json
+from antioch import errors, assets, transact, session, modules, json, restful
 
 class Mind(object):
 	"""
@@ -92,6 +92,10 @@ class RootDelegatePage(rend.Page):
 					else:
 						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service, sid)
 					defer.returnValue((client, segments[1:]))
+				elif(segments[0] == 'actions'):
+					request = inevow.IRequest(ctx)
+					actions = restful.TransctionInterface(user, segments[1:])
+					defer.returnValue((actions, []))
 				elif(segments[0] == 'logout'):
 					self.spool.logoutUser(sid)
 					if(sid in self.connections):
