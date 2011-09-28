@@ -1,10 +1,8 @@
-# modu
-# Copyright (c) 1999-2010 Phil Christensen
-# http://modu.bubblehouse.org
+# fu-web
 #
-# $Id: sql.py 1306 2010-03-04 16:18:24Z phil $
+# freelancersunion.org
 #
-# See LICENSE for details
+# By Phil Christensen
 
 """
 SQL building facilities.

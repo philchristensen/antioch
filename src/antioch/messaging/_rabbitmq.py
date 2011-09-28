@@ -9,11 +9,7 @@ from twisted.application import service
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import ClientCreator
 
-from txamqp import spec, protocol, content, client
-from txamqp.client import TwistedDelegate
-
-from txamqp.client import Closed as ClientClosed
-from txamqp.queue import Closed as QueueClosed
+import simplejson
 
 from antioch import json, parser, messaging
 
@@ -37,9 +33,10 @@ class RabbitMQService(service.Service):
 		Create a service with the given connection.
 		"""
 		self.url = parser.URL(queue_url)
-		if(self.url['scheme'] != 'rabbitmq'):
-			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
 
+		from twisted.internet.protocol import ClientCreator
+		from txamqp import spec, protocol
+		from txamqp.client import TwistedDelegate
 		self.factory = ClientCreator(reactor, protocol.AMQClient,
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
@@ -123,6 +120,7 @@ class RabbitMQQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def stop(self):
+		from txamqp.client import Closed as ClientClosed
 		try:
 			yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
 			yield self.chan.channel_close()
@@ -131,6 +129,7 @@ class RabbitMQQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
+		from txamqp.queue import Closed as QueueClosed
 		try:
 			msg = yield self.queue.get()
 			data = json.loads(msg.content.body.decode('utf8'))
@@ -161,9 +160,11 @@ class RabbitMQQueue(messaging.AbstractQueue):
 			user_id, msg = self.messages.pop(0)
 			routing_key = 'user-%s' % user_id
 			data = json.dumps(msg)
+			from txamqp import content
 			c = content.Content(data, properties={'content type':'application/json'})
 			yield chan.basic_publish(exchange=exchange, content=c, routing_key=routing_key)
 
+		from txamqp.client import Closed as ClientClosed
 		try:
 			yield chan.channel_close()
 		except ClientClosed, e:
