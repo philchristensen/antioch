@@ -47,6 +47,11 @@ class RegistrationModule(object):
 	name = u'registration'
 	script_url = u'/plugin/registration/assets/js/registration-plugin.js'
 	
+	def get_commands(self):
+		from antioch.modules.registration import transactions
+		from antioch.modules import discover_commands
+		return discover_commands(transactions)
+	
 	def get_resource(self, user):
 		return resource.RegistrationPage(user)
 	

@@ -37,6 +37,9 @@ class AskModule(object):
 			ask = ask,
 		)
 	
+	def get_commands(self):
+		return {}
+	
 	def get_resource(self, user):
 		from antioch.modules.ask import resource
 		return resource.AskDelegatePage()

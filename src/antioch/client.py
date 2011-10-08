@@ -92,10 +92,10 @@ class RootDelegatePage(rend.Page):
 					else:
 						client = self.connections[sid] = ClientInterface(user, mind, self.msg_service, sid)
 					defer.returnValue((client, segments[1:]))
-				elif(segments[0] == 'actions'):
+				elif(segments[0] == 'commands'):
 					request = inevow.IRequest(ctx)
-					actions = restful.TransctionInterface(user, segments[1:])
-					defer.returnValue((actions, []))
+					commands = restful.TransctionInterface(user, segments[1:])
+					defer.returnValue((commands, []))
 				elif(segments[0] == 'logout'):
 					self.spool.logoutUser(sid)
 					if(sid in self.connections):
@@ -337,8 +337,8 @@ class ClientConnector(athena.LiveElement):
 		self.login(mind).errback = _init_eb
 		
 		for mod in modules.iterate():
-			if(hasattr(mod, 'activate_athena_commands')):
-				mod.activate_athena_commands(self)
+			if(hasattr(mod, 'activate_client_commands')):
+				mod.activate_client_commands(self)
 	
 	@defer.inlineCallbacks
 	def login(self, mind):
@@ -386,7 +386,7 @@ class ClientConnector(athena.LiveElement):
 	
 	def handle_message(self, data):
 		"""
-		Handle a single message from the RabbitMQ server.
+		Handle a single message from the queue server.
 		"""
 		mod = modules.get(data.get('plugin', None))
 		d = None
