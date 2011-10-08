@@ -15,10 +15,6 @@ import simplejson
 
 from antioch import modules
 
-# wget --load-cookies=cookies.dat http://localhost:8888/commands/parse -S --post-data="{\"test\":\"test\"}"
-
-# cookies.dat:
-# localhost	TRUE	/	FALSE	1333585359	sid	bd5e02cadf1d9bce4c1dc85c0a542887
 def translate_path(path):
 	return ''.join([x.capitalize() for x in path.split('-')])
 
@@ -31,8 +27,7 @@ def get_command_class(class_name):
 	return None
 
 class TransctionInterface(resource.Resource):
-	def __init__(self, user, segments):
-		self.user = user
+	def __init__(self, segments):
 		self.segments = segments
 	
 	@defer.inlineCallbacks
@@ -44,6 +39,6 @@ class TransctionInterface(resource.Resource):
 		
 		json = request.content.getvalue()
 		options = simplejson.loads(json)
-		result = yield klass.run(**kwargs)
+		result = yield klass.run(**options)
 		defer.returnValue(simplejson.dumps(result))
 

@@ -73,11 +73,6 @@ class antiochServer(object):
 		web_service.setName("web-server")
 		web_service.setServiceParent(master_service)
 
-		from antioch import appserver
-		control_service = appserver.ControlService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
-		control_service.setName("control-server")
-		control_service.setServiceParent(master_service)
-
 		task_service.run()
 
 		return master_service

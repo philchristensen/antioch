@@ -100,8 +100,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-LOGIN_URL = '/client/login'
-LOGIN_REDIRECT_URL = '/client'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'antioch.dj.urls'
 
