@@ -10,7 +10,7 @@ Isolate verb code into individual subprocesses
 
 from __future__ import with_statement
 
-import time
+import warnings, time
 
 from twisted.python import log
 from twisted.internet import defer
@@ -41,9 +41,12 @@ def get_process_pool(child=None, *args):
 		return processPools[child.__name__]
 
 	custom_bootstrap = main.BOOTSTRAP.split('\n')
+	warnings.warn("HACK: skipping installReactor in ampoule children.")
+	custom_bootstrap[3] = '    '
+	custom_bootstrap[4] = '    '
 	custom_bootstrap.insert(-2, 'from antioch import child')
 	custom_bootstrap.insert(-2, 'child.initialize()')
-
+	
 	p = processPools[child.__name__] = pool.ProcessPool(
 		child,
 		name 			= 'antioch-process-pool',
