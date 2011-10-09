@@ -103,6 +103,10 @@ MIDDLEWARE_CLASSES = (
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
+AUTHENTICATION_BACKENDS = (
+	'antioch.dj.AntiochAuthBackend',
+	'django.contrib.auth.backends.ModelBackend',
+)
 ROOT_URLCONF = 'antioch.dj.urls'
 
 TEMPLATE_DIRS = (

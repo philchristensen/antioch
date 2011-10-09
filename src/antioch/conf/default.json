@@ -1,6 +1,5 @@
 {
 	"web-port":8888,
-	"control-port":8889,
 	
 	"redis-host":"localhost",
 	"redis-port":6379,

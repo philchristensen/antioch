@@ -154,6 +154,24 @@ class Player(models.Model):
 		db_table = 'player'
 		managed = False
 	
+	def __unicode__(self):
+		return self.email
+
+	def is_authenticated(self):
+		return True
+	
+	@property
+	def is_active(self):
+		return True
+	
+	@property
+	def is_staff(self):
+		return False
+	
+	@property
+	def is_superuser(self):
+		return False
+	
 	avatar = models.ForeignKey(Object)
 	session_id = models.CharField(max_length=255)
 	wizard = models.BooleanField()
