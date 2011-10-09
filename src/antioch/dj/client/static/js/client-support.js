@@ -6,8 +6,25 @@ function getConnector(){
 	/*
 	 * Return the Athena connection to the server.
 	 */
-	var element = document.getElementById('athenaid:1-client-connector');
-	return Nevow.Athena.Widget.get(element);
+	// var element = document.getElementById('athenaid:1-client-connector');
+	// return Nevow.Athena.Widget.get(element);
+}
+
+function callRemote(command, options, callback){
+	$.ajax('/rest/' + command, {
+		type: 'POST',
+		dataType: 'json',
+		processData: false,
+		data: JSON.stringify(options),
+		error:	function(jqXHR, textStatus, errorThrown){
+			alert('Error in callRemote: ' + textStatus);
+		},
+		success: function(data, textStatus, jqXHR){
+			if(callback){
+				callback(data);
+			}
+		}
+	});
 }
 
 // function getEditorDetails(editorWindow){
@@ -23,10 +40,9 @@ function handleKeyEvent(event){
 	 */
 	switch(event.which){
 		case 13:
-			var connector = getConnector();
 			var command = event.target.value;
 			if(command){
-				connector.parse(command);
+				callRemote('parse', {user_id: 2, sentence: command});
 				commandHistory.push(command);
 				historyPosition = commandHistory.length - 1;
 			}
@@ -65,26 +81,10 @@ function look(item){
 	/*
 	 * Primitive click-to-look support.
 	 */
-	var connector = getConnector()
-	
-	connector.parse('look ' + item);
+	callRemote('parse', {user_id: 2, sentence: 'look ' + item});
 }
 
-function init(){
-	jQuery.getScript('/assets/js/jquery.scrollTo-1.4.2-min.js');
-	jQuery.getScript('/assets/js/jquery.dimensions-1.1.2-min.js', function(data, status){
-		jQuery.getScript('/assets/js/jquery.splitter-1.5.1.js', function(data, status){
-			$('#client-wrapper').splitter({
-				type: 'h',
-				anchorToWindow: true,
-				sizeTop: true
-			});
-			$('#bottom-pane').splitter({
-				type: 'h',
-			});
-		});
-	});
-	
+$(document).ready(function(){
 	$('.client-prompt').keyup(handleKeyEvent);
 	
 	$('.look-me').click(function(){
@@ -94,4 +94,4 @@ function init(){
 	$('.look-here').click(function(){
 		look('here');
 	});
-}
+});
