@@ -11,8 +11,11 @@ urlpatterns = patterns('',
 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'', include('antioch.dj.client.urls')),
 )
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns += staticfiles_urlpatterns()
+
+urlpatterns += patterns('',
+    url(r'', include('antioch.dj.client.urls')),
+)

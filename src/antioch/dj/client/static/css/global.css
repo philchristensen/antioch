@@ -1,0 +1,13 @@
+body {
+	font-family: helvetica, arial, _sans;
+}
+
+.error {
+	color: red;
+}
+
+.action-button {
+	margin-top: 10px;
+	float: right;
+}
+
