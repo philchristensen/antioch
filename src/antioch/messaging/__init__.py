@@ -78,6 +78,9 @@ class AbstractQueue(object):
 	def pop(self):
 		raise NotImplementedError('AbstractQueue.pop')
 
+	def get_available(self):
+		raise NotImplementedError('AbstractQueue.get_available')
+
 	def flush(self):
 		raise NotImplementedError('AbstractQueue.flush')
 

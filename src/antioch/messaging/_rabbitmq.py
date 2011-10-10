@@ -136,6 +136,17 @@ class RabbitMQQueue(messaging.AbstractQueue):
 			defer.returnValue(data)
 		except QueueClosed, e:
 			defer.returnValue(None)
+	
+	@defer.inlineCallbacks
+	def get_available(self):
+		from txamqp.queue import Closed as QueueClosed
+		result = []
+		try:
+			msg = yield self.queue.get()
+			data = json.loads(msg.content.body.decode('utf8'))
+			result.append(data)
+		except QueueClosed, e:
+			defer.returnValue(result or None)
 
 	@defer.inlineCallbacks
 	def flush(self):

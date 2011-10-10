@@ -35,22 +35,10 @@ class DjangoService(internet.TCPServer):
 	"""
 	Provides a service that responds to web requests.
 	"""
-	def __init__(self, db_url, access_log):
+	def __init__(self, msg_service, db_url, access_log):
 		os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.dj.settings'
-		self.root = RootResource()
+		self.root = restful.RootResource(msg_service)
 		log_path = conf.get('access-log') or None
 		self.factory = server.Site(self.root, logPath=log_path)
 		internet.TCPServer.__init__(self, conf.get('web-port'), self.factory)
 
-class RootResource(wsgi.WSGIResource):
-	isLeaf=True
-	def __init__(self):
-		import django.core.handlers.wsgi
-		handler = django.core.handlers.wsgi.WSGIHandler()
-		wsgi.WSGIResource.__init__(self, reactor, reactor.getThreadPool(), handler)
-	
-	def render(self, request):
-		if(request.postpath and request.postpath[0] == 'rest'):
-			rsrc = restful.TransctionInterface(request.postpath[1:])
-			return rsrc.render(request)
-		return wsgi.WSGIResource.render(self, request)

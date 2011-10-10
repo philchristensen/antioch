@@ -65,6 +65,10 @@ class RestMQQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
+		return self._get()
+	
+	@defer.inlineCallbacks
+	def _pop(self, return_list=False):
 		"""
 		Take one item from this user's queue.
 		"""
@@ -88,17 +92,27 @@ class RestMQQueue(messaging.AbstractQueue):
 		))
 		client.noisy = False
 		
-		reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-		response = yield client.deferred
-		response = json.loads(response)
+		result = []
+		reading = True
+		while(reading):
+			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
+			response = yield client.deferred
+			response = json.loads(response)
 		
-		if('error' in response):
-			if(response['error'] == 'empty queue'):
-				defer.returnValue(None)
-			else:
-				raise RuntimeError('restmq-pop-error: %s' % response)
+			if('error' in response):
+				if(response['error'] == 'empty queue'):
+					defer.returnValue(result if return_list else None)
+				else:
+					raise RuntimeError('restmq-pop-error: %s' % response)
+			result.append(json.loads(response['value'].decode('utf8')))
+			if not(return_list):
+				break
 		
-		defer.returnValue(json.loads(response['value'].decode('utf8')))
+		defer.returnValue(result[0])
+
+	@defer.inlineCallbacks
+	def get_available(self):
+		return self._pop(return_list=True)
 
 	@defer.inlineCallbacks
 	def flush(self):
