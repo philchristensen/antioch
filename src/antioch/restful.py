@@ -25,6 +25,10 @@ def get_command_class(class_name):
 			return klass
 	return None
 
+def authenticate(request):
+	user_id = None
+	return user_id
+
 class RootResource(wsgi.WSGIResource):
 	isLeaf=True
 	def __init__(self, msg_service):
@@ -83,7 +87,7 @@ class RESTResource(resource.Resource):
 		
 		json = request.content.getvalue()
 		options = simplejson.loads(json)
-		d = klass.run(**options)
+		d = klass.run(user_id=2, **options)
 		
 		def _finish(result):
 			if(request.finished):
