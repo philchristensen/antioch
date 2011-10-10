@@ -78,23 +78,23 @@ class RestMQQueue(messaging.AbstractQueue):
 			port	= queue_url['port'],
 		)
 		
-		client = HTTPClientFactory(url, **dict(
-			method		= 'POST',
-			headers		= {
-				'Content-Type'	: 'application/x-www-form-urlencoded',
-			},
-			postdata	= urllib.urlencode(dict(
-				msg		= json.dumps(dict(
-					cmd		= "take",
-					queue	= 'user-%s' % self.user_id,
-				)),
-			)),
-		))
-		client.noisy = False
-		
 		result = []
 		reading = True
 		while(reading):
+			client = HTTPClientFactory(url, **dict(
+				method		= 'POST',
+				headers		= {
+					'Content-Type'	: 'application/x-www-form-urlencoded',
+				},
+				postdata	= urllib.urlencode(dict(
+					msg		= json.dumps(dict(
+						cmd		= "take",
+						queue	= 'user-%s' % self.user_id,
+					)),
+				)),
+			))
+			client.noisy = False
+		
 			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
 			response = yield client.deferred
 			response = json.loads(response)
@@ -110,7 +110,6 @@ class RestMQQueue(messaging.AbstractQueue):
 		
 		defer.returnValue(result[0])
 
-	@defer.inlineCallbacks
 	def get_available(self):
 		return self._pop(return_list=True)
 

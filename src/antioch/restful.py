@@ -34,36 +34,42 @@ class RootResource(wsgi.WSGIResource):
 		handler = django.core.handlers.wsgi.WSGIHandler()
 		wsgi.WSGIResource.__init__(self, reactor, reactor.getThreadPool(), handler)
 	
-	@defer.inlineCallbacks
 	def render(self, request):
 		if(request.postpath):
 			if(request.postpath[0] == 'rest'):
 				rsrc = RESTResource(request.postpath[1:])
-				result = yield rsrc.render(request)
-				defer.returnValue(result)
+				return rsrc.render(request)
 			elif(request.postpath[0] == 'comet'):
-				queue = self.msg_service.get_queue(self.user_id)
-				yield queue.start()
-				messages = yield self.queue.get_available()
-				rsrc = CometResource(messages)
-				result = yield rsrc.render(request)
-				yield self.queue.stop()
-				defer.returnValue(result)
-		defer.returnValue(wsgi.WSGIResource.render(self, request))
+				d = self.get_messages()
+				def _finish(messages):
+					rsrc = CometResource(messages)
+					output = rsrc.render(request)
+					request.write(output)
+					request.finish()
+				d.addCallback(_finish)
+				return server.NOT_DONE_YET
+		return wsgi.WSGIResource.render(self, request)
+	
+	@defer.inlineCallbacks
+	def get_messages(self):
+		user_id = 2
+		queue = self.msg_service.get_queue(user_id)
+		yield queue.start()
+		messages = yield queue.get_available()
+		yield queue.stop()
+		defer.returnValue(messages)
 
 class CometResource(resource.Resource):
 	def __init__(self, messages):
 		self.messages = messages
 	
-	@defer.inlineCallbacks
 	def render_GET(self, request):
-		defer.returnValue(simplejson.dumps(self.messages))
+		return simplejson.dumps(self.messages)
 
 class RESTResource(resource.Resource):
 	def __init__(self, segments):
 		self.segments = segments
 	
-	@defer.inlineCallbacks
 	def render_POST(self, request):
 		command_name = translate_path(self.segments[0])
 		klass = get_command_class(command_name)
@@ -72,6 +78,10 @@ class RESTResource(resource.Resource):
 		
 		json = request.content.getvalue()
 		options = simplejson.loads(json)
-		result = yield klass.run(**options)
-		defer.returnValue(simplejson.dumps(result))
+		d = klass.run(**options)
+		def _finish(result):
+			request.write(simplejson.dumps(result))
+			request.finish()
+		d.addCallback(_finish)
+		return server.NOT_DONE_YET
 

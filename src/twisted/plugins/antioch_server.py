@@ -69,7 +69,7 @@ class antiochServer(object):
 		task_service.setServiceParent(master_service)
 
 		from antioch import web
-		web_service = web.DjangoService(conf.get('db-url-default'), conf.get('access-log'))
+		web_service = web.DjangoService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
 		web_service.setName("web-server")
 		web_service.setServiceParent(master_service)
 

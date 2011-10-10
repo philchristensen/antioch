@@ -296,8 +296,13 @@ class DefaultTransactionChild(TransactionChild):
 		"""
 		Register a delayed task for the provided user_id.
 		"""
+		print 'registering task'
 		with self.get_exchange(user_id) as x:
-			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+			try:
+				task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+			except Exception, e:
+				print e
+				raise e
 
 		return {'task_id': task_id}
 

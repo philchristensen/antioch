@@ -226,15 +226,26 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 	"""
 	Verb API: queue up a new task.
 	"""
-	#force exception here if undumpable
-	p.exchange.queue.push(p.caller, dict(
-		command		= 'task',
-		delay		= int(delay),
-		origin		= str(origin),
+	# remind me again why we can't do this?
+	from antioch import transact
+	transact.RegisterTask.run(
+		user_id		= p.caller.id,
+		delay		= str(delay),
+		origin_id	= str(origin.id),
 		verb_name	= str(verb_name),
 		args		= json.dumps(args),
 		kwargs		= json.dumps(kwargs),
-	))
+	)
+	
+	# #force exception here if undumpable
+	# p.exchange.queue.push(p.caller, dict(
+	# 	command		= 'task',
+	# 	delay		= int(delay),
+	# 	origin		= str(origin),
+	# 	verb_name	= str(verb_name),
+	# 	args		= json.dumps(args),
+	# 	kwargs		= json.dumps(kwargs),
+	# ))
 
 @api
 def execute(p, code):
