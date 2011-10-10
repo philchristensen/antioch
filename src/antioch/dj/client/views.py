@@ -4,7 +4,6 @@ from django.contrib import auth
 
 @login_required
 def client(request):
-
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
 	), context_instance=template.RequestContext(request))

@@ -17,12 +17,32 @@ function callRemote(command, options, callback){
 		processData: false,
 		data: JSON.stringify(options),
 		error:	function(jqXHR, textStatus, errorThrown){
-			alert('Error in callRemote: ' + textStatus);
+			alert('Error in callRemote: ' + errorThrown);
 		},
 		success: function(data, textStatus, jqXHR){
 			if(callback){
 				callback(data);
 			}
+		}
+	});
+}
+
+function listen(handler){
+	$.ajax('/comet', {
+		dataType: 'json',
+		contentType: 'application/json',
+		cache: false,
+		error:	function(jqXHR, textStatus, errorThrown){
+			if(textStatus == 'timeout'){
+				listen(handler);
+			}
+			else if(textStatus != 'abort'){
+				alert('Error in listen: ' + errorThrown);
+			}
+		},
+		success: function(data, textStatus, jqXHR){
+			handler(JSON.stringify(data));
+			listen(handler);
 		}
 	});
 }
@@ -83,15 +103,3 @@ function look(item){
 	 */
 	callRemote('parse', {user_id: 2, sentence: 'look ' + item});
 }
-
-$(document).ready(function(){
-	$('.client-prompt').keyup(handleKeyEvent);
-	
-	$('.look-me').click(function(){
-		look('me');
-	});
-	
-	$('.look-here').click(function(){
-		look('here');
-	});
-});

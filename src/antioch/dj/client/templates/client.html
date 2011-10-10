@@ -30,3 +30,24 @@
 	</div>
 	</div>
 {% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+	function handleMessage(msg) {
+		$('#actions').append(msg.toString() + '\n');
+	}
+	
+	$(document).ready(function(){
+		$('.client-prompt').keyup(handleKeyEvent);
+	
+		$('.look-me').click(function(){
+			look('me');
+		});
+	
+		$('.look-here').click(function(){
+			look('here');
+		});
+		listen(handleMessage);
+	});
+</script>
+{% endblock %}
