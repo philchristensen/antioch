@@ -1,8 +1,8 @@
 import os
 
-os.environ['DJANGO_SETTINGS_FILE'] = 'antioch.dj.settings'
+os.environ['DJANGO_SETTINGS_FILE'] = 'antioch.settings'
 
-from antioch.dj import settings
+from antioch import settings
 from django.core.management import execute_manager
 
 if __name__ == "__main__":

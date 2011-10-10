@@ -107,7 +107,7 @@ AUTHENTICATION_BACKENDS = (
 	'antioch.dj.AntiochAuthBackend',
 	'django.contrib.auth.backends.ModelBackend',
 )
-ROOT_URLCONF = 'antioch.dj.urls'
+ROOT_URLCONF = 'antioch.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -126,8 +126,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-	'antioch.dj.core',
-    'antioch.dj.client',
+	'antioch.core',
+    'antioch.client',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -161,7 +161,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
-        'antioch.dj.custom': {
+        'antioch.custom': {
             'handlers': ['console'],
             'level': 'INFO',
         }

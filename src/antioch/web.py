@@ -36,7 +36,6 @@ class DjangoService(internet.TCPServer):
 	Provides a service that responds to web requests.
 	"""
 	def __init__(self, msg_service, db_url, access_log):
-		os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.dj.settings'
 		self.root = restful.RootResource(msg_service)
 		log_path = conf.get('access-log') or None
 		self.factory = server.Site(self.root, logPath=log_path)

@@ -1,4 +1,4 @@
-from antioch.dj.core import models
+from antioch.core import models
 from django.contrib import admin
 
 class VerbInline(admin.TabularInline):
