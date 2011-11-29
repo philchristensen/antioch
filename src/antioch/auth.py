@@ -13,7 +13,7 @@ from zope.interface import implements
 from twisted.cred import checkers, credentials
 from twisted.cred import error
 from twisted.internet import defer
-from twisted.python import failure
+from twisted.python import failure, log
 
 from antioch import transact, errors
 
@@ -52,3 +52,48 @@ class TransactionChecker(object):
 				defer.returnValue(result['user_id'])
 			except errors.PermissionError, e:
 				raise error.UnauthorizedLogin(str(e))
+
+class DjangoBackend:
+	"""
+	Authenticate against the antioch object database.
+	"""
+	supports_object_permissions = False
+	supports_anonymous_user = True
+	supports_inactive_user = False
+
+	def authenticate(self, username=None, password=None, request=None):
+		import crypt
+		from antioch.core.models import Player
+		
+		try:
+			p = Player.objects.filter(
+				avatar__name__iexact = username,
+			)[:1]
+			
+			if not(p):
+				log.msg("Django auth failed.")
+				return None
+			
+			p = p[0]
+			if(p.crypt != crypt.crypt(password, p.crypt[0:2])):
+				return None
+			return p
+		except Player.DoesNotExist:
+			log.msg("Player auth failed.")
+			return None
+		except Exception, e:
+			import traceback
+			e = traceback.format_exc()
+			log.msg("Error in authenticate(): %s" % e)
+
+	def get_user(self, user_id):
+		from antioch.core.models import Player
+		
+		try:
+			p = Player.objects.get(pk=user_id)
+			if(p):
+				return p
+			return None
+		except Player.DoesNotExist:
+			return None
+
