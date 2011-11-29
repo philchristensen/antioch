@@ -55,7 +55,9 @@
 		$('.look-here').click(function(){
 			look('here');
 		});
-		listen(handleMessages);
+		setTimeout(function() {
+			listen(handleMessages);
+		}, 500);
 	});
 </script>
 {% endblock %}

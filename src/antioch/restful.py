@@ -44,17 +44,26 @@ class RootResource(wsgi.WSGIResource):
 				rsrc = RESTResource(request.postpath[1:])
 				return rsrc.render(request)
 			elif(request.postpath[0] == 'comet'):
-				d = self.get_messages()
-				def _finish(messages):
-					if(request.finished):
-						return
-					rsrc = CometResource(messages)
-					output = rsrc.render(request)
-					request.write(output)
-					request.finish()
-				d.addCallback(_finish)
-				return server.NOT_DONE_YET
+				rsrc = CometResource(self.msg_service)
+				return rsrc.render(request)
+				
 		return wsgi.WSGIResource.render(self, request)
+
+class CometResource(resource.Resource):
+	def __init__(self, msg_service):
+		self.msg_service = msg_service
+	
+	def render_GET(self, request):
+		d = self.get_messages()
+		def _finish(messages):
+			if(request.finished):
+				return
+			output = simplejson.dumps(messages)
+			request.write(output)
+			request.finish()
+		d.addCallback(_finish)
+		request.setHeader('Content-Type', 'application/json')
+		return server.NOT_DONE_YET
 	
 	@defer.inlineCallbacks
 	def get_messages(self):
@@ -66,14 +75,6 @@ class RootResource(wsgi.WSGIResource):
 			messages = yield queue.get_available()
 		yield queue.stop()
 		defer.returnValue(messages)
-
-class CometResource(resource.Resource):
-	def __init__(self, messages):
-		self.messages = messages
-	
-	def render_GET(self, request):
-		request.setHeader('Content-Type', 'application/json')
-		return simplejson.dumps(self.messages)
 
 class RESTResource(resource.Resource):
 	def __init__(self, segments):
