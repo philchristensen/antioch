@@ -63,7 +63,7 @@ class DjangoBackend:
 
 	def authenticate(self, username=None, password=None, request=None):
 		import crypt
-		from antioch.core.models import Player
+		from antioch.client.models import Player
 		
 		try:
 			p = Player.objects.filter(
@@ -87,7 +87,7 @@ class DjangoBackend:
 			log.msg("Error in authenticate(): %s" % e)
 
 	def get_user(self, user_id):
-		from antioch.core.models import Player
+		from antioch.client.models import Player
 		
 		try:
 			p = Player.objects.get(pk=user_id)
