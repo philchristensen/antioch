@@ -1,6 +1,14 @@
-import os, os.path, subprocess, warnings
+import sys, os, os.path, subprocess, warnings
 
 has_git = None
+
+postgenerate_cache_commands = ('build', 'build_py', 'build_ext',
+	'build_clib', 'build_scripts', 'install', 'install_lib',
+	'install_headers', 'install_scripts', 'install_data',
+	'develop', 'easy_install')
+
+pregenerate_cache_commands = ('sdist', 'bdist', 'bdist_dumb',
+	'bdist_rpm', 'bdist_wininst', 'upload', 'bdist_egg', 'test')
 
 def find_files_for_git(dirname):
 	global has_git
@@ -15,6 +23,21 @@ def find_files_for_git(dirname):
 			yield path
 	else:
 		warnings.warn("Can't find git binary.")
+
+def adaptTwistedSetup(cmd, setup_function):
+	if(cmd in pregenerate_cache_commands):
+		dist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src')
+		if(dist_dir not in sys.path):
+			sys.path.insert(0, dist_dir)
+		
+		print 'Regenerating plugin cache...'
+		regeneratePluginCache()
+
+	dist = setup_function()
+	if(sys.argv[-1] in postgenerate_cache_commands):
+		subprocess.Popen(
+			[sys.executable, '-c', 'from antioch import setup; setup.regeneratePluginCache(); print "Regenerating plugin cache..."'],
+		).wait()
 
 def pluginModules(moduleNames):
 	from twisted.python.reflect import namedAny
