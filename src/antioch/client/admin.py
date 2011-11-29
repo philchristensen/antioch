@@ -1,4 +1,4 @@
-from antioch.core import models
+from antioch.client import models
 from django.contrib import admin
 
 class VerbInline(admin.TabularInline):
@@ -6,7 +6,7 @@ class VerbInline(admin.TabularInline):
 	fk_name = 'origin'
 	extra = 1
 	exclude = ('code',)
-	readonly_fields = ('filename', 'owner', 'ability', 'method')
+	readonly_fields = ('filename', 'ability', 'method', 'owner')
 
 class PropertyInline(admin.TabularInline):
 	model = models.Property
