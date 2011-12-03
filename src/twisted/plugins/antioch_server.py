@@ -10,7 +10,10 @@ twistd plugin support
 This module adds a 'antioch' server type to the twistd service list.
 """
 
-import os, warnings
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
+
+import warnings
 
 from zope.interface import classProvides
 
@@ -68,9 +71,8 @@ class antiochServer(object):
 		task_service.setName("task-daemon")
 		task_service.setServiceParent(master_service)
 
-		from antioch import web
-		os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
-		web_service = web.DjangoService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
+		from antioch import client
+		web_service = client.DjangoService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
 		web_service.setName("web-server")
 		web_service.setServiceParent(master_service)
 

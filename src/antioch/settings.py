@@ -106,7 +106,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
-	'antioch.auth.DjangoBackend',
+	'antioch.client.DjangoBackend',
 	'django.contrib.auth.backends.ModelBackend',
 )
 ROOT_URLCONF = 'antioch.urls'

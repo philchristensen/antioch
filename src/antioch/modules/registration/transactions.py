@@ -8,7 +8,7 @@ import hashlib, socket
 
 from twisted.protocols import amp
 
-from antioch import transact, parser, json, sql, errors, session
+from antioch import transact, parser, json, sql, errors#, session
 
 from antioch.modules.registration import mailer
 
