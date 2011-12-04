@@ -1,8 +1,8 @@
-# fu-web
+# antioch
+# Copyright (c) 1999-2011 Phil Christensen
 #
-# freelancersunion.org
 #
-# By Phil Christensen
+# See LICENSE for details
 
 """
 SQL building facilities.
