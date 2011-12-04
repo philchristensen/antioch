@@ -43,7 +43,7 @@ class RabbitMQService(service.Service):
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
 			spec	 = spec.loadString(
-				pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
+				pkg.resource_string('antioch.messaging', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
 			),
 		)
 		self.profile = profile
