@@ -19,8 +19,8 @@ from twisted.python import util, log
 
 from txamqp.client import Closed
 
-from antioch import sql, json
 from antioch.core import model, errors
+from antioch.util import sql, json
 
 group_definitions = dict(
 	owners		= lambda x,a,s: a.owns(s),

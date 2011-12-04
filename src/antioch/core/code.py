@@ -13,8 +13,9 @@ import time, sys, os.path
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
 
+from antioch import modules
 from antioch.core import errors
-from antioch import modules, json
+from antioch.util import json
 
 allowed_modules = (
 	'hashlib',

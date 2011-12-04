@@ -51,7 +51,7 @@ class antiochServer(object):
 		if(conf.get('suppress-deprecation-warnings')):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
-		from antioch import logging
+		from antioch.util import logging
 		error_log = conf.get('error-log')
 		if(error_log):
 			log.startLogging(open(error_log, 'w'))

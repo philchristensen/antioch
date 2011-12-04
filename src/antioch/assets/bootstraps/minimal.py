@@ -11,7 +11,7 @@ Default database bootstrap.
 from __future__ import with_statement
 
 from antioch.core import model, bootstrap
-from antioch import sql
+from antioch.util import sql
 
 for name in model.default_permissions:
 	exchange.pool.runOperation(sql.build_insert('permission', name=name))

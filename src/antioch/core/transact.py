@@ -18,8 +18,9 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
-from antioch import conf, messaging, sql, modules, json, logging
+from antioch import conf, messaging, modules
 from antioch.core import dbapi, code, exchange, errors, parser
+from antioch.util import sql, json, logging
 
 processPools = {}
 default_db_url = conf.get('db-url-default')

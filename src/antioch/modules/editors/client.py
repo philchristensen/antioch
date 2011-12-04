@@ -6,7 +6,7 @@
 
 from twisted.internet import defer
 
-from antioch import json
+from antioch.util import json
 from antioch.modules.editors import transactions
 
 class EditorRemoteReference(object):

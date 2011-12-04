@@ -8,8 +8,9 @@ from twisted.web.client import HTTPClientFactory
 
 import restmq.web
 
+from antioch import messaging, conf
 from antioch.core import parser
-from antioch import messaging, conf, json
+from antioch.util import json
 
 def getService(queue_url, profile=False):
 	restmq_service = RestMQService(queue_url, profile=profile)

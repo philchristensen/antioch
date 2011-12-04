@@ -11,8 +11,9 @@ from twisted.internet.protocol import ClientCreator
 
 import simplejson
 
-from antioch import json, messaging
+from antioch import messaging
 from antioch.core import parser
+from antioch.util import json
 
 def getService(queue_url, profile=False):
 	rabbitmq_service = RabbitMQService(queue_url, profile=profile)

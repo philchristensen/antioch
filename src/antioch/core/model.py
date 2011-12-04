@@ -8,8 +8,8 @@
 Represent objects in-universe
 """
 
-from antioch import json
 from antioch.core import errors, code
+from antioch.util import json
 
 # These are the default list of permissions, auto-created
 # first thing during universe boostrapping

@@ -12,7 +12,7 @@ try:
 except ImportError, e:
 	from StringIO import StringIO
 
-from antioch import sql
+from antioch.util import sql
 from antioch.core import model
 
 ADDRESS_REGEX = re.compile(r'^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$')

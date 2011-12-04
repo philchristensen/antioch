@@ -47,7 +47,7 @@ def autosetup():
 
 		entry_points	= {
 			'setuptools.file_finders'	: [
-				'git = antioch.setup:find_files_for_git',
+				'git = antioch.util.setup:find_files_for_git',
 			],
 			'console_scripts': [
 				'mkspace = antioch.scripts.mkspace:main',
@@ -97,12 +97,12 @@ if(__name__ == '__main__'):
 		if(dist_dir not in sys.path):
 			sys.path.insert(0, dist_dir)
 
-		from antioch import setup
+		from antioch.util import setup
 		print 'Regenerating plugin cache...'
 		setup.regeneratePluginCache()
 
 	dist = autosetup()
 	if(sys.argv[-1] in postgenerate_cache_commands):
 		subprocess.Popen(
-			[sys.executable, '-c', 'from antioch import setup; setup.regeneratePluginCache(); print "Regenerating plugin cache..."'],
+			[sys.executable, '-c', 'from antioch.util import setup; setup.regeneratePluginCache(); print "Regenerating plugin cache..."'],
 		).wait()

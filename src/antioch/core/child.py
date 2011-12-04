@@ -10,7 +10,8 @@ Initialization code for child processes.
 
 import warnings
 
-from antioch import conf, logging
+from antioch import conf
+from antioch.util import logging
 
 def initialize():
 	if(conf.get('suppress-deprecation-warnings')):
