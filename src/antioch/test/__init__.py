@@ -7,7 +7,9 @@
 Provide testing for the codebase
 """
 
-from antioch import assets, conf
+import pkg_resources as pkg
+
+from antioch import conf
 from antioch.core import dbapi, bootstrap, transact
 
 psql_path = conf.get('psql-path')
@@ -27,7 +29,7 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	
-	schema_path = assets.get('bootstraps/schema.sql')
+	schema_path = pkg.resource_filename('antioch.core.bootstrap', 'schema.sql')
 	bootstrap.load_schema(psql_path, db_url, schema_path)
 	
 	pool[dbid] = dbapi.connect(db_url, **dict(
@@ -37,7 +39,7 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 		debug_syntax	= conf.get('debug-sql-syntax'),
 		profile			= conf.get('profile-db'),
 	))
-	bootstrap_path = assets.get('bootstraps/%s.py' % dataset)
+	bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', '%s.py' % dataset)
 	bootstrap.load_python(pool[dbid], bootstrap_path)
 
 	return pool[dbid]

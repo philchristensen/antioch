@@ -59,8 +59,8 @@ def is_frame_access_allowed():
 			#print '%r 1startswith %r' % (c2.co_filename, test_source_path)
 			return True
 		
-		from antioch import assets
-		bootstrap_source_path = os.path.abspath(os.path.join(os.path.dirname(assets.__file__), 'bootstraps'))
+		from antioch.core import bootstrap
+		bootstrap_source_path = os.path.abspath(os.path.dirname(bootstrap.__file__))
 		if(c2.co_filename.startswith(bootstrap_source_path)):
 			#print '%r 2startswith %r' % (c2.co_filename, bootstrap_source_path)
 			return True

@@ -1,12 +1,13 @@
 import os.path, sys
 
+import pkg_resources as pkg
+
 from twisted.python import usage
 
-from antioch import assets
 from antioch.core import dbapi, bootstrap, transact
 
-default_bootstrap_path = 'bootstraps/%s.py'
-default_schema_path = 'bootstraps/schema.sql'
+default_bootstrap_path = '%s.py'
+default_schema_path = 'schema.sql'
 
 class Options(usage.Options):
 	"""
@@ -41,13 +42,13 @@ def main():
 	if(config['schema-file']):
 		schema_path = config['schema-file']
 	else:
-		schema_path = assets.get(default_schema_path)
+		schema_path = pkg.resource_filename('antioch.core.bootstrap', default_schema_path)
 	schema_path = os.path.abspath(schema_path)
 
 	if(config['bootstrap-file']):
 		bootstrap_path = config['bootstrap-file']
 	else:
-		bootstrap_path = assets.get(default_bootstrap_path % config['dataset-name'])
+		bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', default_bootstrap_path % config['dataset-name'])
 	bootstrap_path = os.path.abspath(bootstrap_path)
 
 	bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)

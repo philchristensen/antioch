@@ -39,7 +39,7 @@ def autosetup():
 		name			= "antioch",
 		version			= "1.0",
 
-		packages		= find_packages('src') + ['twisted.plugins', 'nevow.plugins'],
+		packages		= find_packages('src') + ['twisted.plugins'],
 		package_dir		= {
 			''			: 'src',
 		},
@@ -60,7 +60,7 @@ def autosetup():
 
 		install_requires = ['%s%s' % x for x in {
 			'twisted'			: ">=10.1.0",
-			'django'			: '==1.3',
+			'django'			: '>=1.3',
 			'psycopg2'			: "==2.4.1",
 			'simplejson'		: ">=2.1.1",
 			'txamqp'			: ">=0.3",

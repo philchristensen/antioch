@@ -10,8 +10,6 @@ import pkg_resources as pkg
 
 from nevow import loaders, rend
 
-from antioch import assets
-
 class EditorDelegatePage(rend.Page):
 	def __init__(self, user):
 		self.user = user

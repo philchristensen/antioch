@@ -10,9 +10,10 @@ Create a fresh database
 
 from __future__ import with_statement
 
+import pkg_resources as pkg
+
 import traceback, subprocess
 
-from antioch import assets
 from antioch.core import dbapi, exchange, parser
 
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
@@ -95,10 +96,10 @@ def load_python(pool, python_path):
 		execfile(python_path, globals(), dict(exchange=x))
 
 def get_verb_path(filename, dataset='default'):
-	return assets.get('bootstraps/%s_verbs' % dataset, filename)
+	return pkg.resource_filename('antioch.core.bootstrap', '%s_verbs/%s' % (dataset, filename))
 
 def get_source(filename, dataset='default'):
-	verb_path = assets.get('bootstraps/%s_verbs' % dataset, filename)
+	verb_path = pkg.resource_filename('antioch.core.bootstrap', '%s_verbs/%s' % (dataset, filename))
 	with open(verb_path) as f:
 		return f.read()
 

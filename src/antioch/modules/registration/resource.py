@@ -12,7 +12,6 @@ from twisted.internet import defer
 
 from nevow import loaders, rend, inevow, tags
 
-from antioch import assets
 from antioch.core import errors
 #from antioch.client import DefaultAccountPage
 from antioch.modules.registration import transactions
