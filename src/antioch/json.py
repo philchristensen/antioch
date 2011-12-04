@@ -57,7 +57,7 @@ def dumps(obj):
 	"""
 	Create some antioch-flavored JSON (containing antioch object references).
 	"""
-	from antioch import model
+	from antioch.core import model
 	def from_entity(o):
 		if not(isinstance(o, model.Entity)):
 			return o

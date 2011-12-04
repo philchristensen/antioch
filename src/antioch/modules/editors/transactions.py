@@ -6,7 +6,8 @@
 
 from twisted.protocols import amp
 
-from antioch import transact, parser, json
+from antioch import json
+from antioch.core import transact, parser
 
 class GetObjectDetails(transact.WorldTransaction):
 	arguments = [

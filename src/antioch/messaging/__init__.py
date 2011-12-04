@@ -10,7 +10,8 @@ Enable access to the messaging server
 
 from zope import interface
 
-from antioch import conf, parser
+from antioch import conf
+from antioch.core import parser
 
 def getService(queue_url, profile=False):
 	url = parser.URL(queue_url)

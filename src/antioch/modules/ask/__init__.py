@@ -46,7 +46,7 @@ class AskModule(object):
 	
 	def handle_message(self, data, client):
 		def _cb_ask(result):
-			from antioch import transact, json
+			from antioch.core import transact, json
 			transact.RegisterTask.run(
 				user_id		= client.user_id,
 				origin_id	= str(data['origin_id']),

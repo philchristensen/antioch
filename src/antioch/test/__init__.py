@@ -7,7 +7,8 @@
 Provide testing for the codebase
 """
 
-from antioch import bootstrap, dbapi, assets, transact, conf
+from antioch.core import bootstrap, transact
+from antioch import dbapi, assets, conf
 
 psql_path = conf.get('psql-path')
 

@@ -18,8 +18,9 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
-from antioch import dbapi, exchange, errors, parser, conf
-from antioch import messaging, sql, code, modules, json, logging
+from antioch import dbapi, conf
+from antioch import messaging, sql, modules, json, logging
+from antioch.core import code, exchange, errors, parser
 
 processPools = {}
 default_db_url = conf.get('db-url-default')
@@ -44,7 +45,7 @@ def get_process_pool(child=None, *args):
 	warnings.warn("HACK: skipping installReactor in ampoule children.")
 	custom_bootstrap[3] = '    '
 	custom_bootstrap[4] = '    '
-	custom_bootstrap.insert(-2, 'from antioch import child')
+	custom_bootstrap.insert(-2, 'from antioch.core import child')
 	custom_bootstrap.insert(-2, 'child.initialize()')
 	
 	p = processPools[child.__name__] = pool.ProcessPool(

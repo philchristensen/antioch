@@ -8,7 +8,8 @@
 Represent objects in-universe
 """
 
-from antioch import errors, code, json
+from antioch import json
+from antioch.core import errors, code
 
 # These are the default list of permissions, auto-created
 # first thing during universe boostrapping
@@ -721,7 +722,7 @@ class Verb(Entity):
 		if not(self._method):
 			raise RuntimeError("%s is not a method." % self)
 		self.check('execute', self)
-		from antioch import parser
+		from antioch.core import parser
 		default_parser = parser.get_default_parser(self)
 		env = default_parser.get_environment()
 		env['args'] = args

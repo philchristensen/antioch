@@ -6,7 +6,7 @@
 from twisted.trial import unittest
 from twisted.internet import defer, error
 
-from antioch import transact
+from antioch.core import transact
 from antioch.client import restful
 
 import antioch.modules.registration.transactions as reg_trans

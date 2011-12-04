@@ -12,7 +12,8 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules, errors
+from antioch import modules
+from antioch.core import errors
 
 from antioch.modules.registration import transactions, resource
 

@@ -13,7 +13,8 @@ import time, sys, os.path
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
 
-from antioch import errors, modules, json
+from antioch.core import errors
+from antioch import modules, json
 
 allowed_modules = (
 	'hashlib',
@@ -35,7 +36,7 @@ def is_frame_access_allowed():
 	c1 = f.f_back.f_code
 	c2 = f.f_back.f_back.f_code
 	try:
-		from antioch import model
+		from antioch.core import model
 		model_source_path = os.path.abspath(model.__file__)
 		if(model_source_path.endswith('pyc')):
 			model_source_path = model_source_path[:-1]
@@ -43,7 +44,7 @@ def is_frame_access_allowed():
 			#print '%r =(1)= %r' % (c2.co_filename, model_source_path)
 			return True
 		
-		from antioch import exchange
+		from antioch.core import exchange
 		exchange_source_path = os.path.abspath(exchange.__file__)
 		if(exchange_source_path.endswith('pyc')):
 			exchange_source_path = exchange_source_path[:-1]
@@ -227,7 +228,7 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 	Verb API: queue up a new task.
 	"""
 	# remind me again why we can't do this?
-	from antioch import transact
+	from antioch.core import transact
 	transact.RegisterTask.run(
 		user_id		= p.caller.id,
 		delay		= str(delay),

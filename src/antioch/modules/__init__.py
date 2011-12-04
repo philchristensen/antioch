@@ -32,7 +32,7 @@ def get(name):
 	return None
 
 def discover_commands(mod):
-	from antioch import transact
+	from antioch.core import transact
 	t = mod.__dict__.items()
 	return dict(
 		[(k,v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]

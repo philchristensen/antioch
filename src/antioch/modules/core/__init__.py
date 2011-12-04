@@ -11,7 +11,8 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules, transact
+from antioch import modules
+from antioch.core import transact
 
 class CoreModule(object):
 	classProvides(plugin.IPlugin, modules.IModule)
@@ -40,7 +41,7 @@ class CoreModule(object):
 		"""
 		Return a dict of WorldTransaction/amp.Command classes provided by this module.
 		"""
-		from antioch import transact
+		from antioch.core import transact
 		from antioch.modules import discover_commands
 		return discover_commands(transact)
 	

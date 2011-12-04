@@ -12,7 +12,8 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules, transact
+from antioch import modules
+from antioch.core import transact
 
 def edit(p, item):
 	p.exchange.queue.push(p.caller.get_id(), dict(

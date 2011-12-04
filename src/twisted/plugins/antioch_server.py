@@ -22,7 +22,8 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import conf, parser
+from antioch import conf
+from antioch.core import parser
 
 class antiochServer(object):
 	"""
@@ -66,7 +67,7 @@ class antiochServer(object):
 		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service = master_service.getServiceNamed('message-service')	
 
-		from antioch import tasks
+		from antioch.core import tasks
 		task_service = tasks.TaskService()
 		task_service.setName("task-daemon")
 		task_service.setServiceParent(master_service)

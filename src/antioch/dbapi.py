@@ -43,7 +43,7 @@ def connect(db_urls=None, *args, **kwargs):
 	if not(isinstance(db_urls, tuple)):
 		db_urls = (db_urls,)
 	
-	from antioch import parser
+	from antioch.core import parser
 
 	replicated_pool = None
 	for db_url in db_urls:

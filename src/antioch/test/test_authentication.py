@@ -7,7 +7,8 @@ from twisted.trial import unittest
 from twisted.internet import defer
 from twisted.cred import credentials, error
 
-from antioch import exchange, test, transact, errors, conf#, auth
+from antioch import test, conf#, auth
+from antioch.core import exchange, transact, errors
 
 class AuthenticationTestCase(unittest.TestCase):
 	def setUp(self):

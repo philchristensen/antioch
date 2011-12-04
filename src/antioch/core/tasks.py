@@ -12,7 +12,7 @@ from twisted.application import service
 from twisted.internet import defer, reactor, task
 from twisted.python import log
 
-from antioch import transact
+from antioch.core import transact
 
 MAX_DELAY = 10
 
