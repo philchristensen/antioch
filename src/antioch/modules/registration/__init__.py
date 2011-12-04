@@ -12,7 +12,8 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules, errors
+from antioch import modules
+from antioch.core import errors
 
 from antioch.modules.registration import transactions, resource
 
@@ -21,19 +22,27 @@ VERSION = 2
 def request_account(p, name, email):
 	current_version = p.exchange.get_property(1, 'registration-version')
 	if(not current_version or current_version.value < VERSION):
-		p.exchange.queue.push(p.caller.get_id(), dict(
-			plugin			= 'registration',
-			command			= 'update-schema',
-		))
+		transactions.UpdateSchema.run(
+			transaction_child	= transactions.RegistrationTransactionChild,
+		)
+		# p.exchange.queue.push(p.caller.get_id(), dict(
+		# 	plugin			= 'registration',
+		# 	command			= 'update-schema',
+		# ))
 	
-	p.exchange.queue.push(p.caller.get_id(), dict(
-		plugin			= 'registration',
-		command			= 'request-account',
-		details			= dict(
-			name	= name,
-			email	= email,
-		),
-	))
+	transactions.RequestAccount.run(
+		transaction_child	= transactions.RegistrationTransactionChild,
+		name				= data['details']['name'].encode('utf8'),
+		email				= data['details']['email'].encode('utf8'),
+	)
+	# p.exchange.queue.push(p.caller.get_id(), dict(
+	# 	plugin			= 'registration',
+	# 	command			= 'request-account',
+	# 	details			= dict(
+	# 		name	= name,
+	# 		email	= email,
+	# 	),
+	# ))
 
 def change_caller_password(p):
 	p.exchange.queue.push(p.caller.get_id(), dict(
@@ -46,6 +55,11 @@ class RegistrationModule(object):
 	
 	name = u'registration'
 	script_url = u'/plugin/registration/assets/js/registration-plugin.js'
+	
+	def get_commands(self):
+		from antioch.modules.registration import transactions
+		from antioch.modules import discover_commands
+		return discover_commands(transactions)
 	
 	def get_resource(self, user):
 		return resource.RegistrationPage(user)

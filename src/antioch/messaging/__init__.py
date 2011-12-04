@@ -10,7 +10,8 @@ Enable access to the messaging server
 
 from zope import interface
 
-from antioch import conf, parser
+from antioch import conf
+from antioch.core import parser
 
 def getService(queue_url, profile=False):
 	url = parser.URL(queue_url)
@@ -77,6 +78,9 @@ class AbstractQueue(object):
 
 	def pop(self):
 		raise NotImplementedError('AbstractQueue.pop')
+
+	def get_available(self):
+		raise NotImplementedError('AbstractQueue.get_available')
 
 	def flush(self):
 		raise NotImplementedError('AbstractQueue.flush')

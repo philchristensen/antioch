@@ -8,7 +8,8 @@ import re
 from twisted.trial import unittest
 from twisted.internet import defer
 
-from antioch import exchange, test, model, errors
+from antioch import test
+from antioch.core import exchange, model, errors
 
 exchange.ObjectExchange.permission_list = dict(
 	anything   = 1,

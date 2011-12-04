@@ -8,7 +8,9 @@ from twisted.web.client import HTTPClientFactory
 
 import restmq.web
 
-from antioch import messaging, parser, conf, json
+from antioch import messaging, conf
+from antioch.core import parser
+from antioch.util import json
 
 def getService(queue_url, profile=False):
 	restmq_service = RestMQService(queue_url, profile=profile)
@@ -65,6 +67,10 @@ class RestMQQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
+		return self._get()
+	
+	@defer.inlineCallbacks
+	def _pop(self, return_list=False):
 		"""
 		Take one item from this user's queue.
 		"""
@@ -74,31 +80,40 @@ class RestMQQueue(messaging.AbstractQueue):
 			port	= queue_url['port'],
 		)
 		
-		client = HTTPClientFactory(url, **dict(
-			method		= 'POST',
-			headers		= {
-				'Content-Type'	: 'application/x-www-form-urlencoded',
-			},
-			postdata	= urllib.urlencode(dict(
-				msg		= json.dumps(dict(
-					cmd		= "take",
-					queue	= 'user-%s' % self.user_id,
+		result = []
+		reading = True
+		while(reading):
+			client = HTTPClientFactory(url, **dict(
+				method		= 'POST',
+				headers		= {
+					'Content-Type'	: 'application/x-www-form-urlencoded',
+				},
+				postdata	= urllib.urlencode(dict(
+					msg		= json.dumps(dict(
+						cmd		= "take",
+						queue	= 'user-%s' % self.user_id,
+					)),
 				)),
-			)),
-		))
-		client.noisy = False
+			))
+			client.noisy = False
 		
-		reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-		response = yield client.deferred
-		response = json.loads(response)
+			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
+			response = yield client.deferred
+			response = json.loads(response)
 		
-		if('error' in response):
-			if(response['error'] == 'empty queue'):
-				defer.returnValue(None)
-			else:
-				raise RuntimeError('restmq-pop-error: %s' % response)
+			if('error' in response):
+				if(response['error'] == 'empty queue'):
+					defer.returnValue(result if return_list else None)
+				else:
+					raise RuntimeError('restmq-pop-error: %s' % response)
+			result.append(json.loads(response['value'].decode('utf8')))
+			if not(return_list):
+				break
 		
-		defer.returnValue(json.loads(response['value'].decode('utf8')))
+		defer.returnValue(result[0])
+
+	def get_available(self):
+		return self._pop(return_list=True)
 
 	@defer.inlineCallbacks
 	def flush(self):

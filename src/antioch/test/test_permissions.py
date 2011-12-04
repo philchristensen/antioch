@@ -7,7 +7,8 @@ import sys, os, os.path, time
 
 from twisted.trial import unittest
 
-from antioch import errors, exchange, test, dbapi
+from antioch import test
+from antioch.core import dbapi, errors, exchange
 
 # dbapi.debug = 1
 # sys.setrecursionlimit(100)

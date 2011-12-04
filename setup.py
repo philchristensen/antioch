@@ -27,7 +27,7 @@ def autosetup():
 		name			= "antioch",
 		version			= "1.0",
 
-		packages		= find_packages('src') + ['twisted.plugins', 'nevow.plugins'],
+		packages		= find_packages('src') + ['twisted.plugins'],
 		package_dir		= {
 			''			: 'src',
 		},
@@ -35,7 +35,7 @@ def autosetup():
 
 		entry_points	= {
 			'setuptools.file_finders'	: [
-				'git = antioch.setup:find_files_for_git',
+				'git = antioch.util.setup:find_files_for_git',
 			],
 			'console_scripts': [
 				'mkspace = antioch.scripts.mkspace:main',
@@ -46,18 +46,18 @@ def autosetup():
 
 		zip_safe		= False,
 
-		install_requires = ['%s>=%s' % x for x in dict(
-			twisted				= "10.1.0",
-			nevow				= "0.10",
-			psycopg2			= "2.0.14",
-			simplejson			= "2.1.1",
-			txamqp				= "0.3",
-			ampoule				= "0.1",
-			RestrictedPython	= "3.6.0",
-			termcolor			= "1.1.0",
-			cyclone				= "0.4",
-			# restmq				= "1.0",
-		).items()],
+		install_requires = ['%s%s' % x for x in {
+			'twisted'			: ">=10.1.0",
+			'django'			: '>=1.3',
+			'psycopg2'			: "==2.4.1",
+			'simplejson'		: ">=2.1.1",
+			'txamqp'			: ">=0.3",
+			'ampoule'			: ">=0.1",
+			'RestrictedPython'	: ">=3.6.0",
+			'termcolor'			: ">=1.1.0",
+			'cyclone'			: ">=0.4",
+			# 'restmq'			: ">=1.0",
+		}.items()],
 		
 		# dependency_links = [
 		# 	"http://github.com/philchristensen/restmq/tarball/master#egg=restmq-1.0",

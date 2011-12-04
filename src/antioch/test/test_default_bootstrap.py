@@ -5,7 +5,8 @@
 
 from twisted.trial import unittest
 
-from antioch import parser, exchange, test
+from antioch import test
+from antioch.core import parser, exchange
 
 class DefaultBootstrapTestCase(unittest.TestCase):
 	def setUp(self):

@@ -5,7 +5,7 @@
 
 from twisted.trial import unittest
 
-from antioch import sql
+from antioch.util import sql
 
 class SQLTestCase(unittest.TestCase):
 	def setUp(self):

@@ -13,6 +13,7 @@ from zope.interface import classProvides
 from twisted import plugin
 
 from antioch import modules
+from antioch.core import transact
 
 def edit(p, item):
 	p.exchange.queue.push(p.caller.get_id(), dict(
@@ -51,6 +52,10 @@ class AccessEditorModule(object):
 			access			= access,
 		)
 	
+	def get_commands(self):
+		# let the main editor module return the commands
+		return {}
+	
 	def get_resource(self, user):
 		from antioch.modules.editors import resource
 		return resource.EditorDelegatePage(user)
@@ -76,7 +81,7 @@ class AccessEditorModule(object):
 		d = client.callRemote('plugin', self.name, self.script_url, data['details'])
 		d.addCallback(_cb_accessedit)
 	
-	def activate_athena_commands(self, child):
+	def activate_client_commands(self, child):
 		pass
 
 class EditorModule(object):
@@ -139,7 +144,12 @@ class EditorModule(object):
 			d.addCallback(_cb_verbedit)
 		return d
 	
-	def activate_athena_commands(self, child):
+	def get_commands(self):
+		from antioch.modules.editors import transactions
+		from antioch.modules import discover_commands
+		return discover_commands(transactions)
+	
+	def activate_client_commands(self, child):
 		from antioch.modules.editors.client import EditorRemoteReference
 		from nevow import athena
 		

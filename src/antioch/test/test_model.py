@@ -5,7 +5,8 @@
 
 from twisted.trial import unittest
 
-from antioch import model, test, errors
+from antioch import test
+from antioch.core import model, errors
 
 class EntityTestCase(unittest.TestCase):
 	def setUp(self):

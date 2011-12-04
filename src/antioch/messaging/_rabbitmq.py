@@ -11,7 +11,9 @@ from twisted.internet.protocol import ClientCreator
 
 import simplejson
 
-from antioch import json, parser, messaging
+from antioch import messaging
+from antioch.core import parser
+from antioch.util import json
 
 def getService(queue_url, profile=False):
 	rabbitmq_service = RabbitMQService(queue_url, profile=profile)
@@ -41,7 +43,7 @@ class RabbitMQService(service.Service):
 			delegate = TwistedDelegate(),
 			vhost	 = self.url['path'],
 			spec	 = spec.loadString(
-				pkg.resource_string('antioch.assets', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
+				pkg.resource_string('antioch.messaging', 'amqp-specs/amqp0-8.xml'), 'amqp0-8.xml'
 			),
 		)
 		self.profile = profile
@@ -136,6 +138,17 @@ class RabbitMQQueue(messaging.AbstractQueue):
 			defer.returnValue(data)
 		except QueueClosed, e:
 			defer.returnValue(None)
+	
+	@defer.inlineCallbacks
+	def get_available(self):
+		from txamqp.queue import Closed as QueueClosed
+		result = []
+		try:
+			msg = yield self.queue.get()
+			data = json.loads(msg.content.body.decode('utf8'))
+			result.append(data)
+		except QueueClosed, e:
+			defer.returnValue(result or None)
 
 	@defer.inlineCallbacks
 	def flush(self):
