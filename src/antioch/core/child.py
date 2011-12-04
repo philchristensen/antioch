@@ -13,6 +13,8 @@ import warnings
 from antioch import conf
 from antioch.util import logging
 
+conf.init('/etc/antioch.yaml', package='antioch.conf')
+
 def initialize():
 	if(conf.get('suppress-deprecation-warnings')):
 		import warnings

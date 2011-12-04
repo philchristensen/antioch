@@ -1,9 +1,21 @@
-import os
+#!/usr/bin/env python
 
-os.environ['DJANGO_SETTINGS_FILE'] = 'antioch.settings'
+# antioch
+# Copyright (c) 1999-2011 Phil Christensen
+#
+#
+# See LICENSE for details
 
-from antioch import settings
-from django.core.management import execute_manager
+import sys, os
 
-if __name__ == "__main__":
-	execute_manager(settings)
+from antioch import conf
+
+conf.init('/etc/antioch.yaml', package='antioch.conf')
+
+# some debug pages use this variable (improperly, imho)
+from django.conf import settings
+settings.SETTINGS_MODULE = 'antioch.settings'
+
+from django.core import management
+u = management.ManagementUtility(sys.argv)
+u.execute()

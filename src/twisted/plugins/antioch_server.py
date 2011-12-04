@@ -10,9 +10,6 @@ twistd plugin support
 This module adds a 'antioch' server type to the twistd service list.
 """
 
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
-
 import warnings
 
 from zope.interface import classProvides
@@ -24,6 +21,8 @@ from twisted.application import internet, service
 
 from antioch import conf
 from antioch.core import parser
+
+conf.init('/etc/antioch.yaml', package='antioch.conf')
 
 class antiochServer(object):
 	"""
@@ -37,11 +36,8 @@ class antiochServer(object):
 
 	class options(usage.Options):
 		"""
-		Implement option-parsing for the antioch twistd plugin.
+		No option-parsing for the antioch twistd plugin.
 		"""
-		optParameters = [
-						 ["conf", "f", conf.DEFAULT_CONF_PATH, "Path to configuration file, if any.", str],
-						]
 
 	@classmethod
 	def makeService(cls, config):
