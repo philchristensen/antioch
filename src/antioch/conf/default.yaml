@@ -141,7 +141,7 @@
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware"
     ],
-    "ROOT_URLCONF" : "antioch.urls",
+    "ROOT_URLCONF" : "antioch.client.urls",
     
     "INSTALLED_APPS" : [
         'django.contrib.auth',

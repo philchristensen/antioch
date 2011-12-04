@@ -10,6 +10,8 @@ Provide testing for the codebase
 import pkg_resources as pkg
 
 from antioch import conf
+conf.init()
+
 from antioch.core import dbapi, bootstrap, transact
 
 psql_path = conf.get('psql-path')
