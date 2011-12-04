@@ -32,13 +32,6 @@
         ["Manager", "manager@example.com"]
     ],
     
-    "CACHES": {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-            'LOCATION': 'fu-web'
-        }
-    },
-    
     "DATABASES" : {
         "default" : {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
