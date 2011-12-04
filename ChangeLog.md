@@ -1,4 +1,5 @@
 2011-06-19    Phil Christensen <phil@bubblehouse.org>
+
 * Renamed txspace to antioch
 * Support for in-memory local messaging server
 * Implemented runtime limits and installed Zope's RestrictedPython
