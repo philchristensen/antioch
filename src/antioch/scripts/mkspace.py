@@ -2,8 +2,8 @@ import os.path, sys
 
 from twisted.python import usage
 
-from antioch.core import bootstrap, transact
-from antioch import dbapi, assets
+from antioch import assets
+from antioch.core import dbapi, bootstrap, transact
 
 default_bootstrap_path = 'bootstraps/%s.py'
 default_schema_path = 'bootstraps/schema.sql'

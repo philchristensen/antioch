@@ -12,8 +12,8 @@ from __future__ import with_statement
 
 import traceback, subprocess
 
-from antioch import dbapi, assets
-from antioch.core import exchange, parser
+from antioch import assets
+from antioch.core import dbapi, exchange, parser
 
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
 	"""

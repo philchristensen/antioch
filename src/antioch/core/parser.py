@@ -17,9 +17,8 @@ There are a long list of prepositions supported, some of which are interchangeab
 
 import sys, time, re, string, types
 
-from antioch.core import exchange, model, errors
+from antioch.core import exchange, model, errors, dbapi
 from antioch.core.errors import *
-from antioch import dbapi
 
 URL_REGEXP = r'(?P<scheme>[+a-z0-9]+)\:(\/\/)?'
 URL_REGEXP += r'((?P<user>\w+?)(\:(?P<passwd>\w+?))?\@)?'
