@@ -19,10 +19,10 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import conf
 from antioch.core import parser
 
-conf.init('/etc/antioch.yaml', package='antioch.conf')
+from antioch import conf
+conf.init()
 
 class antiochServer(object):
 	"""

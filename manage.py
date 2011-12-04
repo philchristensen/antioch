@@ -9,8 +9,7 @@
 import sys, os
 
 from antioch import conf
-
-conf.init('/etc/antioch.yaml', package='antioch.conf')
+conf.init()
 
 # some debug pages use this variable (improperly, imho)
 from django.conf import settings

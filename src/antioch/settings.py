@@ -9,3 +9,6 @@ Django Settings File
 
 Django settings are dynamically generated from the files in conf/*.yaml
 """
+
+from antioch import conf
+conf.init()

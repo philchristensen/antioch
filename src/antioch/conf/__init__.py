@@ -68,7 +68,7 @@ def merge(content, into):
 			into[k] = v
 	return into
 
-def init(site_config, package=None, filter=None):
+def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None):
 	"""
 	Bootstrap the Django settings module.
 	"""
