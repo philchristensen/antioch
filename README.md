@@ -33,7 +33,7 @@ Feature Set
 
 * **Customizable AJAX-Enabled Client** — 
   The antioch web client provides a standards-compliant interface based
-  on the Nevow Athena AJAX framework, and is supported by all modern browsers.
+  on Django and jQuery, and is supported by all modern browsers.
   
   Although the default database provided is geared towards text-based games,
   the flexibility of the client interface and the power of the plugin system
@@ -67,8 +67,8 @@ Feature Set
   allowing a high degree of customization.
   
 * **Robust Networking** — 
-  antioch relies on the Twisted Python and Nevow frameworks to implement
-  client-server communication. This robust asynchronous networking library
+  antioch relies on the Twisted Python and Django frameworks to implement
+  applicationn server communication. This robust asynchronous networking library
   allows client counts to scale easily to hundreds of connections.
 
 

@@ -13,7 +13,7 @@ everything else should work, but to be specific:
 * [Python            >=  2.5  ](http://www.python.org)
 * [PostgreSQL        >=  8.4  ](http://www.postgresql.org)
 * [Twisted           >= 10.1  ](http://www.twistedmatrix.com)
-* [Nevow             >=  0.10 ](https://launchpad.net/nevow)
+* [Django            >=  1.3  ](http://www.djangoproject.com)
 * [simplejson        >=  2.1.1](http://pypi.python.org/pypi/simplejson)
 * [psycopg2          >=  2.2.1](http://initd.org/psycopg)
 * [ampoule           >=  0.1  ](https://launchpad.net/ampoule)
@@ -53,7 +53,7 @@ the setuptools-based installer.
 
 Next you'll need to create the default database:
 
-    mkspace.py
+    mkspace
 
 > By default, `mkspace` tries to connect to a PostgreSQL database running on
 > localhost:5432 as the `postgres` super-user.
