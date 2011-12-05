@@ -123,10 +123,14 @@ class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def stop(self):
 		from txamqp.client import Closed as ClientClosed
+		from txamqp.queue import Closed as QueueClosed
 		try:
 			yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
 			yield self.chan.channel_close()
-		except ClientClosed, e:
+			yield self.service.disconnect()
+		except ClientClosed, ce:
+			pass
+		except QueueClosed, qe:
 			pass
 
 	@defer.inlineCallbacks
