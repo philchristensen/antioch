@@ -4,6 +4,9 @@ import pkg_resources as pkg
 
 from twisted.python import usage
 
+from antioch import conf
+conf.init()
+
 from antioch.core import dbapi, bootstrap, transact
 
 default_bootstrap_path = '%s.py'

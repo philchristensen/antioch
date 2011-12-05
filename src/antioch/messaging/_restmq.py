@@ -67,7 +67,7 @@ class RestMQQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
-		return self._get()
+		return self._pop()
 	
 	@defer.inlineCallbacks
 	def _pop(self, return_list=False):

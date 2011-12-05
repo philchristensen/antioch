@@ -10,6 +10,7 @@ ez_setup.use_setuptools()
 try:
 	from twisted import plugin
 except ImportError, e:
+	import sys
 	print >>sys.stderr, "setup.py requires Twisted to create a proper antioch installation. Please install it before continuing."
 	sys.exit(1)
 
@@ -80,5 +81,7 @@ def autosetup():
 
 if(__name__ == '__main__'):
 	import sys
-	from antioch.setup import adaptTwistedSetup
+	sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+	
+	from antioch.util.setup import adaptTwistedSetup
 	adaptTwistedSetup(sys.argv[-1], autosetup)

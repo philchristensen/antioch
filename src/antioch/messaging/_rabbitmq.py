@@ -132,12 +132,12 @@ class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def pop(self):
 		from txamqp.queue import Closed as QueueClosed
+		data = None
 		try:
 			msg = yield self.queue.get()
 			data = json.loads(msg.content.body.decode('utf8'))
+		finally:
 			defer.returnValue(data)
-		except QueueClosed, e:
-			defer.returnValue(None)
 	
 	@defer.inlineCallbacks
 	def get_available(self):
@@ -147,7 +147,7 @@ class RabbitMQQueue(messaging.AbstractQueue):
 			msg = yield self.queue.get()
 			data = json.loads(msg.content.body.decode('utf8'))
 			result.append(data)
-		except QueueClosed, e:
+		finally:
 			defer.returnValue(result or None)
 
 	@defer.inlineCallbacks

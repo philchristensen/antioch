@@ -8,6 +8,10 @@
 
 import sys, os
 
+if(len(sys.argv) > 1 and sys.argv[1] == 'runserver'):
+	print >>sys.stderr, "Please use `twistd antioch` to run the server for this project."
+	sys.exit(1)
+
 from antioch import conf
 conf.init()
 
