@@ -70,9 +70,7 @@ class CometResource(resource.Resource):
 		user_id = 2
 		queue = self.msg_service.get_queue(user_id)
 		yield queue.start()
-		messages = []
-		while(not messages):
-			messages = yield queue.get_available()
+		messages = yield queue.get_available()
 		yield queue.stop()
 		defer.returnValue(messages)
 

@@ -98,7 +98,7 @@ class RabbitMQService(service.Service):
 		"""
 		Disconnect from the AMQP server.
 		"""
-		# print 'disconnecting %s' % self
+		print 'disconnecting %s' % self
 		if(self.connection):
 			chan0 = yield self.connection.channel(0)
 			yield chan0.connection_close()
@@ -123,14 +123,10 @@ class RabbitMQQueue(messaging.AbstractQueue):
 	@defer.inlineCallbacks
 	def stop(self):
 		from txamqp.client import Closed as ClientClosed
-		from txamqp.queue import Closed as QueueClosed
 		try:
 			yield self.chan.basic_cancel("user-%s-consumer" % self.user_id)
 			yield self.chan.channel_close()
-			yield self.service.disconnect()
 		except ClientClosed, ce:
-			pass
-		except QueueClosed, qe:
 			pass
 
 	@defer.inlineCallbacks
@@ -151,8 +147,9 @@ class RabbitMQQueue(messaging.AbstractQueue):
 			msg = yield self.queue.get()
 			data = json.loads(msg.content.body.decode('utf8'))
 			result.append(data)
-		finally:
-			defer.returnValue(result or None)
+		except QueueClosed, qe:
+			pass
+		defer.returnValue(result or None)
 
 	@defer.inlineCallbacks
 	def flush(self):
