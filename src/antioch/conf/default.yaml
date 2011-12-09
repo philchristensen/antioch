@@ -155,6 +155,8 @@
         # Uncomment the next line to enable admin documentation:
         'django.contrib.admindocs',
         'antioch.client',
+        'antioch.modules.core',
+        'antioch.modules.editors'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",
@@ -184,13 +186,13 @@
         'loggers': {
             'django': {
                 'handlers':['console'],
-                'propagate': True,
+                'propagate': true,
                 'level':'INFO',
             },
             'django.request': {
                 'handlers': ['console'],
                 'level': 'INFO',
-                'propagate': False,
+                'propagate': false,
             },
             'antioch.custom': {
                 'handlers': ['console'],

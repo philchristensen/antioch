@@ -14,21 +14,42 @@ from zope import interface
 
 from twisted import plugin
 
-__path__ = [os.path.abspath(os.path.join(x, 'antioch', 'modules')) for x in sys.path]
+def autodiscover():
+	"""
+	Auto-discover INSTALLED_APPS plugin.py modules and fail silently when
+	not present.
+	"""
+	from django.conf import settings
+	from django.utils.importlib import import_module
+	from django.utils.module_loading import module_has_submodule
 
-__all__ = []
+	plugins = []
+	for app in settings.INSTALLED_APPS:
+		mod = import_module(app)
+		# Attempt to import the app's plugin module.
+		try:
+			plugin_mod = import_module('%s.plugin' % app)
+			plugins.append(plugin_mod)
+		except:
+			# Decide whether to bubble up this error. If the app just
+			# doesn't have a plugin module, we can ignore the error
+			# attempting to import it, otherwise we want it to bubble up.
+			if module_has_submodule(mod, 'plugin'):
+				raise
+	return plugins
 
 def iterate():
-	import antioch.modules
-	for module in plugin.getPlugins(IModule, antioch.modules):
-		yield module()
+	for plugin_mod in autodiscover():
+		for module in plugin.getPlugins(IModule, plugin_mod):
+			print module
+			yield module()
 
 def get(name):
-	import antioch.modules
-	for module in plugin.getPlugins(IModule, antioch.modules):
-		if(module.name == name):
-			m = module()
-			return m
+	for plugin_mod in autodiscover():
+		for module in plugin.getPlugins(IModule, plugin_mod):
+			if(module.name == name):
+				m = module()
+				return m
 	return None
 
 def discover_commands(mod):
