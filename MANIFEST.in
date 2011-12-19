@@ -1,2 +1,0 @@
-include src/twisted/plugins/dropin.cache
-include src/antioch/modules/editors/dropin.cache

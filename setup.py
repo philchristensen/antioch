@@ -4,8 +4,8 @@
 #
 # See LICENSE for details
 
-import ez_setup
-ez_setup.use_setuptools()
+import distribute_setup
+distribute_setup.use_setuptools()
 
 try:
 	from twisted import plugin
@@ -32,7 +32,6 @@ def autosetup():
 		package_dir		= {
 			''			: 'src',
 		},
-		include_package_data = True,
 
 		entry_points	= {
 			'setuptools.file_finders'	: [
@@ -43,9 +42,9 @@ def autosetup():
 			]
 		},
 
-		test_suite		= "antioch.test",
-
-		zip_safe		= False,
+		test_suite				= "antioch.test",
+		include_package_data	= True,
+		zip_safe				= False,
 
 		install_requires = ['%s%s' % x for x in {
 			'twisted'			: ">=10.1.0",
