@@ -22,34 +22,34 @@ def autodiscover():
 	from django.conf import settings
 	from django.utils.importlib import import_module
 	from django.utils.module_loading import module_has_submodule
-
-	plugins = []
+	
 	for app in settings.INSTALLED_APPS:
 		mod = import_module(app)
 		# Attempt to import the app's plugin module.
 		try:
 			plugin_mod = import_module('%s.plugin' % app)
-			plugins.append(plugin_mod)
+			for mod_name in dir(plugin_mod):
+				if(mod_name.startswith('_')):
+					continue
+				mod = getattr(plugin_mod, mod_name)
+				if(IModule.providedBy(mod)):
+					yield mod
 		except:
 			# Decide whether to bubble up this error. If the app just
 			# doesn't have a plugin module, we can ignore the error
 			# attempting to import it, otherwise we want it to bubble up.
 			if module_has_submodule(mod, 'plugin'):
 				raise
-	return plugins
 
 def iterate():
-	for plugin_mod in autodiscover():
-		for module in plugin.getPlugins(IModule, plugin_mod):
-			print module
-			yield module()
+	for module in autodiscover():
+		yield module()
 
 def get(name):
 	for plugin_mod in autodiscover():
-		for module in plugin.getPlugins(IModule, plugin_mod):
-			if(module.name == name):
-				m = module()
-				return m
+		if(module.name == name):
+			m = module()
+			return m
 	return None
 
 def discover_commands(mod):
