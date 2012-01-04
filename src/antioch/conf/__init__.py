@@ -111,6 +111,8 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None):
 		environ = merge(filter(environ), environ)
 	
 	settings.configure(ENVIRONMENT=env, **environ)
+	# some debug pages use this variable (improperly, imho)
+	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
 	
 	try:
 		configured_lock.acquire()

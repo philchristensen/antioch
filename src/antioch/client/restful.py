@@ -12,12 +12,11 @@ from twisted.internet import defer, reactor
 from twisted.web import resource, server, wsgi
 import simplejson
 
-from antioch import modules
-
 def translate_path(path):
 	return ''.join([x.capitalize() for x in path.split('-')])
 
 def get_command_class(class_name):
+	from antioch import modules
 	for mod in modules.iterate():
 		available_commands = mod.get_commands()
 		if(class_name in available_commands):

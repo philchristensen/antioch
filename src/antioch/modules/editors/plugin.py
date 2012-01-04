@@ -12,7 +12,7 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules
+from antioch import module
 from antioch.core import transact
 
 def edit(p, item):
@@ -42,7 +42,7 @@ def access(p, item):
 	))
 
 class AccessEditorModule(object):
-	classProvides(plugin.IPlugin, modules.IModule)
+	classProvides(plugin.IPlugin, module.IModule)
 	
 	name = u'access'
 	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
@@ -85,7 +85,7 @@ class AccessEditorModule(object):
 		pass
 
 class EditorModule(object):
-	classProvides(plugin.IPlugin, modules.IModule)
+	classProvides(plugin.IPlugin, module.IModule)
 	
 	name = u'editor'
 	script_url = u'/plugin/editor/assets/js/editor-plugin.js'

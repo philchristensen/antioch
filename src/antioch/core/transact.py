@@ -18,7 +18,7 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
-from antioch import conf, messaging, modules
+from antioch import conf, messaging
 from antioch.core import dbapi, code, exchange, errors, parser
 from antioch.util import sql, json, logging
 

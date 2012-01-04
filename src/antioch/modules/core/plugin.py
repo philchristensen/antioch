@@ -11,11 +11,11 @@ from zope.interface import classProvides
 
 from twisted import plugin
 
-from antioch import modules
+from antioch import module
 from antioch.core import transact
 
 class CoreModule(object):
-	classProvides(plugin.IPlugin, modules.IModule)
+	classProvides(plugin.IPlugin, module.IModule)
 	
 	name = u'core'
 	script_url = u'' #u'/plugin/editor/assets/js/editor-plugin.js'
