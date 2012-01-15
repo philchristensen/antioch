@@ -22,6 +22,10 @@ import os
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
+def get_requirements(filename='requirements.txt'):
+	with open(os.path.join(os.path.dirname(__file__), filename), 'rU') as f:
+		return f.read().split('\n')
+
 def autosetup():
 	from setuptools import setup, find_packages
 	return setup(
@@ -46,22 +50,7 @@ def autosetup():
 		include_package_data	= True,
 		zip_safe				= False,
 
-		install_requires = ['%s%s' % x for x in {
-			'twisted'			: ">=10.1.0",
-			'django'			: '>=1.3',
-			'psycopg2'			: "==2.4.1",
-			'simplejson'		: ">=2.1.1",
-			'txamqp'			: ">=0.3",
-			'ampoule'			: ">=0.1",
-			'RestrictedPython'	: ">=3.6.0",
-			'termcolor'			: ">=1.1.0",
-			# 'cyclone'			: ">=0.4",
-			# 'restmq'			: ">=1.0",
-		}.items()],
-		
-		# dependency_links = [
-		# 	"http://github.com/philchristensen/restmq/tarball/master#egg=restmq-1.0",
-		# ],
+		install_requires = get_requirements(),
 
 		# metadata for upload to PyPI
 		author			= "Phil Christensen",
