@@ -55,7 +55,7 @@ def autosetup():
 			'ampoule'			: ">=0.1",
 			'RestrictedPython'	: ">=3.6.0",
 			'termcolor'			: ">=1.1.0",
-			'cyclone'			: ">=0.4",
+			# 'cyclone'			: ">=0.4",
 			# 'restmq'			: ">=1.0",
 		}.items()],
 		
