@@ -22,10 +22,6 @@ import os
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
-def get_requirements(filename='requirements.txt'):
-	with open(os.path.join(os.path.dirname(__file__), filename), 'rU') as f:
-		return f.read().split('\n')
-
 def autosetup():
 	from setuptools import setup, find_packages
 	return setup(
@@ -50,7 +46,7 @@ def autosetup():
 		include_package_data	= True,
 		zip_safe				= False,
 
-		install_requires = get_requirements(),
+		install_requires = open('requirements.txt', 'rU'),
 
 		# metadata for upload to PyPI
 		author			= "Phil Christensen",
