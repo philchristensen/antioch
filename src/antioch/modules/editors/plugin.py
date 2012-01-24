@@ -44,18 +44,14 @@ def access(p, item):
 class EditorModule(object):
 	classProvides(plugin.IPlugin, module.IModule)
 	
-	name = u'editors'
-	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
+	name = u'editor'
+	script_url = u'/assets/js/editor-plugin.js'
 	
 	def get_environment(self):
 		return dict(
 			edit			= edit,
 			access			= access,
 		)
-	
-	def get_resource(self, user):
-		from antioch.modules.editors import resource
-		return resource.EditorDelegatePage(user)
 	
 	def handle_message(self, data, client):
 		from antioch.modules.editors import transactions
@@ -126,14 +122,4 @@ class EditorModule(object):
 		from antioch.modules.editors import transactions
 		from antioch.modules import discover_commands
 		return discover_commands(transactions)
-	
-	def activate_client_commands(self, child):
-		from antioch.modules.editors.client import EditorRemoteReference
-		from nevow import athena
-		
-		for name, value in EditorRemoteReference.__dict__.items():
-			if(callable(value)):
-				setattr(child.__class__, name, athena.expose(value))
-
-
 

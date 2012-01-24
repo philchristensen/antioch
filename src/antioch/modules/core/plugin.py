@@ -18,19 +18,13 @@ class CoreModule(object):
 	classProvides(plugin.IPlugin, module.IModule)
 	
 	name = u'core'
-	script_url = u'' #u'/plugin/editor/assets/js/editor-plugin.js'
+	script_url = u''
 	
 	def get_environment(self):
 		"""
 		Return a dict of items to add to the verb environment.
 		"""
 		return dict()
-	
-	def get_resource(self, user):
-		"""
-		Return the instantiated resource for this plugin.
-		"""
-		return None
 	
 	def handle_message(self, msg):
 		"""
@@ -44,8 +38,3 @@ class CoreModule(object):
 		from antioch.core import transact
 		from antioch.modules import discover_commands
 		return discover_commands(transact)
-	
-	def activate_client_commands(self, client):
-		"""
-		Given the athena.LiveElement instance, install the available command support.
-		"""
