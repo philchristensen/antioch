@@ -41,58 +41,16 @@ def access(p, item):
 		details			= details,
 	))
 
-class AccessEditorModule(object):
-	classProvides(plugin.IPlugin, module.IModule)
-	
-	name = u'access'
-	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
-	
-	def get_environment(self):
-		return dict(
-			access			= access,
-		)
-	
-	def get_commands(self):
-		# let the main editor module return the commands
-		return {}
-	
-	def get_resource(self, user):
-		from antioch.modules.editors import resource
-		return resource.EditorDelegatePage(user)
-	
-	def handle_message(self, data, client):
-		def _cb_accessedit(result):
-			from antioch.modules.editors import transactions
-			return transactions.ModifyAccess.run(
-				transaction_child	= transactions.EditorTransactionChild,
-				user_id		= client.user_id,
-				object_id	= str(data['details']['id']),
-				type		= data['details']['type'].encode('utf8'),
-				access		= [dict(
-					access_id	= int(access_id),
-					deleted		= item['deleted'],
-					rule		= item['rule'].encode('utf8'),
-					access		= item['access'].encode('utf8'),
-					accessor	= item['accessor'].encode('utf8'),
-					permission	= item['permission'].encode('utf8'),
-					weight		= item['weight'],
-				) for access_id, item in result['access'].items()]
-			) if result else None
-		d = client.callRemote('plugin', self.name, self.script_url, data['details'])
-		d.addCallback(_cb_accessedit)
-	
-	def activate_client_commands(self, child):
-		pass
-
 class EditorModule(object):
 	classProvides(plugin.IPlugin, module.IModule)
 	
-	name = u'editor'
+	name = u'editors'
 	script_url = u'/plugin/editor/assets/js/editor-plugin.js'
 	
 	def get_environment(self):
 		return dict(
 			edit			= edit,
+			access			= access,
 		)
 	
 	def get_resource(self, user):
@@ -142,6 +100,26 @@ class EditorModule(object):
 				) if result else None
 			d = client.callRemote('plugin', self.name, self.script_url, data['details'])
 			d.addCallback(_cb_verbedit)
+		elif(data['details']['kind'] == 'access'):
+			def _cb_accessedit(result):
+				from antioch.modules.editors import transactions
+				return transactions.ModifyAccess.run(
+					transaction_child	= transactions.EditorTransactionChild,
+					user_id		= client.user_id,
+					object_id	= str(data['details']['id']),
+					type		= data['details']['type'].encode('utf8'),
+					access		= [dict(
+						access_id	= int(access_id),
+						deleted		= item['deleted'],
+						rule		= item['rule'].encode('utf8'),
+						access		= item['access'].encode('utf8'),
+						accessor	= item['accessor'].encode('utf8'),
+						permission	= item['permission'].encode('utf8'),
+						weight		= item['weight'],
+					) for access_id, item in result['access'].items()]
+				) if result else None
+			d = client.callRemote('plugin', self.name, self.script_url, data['details'])
+			d.addCallback(_cb_accessedit)
 		return d
 	
 	def get_commands(self):
