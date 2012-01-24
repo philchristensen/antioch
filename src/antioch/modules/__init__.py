@@ -15,49 +15,21 @@ from zope import interface
 from twisted import plugin
 
 from django.conf import settings
-from django.conf.urls.defaults import include
+from django.conf.urls.defaults import include, url
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
+
+module_cache = {}
 
 def autodiscover():
 	"""
 	Auto-discover INSTALLED_APPS plugin.py modules and fail silently when
 	not present.
 	"""
-	from django.conf import settings
-	from django.utils.importlib import import_module
-	from django.utils.module_loading import module_has_submodule
-	
-	from antioch import module
-	
 	for app in settings.INSTALLED_APPS:
-		mod = import_module(app)
-		# Attempt to import the app's plugin module.
-		try:
-			plugin_mod = import_module('%s.plugin' % app)
-			for mod_name in dir(plugin_mod):
-				if(mod_name.startswith('_')):
-					continue
-				p = getattr(plugin_mod, mod_name)
-				if(module.IModule.providedBy(p)):
-					yield p
-		except:
-			# Decide whether to bubble up this error. If the app just
-			# doesn't have a plugin module, we can ignore the error
-			# attempting to import it, otherwise we want it to bubble up.
-			if module_has_submodule(mod, 'plugin'):
-				raise
-
-def iterate():
-	for module in autodiscover():
-		yield module()
-
-def get(name):
-	for plugin_mod in autodiscover():
-		if(module.name == name):
-			m = module()
-			return m
-	return None
+		plugin_mod = get_app_submodule(app, submodule='plugin')
+		if(plugin_mod):
+			yield instantiate(plugin_mod)
 
 def discover_commands(mod):
 	from antioch.core import transact
@@ -69,12 +41,45 @@ def discover_commands(mod):
 def discover_urlconfs():
 	result = []
 	for app in settings.INSTALLED_APPS:
-		# Attempt to import the app's plugin module.
-		mod = import_module(app)
-		if(module_has_submodule(mod, 'plugin')):
-			try:
-				result.append(include('%s.urls' % app))
-			except:
-				if(module_has_submodule(mod, 'urls')):
-					raise
+		p = get_app_submodule(app, submodule='plugin')
+		if(p and get_app_submodule(app, submodule='urls')):
+			p = instantiate(p)
+			urlconf = url(r'^%s/' % p.name, include('%s.urls' % app))
+			result.append(urlconf)
 	return result
+
+def get_app_submodule(app, submodule):
+	mod = import_module(app)
+	# Attempt to import the app's plugin module.
+	try:
+		return import_module('%s.%s' % (app, submodule))
+	except:
+		# Decide whether to bubble up this error. If the app just
+		# doesn't have a plugin module, we can ignore the error
+		# attempting to import it, otherwise we want it to bubble up.
+		if module_has_submodule(mod, submodule):
+			raise
+
+def iterate():
+	for module in autodiscover():
+		yield instantiate(module)
+
+def get(name):
+	for plugin_mod in autodiscover():
+		m = instantiate(module)
+		if(m.name == name):
+			return m
+	return None
+
+def instantiate(mod):
+	from antioch import module
+	global module_cache
+	if(mod not in module_cache):
+		for name in dir(mod):
+			if(name.startswith('_')):
+				continue
+			p = getattr(mod, name)
+			if(module.IModule.providedBy(p)):
+				module_cache[mod] = p()
+	return module_cache[mod]
+
