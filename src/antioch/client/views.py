@@ -15,7 +15,7 @@ from antioch import modules
 def client(request):
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
-		plugins         = [m.script_url for m in modules.iterate()],
+		plugins         = [m.script_url for m in modules.iterate() if m],
 	), context_instance=template.RequestContext(request))
 
 def logout(request):

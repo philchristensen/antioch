@@ -81,5 +81,5 @@ def instantiate(mod):
 			p = getattr(mod, name)
 			if(module.IModule.providedBy(p)):
 				module_cache[mod] = p()
-	return module_cache[mod]
+	return module_cache.get(mod, None)
 
