@@ -21,7 +21,7 @@ from django.utils.module_loading import module_has_submodule
 
 module_cache = {}
 
-def autodiscover():
+def iterate():
 	"""
 	Auto-discover INSTALLED_APPS plugin.py modules and fail silently when
 	not present.
@@ -60,12 +60,12 @@ def get_app_submodule(app, submodule):
 		if module_has_submodule(mod, submodule):
 			raise
 
-def iterate():
-	for module in autodiscover():
-		yield instantiate(module)
+# def iterate():
+# 	for module in autodiscover():
+# 		yield instantiate(module)
 
 def get(name):
-	for plugin_mod in autodiscover():
+	for plugin_mod in iterate():
 		m = instantiate(module)
 		if(m.name == name):
 			return m
@@ -81,5 +81,7 @@ def instantiate(mod):
 			p = getattr(mod, name)
 			if(module.IModule.providedBy(p)):
 				module_cache[mod] = p()
-	return module_cache.get(mod, None)
+	if(mod not in module_cache):
+		raise RuntimeError("Could not instantiate an antioch module from %r" % mod)
+	return module_cache[mod]
 

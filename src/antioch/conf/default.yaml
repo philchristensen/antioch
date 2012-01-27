@@ -141,7 +141,7 @@
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware"
     ],
-    "ROOT_URLCONF" : "antioch.client.urls",
+    "ROOT_URLCONF" : "antioch.urls",
     
     "INSTALLED_APPS" : [
         'django.contrib.auth',
@@ -155,6 +155,7 @@
         # Uncomment the next line to enable admin documentation:
         'django.contrib.admindocs',
         'antioch.client',
+        'antioch.assets',
         'antioch.modules.core',
         'antioch.modules.editors'
     ],
