@@ -10,7 +10,7 @@ Graphical object editor support.
 
 from zope.interface import classProvides
 
-from antioch import plugin
+from antioch import IPlugin
 from antioch.core import transact
 
 def edit(p, item):
@@ -40,7 +40,7 @@ def access(p, item):
 	))
 
 class EditorModule(object):
-	classProvides(plugin.IPlugin)
+	classProvides(IPlugin)
 	
 	name = u'editor'
 	script_url = u'/assets/js/editor-plugin.js'

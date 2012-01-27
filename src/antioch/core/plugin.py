@@ -9,11 +9,11 @@ Core functionality.
 """
 from zope.interface import classProvides
 
-from antioch import plugin
+from antioch import IPlugin
 from antioch.core import transact
 
 class CoreModule(object):
-	classProvides(plugin.IPlugin)
+	classProvides(IPlugin)
 	
 	name = u'core'
 	script_url = u''
