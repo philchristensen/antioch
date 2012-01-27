@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns
 
-from antioch.modules import discover_urlconfs
+from antioch import modules
 
 urlpatterns = patterns('',
-	*(discover_urlconfs())
+	*(modules.urlconfs())
 )

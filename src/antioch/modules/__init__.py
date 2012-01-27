@@ -31,14 +31,7 @@ def iterate():
 		if(plugin_mod):
 			yield instantiate(plugin_mod)
 
-def discover_commands(mod):
-	from antioch.core import transact
-	t = mod.__dict__.items()
-	return dict(
-		[(k,v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]
-	)
-
-def discover_urlconfs():
+def urlconfs():
 	result = []
 	for app in settings.INSTALLED_APPS:
 		p = get_app_submodule(app, submodule='plugin')
@@ -60,16 +53,12 @@ def get_app_submodule(app, submodule):
 		if module_has_submodule(mod, submodule):
 			raise
 
-# def iterate():
-# 	for module in autodiscover():
-# 		yield instantiate(module)
-
-def get(name):
-	for plugin_mod in iterate():
-		m = instantiate(module)
-		if(m.name == name):
-			return m
-	return None
+def discover_commands(mod):
+	from antioch.core import transact
+	t = mod.__dict__.items()
+	return dict(
+		[(k,v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]
+	)
 
 def instantiate(mod):
 	from antioch import module
