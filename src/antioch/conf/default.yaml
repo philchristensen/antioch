@@ -156,8 +156,8 @@
         'django.contrib.admindocs',
         'antioch.client',
         'antioch.assets',
-        'antioch.modules.core',
-        'antioch.modules.editors'
+        'antioch.plugins.core',
+        'antioch.plugins.editors'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",

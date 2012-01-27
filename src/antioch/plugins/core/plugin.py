@@ -9,13 +9,11 @@ Core functionality.
 """
 from zope.interface import classProvides
 
-from twisted import plugin
-
-from antioch import module
+from antioch import plugin
 from antioch.core import transact
 
 class CoreModule(object):
-	classProvides(plugin.IPlugin, module.IModule)
+	classProvides(plugin.IPlugin)
 	
 	name = u'core'
 	script_url = u''
@@ -36,5 +34,5 @@ class CoreModule(object):
 		Return a dict of WorldTransaction/amp.Command classes provided by this module.
 		"""
 		from antioch.core import transact
-		from antioch.modules import discover_commands
+		from antioch.plugins import discover_commands
 		return discover_commands(transact)

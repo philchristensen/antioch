@@ -3,13 +3,13 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 
-from antioch import modules
+from antioch import plugins
 
 @login_required
 def client(request):
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
-		scripts         = [m.script_url for m in modules.iterate() if m],
+		scripts         = [p.script_url for p in plugins.iterate() if p],
 	), context_instance=template.RequestContext(request))
 
 def logout(request):

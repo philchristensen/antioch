@@ -10,9 +10,7 @@ Graphical object editor support.
 
 from zope.interface import classProvides
 
-from twisted import plugin
-
-from antioch import module
+from antioch import plugin
 from antioch.core import transact
 
 def edit(p, item):
@@ -42,7 +40,7 @@ def access(p, item):
 	))
 
 class EditorModule(object):
-	classProvides(plugin.IPlugin, module.IModule)
+	classProvides(plugin.IPlugin)
 	
 	name = u'editor'
 	script_url = u'/assets/js/editor-plugin.js'
@@ -119,7 +117,7 @@ class EditorModule(object):
 		return d
 	
 	def get_commands(self):
-		from antioch.modules.editors import transactions
-		from antioch.modules import discover_commands
+		from antioch.plugins.editors import transactions
+		from antioch.plugins import discover_commands
 		return discover_commands(transactions)
 

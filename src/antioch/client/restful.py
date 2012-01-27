@@ -16,9 +16,9 @@ def translate_path(path):
 	return ''.join([x.capitalize() for x in path.split('-')])
 
 def get_command_class(class_name):
-	from antioch import modules
-	for mod in modules.iterate():
-		available_commands = mod.get_commands()
+	from antioch import plugins
+	for plugin in plugins.iterate():
+		available_commands = plugin.get_commands()
 		if(class_name in available_commands):
 			klass = available_commands[class_name]
 			return klass

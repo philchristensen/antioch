@@ -9,9 +9,7 @@ Client-side prompt support.
 """
 from zope.interface import classProvides
 
-from twisted import plugin
-
-from antioch import modules
+from antioch import plugin
 
 def ask(p, question, callback, *args, **kwargs):
 	details = dict(
@@ -27,7 +25,7 @@ def ask(p, question, callback, *args, **kwargs):
 	))
 
 class AskModule(object):
-	classProvides(plugin.IPlugin, modules.IModule)
+	classProvides(plugin.IPlugin)
 	
 	name = u'ask'
 	script_url = u'/assets/js/ask-plugin.js'

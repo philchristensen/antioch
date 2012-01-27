@@ -63,15 +63,15 @@ def discover_commands(plugin):
 	)
 
 def instantiate(plugin_mod):
-	from antioch import module
+	from antioch import plugin
 	global plugin_cache
 	if(plugin_mod not in plugin_cache):
 		for name in dir(plugin_mod):
 			if(name.startswith('_')):
 				continue
-			plugin = getattr(plugin_mod, name)
-			if(module.IModule.providedBy(plugin)):
-				plugin_cache[plugin_mod] = plugin()
+			p = getattr(plugin_mod, name)
+			if(plugin.IPlugin.providedBy(p)):
+				plugin_cache[plugin_mod] = p()
 	if(plugin_mod not in plugin_cache):
 		raise RuntimeError("Could not instantiate an antioch plugin from %r" % plugin)
 	return plugin_cache[plugin_mod]
