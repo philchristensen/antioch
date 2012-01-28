@@ -30,7 +30,7 @@
 		<div id="bottom-pane">
 			<div id="actions"></div>
 			<div id="prompt-area">
-				<input type="text" class="client-prompt" size="80" />
+				<input type="text" id="connection" class="client-prompt" size="80" />
 			</div>
 		</div>
 	</div>
@@ -40,27 +40,17 @@
 {% block footer %}
 <script type="text/javascript">
 	$(document).ready(function(){
-		// $('#client-wrapper').splitter({
-		// 	type: 'h',
-		// 	anchorToWindow: true,
-		// 	sizeTop: true
-		// });
-		// $('#bottom-pane').splitter({
-		// 	type: 'h',
-		// });
-	
-		$('.client-prompt').keyup(handleKeyEvent);
-	
+		$('#connection').antioch({
+			
+		});
+		
 		$('.look-me').click(function(){
-			look('me');
+			$('#connection').antioch('look', 'me');
 		});
-	
+		
 		$('.look-here').click(function(){
-			look('here');
+			$('#connection').antioch('look', 'here');
 		});
-		setTimeout(function() {
-			listen(handleMessages);
-		}, 500);
 	});
 </script>
 {% endblock %}
