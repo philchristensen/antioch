@@ -6,9 +6,6 @@
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-1.4.2-min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dimensions-1.1.2-min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.splitter-1.5.1.js"></script>
-	{% for script_url in scripts %}
-	<script type="text/javascript" src="{{ script_url }}"></script>
-	{% endfor %}
 {% endblock %}
 
 {% block content %}
@@ -75,6 +72,9 @@
 		$('.look-here').click(function(){
 			$('#connection').antioch('look', 'here');
 		});
+		
+		{% for script_url in scripts %}$.getScript("{{ script_url }}");
+		{% endfor %}
 	});
 </script>
 {% endblock %}

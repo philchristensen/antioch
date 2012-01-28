@@ -15,7 +15,7 @@ from antioch.core import transact
 
 def edit(p, item):
 	p.exchange.queue.push(p.caller.get_id(), dict(
-		plugin		= 'editor',
+		command		= 'edit',
 		details		= item.get_details(),
 	))
 
@@ -35,7 +35,7 @@ def access(p, item):
 	)
 	
 	p.exchange.queue.push(p.caller.get_id(), dict(
-		plugin			= 'access',
+		command			= 'access',
 		details			= details,
 	))
 
