@@ -22,6 +22,7 @@
 		init: function(options){
 			// Create some defaults, extending them with any options that were provided
 			settings = $.extend({
+				listen: false,
 				comet_url: "/comet",
 				rest_url: "/rest/",
 				// // The rest of these settings are defined in the client template
@@ -119,10 +120,12 @@
 				}
 				
 				$(this).keyup(handleKeyEvent);
-				
-				setTimeout(function() {
-					listen(handleMessages);
-				}, 500);
+					
+				if(settings.listen){
+					setTimeout(function() {
+						listen(handleMessages);
+					}, 500);
+				}
 			});
 		},
 		
