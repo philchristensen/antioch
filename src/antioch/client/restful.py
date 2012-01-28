@@ -24,10 +24,6 @@ def get_command_class(class_name):
 			return klass
 	return None
 
-def authenticate(request):
-	user_id = None
-	return user_id
-
 class Resource(resource.Resource):
 	isLeaf=True
 	def __init__(self, msg_service):
@@ -57,7 +53,8 @@ class Resource(resource.Resource):
 		command_name = translate_path(request.postpath[1])
 		klass = get_command_class(command_name)
 		if(klass is None):
-			raise 404
+			request.setResponseCode(404)
+			return '404 Not Found'
 		
 		json = request.content.getvalue()
 		options = simplejson.loads(json)
