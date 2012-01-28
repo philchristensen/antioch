@@ -26,17 +26,17 @@ class antiochServer(object):
 	"""
 	The antioch application server startup class.
 	"""
-
+	
 	classProvides(service.IServiceMaker, plugin.IPlugin)
-
+	
 	tapname = "antioch"
 	description = "Run a set of antioch servers."
-
+	
 	class options(usage.Options):
 		"""
 		No option-parsing for the antioch twistd plugin.
 		"""
-
+	
 	@classmethod
 	def makeService(cls, config):
 		"""
@@ -44,7 +44,7 @@ class antiochServer(object):
 		"""
 		if(conf.get('suppress-deprecation-warnings')):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
-
+		
 		from antioch.util import logging
 		error_log = conf.get('error-log')
 		if(error_log):
@@ -54,23 +54,28 @@ class antiochServer(object):
 			def _customizeLogs():
 				logging.customizeLogs(colorize=True)
 			reactor.addSystemEventTrigger('after', 'startup', _customizeLogs)
-
+		
 		master_service = service.MultiService()
-
+		
 		from antioch import messaging
 		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))
 		msg_service = master_service.getServiceNamed('message-service')	
-
+		
 		from antioch.core import tasks
 		task_service = tasks.TaskService()
 		task_service.setName("task-daemon")
 		task_service.setServiceParent(master_service)
-
+		
+		from antioch.core import appserver
+		app_service = appserver.AppServer(msg_service)
+		app_service.setName("app-server")
+		app_service.setServiceParent(master_service)
+		
 		from antioch import client
-		web_service = client.DjangoService(msg_service, conf.get('db-url-default'), conf.get('access-log'))
-		web_service.setName("web-server")
+		web_service = client.DjangoServer(msg_service)
+		web_service.setName("django-server")
 		web_service.setServiceParent(master_service)
-
+		
 		task_service.run()
-
+		
 		return master_service

@@ -11,6 +11,9 @@
     "PROFILE_DB": false,
 
     "WEB_PORT": 8888,
+    "APPSERVER_PORT": 8887,
+    
+    "APPSERVER_URL": "http://localhost:8887/",
 
     "QUEUE_URL": "restmq://localhost:8889/queue",
     "PSQL_PATH": "psql",

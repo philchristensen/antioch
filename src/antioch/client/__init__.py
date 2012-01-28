@@ -10,23 +10,24 @@ Setup the web client interface.
 
 import crypt
 
-from zope.interface import implements
-
-from twisted.application import internet
-from twisted.web import server
-from twisted.python import log
-
 from django.contrib.auth import backends
 
-from antioch import conf
-from antioch.client import restful, models
+from twisted.internet import reactor
+from twisted.application import internet
+from twisted.python import log
+from twisted.web import wsgi, server
 
-class DjangoService(internet.TCPServer):
+from antioch import conf
+from antioch.client import models
+
+class DjangoServer(internet.TCPServer):
 	"""
 	Provides a service that responds to web requests.
 	"""
-	def __init__(self, msg_service, db_url, access_log):
-		self.root = restful.RootResource(msg_service)
+	def __init__(self, msg_service):
+		import django.core.handlers.wsgi
+		handler = django.core.handlers.wsgi.WSGIHandler()
+		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
 		log_path = conf.get('access-log') or None
 		self.factory = server.Site(self.root, logPath=log_path)
 		internet.TCPServer.__init__(self, conf.get('web-port'), self.factory)
