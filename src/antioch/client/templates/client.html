@@ -41,7 +41,29 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#connection').antioch({
+			actions_selector: "#actions",
+			name_selector: ".name",
+			description_selector: ".description",
+			contents_selector: '.contents',
 			
+			issued_command_template: "<br/><span class=\"issued-command\">$content</span>",
+			error_template: "<br/><span class=\"error-response\">$content</span>",
+			message_template: "<br/>$content",
+			player_image_template: "<img src=\"$content\" />",
+			
+			players_wrapper_node: '<div id="players-list"></div>',
+			contents_wrapper_node: '<div id="contents-list"></div>',
+			players_list_node: '<ul></ul>',
+			contents_list_node: '<ul></ul>',
+			player_image_node: '<div class="player-image"></div>',
+			default_image_node: '<img src="/assets/images/silhouette.png" />',
+			player_name_node: '<div class="player-name"></div>',
+			player_mood_node: '<div class="player-mood"></div>',
+			people_here_node: '<strong>people here:</strong>',
+			contents_here_node: '<strong>obvious contents:</strong>',
+			clear_both_node: '<br style="clear: both;"/>',
+			player_list_item_node: '<li></li>',
+			content_list_item_node: '<li></li>',
 		});
 		
 		$('.look-me').click(function(){

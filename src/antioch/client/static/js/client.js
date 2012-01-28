@@ -2,12 +2,30 @@
 	var commandHistory = [];
 	var historyPosition = -1;
 	var currentCommand = ''
+	var settings;
 	
 	var methods = {
 		init: function(options){ 
 			// Create some defaults, extending them with any options that were provided
-			var settings = $.extend({
-				
+			settings = $.extend({
+				comet_url: "/comet",
+				rest_url: "/rest/",
+				// // The rest of these settings are defined in the client template
+				// // when the plugin is instantiated, keeping all template-related
+				// // code together. The setting names are also listed here:
+				//
+				// issued_command_template      actions_selector
+				// error_template               name_selector
+				// message_template             description_selector
+				// player_image_template        contents_selector
+				// 
+				// players_wrapper_node         player_name_node
+				// contents_wrapper_node        player_mood_node
+				// players_list_node            people_here_node
+				// contents_list_node           contents_here_node
+				// player_image_node            clear_both_node
+				// default_image_node           player_list_item_node
+				// content_list_item_node
 			}, options);
 			
 			return this.each(function(){
@@ -24,7 +42,7 @@
 				}
 				
 				function listen(handler){
-					$.ajax('/comet', {
+					$.ajax(settings.comet_url, {
 						dataType: 'json',
 						contentType: 'application/json',
 						cache: false,
@@ -86,15 +104,6 @@
 					}
 				}
 				
-				// $('#client-wrapper').splitter({
-				// 	type: 'h',
-				// 	anchorToWindow: true,
-				// 	sizeTop: true
-				// });
-				// $('#bottom-pane').splitter({
-				// 	type: 'h',
-				// });
-				
 				$(this).keyup(handleKeyEvent);
 				
 				setTimeout(function() {
@@ -104,7 +113,7 @@
 		},
 		
 		callRemote: function(command, options, callback){
-			$.ajax('/rest/' + command, {
+			$.ajax(settings.rest_url + command, {
 				type: 'POST',
 				dataType: 'json',
 				processData: false,
@@ -125,8 +134,8 @@
 			 * Send a command to the server.
 			 */
 			methods.callRemote('parse', {sentence: text});
-			var actions = $('#actions');
-			actions.append('<br/><span class="issued-command">' + text + '</span>')
+			var actions = $(settings.actions_selector);
+			actions.append(settings.issued_command_template.replace('$content', text))
 			actions.scrollTo('max');
 		},
 		
@@ -159,10 +168,10 @@
 			}
 			
 			if(error){
-				actions.append('<br/><span class="error-response">' + text + '</span>');
+				actions.append(settings.error_template.replace('$content', text));
 			}
 			else{
-				actions.append('<br/>' + text);
+				actions.append(settings.message_template.replace('$content', text));
 			}
 			
 			actions.scrollTo('max');
@@ -172,67 +181,67 @@
 			/*
 			 * Called by the server to change the main client display.
 			 */
-			$('.name').html(observations['name']);
-			$('.description').html(observations['description']);
+			$(settings.name_selector).html(observations['name']);
+			$(settings.description_selector).html(observations['description']);
 			
-			var player_content = $('<div id="players-list"></div>');
-			var item_content = $('<div id="contents-list"></div>');
+			var player_content = $(settings.players_wrapper_node);
+			var item_content = $(settings.contents_wrapper_node);
 			
 			if(observations['contents'].length){
-				var player_list = $('<ul></ul>');
-				var contents_list = $('<ul></ul>');
+				var player_list = $(settings.players_list_node);
+				var contents_list = $(settings.contents_list_node);
 				
 				for(index in observations['contents']){
 					var details = observations['contents'][index];
 					if(details.type){
-						image_div = ($('<div class="player-image"></div>'));
+						image_div = ($(settings.player_image_node));
 						if(details.image){
-							image_div.append($('<img src="' + details.image + '" />'));
+							image_div.append($(settings.player_image_template.replace('$content', details.image)));
 						}
 						else{
-							image_div.append($('<img src="/assets/images/silhouette.png" />'));
+							image_div.append($(settings.default_image_node));
 						}
 						
-						name_div = $('<div class="player-name"></div>');
+						name_div = $(settings.player_name_node);
 						name_div.html(details.name);
 						
-						list_item = $('<li></li>');
+						list_item = $(settings.player_list_item_node);
 						list_item.click(function(){
-							look(details.name);
+							methods.look(details.name);
 						});
 						list_item.append(image_div);
 						list_item.append(name_div);
 						
 						if(details.mood){
-							mood_div = $('<div class="player-mood"></div>');
+							mood_div = $(settings.player_mood_node);
 							mood_div.html(details.mood);
 							list_item.append(mood_div);
 						}
 						player_list.append(list_item);
 					}
 					else{
-						list_item = $('<li></li>');
+						list_item = $(settings.content_list_item_node);
 						list_item.html(details.name);
 						list_item.click(function(){
-							look(details.name);
+							methods.look(details.name);
 						});
 						contents_list.append(list_item);
 					}
 				}
 				
 				if(player_list[0].children.length){
-					player_content.append($('<strong>people here:</strong>'));
+					player_content.append($(settings.people_here_node));
 					player_content.append(player_list);
-					player_content.append($('<br style="clear: both;"/>'))
+					player_content.append($(settings.clear_both_node))
 				}
 				if(contents_list[0].children.length){
-					item_content.append($('<strong>obvious contents:</strong>'));
+					item_content.append($(settings.contents_here_node));
 					item_content.append(contents_list);
-					item_content.append($('<br style="clear: both;"/>'))
+					item_content.append($(settings.clear_both_node))
 				}
 			}
 			
-			var contents_area = $('.contents');
+			var contents_area = $(settings.contents_selector);
 			contents_area.empty();
 			contents_area.append(player_content);
 			contents_area.append(item_content);
