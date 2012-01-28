@@ -2,10 +2,24 @@
 	var commandHistory = [];
 	var historyPosition = -1;
 	var currentCommand = ''
+	
 	var settings;
 	
+	var messageListeners = {
+		observe: [
+			function(msg){
+				methods.setObservations(msg.observations);
+			}
+		],
+		write: [
+			function(msg){
+				methods.write(msg.text, msg.is_error, msg.escape_html);
+			}
+		]
+	}
+	
 	var methods = {
-		init: function(options){ 
+		init: function(options){
 			// Create some defaults, extending them with any options that were provided
 			settings = $.extend({
 				comet_url: "/comet",
@@ -32,11 +46,11 @@
 				function handleMessages(msgs){
 					for(index in msgs){
 						msg = msgs[index];
-						if(msg.command == 'observe'){
-							methods.setObservations(msg.observations);
-						}
-						else if(msg.command == 'write'){
-							methods.write(msg.text, msg.is_error, msg.escape_html);
+						handlers = messageListeners[msg['command']];
+						if(handlers){
+							for(index in handlers){
+								handlers[index](msg);
+							}
 						}
 					}
 				}
@@ -247,6 +261,15 @@
 			contents_area.append(item_content);
 			
 			$(this).focus();
+		},
+		
+		addMessageListener: function(command, listener){
+			if(messageListeners[command]){
+				messageListeners[command].push(listener);
+			}
+			else{
+				messageListeners[command] = [listener];
+			}
 		}
 	};
 	
