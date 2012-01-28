@@ -19,8 +19,6 @@ from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch.core import parser
-
 from antioch import conf
 conf.init()
 

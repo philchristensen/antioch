@@ -13,7 +13,6 @@ import time, sys, os.path
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
 
-from antioch import modules
 from antioch.core import errors
 from antioch.util import json
 
@@ -193,8 +192,9 @@ def get_restricted_environment(writer, p=None):
 		__builtins__	= safe_builtins,
 	)
 	
-	for mod in modules.iterate():
-		for name, func in mod.get_environment().items():
+	from antioch import plugins
+	for plugin in plugins.iterate():
+		for name, func in plugin.get_environment().items():
 			func.func_name = name
 			api(func) if callable(func) else None
 	

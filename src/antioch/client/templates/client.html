@@ -2,7 +2,7 @@
 
 {% block header %}
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/client.css"/>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/client-support.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/client.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-1.4.2-min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dimensions-1.1.2-min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.splitter-1.5.1.js"></script>
@@ -27,7 +27,7 @@
 		<div id="bottom-pane">
 			<div id="actions"></div>
 			<div id="prompt-area">
-				<input type="text" class="client-prompt" size="80" />
+				<input type="text" id="connection" class="client-prompt" size="80" />
 			</div>
 		</div>
 	</div>
@@ -37,27 +37,44 @@
 {% block footer %}
 <script type="text/javascript">
 	$(document).ready(function(){
-		// $('#client-wrapper').splitter({
-		// 	type: 'h',
-		// 	anchorToWindow: true,
-		// 	sizeTop: true
-		// });
-		// $('#bottom-pane').splitter({
-		// 	type: 'h',
-		// });
-	
-		$('.client-prompt').keyup(handleKeyEvent);
-	
+		$('#connection').antioch({
+			listen: true,
+			
+			actions_selector: "#actions",
+			name_selector: ".name",
+			description_selector: ".description",
+			contents_selector: '.contents',
+			
+			issued_command_template: "<br/><span class=\"issued-command\">$content</span>",
+			error_template: "<br/><span class=\"error-response\">$content</span>",
+			message_template: "<br/>$content",
+			player_image_template: "<img src=\"$content\" />",
+			
+			players_wrapper_node: '<div id="players-list"></div>',
+			contents_wrapper_node: '<div id="contents-list"></div>',
+			players_list_node: '<ul></ul>',
+			contents_list_node: '<ul></ul>',
+			player_image_node: '<div class="player-image"></div>',
+			default_image_node: '<img src="/assets/images/silhouette.png" />',
+			player_name_node: '<div class="player-name"></div>',
+			player_mood_node: '<div class="player-mood"></div>',
+			people_here_node: '<strong>people here:</strong>',
+			contents_here_node: '<strong>obvious contents:</strong>',
+			clear_both_node: '<br style="clear: both;"/>',
+			player_list_item_node: '<li></li>',
+			content_list_item_node: '<li></li>',
+		});
+		
 		$('.look-me').click(function(){
-			look('me');
+			$('#connection').antioch('look', 'me');
 		});
-	
+		
 		$('.look-here').click(function(){
-			look('here');
+			$('#connection').antioch('look', 'here');
 		});
-		setTimeout(function() {
-			listen(handleMessages);
-		}, 500);
+		
+		{% for script_url in scripts %}$.getScript("{{ script_url }}");
+		{% endfor %}
 	});
 </script>
 {% endblock %}

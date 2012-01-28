@@ -1,15 +1,12 @@
-<html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
-<head>
-	<title>antioch Object Editor</title>
-	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
-	<link rel="stylesheet" type="text/css" href="/assets/css/global.css"/>
-	<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/object-editor.css"/>
-	<script type="text/javascript" src="/assets/js/global.js"></script>
-	<script type="text/javascript" src="/plugin/editor/assets/js/object-editor.js"></script>
-	<script type="text/javascript" src="/plugin/editor/assets/js/editor-plugin-support.js"></script>
-	<nevow:invisible nevow:render="jquery"></nevow:invisible>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block header %}
+<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/object-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/js/object-editor.js"/>
+{% endblock %}
+
+{% block content %}
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
 		<div class="controls">
 			<div class="field-row">
@@ -53,5 +50,12 @@
 		<button type="button" class="action-button" id="save-button">save</button>
 		<button type="button" class="action-button" id="cancel-button">cancel</button>
 	</div>
-</body>
-</html>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(document).antioch();
+	});
+</script>
+{% endblock %}

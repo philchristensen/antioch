@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/access-editor.css"/>
+{% endblock %}
+
+{% block content %}
+	<div id="editor" class="ui-widget-content ui-corner-all">
+		<button id="add-button"></button>
+	</div>
+	<button type="button" class="action-button" id="save-button">save</button>
+	<button type="button" class="action-button" id="cancel-button">cancel</button>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+	$(document).ready(function(){
+
+	});
+</script>
+{% endblock %}

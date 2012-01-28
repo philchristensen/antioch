@@ -141,7 +141,7 @@
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware"
     ],
-    "ROOT_URLCONF" : "antioch.client.urls",
+    "ROOT_URLCONF" : "antioch.urls",
     
     "INSTALLED_APPS" : [
         'django.contrib.auth',
@@ -150,11 +150,12 @@
         'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        # Uncomment the next line to enable the admin:
         'django.contrib.admin',
-        # Uncomment the next line to enable admin documentation:
         'django.contrib.admindocs',
+        'antioch.core',
         'antioch.client',
+        'antioch.assets',
+        'antioch.plugins.editors'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",
@@ -184,13 +185,13 @@
         'loggers': {
             'django': {
                 'handlers':['console'],
-                'propagate': True,
+                'propagate': true,
                 'level':'INFO',
             },
             'django.request': {
                 'handlers': ['console'],
                 'level': 'INFO',
-                'propagate': False,
+                'propagate': false,
             },
             'antioch.custom': {
                 'handlers': ['console'],
