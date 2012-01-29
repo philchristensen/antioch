@@ -4,7 +4,7 @@ body {
 	padding: 0;
 }
 
-#message-log {
+#status-line {
 	color: #800;
 	background-color: #eee;
 	font-family: Courier, "Courier New", sans-serif;

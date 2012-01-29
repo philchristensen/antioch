@@ -9,7 +9,6 @@
 {% endblock %}
 
 {% block content %}
-	<div id="message-log"></div>
 	<div id="client">
 	<div class="name">antioch</div>
 	<div id="client-wrapper">
@@ -33,6 +32,7 @@
 		</div>
 	</div>
 	</div>
+	<div id="status-line"></div>
 {% endblock %}
 
 {% block footer %}
@@ -41,7 +41,7 @@
 		$('#connection').antioch({
 			listen: true,
 			error_handler: function(err){
-				$('#message-log').html(err);
+				$('#status-line').html(err);
 			},
 			
 			actions_selector: "#actions",
