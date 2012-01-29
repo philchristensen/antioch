@@ -24,13 +24,7 @@ def comet(request):
 	conn = httplib.HTTPConnection(url.netloc)
 	conn.request('GET', '/comet/%d' % request.user.avatar.id)
 	response = conn.getresponse()
-	def _reader():
-		g = iter(response.read, '')
-		try:
-			yield g.next()
-		except StopIteration:
-			conn.close()
-	return http.HttpResponse(_reader(), content_type="application/json")
+	return http.HttpResponse(response.read(), content_type="application/json")
 
 @login_required
 @csrf_exempt
