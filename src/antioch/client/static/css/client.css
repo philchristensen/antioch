@@ -4,6 +4,15 @@ body {
 	padding: 0;
 }
 
+#message-log {
+	color: #800;
+	background-color: #eee;
+	font-family: Courier, "Courier New", sans-serif;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: right;
+}
+
 #client {
 	text-align: left;
 	width: 100%;

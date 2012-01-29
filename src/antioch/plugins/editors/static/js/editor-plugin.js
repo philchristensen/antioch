@@ -1,5 +1,4 @@
 // Loaded in the client window automatically
-debugger;
 (function($) {
 	var sizes = {
 		object: {

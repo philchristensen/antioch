@@ -25,6 +25,9 @@
 				listen: false,
 				comet_url: "/comet/",
 				rest_url: "/rest/",
+				error_handler: function(err){
+					alert(err);
+				},
 				// // The rest of these settings are defined in the client template
 				// // when the plugin is instantiated, keeping all template-related
 				// // code together. The setting names are also listed here:
@@ -48,10 +51,8 @@
 					for(index in msgs){
 						msg = msgs[index];
 						handlers = messageListeners[msg['command']];
-						console.log(msg);
 						if(handlers){
 							for(index in handlers){
-								console.log(handlers[index]);
 								handlers[index](msg);
 							}
 						}
@@ -68,7 +69,7 @@
 								listen(handler);
 							}
 							else if(textStatus != 'abort'){
-								alert('Error in listen: ' + errorThrown);
+								settings.error_handler('Error in listen: ' + errorThrown);
 							}
 						},
 						success: function(data, textStatus, jqXHR){
