@@ -15,7 +15,7 @@ from antioch import plugins
 def client(request):
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
-		scripts         = [p.script_url for p in plugins.iterate() if p],
+		scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
 	), context_instance=template.RequestContext(request))
 
 @login_required

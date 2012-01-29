@@ -73,7 +73,8 @@
 			$('#connection').antioch('look', 'here');
 		});
 		
-		{% for script_url in scripts %}$.getScript("{{ script_url }}");
+		{% for script_url in scripts %}
+		$('body').append('\x3Cscript type="text/javascript" src="{{ script_url }}">\x3C/script>');
 		{% endfor %}
 	});
 </script>

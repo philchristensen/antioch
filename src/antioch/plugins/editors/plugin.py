@@ -52,7 +52,7 @@ class EditorModule(object):
 		)
 	
 	def handle_message(self, data, client):
-		from antioch.modules.editors import transactions
+		from antioch.plugins.editors import transactions
 		if(data['details']['kind'] == 'object'):
 			def _cb_objedit(result):
 				return transactions.ModifyObject.run(
@@ -96,7 +96,7 @@ class EditorModule(object):
 			d.addCallback(_cb_verbedit)
 		elif(data['details']['kind'] == 'access'):
 			def _cb_accessedit(result):
-				from antioch.modules.editors import transactions
+				from antioch.plugins.editors import transactions
 				return transactions.ModifyAccess.run(
 					transaction_child	= transactions.EditorTransactionChild,
 					user_id		= client.user_id,

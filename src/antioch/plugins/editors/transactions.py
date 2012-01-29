@@ -121,7 +121,7 @@ class EditorTransactionChild(transact.TransactionChild):
 					item = x.instantiate(type, owner_id=user_id, origin_id=object_id, name=name)
 			caller = x.get_object(user_id)
 			p = parser.TransactionParser(parser.Lexer(''), caller, x)
-			from antioch.modules import editors
+			from antioch.plugins import editors
 			editors.edit(p, item)
 		
 		return {'response': True}
@@ -137,7 +137,7 @@ class EditorTransactionChild(transact.TransactionChild):
 				item = getattr(origin, 'get_' + type)(name)
 			
 			p = parser.TransactionParser(parser.Lexer(''), caller, x)
-			from antioch.modules import editors
+			from antioch.plugins import editors
 			editors.access(p, item)
 		
 		return {'response': True}

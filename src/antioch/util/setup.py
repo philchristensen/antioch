@@ -55,7 +55,7 @@ def pluginModules(moduleNames):
 			traceback.print_exc()
 
 def regeneratePluginCache():
-	pluginPackages = ['twisted.plugins', 'antioch.modules']
+	pluginPackages = ['twisted.plugins']
 	
 	from twisted import plugin
 	

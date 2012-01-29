@@ -48,8 +48,10 @@
 					for(index in msgs){
 						msg = msgs[index];
 						handlers = messageListeners[msg['command']];
+						console.log(msg);
 						if(handlers){
 							for(index in handlers){
+								console.log(handlers[index]);
 								handlers[index](msg);
 							}
 						}
