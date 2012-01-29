@@ -30,9 +30,13 @@ class Resource(resource.Resource):
 		self.msg_service = msg_service
 	
 	def render_GET(self, request):
+		def _disconnect(resultOrFailure):
+			request.notified = True
+		request.notifyFinish().addBoth(_disconnect)
+		
 		d = self.get_messages(request.postpath[1])
 		def _finish(messages):
-			if(request.finished):
+			if(getattr(request, 'notified', False)):
 				return
 			output = simplejson.dumps(messages)
 			request.write(output)
@@ -50,6 +54,10 @@ class Resource(resource.Resource):
 		defer.returnValue(messages)
 	
 	def render_POST(self, request):
+		def _disconnect(resultOrFailure):
+			request.notified = True
+		request.notifyFinish().addBoth(_disconnect)
+		
 		command_name = translate_path(request.postpath[1])
 		klass = get_command_class(command_name)
 		if(klass is None):
@@ -61,7 +69,7 @@ class Resource(resource.Resource):
 		d = klass.run(**options)
 		
 		def _finish(result):
-			if(request.finished):
+			if(getattr(request, 'notified', False)):
 				return
 			request.setHeader('Content-Type', 'application/json')
 			request.write(simplejson.dumps(result))
