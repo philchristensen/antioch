@@ -20,7 +20,7 @@
 	};
 	$(document).antioch('addMessageListener', 'edit', function(msg){
 		window.open(
-			'/plugin/editor/' + msg.details.kind + '/',
+			'/plugin/editor/' + msg.details.kind + '/' + msg.details.id,
 			[msg.details.kind, 'editor', msg.details.id].join('-'), 
 			buildWindowString(sizes[msg.details.kind])
 		);

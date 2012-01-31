@@ -5,29 +5,34 @@
     "DEBUG_SQL": false,
     "DEBUG_SQL_WRITES": false,
     "DEBUG_SQL_SYNTAX": false,
-
+    
     "PROFILE_TRANSACTIONS": false,
     "PROFILE_QUEUE": false,
     "PROFILE_DB": false,
-
+    
     "WEB_PORT": 8888,
     "APPSERVER_PORT": 8887,
     
     "APPSERVER_URL": "http://localhost:8887/",
-
+    
     "QUEUE_URL": "restmq://localhost:8889/queue",
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 3,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
     "XSENDFILE": false,
     
+    # define the lookup channels in use on the site
+    "AJAX_LOOKUP_CHANNELS": {
+        'object': ['antioch.client.lookups', 'ObjectLookup']
+    },
+    
     # "SESSION_COOKIE_NAME" : "sessionid",
     
     "LOGIN_URL" : "/login/",
     "LOGIN_REDIRECT_URL" : "/",
-
+    
     "ADMIN_FOR": ['antioch.settings'],
-
+    
     "ADMINS":[
         ["Admin", "admin@example.com"]
     ],
@@ -155,6 +160,7 @@
         'django.contrib.staticfiles',
         'django.contrib.admin',
         'django.contrib.admindocs',
+        'ajax_select',
         'antioch.core',
         'antioch.client',
         'antioch.assets',

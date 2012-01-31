@@ -3,8 +3,10 @@
 {% block header %}
 <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/object-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/object-editor.js"></script>
+<script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -12,23 +14,23 @@
 		<div class="controls">
 			<div class="field-row">
 			<label id="name-label" for="name-field">name:</label>
-			<input id="name-field" type="text" size="30"/>
+			{{ form.name }}
 			</div>
 			<div class="field-row">
 			<label id="parent-label" for="parent-field">parents:</label>
-			<input type="text" id="parent-field" size="20"/>
+			{{ form.parents }}
 			</div>
 			<div class="field-row">
 			<label id="location-label" for="location-field">location:</label>
-			<input type="text" id="location-field" size="20"/>
+			{{ form.location }}
 			</div>
 			<div class="field-row">
 			<label id="owner-label" for="owner-field">owner:</label>
-			<input type="text" id="owner-field" size="20"/>
+			{{ form.owner }}
 			</div>
 			<div class="field-row">
 			<label id="id-label" for="id-field">id:</label>
-			<input id="id-field" type="text" size="10" disabled="1"/>
+			{{ form.id }}
 			</div>
 			<input type="button" id="access-button" value="access..." />
 		</div>
