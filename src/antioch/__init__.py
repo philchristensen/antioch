@@ -13,6 +13,7 @@ from zope import interface
 class IPlugin(interface.Interface):
 	name = interface.Attribute('Name of this module.')
 	script_url = interface.Attribute('Plugin script URL.')
+	transaction_child = interface.Attribute('ampoule transaction child class.')
 	
 	def get_environment(self):
 		"""

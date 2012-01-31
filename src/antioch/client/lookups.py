@@ -19,8 +19,8 @@ class ObjectLookup(LookupChannel):
 	
 	def format_match(self, obj):
 		""" (HTML) formatted item for display in the dropdown """
-		return self.format_item_display(obj)
+		return escape(obj.name)
 	
 	def format_item_display(self,obj):
 		""" (HTML) formatted item for displaying item in the selected deck area """
-		return escape(obj.name)
+		return escape(unicode(obj))

@@ -6,7 +6,8 @@ from antioch.client import models
 class ObjectForm(forms.ModelForm):
 	class Meta:
 		model = models.Object
+		exclude = ('observers',)
 	
 	owner = fields.AutoCompleteSelectField('object')
-	location = fields.AutoCompleteSelectField('object')
+	location = fields.AutoCompleteSelectField('object', required=False)
 	parents = fields.AutoCompleteSelectMultipleField('object')

@@ -10,7 +10,10 @@
 {% endblock %}
 
 {% block content %}
+<form method="POST" action="">
+	{% csrf_token %}
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
+		{{ form.errors }}
 		<div class="controls">
 			<div class="field-row">
 			<label id="name-label" for="name-field">name:</label>
@@ -50,9 +53,9 @@
 		</div>
 	</div>
 	<div class="controls">
-		<button type="button" class="action-button" id="save-button">save</button>
-		<button type="button" class="action-button" id="cancel-button">cancel</button>
+		<input type="submit" class="action-button" id="save-button" value="save" />
 	</div>
+</form>
 {% endblock %}
 
 {% block footer %}

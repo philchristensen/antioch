@@ -13,6 +13,8 @@ from zope.interface import classProvides
 from antioch import IPlugin
 from antioch.core import transact
 
+from antioch.plugins.editors.transactions import EditorTransactionChild
+
 def edit(p, item):
 	p.exchange.queue.push(p.caller.get_id(), dict(
 		command		= 'edit',
@@ -44,6 +46,7 @@ class EditorModule(object):
 	
 	name = u'editor'
 	script_url = u'/assets/js/editor-plugin.js'
+	transaction_child = EditorTransactionChild
 	
 	def get_environment(self):
 		return dict(

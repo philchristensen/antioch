@@ -15,13 +15,14 @@ import simplejson
 def translate_path(path):
 	return ''.join([x.capitalize() for x in path.split('-')])
 
-def get_command_class(class_name):
+def get_command_support(class_name):
 	from antioch import plugins
 	for plugin in plugins.iterate():
 		available_commands = plugin.get_commands()
 		if(class_name in available_commands):
 			klass = available_commands[class_name]
-			return klass
+			child = getattr(plugin, 'transaction_child', None)
+			return klass, child
 	return None
 
 class Resource(resource.Resource):
@@ -59,14 +60,14 @@ class Resource(resource.Resource):
 		request.notifyFinish().addBoth(_disconnect)
 		
 		command_name = translate_path(request.postpath[1])
-		klass = get_command_class(command_name)
+		klass, child = get_command_support(command_name)
 		if(klass is None):
 			request.setResponseCode(404)
 			return '404 Not Found'
 		
 		json = request.content.getvalue()
 		options = simplejson.loads(json)
-		d = klass.run(**options)
+		d = klass.run(transaction_child=child, **options)
 		
 		def _finish(result):
 			if(getattr(request, 'notified', False)):
