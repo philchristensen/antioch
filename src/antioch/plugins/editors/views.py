@@ -9,6 +9,7 @@ from antioch.plugins.editors import forms
 @login_required
 def object_editor(request, object_id):
 	o = models.Object.objects.get(pk=object_id)
+	
 	if(request.method == 'POST'):
 		form = forms.ObjectForm(request.POST, instance=o)
 		if(form.is_valid()):

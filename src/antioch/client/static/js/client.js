@@ -47,18 +47,6 @@
 			}, options);
 			
 			return this.each(function(){
-				function handleMessages(msgs){
-					for(index in msgs){
-						msg = msgs[index];
-						handlers = messageListeners[msg['command']];
-						if(handlers){
-							for(index in handlers){
-								handlers[index](msg);
-							}
-						}
-					}
-				}
-				
 				function listen(handler){
 					$.ajax(settings.comet_url, {
 						dataType: 'json',
@@ -126,7 +114,12 @@
 					
 				if(settings.listen){
 					setTimeout(function() {
-						listen(handleMessages);
+						listen(function(msgs){
+							for(index in msgs){
+								msg = msgs[index];
+								methods.handleMessage(msg);
+							}
+						});
 					}, 500);
 				}
 			});
@@ -276,7 +269,19 @@
 			else{
 				messageListeners[command] = [listener];
 			}
-		}
+		},
+		
+		handleMessage: function(msg){
+			handlers = messageListeners[msg['command']];
+			if(handlers){
+				for(index in handlers){
+					handlers[index](msg);
+				}
+			}
+			else{
+				console.log("No handler found for command " + msg['command']);
+			}
+		},
 	};
 	
 	$.fn.antioch = function(method){

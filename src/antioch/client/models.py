@@ -54,14 +54,18 @@ class Verb(models.Model):
 	method = models.BooleanField()
 	
 	def __unicode__(self):
+		return u"%s {#%s on %s}" % (
+			self.annotated(), self.id, self.origin
+		)
+	
+	def annotated(self):
 		ability_decoration = ['', '@'][self.ability]
 		method_decoration = ['', '()'][self.method]
-		print self.__dict__
-		verb_name = self.names.all()[0].name
-		print verb_name
-		return u"%s%s%s {#%s on %s}" % (
-			ability_decoration, verb_name, method_decoration, self.id, self.origin
-		)
+		verb_name = self.name()
+		return u''.join([ability_decoration, verb_name, method_decoration])
+	
+	def name(self):
+		return self.names.all()[0].name
 
 class VerbName(models.Model):
 	class Meta:

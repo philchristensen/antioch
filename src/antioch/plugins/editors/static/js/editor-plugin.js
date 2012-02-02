@@ -2,8 +2,8 @@
 (function($) {
 	var sizes = {
 		object: {
-			width: 600,
-			height: 500,
+			width: 470,
+			height: 595,
 		},
 		verb: {
 			width: 600,

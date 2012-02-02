@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/object-editor.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
 <script type="text/javascript" src="/assets/js/client.js"></script>
+<script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
 <script type="text/javascript" src="/assets/js/object-editor.js"></script>
 <script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
@@ -40,13 +41,21 @@
 		<div class="attributes">
 			<div class="verbs">
 				<label id="verbs-label" for="verbs-select">verbs:</label>
-				<select id="verbs-select" size="8"></select>
+				<select id="verbs-select" size="8">
+					{% for verb in form.instance.local_verbs.all %}
+					<option value="{{ verb.id }}">{{ verb.annotated }}</option>
+					{% endfor %}
+				</select>
 				<button id="add-verb"></button>
 				<button id="remove-verb"></button>
 			</div>
 			<div class="properties">
 				<label id="properties-label" for="properties-select">properties:</label>
-				<select id="properties-select" size="8"></select>
+				<select id="properties-select" size="8">
+					{% for property in form.instance.local_properties.all %}
+					<option value="{{ property.id }}">{{ property.name }}</option>
+					{% endfor %}
+				</select>
 				<button id="add-prop"></button>
 				<button id="remove-prop"></button>
 			</div>
@@ -60,8 +69,37 @@
 
 {% block footer %}
 <script type="text/javascript">
-	$(document).ready(function(){
-		$(document).antioch();
+$(document).ready(function(){
+	$(document).antioch();
+	
+	$('#parent-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
+	$('#location-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
+	$('#owner-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
+
+	$('#verbs-select').dblclick(function(){
+		$(document).antioch('handleMessage', {
+			command: 'edit',
+			details: {
+				id: $('#verbs-select').val(),
+				kind: 'verb'
+			}
+		});
 	});
+
+	$('#properties-select').dblclick(function(){
+		$(document).antioch('handleMessage', {
+			command: 'edit',
+			details: {
+				id: $('#properties-select').val(),
+				kind: 'property'
+			}
+		});
+	});
+
+	$('#add-verb').button({icons:{primary:'ui-icon-plusthick'}});
+	$('#remove-verb').button({icons:{primary:'ui-icon-minusthick'}});
+	$('#add-prop').button({icons:{primary:'ui-icon-plusthick'}});
+	$('#remove-prop').button({icons:{primary:'ui-icon-minusthick'}});
+});
 </script>
 {% endblock %}
