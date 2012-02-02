@@ -12,3 +12,10 @@ class ObjectForm(forms.ModelForm):
 	owner = fields.AutoCompleteSelectField('object')
 	location = fields.AutoCompleteSelectField('object', required=False)
 	parents = fields.AutoCompleteSelectMultipleField('object')
+
+class PropertyForm(forms.ModelForm):
+	class Meta:
+		model = models.Property
+		exclude = ('origin',)
+	
+	owner = fields.AutoCompleteSelectField('object')

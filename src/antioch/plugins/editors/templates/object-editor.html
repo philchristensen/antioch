@@ -6,7 +6,9 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
+<!--
 <script type="text/javascript" src="/assets/js/object-editor.js"></script>
+-->
 <script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
@@ -72,10 +74,6 @@
 $(document).ready(function(){
 	$(document).antioch();
 	
-	$('#parent-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
-	$('#location-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
-	$('#owner-button').button({icons:{primary:'ui-icon-newwin'}, text:false})
-
 	$('#verbs-select').dblclick(function(){
 		$(document).antioch('handleMessage', {
 			command: 'edit',
@@ -85,7 +83,7 @@ $(document).ready(function(){
 			}
 		});
 	});
-
+	
 	$('#properties-select').dblclick(function(){
 		$(document).antioch('handleMessage', {
 			command: 'edit',
@@ -95,7 +93,7 @@ $(document).ready(function(){
 			}
 		});
 	});
-
+	
 	$('#add-verb').button({icons:{primary:'ui-icon-plusthick'}});
 	$('#remove-verb').button({icons:{primary:'ui-icon-minusthick'}});
 	$('#add-prop').button({icons:{primary:'ui-icon-plusthick'}});

@@ -31,8 +31,18 @@ def object_editor(request, object_id):
 
 @login_required
 def property_editor(request, property_id):
+	p = models.Property.objects.get(pk=property_id)
+	
+	if(request.method == 'POST'):
+		form = forms.PropertyForm(request.POST, instance=p)
+		if(form.is_valid()):
+			pass
+	else:
+		form = forms.PropertyForm(instance=p)
+	
 	return shortcuts.render_to_response('property-editor.html', dict(
 		title           = "property editor",
+		form            = form,
 	), context_instance=template.RequestContext(request))
 
 @login_required

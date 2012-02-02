@@ -1,18 +1,29 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/property-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/property-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
+<script type="text/javascript" src="/assets/js/client.js"></script>
+<script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
+<script type="text/javascript" src="/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
+<!--
+<script type="text/javascript" src="/assets/js/property-editor.js"></script>
+-->
+<script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
 {% block content %}
+<form method="POST" action="">
+	{% csrf_token %}
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
+		{{ form.errors }}
 		<div class="controls">
 			<label id="name-label" for="name-field">name:</label>
-			<input type="text" id="name-field" size="20"/>
+			{{ form.name }}
 			
 			<label id="owner-label" for="owner-field">owner:</label>
-			<input type="text" id="owner-field" size="20"/>
+			{{ form.owner }}
 		</div>
 		<div class="controls">
 			<label id="type-label" for="type-field">type:</label>
@@ -28,19 +39,42 @@
 			<input type="button" id="access-button" value="access..." />
 		</div>
 		<div class="property-editor">
-			<textarea id="property-value"></textarea>
+			{{ form.value }}
 		</div>
 	</div>
 	<div class="controls">
-		<button type="button" class="action-button" id="save-button">save</button>
-		<button type="button" class="action-button" id="cancel-button">cancel</button>
+		<input type="submit" class="action-button" id="save-button" value="save" />
 	</div>
+</form>
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
-	$(document).ready(function(){
-
+$(document).ready(function(){
+	$(document).antioch();
+	
+	var syntaxStates = {
+		'string'	: 'DummyParser', 
+		'html'		: 'HTMLMixedParser', 
+		'python'	: 'antiochParser', 
+		'dynamic'	: 'antiochParser',
+	};
+	var editor = new CodeMirror(CodeMirror.replace("id_value"), {
+		parserfile: ["parsexml.js", "parsecss.js", "parsejavascript.js", "tokenizejavascript.js",
+						"parsehtmlmixed.js", "parseantioch.js", "parsedummy.js"],
+		path: "/assets/js/CodeMirror-0.91/js/",
+		stylesheet: "/assets/js/CodeMirror-0.91/css/antiochcolors.css",
+		content: $('#id_value').val(),
+		textWrapping: false,
+		lineNumbers: true,
+		indentUnit: 4,
+		tabMode: "shift",
+		height: null,
+		width: null,
+		initCallback: function(){
+			editor.setParser(syntaxStates[$('#type-select').val()]);
+		}
 	});
+});
 </script>
 {% endblock %}

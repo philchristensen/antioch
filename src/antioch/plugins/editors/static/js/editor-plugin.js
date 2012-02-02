@@ -6,12 +6,12 @@
 			height: 595,
 		},
 		verb: {
-			width: 600,
-			height: 500,
+			width: 815,
+			height: 590,
 		},
 		property: {
-			width: 600,
-			height: 500,
+			width: 815,
+			height: 590,
 		},
 		access: {
 			width: 600,
