@@ -1,13 +1,10 @@
-import urllib
-
 from django import template, shortcuts
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+from antioch.core import appserver
 from antioch.client import models
 from antioch.plugins.editors import forms
-
-import simplejson
 
 @login_required
 def object_editor(request, object_id):
@@ -15,16 +12,14 @@ def object_editor(request, object_id):
 	if(request.method == 'POST'):
 		form = forms.ObjectForm(request.POST, instance=o)
 		if(form.is_valid()):
-			# this needs to be centralized
-			urllib.urlopen(settings.APPSERVER_URL + 'rest/modify-object', simplejson.dumps(dict(
+			appserver.run('modify-object',
 				user_id		= request.user.avatar.id,
 				object_id	= o.id,
 				name		= request.POST['name'],
-				# returns the int as a string
 				location	= request.POST['location'],
 				owner		= request.POST['owner'],
-				parents		= ','.join([x for x in request.POST['parents'].split('|') if x]),
-			))).read()
+				parents		= request.POST['parents'].replace('|', ',').strip(','),
+			)
 	else:
 		form = forms.ObjectForm(instance=o)
 	
