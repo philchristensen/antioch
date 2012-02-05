@@ -4,11 +4,9 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/object-editor.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
+<script type="text/javascript" src="/assets/js/global.js"></script>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
-<!--
-<script type="text/javascript" src="/assets/js/object-editor.js"></script>
--->
 <script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
@@ -38,7 +36,7 @@
 			<label id="id-label" for="id-field">id:</label>
 			{{ form.id }}
 			</div>
-			<input type="button" id="access-button" value="access..." />
+			<button type="button" id="access-button">access...</button>
 		</div>
 		<div class="attributes">
 			<div class="verbs">
@@ -48,8 +46,8 @@
 					<option value="{{ verb.id }}">{{ verb.annotated }}</option>
 					{% endfor %}
 				</select>
-				<button id="add-verb"></button>
-				<button id="remove-verb"></button>
+				<button type="button" id="add-verb"></button>
+				<button type="button" id="remove-verb"></button>
 			</div>
 			<div class="properties">
 				<label id="properties-label" for="properties-select">properties:</label>
@@ -58,8 +56,8 @@
 					<option value="{{ property.id }}">{{ property.name }}</option>
 					{% endfor %}
 				</select>
-				<button id="add-prop"></button>
-				<button id="remove-prop"></button>
+				<button type="button" id="add-prop"></button>
+				<button type="button" id="remove-prop"></button>
 			</div>
 		</div>
 	</div>
@@ -98,6 +96,16 @@ $(document).ready(function(){
 	$('#remove-verb').button({icons:{primary:'ui-icon-minusthick'}});
 	$('#add-prop').button({icons:{primary:'ui-icon-plusthick'}});
 	$('#remove-prop').button({icons:{primary:'ui-icon-minusthick'}});
+	
+	$('#access-button').click(function(){
+		$(document).antioch('handleMessage', {
+			command: 'edit',
+			details: {
+				id: {{ form.instance.pk }},
+				kind: 'access/object',
+			}
+		});
+	});
 });
 </script>
 {% endblock %}

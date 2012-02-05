@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/property-editor.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
+<script type="text/javascript" src="/assets/js/global.js"></script>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
 <script type="text/javascript" src="/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
@@ -29,7 +30,7 @@
 			<label id="html-label" for="html-checkbox">html:</label>
 			<input type="checkbox" id="html-checkbox" />
 			
-			<input type="button" id="access-button" value="access..." />
+			<button type="button" id="access-button">access...</button>
 		</div>
 		<div class="property-editor">
 			{{ form.value }}
@@ -92,6 +93,16 @@ $(document).ready(function(){
 	
 	$('#property-form').submit(function(){
 		$('#id_value').val(editor.getCode());
+	});
+	
+	$('#access-button').click(function(){
+		$(document).antioch('handleMessage', {
+			command: 'edit',
+			details: {
+				id: {{ form.instance.pk }},
+				kind: 'access/property',
+			}
+		});
 	});
 });
 </script>

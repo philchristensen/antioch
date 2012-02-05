@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/verb-editor.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
+<script type="text/javascript" src="/assets/js/global.js"></script>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
 <script type="text/javascript" src="/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
@@ -26,7 +27,7 @@
 				<label id="method-label" for="id_method">{{ form.method }} method</label>
 			</div>
 			
-			<input type="button" id="access-button" value="access..." />
+			<button type="button" id="access-button">access...</button>
 		</div>
 		<div class="code-editor">
 			{{ form.code }}
@@ -62,6 +63,16 @@ $(document).ready(function(){
 
 	$('#verb-form').submit(function(){
 		$('#id_code').val(editor.getCode());
+	});
+	
+	$('#access-button').click(function(){
+		$(document).antioch('handleMessage', {
+			command: 'edit',
+			details: {
+				id: {{ form.instance.pk }},
+				kind: 'access/verb',
+			}
+		});
 	});
 });
 </script>

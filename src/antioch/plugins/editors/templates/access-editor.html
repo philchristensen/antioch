@@ -20,36 +20,29 @@
 
 {% block footer %}
 <script type="text/javascript">
-	$(document).ready(function(){
-		$('#editor').sortable({
-			handle:	".drag-thumb",
-			items: 	".access-rule",  
-		})
+$(document).ready(function(){
+	$(document).antioch();
 	
-		$('#add-button').button({icons:{primary:'ui-icon-plusthick'}}).click(function(){
-			addRule({
-				access_id	: 0,
-				access		: "group",
-				accessor	: "",
-				rule		: "allow",
-				permission	: "anything",
-			});
-		});
-		
-		{% for access in model.acl.all %}
+	$('#editor').sortable({
+		handle:	".drag-thumb",
+		items: 	".access-rule",  
+	})
+
+	$('#add-button').button({icons:{primary:'ui-icon-plusthick'}}).click(function(){
 		addRule({
-			access_id: {{ access.id }},
-			rule: "{{ access.rule }}",
-			access: "{{ access.type }}",
-			accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}",
-			permission: "{{ access.permission }}",
-			weight: {{ access.weight }},
-		});
-		{% endfor %}
-		
-		$('#access-form').submit(function(){
-			saveAccess();
+			access_id	: 0,
+			access		: "group",
+			accessor	: "",
+			rule		: "allow",
+			permission	: "anything",
 		});
 	});
+	
+	{% for access in model.acl.all %}
+	addRule({access_id: {{ access.id }}, rule: "{{ access.rule }}", access: "{{ access.type }}", accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}", permission: "{{ access.permission }}", weight: {{ access.weight }}});
+	{% endfor %}
+	
+	$('#access-form').submit(saveAccess);
+});
 </script>
 {% endblock %}
