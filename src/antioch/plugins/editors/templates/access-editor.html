@@ -1,22 +1,55 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/access-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/access-editor.css"/>
+<script type="text/javascript" src="/assets/js/client.js"></script>
+<script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
+<script type="text/javascript" src="/assets/js/access-editor.js"></script>
 {% endblock %}
 
 {% block content %}
+<form id="access-form" method="POST" action="">
+	{% csrf_token %}
 	<div id="editor" class="ui-widget-content ui-corner-all">
-		<button id="add-button"></button>
+		<button type="button" id="add-button"></button>
 	</div>
-	<button type="button" class="action-button" id="save-button">save</button>
-	<button type="button" class="action-button" id="cancel-button">cancel</button>
+	<input type="submit" class="action-button" id="save-button" value="save" />
+</form>
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
 	$(document).ready(function(){
-
+		$('#editor').sortable({
+			handle:	".drag-thumb",
+			items: 	".access-rule",  
+		})
+	
+		$('#add-button').button({icons:{primary:'ui-icon-plusthick'}}).click(function(){
+			addRule({
+				access_id	: 0,
+				access		: "group",
+				accessor	: "",
+				rule		: "allow",
+				permission	: "anything",
+			});
+		});
+		
+		{% for access in model.acl.all %}
+		addRule({
+			access_id: {{ access.id }},
+			rule: "{{ access.rule }}",
+			access: "{{ access.type }}",
+			accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}",
+			permission: "{{ access.permission }}",
+			weight: {{ access.weight }},
+		});
+		{% endfor %}
+		
+		$('#access-form').submit(function(){
+			saveAccess();
+		});
 	});
 </script>
 {% endblock %}

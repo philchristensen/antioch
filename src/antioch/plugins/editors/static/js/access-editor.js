@@ -15,7 +15,7 @@ function addRule(access){
 	
 	var thumb = $('<div class="drag-thumb"></div>');
 	
-	var allow_deny = $('<button class="rule-toggle ' + access['rule'] + '"></button>');
+	var allow_deny = $('<button type="button" class="rule-toggle ' + access['rule'] + '"></button>');
 	allow_deny.button({
 		label	: access['rule'],
 	});
@@ -32,7 +32,7 @@ function addRule(access){
 		e.stopImmediatePropagation();
 	});
 	
-	var group_accessor = $('<button class="access-toggle ' + access['access'] + '"></button>');
+	var group_accessor = $('<button type="button" class="access-toggle ' + access['access'] + '"></button>');
 	group_accessor.button({
 		label	: access['access'],
 	});
@@ -61,7 +61,7 @@ function addRule(access){
 		}
 	}
 	
-	var delete_rule = $('<button class="delete-rule"></button>');
+	var delete_rule = $('<button type="button" class="delete-rule"></button>');
 	delete_rule.button({
 		icons	: {primary: 'ui-icon-trash'},
 	}).click(function(){
@@ -80,72 +80,27 @@ function addRule(access){
 	perms.append(row);
 }
 
-function loadAccess(){
-	var details = getEditorDetails(window);
-	var info = details.info;
-	
-	document.title = 'Access control for ' + info['id'];
-	
-	for(index in info['access']){
-		var access = info['access'][index];
-		addRule(access);
-	}
-}
-
 function saveAccess(){
-	var details = getEditorDetails(window);
-	var info = {
-		access	: function(){
-			var access = {};
-			var rules = $('#editor').find('.access-rule');
-			var weight = 0;
-			rules.each(function(index, element){
-				var access_id = $(this).attr('id').split('-')[1];
-				if(!access_id && $(this).hasClass('deleted')){
-					return;
-				}
-				access[access_id] = {
-					deleted		: $(this).hasClass('deleted'),
-					access		: $(this).find('.access-toggle').button('option', 'label'),
-					accessor	: $(this).find('.accessor-field').val(),
-					rule		: $(this).find('.rule-toggle').button('option', 'label'),
-					permission	: $(this).find('.permission-field').val(),
-					weight		: weight++,
-				};
-			});
-			return access;
-		}(),
-	};
-	
-	details.resultDeferred.callback(info);
-	window.close();
-}
-
-function cancelAccess(){
-	var details = getEditorDetails(window);
-	details.resultDeferred.callback(null);
-	window.close();
-}
-
-function init(){
-	$('#editor').sortable({
-		handle:	".drag-thumb",
-		items: 	".access-rule",  
-	})
-	
-	$('#add-button').button({icons:{primary:'ui-icon-plusthick'}}).click(function(){
-		addRule({
-			access_id	: 0,
-			access		: "group",
-			accessor	: "",
-			rule		: "allow",
-			permission	: "anything",
-		});
+	var rules = $('#editor').find('.access-rule');
+	var weight = 0;
+	rules.each(function(i, e){
+		var access_id = $(this).attr('id').split('-')[1];
+		if(!access_id && $(this).hasClass('deleted')){
+			return;
+		}
+		
+		var elements = [
+			$('<input type="hidden" name="accessid-' + access_id + '" value="' + access_id + '">'),
+			$('<input type="hidden" name="deleted-' + access_id + '" value="' + ($(this).hasClass('deleted') ? 1 : 0) + '">'),
+			$('<input type="hidden" name="access-' + access_id + '" value="' + $(this).find('.access-toggle').button('option', 'label') + '">'),
+			$('<input type="hidden" name="accessor-' + access_id + '" value="' + $(this).find('.accessor-field').val() + '">'),
+			$('<input type="hidden" name="rule-' + access_id + '" value="' + $(this).find('.rule-toggle').button('option', 'label') + '">'),
+			$('<input type="hidden" name="permission-' + access_id + '" value="' + $(this).find('.permission-field').val() + '">'),
+			$('<input type="hidden" name="weight-' + access_id + '" value="' + (weight++) + '">')
+		];
+		
+		for(index in elements){
+			$('#access-form').append(elements[index]);
+		}
 	});
-	$('#cancel-button').button().click(cancelAccess);
-	$('#save-button').button().click(saveAccess);
-	
-	$('#html-checkbox').button();
-	
-	loadAccess();
 }
