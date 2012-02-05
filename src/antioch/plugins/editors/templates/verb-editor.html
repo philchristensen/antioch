@@ -1,43 +1,67 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/jquery-ui/jquery-ui.custom.css"/>
-<link rel="stylesheet" type="text/css" href="/plugin/editor/assets/css/verb-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/verb-editor.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
+<script type="text/javascript" src="/assets/js/client.js"></script>
+<script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
+<script type="text/javascript" src="/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
+<script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
 {% block content %}
+<form id="verb-form" method="POST" action="">
+	{% csrf_token %}
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
+		{{ form.errors }}
 		<div class="controls">
 			<label id="names-label" for="names-field">names:</label>
-			<input type="text" id="names-field" size="20"/>
+			{{ form.names }}
 			<label id="owner-label" for="owner-field">owner:</label>
-			<input type="text" id="owner-field" size="20"/>
+			{{ form.owner }}
 			
 			<div id="type-radio">
-				<input type="radio" class="type-button" name="type_verb" id="type-verb" value="verb"
-					/><label id="type-verb-label" for="type-verb">verb</label><input
-					type="radio" class="type-button" name="type_verb" id="type-method" value="method" /><label
-					id="type-method-label" for="type-method">method</label><input
-					type="radio" class="type-button" name="type_verb" id="type-ability" value="ability" /><label
-					id="type-ability-label" for="type-ability">ability</label>
+				{{ form.type }}
 			</div>
 			
 			<input type="button" id="access-button" value="access..." />
 		</div>
 		<div class="code-editor">
-			<textarea id="verb-code"></textarea>
+			{{ form.code }}
+			<textarea id="code-field"></textarea>
 		</div>
 	</div>
 	<div class="controls">
-		<button type="button" class="action-button" id="save-button">save</button>
-		<button type="button" class="action-button" id="cancel-button">cancel</button>
+		<input type="submit" class="action-button" id="save-button" value="save" />
 	</div>
+</form>
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
-	$(document).ready(function(){
-
+$(document).ready(function(){
+	$(document).antioch();
+	
+	var editor = new CodeMirror(CodeMirror.replace("code-field"), {
+		parserfile: ["parseantioch.js", "parsedummy.js"],
+		path: "/assets/js/CodeMirror-0.91/js/",
+		stylesheet: "/assets/js/CodeMirror-0.91/css/antiochcolors.css",
+		content: $('#id_code').val(),
+		textWrapping: false,
+		lineNumbers: true,
+		indentUnit: 4,
+		tabMode: "shift",
+		height: null,
+		width: null,
+		initCallback: function(){
+			editor.setParser('antiochParser');
+		}
 	});
+
+	$('#verb-form').submit(function(){
+		$('#id_code').val(editor.getCode());
+	});
+});
 </script>
 {% endblock %}

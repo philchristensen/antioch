@@ -25,3 +25,12 @@ class PropertyForm(forms.ModelForm):
 	
 	value = forms.CharField(widget=widgets.HiddenInput)
 	owner = fields.AutoCompleteSelectField('object')
+
+class VerbForm(forms.ModelForm):
+	class Meta:
+		model = models.Verb
+		exclude = ('origin',)
+	
+	code = forms.CharField(widget=widgets.HiddenInput)
+	names = forms.CharField()
+	owner = fields.AutoCompleteSelectField('object')
