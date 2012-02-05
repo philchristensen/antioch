@@ -47,7 +47,7 @@ class Verb(models.Model):
 		managed = False
 	
 	code = models.TextField()
-	filename = models.CharField(max_length=255)
+	filename = models.CharField(max_length=255, blank=True)
 	owner = models.ForeignKey(Object, related_name='+')
 	origin = models.ForeignKey(Object, related_name='verbs')
 	ability = models.BooleanField()

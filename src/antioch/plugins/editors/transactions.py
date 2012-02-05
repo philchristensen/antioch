@@ -64,7 +64,8 @@ class ModifyVerb(transact.WorldTransaction):
 		('verb_id', amp.String()),
 		('names', amp.String()),
 		('code', amp.String()),
-		('exec_type', amp.String()),
+		('ability', amp.Boolean()),
+		('method', amp.Boolean()),
 		('owner', amp.String()),
 	]
 
@@ -159,7 +160,7 @@ class EditorTransactionChild(transact.TransactionChild):
 		return {'response': True}
 	
 	@ModifyVerb.responder
-	def modify_verb(self, user_id, object_id, verb_id, names, code, exec_type, owner):
+	def modify_verb(self, user_id, object_id, verb_id, names, code, ability, method, owner):
 		with self.get_exchange(user_id) as x:
 			names = [n.strip() for n in names.split(',')]
 			
@@ -168,15 +169,8 @@ class EditorTransactionChild(transact.TransactionChild):
 			v.set_owner(x.get_object(owner))
 			v.set_code(code)
 			
-			if(exec_type == 'ability'):
-				v.set_ability(True)
-				v.set_method(False)
-			elif(exec_type == 'method'):
-				v.set_ability(False)
-				v.set_method(True)
-			else:
-				v.set_ability(False)
-				v.set_method(False)
+			v.set_ability(ability)
+			v.set_method(method)
 		
 		return {'response': True}
 	

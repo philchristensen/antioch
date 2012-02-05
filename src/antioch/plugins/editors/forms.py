@@ -31,6 +31,6 @@ class VerbForm(forms.ModelForm):
 		model = models.Verb
 		exclude = ('origin',)
 	
-	code = forms.CharField(widget=widgets.HiddenInput)
 	names = forms.CharField()
+	code = forms.CharField(widget=widgets.HiddenInput)
 	owner = fields.AutoCompleteSelectField('object')

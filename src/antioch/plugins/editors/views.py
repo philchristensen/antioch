@@ -56,9 +56,10 @@ def property_editor(request, property_id):
 @login_required
 def verb_editor(request, verb_id):
 	v = models.Verb.objects.get(pk=verb_id)
+	names = ', '.join([n.name for n in v.names.all()])
 	
 	if(request.method == 'POST'):
-		form = forms.VerbForm(request.POST, instance=v)
+		form = forms.VerbForm(request.POST, instance=v, initial=dict(names=names))
 		if(form.is_valid()):
 			appserver.run('modify-verb',
 				user_id		= request.user.avatar.id,
@@ -66,11 +67,12 @@ def verb_editor(request, verb_id):
 				verb_id		= str(v.id),
 				names		= form.cleaned_data['names'],
 				code		= form.cleaned_data['code'],
-				exec_type	= form.cleaned_data['type'],
+				ability		= form.cleaned_data['ability'],
+				method		= form.cleaned_data['method'],
 				owner		= request.POST['owner'],
 			)
 	else:
-		form = forms.VerbForm(instance=v)
+		form = forms.VerbForm(instance=v, initial=dict(names=names))
 	
 	return shortcuts.render_to_response('verb-editor.html', dict(
 		title           = "verb editor",
