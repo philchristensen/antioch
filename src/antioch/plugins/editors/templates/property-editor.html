@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="POST" action="">
+<form id="property-form" method="POST" action="">
 	{% csrf_token %}
 	<div class="editor ui-widget ui-widget-content ui-corner-all">
 		{{ form.errors }}
@@ -27,11 +27,7 @@
 		</div>
 		<div class="controls">
 			<label id="type-label" for="type-field">type:</label>
-			<select id="type-select" class="ui-widget ui-widget-content">
-				<option value="string">string</option>
-				<option value="python">python</option>
-				<option value="dynamic">dynamic python</option>
-			</select>
+			{{ form.type }}
 			
 			<label id="html-label" for="html-checkbox">html:</label>
 			<input type="checkbox" id="html-checkbox" />
@@ -40,6 +36,7 @@
 		</div>
 		<div class="property-editor">
 			{{ form.value }}
+			<textarea id="value-field"></textarea>
 		</div>
 	</div>
 	<div class="controls">
@@ -59,7 +56,8 @@ $(document).ready(function(){
 		'python'	: 'antiochParser', 
 		'dynamic'	: 'antiochParser',
 	};
-	var editor = new CodeMirror(CodeMirror.replace("id_value"), {
+	
+	var editor = new CodeMirror(CodeMirror.replace("value-field"), {
 		parserfile: ["parsexml.js", "parsecss.js", "parsejavascript.js", "tokenizejavascript.js",
 						"parsehtmlmixed.js", "parseantioch.js", "parsedummy.js"],
 		path: "/assets/js/CodeMirror-0.91/js/",
@@ -72,8 +70,31 @@ $(document).ready(function(){
 		height: null,
 		width: null,
 		initCallback: function(){
-			editor.setParser(syntaxStates[$('#type-select').val()]);
+			editor.setParser(syntaxStates[$('#id_type').val()]);
 		}
+	});
+
+	$('#id_type').change(function(){
+		var lang = $('#id_type').val();
+		editor.setParser(syntaxStates[lang]);
+		if(lang == 'string'){
+			// show html check
+			$('#html-checkbox').add($('#html-label')).removeAttr("disabled");
+		}
+		else {
+			// hide html check
+			$('#html-checkbox').add($('#html-label')).attr("disabled", "disabled");
+			$('#html-checkbox').removeAttr('checked');
+		}
+	});
+	
+	$('#html-checkbox').change(function(){
+		var type = $(this).is(':checked') ? 'html' : 'string';
+		editor.setParser(syntaxStates[type]);
+	});
+	
+	$('#property-form').submit(function(){
+		$('#id_value').val(editor.getCode());
 	});
 });
 </script>

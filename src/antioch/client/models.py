@@ -48,8 +48,8 @@ class Verb(models.Model):
 	
 	code = models.TextField()
 	filename = models.CharField(max_length=255)
-	owner = models.ForeignKey(Object, related_name='verbs')
-	origin = models.ForeignKey(Object, related_name='local_verbs')
+	owner = models.ForeignKey(Object, related_name='+')
+	origin = models.ForeignKey(Object, related_name='verbs')
 	ability = models.BooleanField()
 	method = models.BooleanField()
 	
@@ -89,8 +89,9 @@ class Property(models.Model):
 	
 	name = models.CharField(max_length=255)
 	value = models.TextField()
-	owner = models.ForeignKey(Object, related_name='properties')
-	origin = models.ForeignKey(Object, related_name='local_properties')
+	type = models.CharField(max_length=255, choices=[(x,x) for x in ('string', 'python', 'dynamic')])
+	owner = models.ForeignKey(Object, related_name='+')
+	origin = models.ForeignKey(Object, related_name='properties')
 	
 	def __unicode__(self):
 		return u'%s {#%s on %s}' % (self.name, self.id, self.origin)

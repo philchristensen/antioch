@@ -44,7 +44,7 @@
 			<div class="verbs">
 				<label id="verbs-label" for="verbs-select">verbs:</label>
 				<select id="verbs-select" size="8">
-					{% for verb in form.instance.local_verbs.all %}
+					{% for verb in form.instance.verbs.all %}
 					<option value="{{ verb.id }}">{{ verb.annotated }}</option>
 					{% endfor %}
 				</select>
@@ -54,7 +54,7 @@
 			<div class="properties">
 				<label id="properties-label" for="properties-select">properties:</label>
 				<select id="properties-select" size="8">
-					{% for property in form.instance.local_properties.all %}
+					{% for property in form.instance.properties.all %}
 					<option value="{{ property.id }}">{{ property.name }}</option>
 					{% endfor %}
 				</select>
