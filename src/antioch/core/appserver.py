@@ -28,5 +28,5 @@ class AppServer(internet.TCPServer):
 		self.root = restful.Resource(msg_service)
 		log_path = conf.get('access-log') or None
 		self.factory = server.Site(self.root, logPath=log_path)
-		internet.TCPServer.__init__(self, conf.get('appserver-port'), self.factory)
+		internet.TCPServer.__init__(self, conf.get('appserver-port'), self.factory, interface=conf.get('appserver-interface'))
 

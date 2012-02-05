@@ -12,10 +12,10 @@
     
     "WEB_PORT": 8888,
     "APPSERVER_PORT": 8887,
+    "APPSERVER_INTERFACE": "127.0.0.1",
     
     "APPSERVER_URL": "http://localhost:8887/",
     
-    "QUEUE_URL": "restmq://localhost:8889/queue",
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 3,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
@@ -50,12 +50,6 @@
             "PORT": ""
         }
     },
-
-    # only used by restmq when using local messaging
-    "REDIS_HOST": "localhost",
-    "REDIS_PORT": 6379,
-    "REDIS_POOL": 10,
-    "REDIS_DB": 0,
 
     "DB_URL_DEFAULT":"psycopg2://antioch:moavmic7@localhost/antioch",
     "DB_URL_TEST":"psycopg2://antioch:moavmic7@localhost/antioch_test",
