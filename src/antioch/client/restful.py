@@ -9,7 +9,9 @@ Provide a local REST-style interface to the transaction layer.
 """
 
 from twisted.internet import defer, reactor
+from twisted.protocols import amp
 from twisted.web import resource, server, wsgi
+
 import simplejson
 
 def translate_path(path):

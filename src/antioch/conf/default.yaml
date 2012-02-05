@@ -164,6 +164,7 @@
         'antioch.core',
         'antioch.client',
         'antioch.assets',
+        'antioch.plugins.ask',
         'antioch.plugins.editors'
     ],
 

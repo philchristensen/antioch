@@ -132,7 +132,7 @@
 				processData: false,
 				data: JSON.stringify(options),
 				error:	function(jqXHR, textStatus, errorThrown){
-					alert('Error in callRemote: ' + errorThrown);
+					settings.error_handler('Error in callRemote: ' + errorThrown);
 				},
 				success: function(data, textStatus, jqXHR){
 					if(callback){
