@@ -30,12 +30,14 @@ class antiochServer(object):
 	classProvides(service.IServiceMaker, plugin.IPlugin)
 	
 	tapname = "antioch"
-	description = "Run a set of antioch servers."
+	description = "Run an antioch appserver."
 	
 	class options(usage.Options):
 		"""
-		No option-parsing for the antioch twistd plugin.
+		Option-parsing for the antioch twistd plugin.
 		"""
+		optFlags =		[["with-client", "c", "Use the internal WSGI/Django-powered frontend client."],
+						]
 	
 	@classmethod
 	def makeService(cls, config):
@@ -71,10 +73,11 @@ class antiochServer(object):
 		app_service.setName("app-server")
 		app_service.setServiceParent(master_service)
 		
-		from antioch import client
-		web_service = client.DjangoServer(msg_service)
-		web_service.setName("django-server")
-		web_service.setServiceParent(master_service)
+		if(config['with-client']):
+			from antioch import client
+			web_service = client.DjangoServer(msg_service)
+			web_service.setName("django-server")
+			web_service.setServiceParent(master_service)
 		
 		task_service.run()
 		
