@@ -183,7 +183,7 @@
         "formatters": {
             "default": {
                 "()": "antioch.util.logging.DjangoColorFormatter",
-                "logformat": "[%(levelname)s:%(name)s] %(msg)s",
+                "logformat": "[%(levelname)s] [%(name)s] %(msg)s",
                 "datefmt": "%d/%b/%Y %H:%M:%S"
             }
         },
@@ -203,7 +203,7 @@
                 'handlers':['console'],
                 'propagate': false,
                 'level':'DEBUG',
-            },
+            }
             # 'django': {
             #     'handlers':['console'],
             #     'propagate': true,
@@ -214,10 +214,6 @@
             #     'level': 'INFO',
             #     'propagate': false,
             # },
-            # 'antioch.custom': {
-            #     'handlers': ['console'],
-            #     'level': 'INFO',
-            # }
         }
     },
 }

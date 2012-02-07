@@ -50,7 +50,7 @@ class antiochServer(object):
 		class PythonLoggingMultiService(service.MultiService):
 			def setServiceParent(self, parent):
 				service.MultiService.setServiceParent(self, parent)
-				observer = log.PythonLoggingObserver(loggerName='antioch')
+				observer = log.PythonLoggingObserver(loggerName='antioch.appserver')
 				parent.setComponent(log.ILogObserver, observer.emit)
 		
 		master_service = PythonLoggingMultiService()

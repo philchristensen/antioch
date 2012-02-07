@@ -10,9 +10,8 @@ Isolate verb code into individual subprocesses
 
 from __future__ import with_statement
 
-import warnings, time
+import warnings, time, logging
 
-from twisted.python import log
 from twisted.internet import defer
 from twisted.protocols import amp
 
@@ -20,7 +19,7 @@ from ampoule import child, pool, main, util
 
 from antioch import conf, messaging
 from antioch.core import dbapi, code, exchange, errors, parser
-from antioch.util import sql, json, logging
+from antioch.util import sql, json
 
 processPools = {}
 default_db_url = conf.get('db-url-default')
@@ -40,17 +39,10 @@ def get_process_pool(child=None, *args):
 
 	if(child.__name__ in processPools):
 		return processPools[child.__name__]
-
-	custom_bootstrap = main.BOOTSTRAP.split('\n')
-	warnings.warn("HACK: skipping installReactor in ampoule children.")
-	custom_bootstrap[4] = '    '
-	custom_bootstrap[7] = '    '
-	custom_bootstrap.insert(-2, 'from antioch.core import child')
-	custom_bootstrap.insert(-2, 'child.initialize()')
 	
 	starter = main.ProcessStarter(
 		packages		= ("twisted", "ampoule", "antioch"),
-		bootstrap		= '\n'.join(custom_bootstrap),
+		bootstrap		= "from antioch.core.child import initialize\ninitialize()",
 	)
 	starter.connectorFactory = LoggingAMPConnector
 	
@@ -76,8 +68,9 @@ def shutdown(child=None):
 
 class LoggingAMPConnector(main.AMPConnector):
 	def errReceived(self, data):
+		amplog = logging.getLogger('antioch.child.%s' % self.name)
 		for line in data.strip().splitlines():
-			log.msg(line)
+			amplog.info(line)
 
 class WorldTransaction(amp.Command):
 	"""

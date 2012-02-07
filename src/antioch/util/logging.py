@@ -1,14 +1,6 @@
-import re, time, logging
-
-import termcolor
-
-from twisted.python import log
+import sys, re, time
 
 from django.utils import termcolors
-from django.core.management import color
-
-child_msg = re.compile(r'^FROM (?P<child_id>\d+)(:.*?)(?P<msg>\[(.*?)\] .*?)$')
-use_color = True
 
 styles = dict(
 	ERROR = termcolors.make_style(fg='red', opts=['bold']),
@@ -17,51 +9,23 @@ styles = dict(
 	DEBUG = termcolors.make_style(fg='blue'),
 )
 
-def customizeLogs(colorize=False):
-	global use_color
-	use_color = colorize
-	log.originalTextFromEventDict = log.textFromEventDict
-	log.textFromEventDict = textFromEventDict
-
-def colorizeChild(child_id, msg):
-	colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan']
-	return termcolor.colored(msg, colors[child_id % len(colors)])
-
-def textFromEventDict(e):
-	try:
-		if(e['system'] == 'RedisProtocol,client'):
-			return None
-		
-		msg = e['message']
-		if(msg):
-			match = child_msg.match(e['message'][0])
-			if not(match):
-				return log.originalTextFromEventDict(e)
-			child_id = int(match.group('child_id'))
-			msg = match.group('msg')
-			if(msg.startswith('[-] ')):
-				msg = msg[4:]
-			if(use_color):
-				e['message'] = colorizeChild(child_id, str(child_id) + ': ' + msg),
-		return log.originalTextFromEventDict(e)
-	except Exception, e:
-		import traceback
-		traceback.print_exc()
-		return 'error: ' + str(e)
-
 class DjangoColorFormatter(object):
 	def __init__(self, logformat=None, datefmt=None):
 		self.logformat = logformat if logformat else '[%(asctime)s] %(levelname)s: %(msg)s'
 		self.datefmt = datefmt if datefmt else '%d/%b/%Y %H:%M:%S'
 	
 	def format(self, log):
+		supports_color = True
+		unsupported_platform = (sys.platform in ('win32', 'Pocket PC'))
+		is_a_tty = hasattr(sys.__stdout__, 'isatty') and sys.__stdout__.isatty()
+		
 		result = self.logformat % dict(
 			asctime = time.strftime(self.datefmt, time.gmtime(log.created)),
 			**log.__dict__
 		)
 		
-		if(log.levelname in styles and color.supports_color()):
-			return styles[log.levelname](result)
-		else:
+		if log.levelname not in styles or unsupported_platform or not is_a_tty:
 			return result
+		else:
+			return styles[log.levelname](result)
 

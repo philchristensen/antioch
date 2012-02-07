@@ -69,7 +69,7 @@ def merge(content, into):
 			into[k] = v
 	return into
 
-def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None):
+def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, initLogging=True):
 	"""
 	Bootstrap the Django settings module.
 	"""
@@ -116,7 +116,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None):
 	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
 	
 	# Settings are configured, so we can set up the logger if required
-	if settings.LOGGING_CONFIG:
+	if initLogging and settings.LOGGING_CONFIG:
 		# First find the logging configuration function ...
 		logging_config_path, logging_config_func_name = settings.LOGGING_CONFIG.rsplit('.', 1)
 		logging_config_module = importlib.import_module(logging_config_path)
