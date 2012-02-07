@@ -179,28 +179,45 @@
 
     "LOGGING" : {
         "version": 1,
-        "disable_existing_loggers": false,
+        "disable_existing_loggers": true,
+        "formatters": {
+            "default": {
+                "()": "antioch.util.logging.DjangoColorFormatter",
+                "logformat": "[%(levelname)s:%(name)s] %(msg)s",
+                "datefmt": "%d/%b/%Y %H:%M:%S"
+            }
+        },
         "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": "DEBUG",
+            },
             "mail_admins": {
                 "level": "ERROR",
                 "class": "django.utils.log.AdminEmailHandler"
             }
         },
         'loggers': {
-            'django': {
+            'antioch': {
                 'handlers':['console'],
-                'propagate': true,
-                'level':'INFO',
-            },
-            'django.request': {
-                'handlers': ['console'],
-                'level': 'INFO',
                 'propagate': false,
+                'level':'DEBUG',
             },
-            'antioch.custom': {
-                'handlers': ['console'],
-                'level': 'INFO',
-            }
+            # 'django': {
+            #     'handlers':['console'],
+            #     'propagate': true,
+            #     'level':'INFO',
+            # },
+            # 'django.request': {
+            #     'handlers': ['console'],
+            #     'level': 'INFO',
+            #     'propagate': false,
+            # },
+            # 'antioch.custom': {
+            #     'handlers': ['console'],
+            #     'level': 'INFO',
+            # }
         }
     },
 }

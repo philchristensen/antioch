@@ -20,6 +20,7 @@ import sys, os, os.path, yaml, warnings, threading
 import pkg_resources as pkg
 
 from django.conf import settings
+from django.utils import importlib
 
 configured = False
 configured_lock = threading.BoundedSemaphore()
@@ -113,6 +114,16 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None):
 	settings.configure(ENVIRONMENT=env, **environ)
 	# some debug pages use this variable (improperly, imho)
 	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
+	
+	# Settings are configured, so we can set up the logger if required
+	if settings.LOGGING_CONFIG:
+		# First find the logging configuration function ...
+		logging_config_path, logging_config_func_name = settings.LOGGING_CONFIG.rsplit('.', 1)
+		logging_config_module = importlib.import_module(logging_config_path)
+		logging_config_func = getattr(logging_config_module, logging_config_func_name)
+		
+		# ... then invoke it with the logging settings
+		logging_config_func(settings.LOGGING)
 	
 	try:
 		configured_lock.acquire()

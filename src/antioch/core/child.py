@@ -11,7 +11,7 @@ Initialization code for child processes.
 import warnings
 
 from antioch import conf
-from antioch.util import logging
+#from antioch.util import logging
 
 conf.init('/etc/antioch.yaml', package='antioch.conf')
 
@@ -20,6 +20,6 @@ def initialize():
 		import warnings
 		warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 
-	if not(conf.get('error-log')):
-		logging.customizeLogs()
+	# if not(conf.get('error-log')):
+	# 	logging.customizeLogs()
 

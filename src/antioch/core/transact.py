@@ -43,18 +43,21 @@ def get_process_pool(child=None, *args):
 
 	custom_bootstrap = main.BOOTSTRAP.split('\n')
 	warnings.warn("HACK: skipping installReactor in ampoule children.")
-	custom_bootstrap[3] = '    '
 	custom_bootstrap[4] = '    '
+	custom_bootstrap[7] = '    '
 	custom_bootstrap.insert(-2, 'from antioch.core import child')
 	custom_bootstrap.insert(-2, 'child.initialize()')
+	
+	starter = main.ProcessStarter(
+		packages		= ("twisted", "ampoule", "antioch"),
+		bootstrap		= '\n'.join(custom_bootstrap),
+	)
+	starter.connectorFactory = LoggingAMPConnector
 	
 	p = processPools[child.__name__] = pool.ProcessPool(
 		child,
 		name 			= 'antioch-process-pool',
-		starter			= main.ProcessStarter(
-			packages		= ("twisted", "ampoule", "antioch"),
-			bootstrap		= '\n'.join(custom_bootstrap),
-		),
+		starter			= starter,
 		ampChildArgs	= args
 	)
 	return p
@@ -70,6 +73,11 @@ def shutdown(child=None):
 	if(child.__name__ in processPools):
 		yield processPools[child.__name__].stop()
 		del processPools[child.__name__]
+
+class LoggingAMPConnector(main.AMPConnector):
+	def errReceived(self, data):
+		for line in data.strip().splitlines():
+			log.msg(line)
 
 class WorldTransaction(amp.Command):
 	"""

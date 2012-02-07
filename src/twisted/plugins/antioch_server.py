@@ -47,17 +47,13 @@ class antiochServer(object):
 		if(conf.get('suppress-deprecation-warnings')):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 		
-		from antioch.util import logging
-		error_log = conf.get('error-log')
-		if(error_log):
-			log.startLogging(open(error_log, 'w'))
-			reactor.addSystemEventTrigger('after', 'startup', logging.customizeLogs)
-		else:
-			def _customizeLogs():
-				logging.customizeLogs(colorize=True)
-			reactor.addSystemEventTrigger('after', 'startup', _customizeLogs)
+		class PythonLoggingMultiService(service.MultiService):
+			def setServiceParent(self, parent):
+				service.MultiService.setServiceParent(self, parent)
+				observer = log.PythonLoggingObserver(loggerName='antioch')
+				parent.setComponent(log.ILogObserver, observer.emit)
 		
-		master_service = service.MultiService()
+		master_service = PythonLoggingMultiService()
 		
 		from antioch import messaging
 		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))

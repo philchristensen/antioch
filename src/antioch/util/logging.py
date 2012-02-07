@@ -1,11 +1,21 @@
-import re
+import re, time, logging
 
 import termcolor
 
 from twisted.python import log
 
+from django.utils import termcolors
+from django.core.management import color
+
 child_msg = re.compile(r'^FROM (?P<child_id>\d+)(:.*?)(?P<msg>\[(.*?)\] .*?)$')
 use_color = True
+
+styles = dict(
+	ERROR = termcolors.make_style(fg='red', opts=['bold']),
+	WARNING = termcolors.make_style(fg='yellow', opts=['bold']),
+	INFO = termcolors.make_style(fg='cyan'),
+	DEBUG = termcolors.make_style(fg='blue'),
+)
 
 def customizeLogs(colorize=False):
 	global use_color
@@ -38,3 +48,20 @@ def textFromEventDict(e):
 		import traceback
 		traceback.print_exc()
 		return 'error: ' + str(e)
+
+class DjangoColorFormatter(object):
+	def __init__(self, logformat=None, datefmt=None):
+		self.logformat = logformat if logformat else '[%(asctime)s] %(levelname)s: %(msg)s'
+		self.datefmt = datefmt if datefmt else '%d/%b/%Y %H:%M:%S'
+	
+	def format(self, log):
+		result = self.logformat % dict(
+			asctime = time.strftime(self.datefmt, time.gmtime(log.created)),
+			**log.__dict__
+		)
+		
+		if(log.levelname in styles and color.supports_color()):
+			return styles[log.levelname](result)
+		else:
+			return result
+
