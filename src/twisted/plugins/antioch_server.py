@@ -40,7 +40,7 @@ class antiochServer(object):
 		"""
 		Option-parsing for the antioch twistd plugin.
 		"""
-		optFlags =		[["with-client", "c", "Use the internal WSGI/Django-powered frontend client."],
+		optFlags =		[["no-client", "c", "Don't run the internal WSGI/Django-powered frontend client."],
 						]
 	
 	@classmethod
@@ -78,7 +78,7 @@ class antiochServer(object):
 		app_service.setName("app-server")
 		app_service.setServiceParent(master_service)
 		
-		if(config['with-client']):
+		if not(config['no-client']):
 			from antioch import client
 			web_service = client.DjangoServer(msg_service)
 			web_service.setName("django-server")
