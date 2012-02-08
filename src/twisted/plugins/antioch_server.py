@@ -10,7 +10,7 @@ twistd plugin support
 This module adds a 'antioch' server type to the twistd service list.
 """
 
-import warnings
+import warnings, logging
 
 from zope.interface import classProvides
 
@@ -21,6 +21,10 @@ from twisted.application import internet, service
 
 from antioch import conf
 conf.init()
+
+pylog = logging.getLogger('antioch')
+
+STARTUP_MESSAGE = "appserver ready for requests"
 
 class antiochServer(object):
 	"""
@@ -51,7 +55,12 @@ class antiochServer(object):
 			def setServiceParent(self, parent):
 				service.MultiService.setServiceParent(self, parent)
 				observer = log.PythonLoggingObserver(loggerName='antioch.appserver')
-				parent.setComponent(log.ILogObserver, observer.emit)
+				def appserver_log_level(event):
+					event['logLevel'] = logging.DEBUG
+					observer.emit(event)
+				parent.setComponent(log.ILogObserver, appserver_log_level)
+		
+		reactor.addSystemEventTrigger("after", "startup", lambda: pylog.info(STARTUP_MESSAGE))
 		
 		master_service = PythonLoggingMultiService()
 		

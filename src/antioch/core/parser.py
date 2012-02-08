@@ -17,6 +17,8 @@ There are a long list of prepositions supported, some of which are interchangeab
 
 import sys, time, re, string, types
 
+from twisted.python import log
+
 from antioch.core import exchange, model, errors, dbapi
 from antioch.core.errors import *
 

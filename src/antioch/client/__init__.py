@@ -8,17 +8,18 @@
 Setup the web client interface.
 """
 
-import crypt
+import crypt, logging
 
 from django.contrib.auth import backends
 
 from twisted.internet import reactor
 from twisted.application import internet
-from twisted.python import log
 from twisted.web import wsgi, server
 
 from antioch import conf
 from antioch.client import models
+
+log = logging.getLogger(__name__)
 
 class DjangoServer(internet.TCPServer):
 	"""
@@ -47,20 +48,21 @@ class DjangoBackend(backends.ModelBackend):
 			)[:1]
 			
 			if not(p):
-				log.msg("Django auth failed.")
+				log.error("Django auth failed.")
 				return None
 			
 			p = p[0]
 			if(p.crypt != crypt.crypt(password, p.crypt[0:2])):
 				return None
+			
+			log.info('%s logged in' % p.avatar)
 			return p
 		except models.Player.DoesNotExist:
-			log.msg("Player auth failed.")
+			log.error("Player auth failed.")
 			return None
 		except Exception, e:
 			import traceback
-			e = traceback.format_exc()
-			log.msg("Error in authenticate(): %s" % e)
+			log.error("Error in authenticate(): %s" % traceback.format_exc())
 
 	def get_user(self, user_id):
 		try:

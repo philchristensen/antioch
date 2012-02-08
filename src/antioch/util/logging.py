@@ -1,5 +1,7 @@
 import sys, re, time
 
+import simplejson
+
 from django.utils import termcolors
 
 styles = dict(
@@ -28,4 +30,8 @@ class DjangoColorFormatter(object):
 			return result
 		else:
 			return styles[log.levelname](result)
+
+class JSONFormatter(object):
+	def format(self, log):
+		return simplejson.dumps(log.__dict__)
 

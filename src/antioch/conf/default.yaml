@@ -203,6 +203,16 @@
                 'handlers':['console'],
                 'propagate': false,
                 'level':'DEBUG',
+            },
+            'antioch.appserver': {
+                'handlers':['console'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            'antioch.child': {
+                'handlers':['console'],
+                'propagate': false,
+                'level':'INFO',
             }
             # 'django': {
             #     'handlers':['console'],

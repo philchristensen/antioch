@@ -12,10 +12,10 @@ during a transaction. it is responsible for loading and saving objects,
 verbs, properties and permissions, as well as caching objects loaded
 during a single verb transaction.
 """
-import crypt, string, random, time
+import crypt, string, random, time, logging
 
 from twisted.internet import defer
-from twisted.python import util, log
+from twisted.python import util
 
 from txamqp.client import Closed
 
@@ -32,6 +32,8 @@ salt = list(string.printable[:])
 
 rollback_after_fatal_errors = True
 profile_exchange = False
+
+log = logging.getLogger(__name__)
 
 def extract_id(literal):
 	"""
@@ -131,7 +133,7 @@ class ObjectExchange(object):
 			elif(isinstance(e, errors.UserError) and not show_all_traces):
 				self.commit()
 				err = str(e)
-				log.msg('Sending normal exception to user: %s' % err)
+				log.info('Sending normal exception to user: %s' % err)
 				if(self.queue):
 					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
@@ -147,7 +149,7 @@ class ObjectExchange(object):
 				import traceback, StringIO
 				io = StringIO.StringIO()
 				traceback.print_exception(etype, e, trace, None, io)
-				log.msg('Sending fatal exception to user: %s' % str(e))
+				log.error('Sending fatal exception to user: %s' % str(e))
 				if(self.queue):
 					self.queue.push(self.ctx.get_id(), dict(
 						command		= 'write',
@@ -159,7 +161,7 @@ class ObjectExchange(object):
 				self.commit()
 		finally:
 			d = self.flush()
-			d.addErrback(log.err)
+			d.addErrback(log.error)
 	
 	def get_context(self):
 		"""

@@ -17,6 +17,9 @@ from twisted.protocols import amp
 
 from ampoule import child, pool, main, util
 
+import simplejson
+from simplejson.decoder import JSONDecodeError
+
 from antioch import conf, messaging
 from antioch.core import dbapi, code, exchange, errors, parser
 from antioch.util import sql, json
@@ -26,6 +29,8 @@ default_db_url = conf.get('db-url-default')
 job_timeout = conf.get('job-timeout')
 
 profile_transactions = conf.get('profile-transactions')
+
+log = logging.getLogger(__name__)
 
 def get_process_pool(child=None, *args):
 	"""
@@ -42,7 +47,7 @@ def get_process_pool(child=None, *args):
 	
 	starter = main.ProcessStarter(
 		packages		= ("twisted", "ampoule", "antioch"),
-		bootstrap		= "from antioch.core.child import initialize\ninitialize()",
+		bootstrap		= "from antioch.core.child import bootstrap\nbootstrap()",
 	)
 	starter.connectorFactory = LoggingAMPConnector
 	
@@ -68,9 +73,27 @@ def shutdown(child=None):
 
 class LoggingAMPConnector(main.AMPConnector):
 	def errReceived(self, data):
-		amplog = logging.getLogger('antioch.child.%s' % self.name)
 		for line in data.strip().splitlines():
-			amplog.info(line)
+			try:
+				event = simplejson.loads(line)
+			except JSONDecodeError, e:
+				amplog = logging.getLogger('antioch.child.%s' % self.name)
+				amplog.warning('Malformed log output: %s' % line)
+				continue
+			
+			def _emit(l, e):
+				if('levelname' in e):
+					getattr(l, e['levelname'].lower())(e['msg'])
+				else:
+					level = ('debug', 'error')[e['isError']]
+					getattr(l, level)(e['message'][0])
+			
+			if(event.get('system', '-') == '-'):
+				amplog = logging.getLogger('antioch.child.%s' % self.name)
+				_emit(amplog, event)
+			else:
+				amplog = logging.getLogger('antioch.child.%s.%s' % (self.name, event['system']))
+				_emit(amplog, event)
 
 class WorldTransaction(amp.Command):
 	"""
@@ -83,15 +106,11 @@ class WorldTransaction(amp.Command):
 	}
 
 	@classmethod
-	def run(cls, transaction_child=None, db_url=None, **kwargs):
-		if(db_url):
-			pool = get_process_pool(transaction_child, db_url)
-		else:
-			pool = get_process_pool(transaction_child, conf.get('db-url-default'))
-
+	def run(cls, transaction_child=None, **kwargs):
+		pool = get_process_pool(transaction_child)
 		d = pool.doWork(cls, _timeout=job_timeout, **kwargs)
 		def _log_err(failure):
-			log.err(failure)
+			log.error(failure)
 			return failure
 		d.addErrback(_log_err)
 		return d
@@ -180,14 +199,12 @@ class TransactionChild(child.AMPChild):
 	process pool size, but in return it will allow verbs to continue to be written
 	in a synchronous manner, while still meeting all other design goals.
 	"""
-	def __init__(self, db_url):
+	def __init__(self,):
 		"""
 		Create a new TransactionChild.
-
-		Optionally supply db_url to specify the database to connect to.
 		"""
 		t = time.time()
-		self.pool = dbapi.connect(db_url, **dict(
+		self.pool = dbapi.connect(conf.get('db-url-default'), **dict(
 			autocommit		= False,
 			debug			= conf.get('debug-sql'),
 			debug_writes	= conf.get('debug-sql-writes'),
@@ -196,7 +213,7 @@ class TransactionChild(child.AMPChild):
 		))
 
 		if(profile_transactions):
-			log.msg("db connection took %s seconds" % (time.time() - t))
+			log.info("db connection took %s seconds" % (time.time() - t))
 
 		self.msg_service = messaging.getService(conf.get('queue-url'), conf.get('profile-queue'))
 
@@ -258,7 +275,7 @@ class DefaultTransactionChild(TransactionChild):
 			system = x.get_object(1)
 			if(system.has_verb("login")):
 				system.login()
-			log.msg('user #%s logged in from %s' % (user_id, ip_address))
+			log.info('user #%s logged in from %s' % (user_id, ip_address))
 
 		return {'response': True}
 
@@ -276,7 +293,7 @@ class DefaultTransactionChild(TransactionChild):
 			system = x.get_object(1)
 			if(system.has_verb("logout")):
 				system.logout()
-		 	log.msg('user #%s logged out' % user_id)
+		 	log.info('user #%s logged out' % user_id)
 
 		return {'response': True}
 
@@ -288,7 +305,7 @@ class DefaultTransactionChild(TransactionChild):
 		with self.get_exchange(user_id) as x:
 			caller = x.get_object(user_id)
 
-			log.msg('%s: %s' % (caller, sentence))
+			log.info('%s: %s' % (caller, sentence))
 			parser.parse(caller, sentence)
 
 		return {'response': True}
