@@ -196,11 +196,9 @@
             "accesslog": {
                 "class": "logging.StreamHandler",
                 # "formatter": "default",
-                "level": "DEBUG",
             },
             "null": {
                 "class": "logging.FileHandler",
-                "level": "DEBUG",
                 "filename": "/dev/null",
             },
             "mail_admins": {
