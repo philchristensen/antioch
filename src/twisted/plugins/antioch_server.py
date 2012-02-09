@@ -24,7 +24,10 @@ conf.init()
 
 pylog = logging.getLogger('antioch')
 
-STARTUP_MESSAGE = "appserver ready for requests"
+messages = dict(
+	startup = "appserver ready for requests",
+	shutdown = "shutting down appserver"
+)
 
 class antiochServer(object):
 	"""
@@ -56,11 +59,13 @@ class antiochServer(object):
 				service.MultiService.setServiceParent(self, parent)
 				observer = log.PythonLoggingObserver(loggerName='antioch.appserver')
 				def appserver_log_level(event):
-					event['logLevel'] = logging.DEBUG
+					if not(event['isError']):
+						event['logLevel'] = logging.DEBUG
 					observer.emit(event)
 				parent.setComponent(log.ILogObserver, appserver_log_level)
 		
-		reactor.addSystemEventTrigger("after", "startup", lambda: pylog.info(STARTUP_MESSAGE))
+		reactor.addSystemEventTrigger("after", "startup", lambda: pylog.info(messages['startup']))
+		reactor.addSystemEventTrigger("before", "shutdown", lambda: pylog.info(messages['shutdown']))
 		
 		master_service = PythonLoggingMultiService()
 		

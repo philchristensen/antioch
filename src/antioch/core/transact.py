@@ -57,6 +57,7 @@ def get_process_pool(child=None, *args):
 		starter			= starter,
 		ampChildArgs	= args
 	)
+	log.info('created new process pool with %s' % child.__name__)
 	return p
 
 @defer.inlineCallbacks
@@ -199,10 +200,12 @@ class TransactionChild(child.AMPChild):
 	process pool size, but in return it will allow verbs to continue to be written
 	in a synchronous manner, while still meeting all other design goals.
 	"""
-	def __init__(self,):
+	def __init__(self):
 		"""
 		Create a new TransactionChild.
 		"""
+		super(TransactionChild, self).__init__()
+		log.info("%s started" % self.__class__.__name__)
 		t = time.time()
 		self.pool = dbapi.connect(conf.get('db-url-default'), **dict(
 			autocommit		= False,
