@@ -82,19 +82,19 @@ class LoggingAMPConnector(main.AMPConnector):
 				amplog.warning('Malformed log output: %s' % line)
 				continue
 			
-			def _emit(l, e):
-				if('levelname' in e):
-					getattr(l, e['levelname'].lower())(e['msg'])
-				else:
-					level = ('debug', 'error')[e['isError']]
-					getattr(l, level)(e['message'][0])
-			
-			if(event.get('system', '-') == '-'):
-				amplog = logging.getLogger('antioch.child.%s' % self.name)
-				_emit(amplog, event)
+			if('levelname' in event):
+				amplog = logging.getLogger('%s.child.%s' % (event['name'], self.name))
+				getattr(amplog, event['levelname'].lower())(event['msg'])
 			else:
-				amplog = logging.getLogger('antioch.child.%s.%s' % (self.name, event['system']))
-				_emit(amplog, event)
+				system = event['system']
+				if(system == '-'):
+					system = ''
+				else:
+					system = '.' + system.lower()
+				amplog = logging.getLogger('antioch.child.%s%s' % (self.name, system))
+				level = ('debug', 'error')[event['isError']]
+				getattr(amplog, level)(event['message'][0])
+			
 
 class WorldTransaction(amp.Command):
 	"""
@@ -205,7 +205,7 @@ class TransactionChild(child.AMPChild):
 		Create a new TransactionChild.
 		"""
 		super(TransactionChild, self).__init__()
-		log.info("%s started" % self.__class__.__name__)
+		log.debug("%s started" % self.__class__.__name__)
 		t = time.time()
 		self.pool = dbapi.connect(conf.get('db-url-default'), **dict(
 			autocommit		= False,

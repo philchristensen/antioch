@@ -1,4 +1,4 @@
-import time
+import time, logging
 
 import pkg_resources as pkg
 
@@ -86,7 +86,7 @@ class RabbitMQService(service.Service):
 		if(self.connection):
 			defer.returnValue(self.connection)
 		else:
-			# print 'connecting %s' % self
+			messaging.log.debug("connecting to RabbitMQ server at %(host)s:%(port)s with %(user)s" % self.url)
 			try:
 				self.connection = yield self.factory.connectTCP(self.url['host'], int(self.url['port']))
 				yield self.connection.authenticate(self.url['user'], self.url['passwd'])
@@ -98,7 +98,7 @@ class RabbitMQService(service.Service):
 		"""
 		Disconnect from the AMQP server.
 		"""
-		print 'disconnecting %s' % self
+		messaging.log.debug("disconnecting from RabbitMQ server" % self.url)
 		if(self.connection):
 			chan0 = yield self.connection.channel(0)
 			yield chan0.connection_close()

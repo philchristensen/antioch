@@ -40,7 +40,7 @@ def bootstrap():
 		"disable_existing_loggers": False,
 		"formatters": {
 			"default": {
-				"()": "antioch.util.logging.JSONFormatter",
+				"()": "antioch.util.logs.JSONFormatter",
 			}
 		},
 		"handlers": {

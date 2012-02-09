@@ -18,6 +18,7 @@ from twisted.web import wsgi, server
 
 from antioch import conf
 from antioch.client import models
+from antioch.util.logs import AccessLogOnnaStick, AccessLoggingSite
 
 log = logging.getLogger(__name__)
 
@@ -29,8 +30,8 @@ class DjangoServer(internet.TCPServer):
 		import django.core.handlers.wsgi
 		handler = django.core.handlers.wsgi.WSGIHandler()
 		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
-		log_path = conf.get('access-log') or None
-		self.factory = server.Site(self.root, logPath=log_path)
+		log_path = conf.get('access-log') or AccessLogOnnaStick('antioch.client.access')
+		self.factory = AccessLoggingSite(self.root, logPath=log_path)
 		internet.TCPServer.__init__(self, conf.get('web-port'), self.factory)
 
 class DjangoBackend(backends.ModelBackend):

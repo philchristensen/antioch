@@ -14,18 +14,24 @@ import warnings, logging
 
 from zope.interface import classProvides
 
-from twisted import plugin
+from twisted import plugin, __version__ as twisted_version
 from twisted.python import usage, log
 from twisted.internet import reactor
 from twisted.application import internet, service
 
-from antioch import conf
+from ampoule import __version__ as ampoule_version
+
+from antioch import conf, __version__
 conf.init()
 
 pylog = logging.getLogger('antioch')
 
 messages = dict(
-	startup = "appserver ready for requests",
+	startup = "appserver version %(antioch)s [ twisted v%(twisted)s, ampoule v%(ampoule)s ] now starting..." % dict(
+		antioch = __version__,
+		twisted = twisted_version,
+		ampoule = ampoule_version,
+	),
 	shutdown = "shutting down appserver"
 )
 
@@ -64,9 +70,6 @@ class antiochServer(object):
 					observer.emit(event)
 				parent.setComponent(log.ILogObserver, appserver_log_level)
 		
-		reactor.addSystemEventTrigger("after", "startup", lambda: pylog.info(messages['startup']))
-		reactor.addSystemEventTrigger("before", "shutdown", lambda: pylog.info(messages['shutdown']))
-		
 		master_service = PythonLoggingMultiService()
 		
 		from antioch import messaging
@@ -89,6 +92,9 @@ class antiochServer(object):
 			web_service.setName("django-server")
 			web_service.setServiceParent(master_service)
 		
-		task_service.run()
+		reactor.addSystemEventTrigger("before", "startup", lambda: pylog.info(messages['startup']))
+		reactor.addSystemEventTrigger("after", "startup", task_service.run)
+		
+		reactor.addSystemEventTrigger("before", "shutdown", lambda: pylog.info(messages['shutdown']))
 		
 		return master_service

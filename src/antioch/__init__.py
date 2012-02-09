@@ -10,6 +10,11 @@ A highly-customizable, scalable game server for creating virtual worlds.
 
 from zope import interface
 
+from twisted.python import versions
+
+version = versions.Version('antioch', 2, 0, 0)
+__version__ = version.short()
+
 class IPlugin(interface.Interface):
 	name = interface.Attribute('Name of this module.')
 	script_url = interface.Attribute('Plugin script URL.')

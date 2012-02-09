@@ -8,10 +8,14 @@
 Enable access to the messaging server
 """
 
+import logging
+
 from zope import interface
 
 from antioch import conf
 from antioch.core import parser
+
+log = logging.getLogger(__name__)
 
 def getService(queue_url, profile=False):
 	url = parser.URL(queue_url)
