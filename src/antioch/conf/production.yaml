@@ -1,3 +1,4 @@
 {
-    "APPSERVER_INTERFACE": "0.0.0.0"
+    "APPSERVER_INTERFACE": "0.0.0.0",
+    "USE_HEROKU_DB": true
 }

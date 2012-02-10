@@ -70,6 +70,40 @@ def merge(content, into):
 			result[k] = v
 	return result
 
+def get_heroku_db():
+	import os
+	import sys
+	import urlparse
+
+	# Register database schemes in URLs.
+	urlparse.uses_netloc.append('postgres')
+	urlparse.uses_netloc.append('mysql')
+
+	DATABASES = {}
+	try:
+		if 'DATABASE_URL' in os.environ:
+			url = urlparse.urlparse(os.environ['DATABASE_URL'])
+			
+			# Ensure default database exists.
+			DATABASES['default'] = DATABASES.get('default', {})
+			
+			# Update with environment configuration.
+			DATABASES['default'].update({
+				'NAME': url.path[1:],
+				'USER': url.username,
+				'PASSWORD': url.password,
+				'HOST': url.hostname,
+				'PORT': url.port,
+			})
+			if url.scheme == 'postgres':
+				DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+			
+			if url.scheme == 'mysql':
+				DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+	except Exception:
+		print 'Unexpected error:', sys.exc_info()
+	return DATABASES
+
 def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, initLogging=True):
 	"""
 	Bootstrap the Django settings module.
@@ -124,6 +158,11 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	if(callable(filter)):
 		warnings.warn("Overriding Django settings with %r" % filter)
 		environ = merge(filter(environ), environ)
+	
+	if('USE_HEROKU_DB' in environ):
+		import os.environ
+		environ['DATABASES'] = get_heroku_db()
+		environ['DB_URL_DEFAULT'] = os.environ['DATABASE_URL']
 	
 	settings.configure(ENVIRONMENT=env, **environ)
 	
