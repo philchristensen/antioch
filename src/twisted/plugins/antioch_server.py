@@ -49,8 +49,8 @@ class antiochServer(object):
 		"""
 		Option-parsing for the antioch twistd plugin.
 		"""
-		optParameters =	[["port", "p", None, "antioch appserver port."],
-						 ["web-port", "w", None, "antioch webserver port."],
+		optParameters =	[["port", "p", None, "antioch appserver port.", int],
+						 ["web-port", "w", None, "antioch webserver port.", int],
 						]
 		optFlags =		[["no-client", "c", "Don't run the internal WSGI/Django-powered frontend client."],
 						]
