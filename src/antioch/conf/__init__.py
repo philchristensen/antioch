@@ -159,7 +159,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	
 	if('USE_HEROKU_DB' in environ):
 		environ['DATABASES'] = get_heroku_db()
-		environ['DB_URL_DEFAULT'] = os.environ['DATABASE_URL']
+		environ['DB_URL_DEFAULT'] = os.environ['DATABASE_URL'].replace('postgres:', 'psycopg2:')
 	
 	settings.configure(ENVIRONMENT=env, **environ)
 	
