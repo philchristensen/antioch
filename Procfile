@@ -1,1 +1,1 @@
-web: bin/python ./twistd -n antioch --no-client --port=$PORT
+web: bin/pytohn bin/twistd -n antioch --no-client --port=$PORT
