@@ -8,10 +8,9 @@
 Provide access to the database
 """
 
-import threading, random, sys, time, re, subprocess
+import threading, random, sys, time, re, subprocess, logging
 
 from twisted.enterprise import adbapi
-from twisted.python import log
 
 from antioch import conf
 
@@ -20,6 +19,8 @@ async_pools = {}
 pools_lock = threading.BoundedSemaphore()
 
 RE_WS = re.compile(r'(\s+)?\t+(\s+)?')
+
+log = logging.getLogger(__name__)
 
 def connect(db_urls=None, *args, **kwargs):
 	"""
@@ -73,12 +74,14 @@ def connect(db_urls=None, *args, **kwargs):
 			
 			if(db_url in selected_pools):
 				pool = selected_pools[db_url]
+				log.info("reusing connection to %s" % db_url)
 			else:
 				if(async):
 					pool = TimeoutConnectionPool(dsn['scheme'], *args, **kwargs)
 				else:
 					pool = SynchronousConnectionPool(dsn['scheme'], *args, **kwargs)
 				selected_pools[db_url] = pool
+				log.info("connecting to %s" % db_url)
 		finally:
 			pools_lock.release()
 		
@@ -215,14 +218,14 @@ class TimeoutConnectionPool(adbapi.ConnectionPool):
 				except:
 					self.debug_syntax = False
 					if(error):
-						log.msg(error.strip())
+						log.info(error.strip())
 				else:
 					query = output
 		
 		if(self.debug):
-			log.msg(query)
+			log.info(query)
 		elif(self.debug_writes and not original_query.lower().startswith('select')):
-			log.msg(query)
+			log.info(query)
 
 
 
