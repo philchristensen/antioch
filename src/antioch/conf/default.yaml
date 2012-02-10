@@ -15,7 +15,8 @@
     "APPSERVER_INTERFACE": "127.0.0.1",
     
     "APPSERVER_URL": "http://localhost:8887/",
-    
+     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
+     
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 3,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
