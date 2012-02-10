@@ -71,8 +71,6 @@ def merge(content, into):
 	return result
 
 def get_heroku_db():
-	import os
-	import sys
 	import urlparse
 
 	# Register database schemes in URLs.
@@ -160,7 +158,6 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		environ = merge(filter(environ), environ)
 	
 	if('USE_HEROKU_DB' in environ):
-		import os.environ
 		environ['DATABASES'] = get_heroku_db()
 		environ['DB_URL_DEFAULT'] = os.environ['DATABASE_URL']
 	
