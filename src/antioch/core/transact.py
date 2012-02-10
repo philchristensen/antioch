@@ -10,7 +10,7 @@ Isolate verb code into individual subprocesses
 
 from __future__ import with_statement
 
-import warnings, time, logging
+import os, warnings, time, logging
 
 from twisted.internet import defer
 from twisted.protocols import amp
@@ -48,6 +48,7 @@ def get_process_pool(child=None, *args):
 	starter = main.ProcessStarter(
 		packages		= ("twisted", "ampoule", "antioch"),
 		bootstrap		= "from antioch.core.child import bootstrap\nbootstrap()",
+		env				= os.environ,
 	)
 	starter.connectorFactory = LoggingAMPConnector
 	

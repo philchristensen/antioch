@@ -9,6 +9,8 @@ Initialization code for child processes.
 """
 
 import warnings
+warnings.filterwarnings('ignore', r'.*', UserWarning)
+
 import sys
 import logging
 

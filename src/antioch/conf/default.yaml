@@ -20,6 +20,7 @@
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 3,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
+    "SUPPRESS_USER_WARNINGS": true,
     "XSENDFILE": false,
     
     # define the lookup channels in use on the site

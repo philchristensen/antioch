@@ -62,6 +62,8 @@ class antiochServer(object):
 		"""
 		if(conf.get('suppress-deprecation-warnings')):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
+		if(conf.get('suppress-user-warnings')):
+			warnings.filterwarnings('ignore', r'.*', UserWarning)
 		
 		class PythonLoggingMultiService(service.MultiService):
 			def setServiceParent(self, parent):
