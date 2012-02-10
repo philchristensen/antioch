@@ -16,7 +16,7 @@ directory, or optionally elsewhere in the filesystem.
 
 from __future__ import with_statement
 
-import sys, os, os.path, yaml, warnings, threading
+import sys, os, os.path, yaml, warnings, threading, copy
 import pkg_resources as pkg
 
 from django.conf import settings
