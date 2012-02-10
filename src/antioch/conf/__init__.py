@@ -16,7 +16,7 @@ directory, or optionally elsewhere in the filesystem.
 
 from __future__ import with_statement
 
-import sys, os, os.path, yaml, warnings, threading, copy
+import sys, os, os.path, yaml, warnings, threading, copy, logging
 import pkg_resources as pkg
 
 from django.conf import settings
@@ -24,6 +24,8 @@ from django.utils import importlib
 
 configured = False
 configured_lock = threading.BoundedSemaphore()
+
+log = logging.getLogger(__name__)
 
 def get(key):
 	translated_key = key.upper().replace('-', '_')
@@ -122,7 +124,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	# allow overriding at the command-line for debug/emergencies
 	if('ENVIRONMENT' in os.environ):
 		env = os.environ['ENVIRONMENT']
-		warnings.warn("Overriding Django settings with os.environ['ENVIRONMENT'] ('%s')" % env)
+		log.info("Overriding Django settings with os.environ['ENVIRONMENT'] ('%s')" % env)
 	
 	# load the default config file.
 	default = load_yaml('default.yaml', package=package)
@@ -131,13 +133,13 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		project_template_dir = pkg.resource_filename(package.split('.')[0], 'templates')
 		default.setdefault('TEMPLATE_DIRS', []).append(project_template_dir)
 	except Exception, e:
-		warnings.warn("Couldn't append project template dir: %s" % e)
+		log.warning("Couldn't append project template dir: %s" % e)
 	
 	try:
 		project_static_dir = pkg.resource_filename(package.split('.')[0], 'static')
 		default.setdefault('STATICFILES_DIRS', []).append(project_static_dir)
 	except Exception, e:
-		warnings.warn("Couldn't append project static dir: %s" % e)
+		log.warning("Couldn't append project static dir: %s" % e)
 	
 	# merge in the environment-specific config
 	environ = merge(load_yaml('%s.yaml' % env, package=package), default)
@@ -148,13 +150,13 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	if(os.path.isfile(site_config)):
 		environ = merge(load_yaml(site_config, package=None), environ)
 	else:
-		warnings.warn("Cannot find site-specific Django settings in %r" % site_config)
+		log.info("Cannot find site-specific Django settings in %r" % site_config)
 
 	# the optional filter is a method that returns updates to the
 	# final settings dict. this is used to override the database
 	# config during unit testing.
 	if(callable(filter)):
-		warnings.warn("Overriding Django settings with %r" % filter)
+		log.info("Overriding Django settings with %r" % filter)
 		environ = merge(filter(environ), environ)
 	
 	if('USE_HEROKU_DB' in environ):
