@@ -49,6 +49,9 @@ class antiochServer(object):
 		"""
 		Option-parsing for the antioch twistd plugin.
 		"""
+		optParameters =	[["port", "p", None, "antioch appserver port."],
+						 ["web-port", "w", None, "antioch webserver port."],
+						]
 		optFlags =		[["no-client", "c", "Don't run the internal WSGI/Django-powered frontend client."],
 						]
 	
@@ -82,13 +85,13 @@ class antiochServer(object):
 		task_service.setServiceParent(master_service)
 		
 		from antioch.core import appserver
-		app_service = appserver.AppServer(msg_service)
+		app_service = appserver.AppServer(msg_service, port=config['port'])
 		app_service.setName("app-server")
 		app_service.setServiceParent(master_service)
 		
 		if not(config['no-client']):
 			from antioch import client
-			web_service = client.DjangoServer(msg_service)
+			web_service = client.DjangoServer(msg_service, port=config['port'])
 			web_service.setName("django-server")
 			web_service.setServiceParent(master_service)
 		

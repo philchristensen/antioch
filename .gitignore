@@ -1,6 +1,6 @@
 *.pyc
+venv
 *.cache
 *.egg-info
 .DS_Store
 _trial_temp
-

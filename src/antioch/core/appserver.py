@@ -24,9 +24,9 @@ def run(command, **kwargs):
 	return simplejson.loads(f.read())
 
 class AppServer(internet.TCPServer):
-	def __init__(self, msg_service):
+	def __init__(self, msg_service, port=None):
 		self.root = restful.Resource(msg_service)
 		logPath = AccessLogOnnaStick('antioch.appserver.access')
 		self.factory = AccessLoggingSite(self.root, logPath=logPath)
-		internet.TCPServer.__init__(self, conf.get('appserver-port'), self.factory, interface=conf.get('appserver-interface'))
+		internet.TCPServer.__init__(self, port or conf.get('appserver-port'), self.factory, interface=conf.get('appserver-interface'))
 

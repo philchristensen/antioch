@@ -26,13 +26,13 @@ class DjangoServer(internet.TCPServer):
 	"""
 	Provides a service that responds to web requests.
 	"""
-	def __init__(self, msg_service):
+	def __init__(self, msg_service, port=None):
 		import django.core.handlers.wsgi
 		handler = django.core.handlers.wsgi.WSGIHandler()
 		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
 		log_path = conf.get('access-log') or AccessLogOnnaStick('antioch.client.access')
 		self.factory = AccessLoggingSite(self.root, logPath=log_path)
-		internet.TCPServer.__init__(self, conf.get('web-port'), self.factory)
+		internet.TCPServer.__init__(self, port or conf.get('web-port'), self.factory)
 
 class DjangoBackend(backends.ModelBackend):
 	"""
