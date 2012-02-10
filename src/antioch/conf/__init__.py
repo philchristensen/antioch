@@ -62,12 +62,13 @@ def merge(content, into):
 
 	No, dict.update() doesn't already do this ;-)
 	"""
+	result = copy.deepcopy(into)
 	for k, v in content.items():
-		if k in into and isinstance(v, dict) and isinstance(into[k], dict):
-			into[k] = merge(into[k], v)
+		if(isinstance(v, dict) and isinstance(into[k], dict)):
+			result[k] = merge(v, into[k])
 		else:
-			into[k] = v
-	return into
+			result[k] = v
+	return result
 
 def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, initLogging=True):
 	"""
@@ -76,8 +77,6 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	global configured
 	if(configured):
 		return
-	
-	result = dict()
 	
 	# with no config, it's a development environment
 	env = 'development'
@@ -95,6 +94,19 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	
 	# load the default config file.
 	default = load_yaml('default.yaml', package=package)
+	
+	try:
+		project_template_dir = pkg.resource_filename(package.split('.')[0], 'templates')
+		default.setdefault('TEMPLATE_DIRS', []).append(project_template_dir)
+	except Exception, e:
+		warnings.warn("Couldn't append project template dir: %s" % e)
+	
+	try:
+		project_static_dir = pkg.resource_filename(package.split('.')[0], 'static')
+		default.setdefault('STATICFILES_DIRS', []).append(project_static_dir)
+	except Exception, e:
+		warnings.warn("Couldn't append project static dir: %s" % e)
+	
 	# merge in the environment-specific config
 	environ = merge(load_yaml('%s.yaml' % env, package=package), default)
 	
@@ -103,6 +115,8 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	# external passwords are kept in the site config.)
 	if(os.path.isfile(site_config)):
 		environ = merge(load_yaml(site_config, package=None), environ)
+	else:
+		warnings.warn("Cannot find site-specific Django settings in %r" % site_config)
 
 	# the optional filter is a method that returns updates to the
 	# final settings dict. this is used to override the database
@@ -112,6 +126,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		environ = merge(filter(environ), environ)
 	
 	settings.configure(ENVIRONMENT=env, **environ)
+	
 	# some debug pages use this variable (improperly, imho)
 	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
 	
@@ -121,7 +136,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		logging_config_path, logging_config_func_name = settings.LOGGING_CONFIG.rsplit('.', 1)
 		logging_config_module = importlib.import_module(logging_config_path)
 		logging_config_func = getattr(logging_config_module, logging_config_func_name)
-		
+
 		# ... then invoke it with the logging settings
 		logging_config_func(settings.LOGGING)
 	
@@ -130,4 +145,3 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		configured = True
 	finally:
 		configured_lock.release()
-
