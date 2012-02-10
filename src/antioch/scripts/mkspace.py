@@ -21,6 +21,9 @@ class Options(usage.Options):
 					["schema-file", "z", None, "The database schema file to use."],
 					["bootstrap-file", "b", None, "The database bootstrap file to use."],
 					]
+	optFlags = [
+					["no-init", "n", "Database already exists, don't create it."],
+				]
 
 	synopsis = "Usage: mkspace.py [options] <db-url|'default'> <dataset-name> [<psql-arg>*]"
 
@@ -53,8 +56,9 @@ def main():
 	else:
 		bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', default_bootstrap_path % config['dataset-name'])
 	bootstrap_path = os.path.abspath(bootstrap_path)
-
-	bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)
+	
+	if not(config['no-init']):
+		bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)
 	bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path)
 
 	pool = dbapi.connect(config['db-url'])
