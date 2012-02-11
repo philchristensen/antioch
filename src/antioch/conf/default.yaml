@@ -15,8 +15,11 @@
     "APPSERVER_INTERFACE": "127.0.0.1",
     
     "APPSERVER_URL": "http://localhost:8887/",
-     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
-     
+    "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
+    
+    "JQUERY_VERSION": "1.7.1",
+    "JQUERY_UI_VERSION": "1.8.17",
+    
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 3,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
@@ -135,6 +138,7 @@
         "django.core.context_processors.static",
         "django.core.context_processors.request",
         "django.contrib.messages.context_processors.messages",
+        "antioch.client.context_processors.default_variables"
     ],
 
     "MIDDLEWARE_CLASSES" : [
