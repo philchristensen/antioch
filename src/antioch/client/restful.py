@@ -37,6 +37,10 @@ class Resource(resource.Resource):
 			request.notified = True
 		request.notifyFinish().addBoth(_disconnect)
 		
+		if(len(request.postpath) != 2):
+			request.setResponseCode(400)
+			return '400 Bad Request'
+		
 		d = self.get_messages(request.postpath[1])
 		def _finish(messages):
 			if(getattr(request, 'notified', False)):
