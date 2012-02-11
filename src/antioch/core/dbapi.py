@@ -50,14 +50,20 @@ def connect(db_urls=None, *args, **kwargs):
 	replicated_pool = None
 	for db_url in db_urls:
 		dsn = parser.URL(db_url)
+		
 		if(dsn['scheme'] == 'postgres'):
 			dsn['scheme'] = 'psycopg2'
+		
+		if('port' not in dsn):
+			dsn['port'] = '5432'
+		
 		for key in dsn.keys():
 			if(dsn[key] is None):
 				del dsn[key]
 		
-		args += ('host=%s dbname=%s user=%s password=%s' % (dsn['host'], dsn['path'][1:], dsn['user'], dsn['passwd']),)
+		dsn['path'] = dsn['path'][1:]
 		
+		args += ('host=%(host)s port=%(port)s dbname=%(path)s user=%(user)s password=%(passwd)s' %  dsn
 		async = kwargs.pop('async', False)
 		kwargs.update(dict(
 			cp_reconnect	= True,
