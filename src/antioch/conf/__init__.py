@@ -161,7 +161,7 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	
 	if('HEROKU_ENV' in environ):
 		for k,v in environ['HEROKU_ENV'].items():
-			environ[k] = os.environ.get(v, '')
+			environ[k] = os.environ[v]
 		environ['DATABASES'] = get_heroku_db(environ)
 	
 	settings.configure(ENVIRONMENT=env, **environ)

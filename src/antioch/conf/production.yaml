@@ -3,7 +3,7 @@
     "HEROKU_ENV" : {
         "QUEUE_URL": "RABBITMQ_URL",
         "DATABASE_URL": "DATABASE_URL",
-        "DATABASE_URL": "DB_URL_DEFAULT"
+        "DB_URL_DEFAULT": "DATABASE_URL"
         # "IRON_MQ_TOKEN": "IRON_MQ_TOKEN",
         # "IRONMQ_PROJECT_ID": "IRONMQ_PROJECT_ID"
     }
