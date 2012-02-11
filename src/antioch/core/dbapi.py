@@ -49,7 +49,8 @@ def connect(db_urls=None, *args, **kwargs):
 	replicated_pool = None
 	for db_url in db_urls:
 		dsn = parser.URL(db_url)
-		
+		if(dsn['scheme'] == 'postgres'):
+			dsn['scheme'] = 'psycopg2'
 		for key in dsn.keys():
 			if(dsn[key] is None):
 				del dsn[key]
