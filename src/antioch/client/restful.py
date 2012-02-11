@@ -52,7 +52,13 @@ class Resource(resource.Resource):
 	def get_messages(self, user_id):
 		queue = self.msg_service.get_queue(user_id)
 		yield queue.start()
-		messages = yield queue.get_available()
+		messages = False
+		while(not messages):
+			messages = yield queue.get_available()
+			if not messages:
+				d = defer.Deferred()
+				reactor.callLater(1, d.callback, True)
+				yield d
 		yield queue.stop()
 		defer.returnValue(messages)
 	

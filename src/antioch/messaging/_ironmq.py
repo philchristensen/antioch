@@ -1,4 +1,4 @@
-import urllib
+import urllib, logging
 
 from zope import interface
 
@@ -9,6 +9,10 @@ from twisted.web.client import HTTPClientFactory
 from antioch import messaging, conf
 from antioch.core import parser
 from antioch.util import json
+
+from antioch.messaging import iron_mq
+
+log = logging.getLogger(__name__)
 
 def getService(queue_url, profile=False):
 	ironmq_service = IronMQService(queue_url, profile=profile)
@@ -26,18 +30,18 @@ class IronMQService(service.Service):
 	interface.implements(messaging.IMessageService)
 
 	def __init__(self, queue_url, profile=False):
-		self.queue_url = queue_url
 		self.profile = profile
-		self.url = parser.URL(queue_url)
-		if(self.url['scheme'] != 'ironmq'):
-			raise RuntimeError("Unsupported scheme %r" % self.url['scheme'])
+		# we don't save the URL since it's useless
+		url = parser.URL(queue_url)
+		if(url['scheme'] != 'ironmq'):
+			raise RuntimeError("Unsupported scheme %r" % url['scheme'])
 
 	def get_queue(self, user_id):
 		"""
 		Get a queue object that stores up messages until committed.
 		"""
 		q = IronMQueue(self, user_id, self.profile)
-		q.queue = IronMQ(
+		q.queue = iron_mq.IronMQ(
 			token = conf.get('ironmq-token'),
 			project_id = conf.get('ironmq-project-id'),
 		)
@@ -54,78 +58,43 @@ class IronMQueue(messaging.AbstractQueue):
 
 	@defer.inlineCallbacks
 	def pop(self):
-		return self._pop()
-	
-	@defer.inlineCallbacks
-	def _pop(self, return_list=False):
 		"""
 		Take one item from this user's queue.
 		"""
-		url = "%(protocol)s://%(host)s:%(port)s/%(version)s/" % self.queue.__dict__
-		
-		result = []
-		reading = True
-		while(reading):
-			client = HTTPClientFactory(url, **dict(
-				method		= 'POST',
-				headers		= {
-					'Content-Type'	: 'application/x-www-form-urlencoded',
-				},
-				postdata	= urllib.urlencode(dict(
-					msg		= json.dumps(dict(
-						cmd		= "take",
-						queue	= 'user-%s' % self.user_id,
-					)),
-				)),
-			))
-			client.noisy = False
-		
-			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-			response = yield client.deferred
-			response = json.loads(response)
-		
-			if('error' in response):
-				if(response['error'] == 'empty queue'):
-					defer.returnValue(result if return_list else None)
-				else:
-					raise RuntimeError('ironmq-pop-error: %s' % response)
-			result.append(json.loads(response['value'].decode('utf8')))
-			if not(return_list):
-				break
-		
-		defer.returnValue(result[0])
-
+		log.warning('pop')
+		response = yield self.queue.getMessage(queue_name="user-%s" % self.user_id, max=1)
+		if(response['messages']):
+			msg = response['messages'][0]
+			yield self.queue.deleteMessage(queue_name="user-%s" % self.user_id, message_id=msg['id'])
+			defer.returnValue(json.loads(msg['body']))
+	
+	@defer.inlineCallbacks
 	def get_available(self):
-		return self._pop(return_list=True)
+		"""
+		Get all items from this user's queue.
+		"""
+		fetch_size = 10
+		response = dict(messages=True)
+		result = []
+		while(response['messages']):
+			response = yield self.queue.getMessage("user-%s" % self.user_id, max=fetch_size)
+			for msg in response['messages']:
+				yield self.queue.deleteMessage("user-%s" % self.user_id, message_id=msg['id'])
+				result.append(json.loads(msg['body']))
+			if(len(response['messages']) < fetch_size):
+				break
+		defer.returnValue(result)
 
 	@defer.inlineCallbacks
 	def flush(self):
 		"""
 		Send all queued messages.
 		"""
-		self.queue_url
-		url = "%s://%s:%s/%s/" % (self.protocol, self.host, self.port,
-                self.version)
+		id_map = dict()
+		for m in self.messages:
+			id_map.setdefault('%s' % m[0], []).append(m[1])
 		
-		for msg in self.messages:
-			client = HTTPClientFactory(url, **dict(
-				method		= 'POST',
-				headers		= {
-					'Content-Type'	: 'application/x-www-form-urlencoded',
-				},
-				postdata	= urllib.urlencode(dict(
-					msg		= json.dumps(dict(
-						cmd		= 'add',
-						queue	= 'user-%s' % msg[0],
-						value	= json.dumps(msg[1]),
-					)),
-				)),
-			))
-			client.noisy = False
-			
-			reactor.connectTCP(queue_url['host'], int(queue_url['port']), client)
-			response = yield client.deferred
-			response = json.loads(response)
-			
-			if('error' in response):
-				raise RuntimeError('ironmq-flush-error: %s' % response)
+		for user_id, messages in id_map.items():
+			yield self.queue.postMessage("user-%s" % user_id,
+				[json.dumps(x) for x in messages],
+			)

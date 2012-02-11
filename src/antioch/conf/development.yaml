@@ -1,3 +1,0 @@
-{
-    "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/"
-}

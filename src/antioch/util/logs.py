@@ -36,7 +36,11 @@ class DjangoColorFormatter(object):
 
 class JSONFormatter(object):
 	def format(self, log):
-		return simplejson.dumps(log.__dict__)
+		return simplejson.dumps(dict(
+			name		= log.name,
+			levelname	= log.levelname,
+			msg			= str(log.msg),
+		))
 
 class AccessLoggingSite(server.Site):
 	def __init__(self, resource, logPath=None, timeout=60*60*12):
