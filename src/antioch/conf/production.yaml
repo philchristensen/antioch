@@ -1,7 +1,10 @@
 {
     "APPSERVER_INTERFACE": "0.0.0.0",
-    "USE_HEROKU_DB": true,
-    "QUEUE_URL": "ironmq://heroku/",
-    "IRONMQ_TOKEN": "CSgWlXdfc2gb_KI3otW-iO4oo5Q",
-    "IRONMQ_PROJECT_ID": "4f3581f95023e81adb000bb3"
+    "HEROKU_ENV" : {
+        "QUEUE_URL": "RABBITMQ_URL",
+        "DATABASE_URL": "DATABASE_URL",
+        "DATABASE_URL": "DB_URL_DEFAULT"
+        # "IRON_MQ_TOKEN": "IRON_MQ_TOKEN",
+        # "IRONMQ_PROJECT_ID": "IRONMQ_PROJECT_ID"
+    }
 }

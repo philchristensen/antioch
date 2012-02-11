@@ -72,7 +72,7 @@ def merge(content, into):
 			result[k] = v
 	return result
 
-def get_heroku_db():
+def get_heroku_db(env):
 	import urlparse
 
 	# Register database schemes in URLs.
@@ -81,8 +81,8 @@ def get_heroku_db():
 
 	DATABASES = {}
 	try:
-		if 'DATABASE_URL' in os.environ:
-			url = urlparse.urlparse(os.environ['DATABASE_URL'])
+		if 'DATABASE_URL' in env:
+			url = urlparse.urlparse(env['DATABASE_URL'])
 			
 			# Ensure default database exists.
 			DATABASES['default'] = DATABASES.get('default', {})
@@ -159,9 +159,10 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 		log.info("Overriding Django settings with %r" % filter)
 		environ = merge(filter(environ), environ)
 	
-	if('USE_HEROKU_DB' in environ):
-		environ['DATABASES'] = get_heroku_db()
-		environ['DB_URL_DEFAULT'] = os.environ['DATABASE_URL'].replace('postgres:', 'psycopg2:')
+	if('HEROKU_ENV' in environ):
+		for k,v in environ['HEROKU_ENV'].items():
+			environ[k] = os.environ.get(v, '')
+		environ['DATABASES'] = get_heroku_db(environ)
 	
 	settings.configure(ENVIRONMENT=env, **environ)
 	
