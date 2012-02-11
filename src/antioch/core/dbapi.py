@@ -63,7 +63,7 @@ def connect(db_urls=None, *args, **kwargs):
 		
 		dsn['path'] = dsn['path'][1:]
 		
-		args += ('host=%(host)s port=%(port)s dbname=%(path)s user=%(user)s password=%(passwd)s' %  dsn
+		args += ('host=%(host)s port=%(port)s dbname=%(path)s user=%(user)s password=%(passwd)s' %  dsn)
 		async = kwargs.pop('async', False)
 		kwargs.update(dict(
 			cp_reconnect	= True,
