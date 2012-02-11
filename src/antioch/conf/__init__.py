@@ -66,8 +66,8 @@ def merge(content, into):
 	"""
 	result = copy.deepcopy(into)
 	for k, v in content.items():
-		if(isinstance(v, dict) and isinstance(into[k], dict)):
-			result[k] = merge(v, into[k])
+		if(isinstance(v, dict) and isinstance(into.get(k, {}), dict)):
+			result[k] = merge(v, into.get(k, {}))
 		else:
 			result[k] = v
 	return result
