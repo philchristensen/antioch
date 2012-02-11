@@ -36,7 +36,7 @@ def getService(queue_url, profile=False):
 def installServices(master_service, queue_url, profile=False):
 	url = parser.URL(queue_url)
 	try:
-		module_name = '_' + url['scheme']
+		module_name = '_' + scheme_trans[url['scheme']]
 		imp = __import__('antioch.messaging', globals(), locals(), [module_name], -1)
 		getattr(imp,  module_name).installServices(master_service, queue_url, profile=profile)
 	except ImportError, e:
