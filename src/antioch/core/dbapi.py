@@ -54,14 +54,13 @@ def connect(db_urls=None, *args, **kwargs):
 		if(dsn['scheme'] == 'postgres'):
 			dsn['scheme'] = 'psycopg2'
 		
-		if('port' not in dsn):
-			dsn['port'] = '5432'
-		
 		for key in dsn.keys():
 			if(dsn[key] is None):
 				del dsn[key]
 		
 		dsn['path'] = dsn['path'][1:]
+		if('port' not in dsn):
+			dsn['port'] = '5432'
 		
 		args += ('host=%(host)s port=%(port)s dbname=%(path)s user=%(user)s password=%(passwd)s' %  dsn)
 		async = kwargs.pop('async', False)
