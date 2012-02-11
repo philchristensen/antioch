@@ -2,6 +2,13 @@
 <html>
 <head>
 <title>{{ title }}</title>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/{{ JQUERY_VERSION }}/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/jquery-{{ JQUERY_VERSION }}.min.js"><\/script>')</script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/{{ JQUERY_UI_VERSION }}/jquery-ui.min.js"></script>
+<script>window.jQuery(document).draggable || document.write('<script src="{{ STATIC_URL }}/js/jquery-ui-{{ JQUERY_UI_VERSION }}.min.js"><\/script>')</script>
+
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.17.min.js"></script>
 <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
