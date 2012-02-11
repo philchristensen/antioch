@@ -13,6 +13,7 @@ import threading, random, sys, time, re, subprocess, logging
 from twisted.enterprise import adbapi
 
 from antioch import conf
+from antioch.util import logs
 
 pools = {}
 async_pools = {}
@@ -82,7 +83,7 @@ def connect(db_urls=None, *args, **kwargs):
 				else:
 					pool = SynchronousConnectionPool(dsn['scheme'], *args, **kwargs)
 				selected_pools[db_url] = pool
-				log.info("connecting to %s" % db_url)
+				log.info("connecting to postgres server at %(host)s:%(port)s with %(user)s" % dsn)
 		finally:
 			pools_lock.release()
 		

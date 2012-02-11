@@ -91,14 +91,15 @@ class RabbitMQService(service.Service):
 				self.connection = yield self.factory.connectTCP(self.url['host'], int(self.url['port']))
 				yield self.connection.authenticate(self.url['user'], self.url['passwd'])
 			except Exception, e:
-				raise EnvironmentError("Couldn't connect to RabbitMQ server on %s, exception: %s" % (self.url, e))
+				self.url['e'] = e
+				raise EnvironmentError("Couldn't connect to RabbitMQ server at %(host)s:%(port)s, exception: %(e)s" % self.url)
 
 	@defer.inlineCallbacks
 	def disconnect(self):
 		"""
 		Disconnect from the AMQP server.
 		"""
-		messaging.log.debug("disconnecting from RabbitMQ server" % self.url)
+		messaging.log.debug("disconnecting from RabbitMQ server at %(host)s:%(port)s" % self.url)
 		if(self.connection):
 			chan0 = yield self.connection.channel(0)
 			yield chan0.connection_close()
