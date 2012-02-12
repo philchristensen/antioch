@@ -87,8 +87,8 @@ class antiochServer(object):
 		task_service.setServiceParent(master_service)
 		
 		from antioch.core import appserver
-		app_service = appserver.AppServer(msg_service, port=config['port'])
-		app_service.setName("app-server")
+		app_service = appserver.AppService(msg_service)
+		app_service.setName("app-service")
 		app_service.setServiceParent(master_service)
 		
 		if not(config['no-client']):
@@ -98,8 +98,6 @@ class antiochServer(object):
 			web_service.setServiceParent(master_service)
 		
 		reactor.addSystemEventTrigger("before", "startup", lambda: pylog.info(messages['startup']))
-		reactor.addSystemEventTrigger("after", "startup", task_service.run)
-		
 		reactor.addSystemEventTrigger("before", "shutdown", lambda: pylog.info(messages['shutdown']))
 		
 		return master_service

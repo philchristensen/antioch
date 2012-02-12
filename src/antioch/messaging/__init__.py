@@ -8,7 +8,7 @@
 Enable access to the messaging server
 """
 
-import logging
+import os, logging, threading, socket
 
 from zope import interface
 
@@ -21,6 +21,14 @@ scheme_trans = dict(
 	rabbitmq	= 'rabbitmq',
 	amqp		= 'rabbitmq',
 )
+
+def getLocalIdent(prefix):
+	return '%(prefix)s-P%(process_id)s-T%(thread_id)s-%(ip_address)s' % dict(
+		prefix		= prefix,
+		process_id	= os.getpid(),
+		thread_id	= threading.currentThread().ident,
+		ip_address	= socket.gethostbyname(socket.gethostname()),
+	)
 
 def getService(queue_url, profile=False):
 	url = parser.URL(queue_url)

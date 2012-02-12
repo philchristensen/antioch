@@ -1,4 +1,4 @@
-import httplib, urlparse, urllib, urllib2, os.path
+import os.path, threading, time
 
 from django import template, shortcuts, http
 from django.conf import settings
@@ -9,7 +9,60 @@ from django.views.decorators.csrf import csrf_exempt
 
 import simplejson
 
-from antioch import plugins
+from antioch import plugins, messaging
+from antioch.core import parser
+
+_msg_service = None
+_msg_service_lock = threading.Lock()
+
+def get_msg_service():
+	global _msg_service, _msg_service_lock
+	if(_msg_service is not None):
+		return _msg_service
+	with _msg_service_lock:
+		url = parser.URL(settings.QUEUE_URL)
+		from amqplib import client_0_8 as amqp
+		_msg_service = amqp.Connection(
+			host         = "%(host)s:%(port)s" % url,
+			userid       = url['user'],
+			password     = url['passwd'],
+			virtual_host = url['path'],
+			insist       = False,
+		)
+		return _msg_service
+
+def call(command, **kwargs):
+	responder_id = messaging.getLocalIdent('responses')
+	conn = get_msg_service()
+	chan = conn.channel()
+	chan.queue_declare(
+		queue		= responder_id,
+		durable		= False,
+		exclusive	= False,
+		auto_delete	= True,
+	)
+	chan.exchange_declare(
+		exchange	= "responder",
+		type		= "direct",
+		durable		= False,
+		auto_delete	= False,
+	)
+	chan.queue_bind(queue=responder_id, exchange="responder",
+		routing_key=responder_id)
+	
+	from amqplib import client_0_8 as amqp
+	msg = amqp.Message(simplejson.dumps({'command':command, 'kwargs':kwargs, 'responder_id':responder_id}))
+	msg.properties["delivery_mode"] = 2
+	chan.basic_publish(msg, exchange="responder", routing_key='appserver')
+	
+	msg = None
+	while(not msg):
+		msg = chan.basic_get(responder_id)
+		if not(msg):
+			time.sleep(1)
+	
+	chan.basic_ack(msg.delivery_tag)
+	return msg.body
 
 @login_required
 def client(request):
@@ -31,10 +84,8 @@ def comet(request):
 def rest(request, command):
 	data = simplejson.loads(request.read())
 	data['user_id'] = request.user.avatar.id
-	return http.HttpResponse(urllib2.urlopen(
-		os.path.join(settings.APPSERVER_URL, 'rest', command),
-		simplejson.dumps(data)
-	), content_type="application/json")
+	response = call(command, **data)
+	return http.HttpResponse(response, content_type="application/json")
 
 def logout(request):
 	auth.logout(request)

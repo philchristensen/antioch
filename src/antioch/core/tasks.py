@@ -39,11 +39,15 @@ class TaskService(service.Service):
 		"""
 		self.loop.interval = 1.0
 	
-	def run(self, result=None):
+	def startService(self):
 		"""
 		Start the loop.
 		"""
 		self.loop.start(self.loop.interval)
+	
+	def stopService(self):
+		self.stopped = True
+		self.loop.stop()
 	
 	def check(self, *args, **kwargs):
 		"""
@@ -70,7 +74,7 @@ class TaskService(service.Service):
 		"""
 		Adjust the check interval based on the result.
 		"""
-		self.loop.stop()
+		self.stopService()
 		# an EnvironmentError Exception during IterateTasks will have already printed itself
 		# if it's something else, though, make sure we print something.
 		if not(failure.check(EnvironmentError)):

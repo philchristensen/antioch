@@ -8,3 +8,4 @@ RestrictedPython>=3.6.0
 termcolor>=1.1.0
 PyYAML>=0.1
 django-ajax-selects>=1.2.4
+amqplib>=1.0.2
