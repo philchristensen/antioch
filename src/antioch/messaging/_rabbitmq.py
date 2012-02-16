@@ -92,7 +92,7 @@ class RabbitMQService(service.Service):
 				yield self.connection.authenticate(self.url['user'], self.url['passwd'])
 			except Exception, e:
 				self.url['e'] = e
-				raise EnvironmentError("Couldn't connect to RabbitMQ server at %(host)s:%(port)s, exception: %(e)s" % self.url)
+				messaging.log.error("Couldn't connect to RabbitMQ server at %(host)s:%(port)s, exception: %(e)s" % self.url)
 
 	@defer.inlineCallbacks
 	def disconnect(self):

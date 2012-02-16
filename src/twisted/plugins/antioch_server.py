@@ -68,7 +68,7 @@ class antiochServer(object):
 		class PythonLoggingMultiService(service.MultiService):
 			def setServiceParent(self, parent):
 				service.MultiService.setServiceParent(self, parent)
-				observer = log.PythonLoggingObserver(loggerName='antioch.appserver')
+				observer = log.PythonLoggingObserver(loggerName='antioch.twisted')
 				def appserver_log_level(event):
 					if not(event['isError']):
 						event['logLevel'] = logging.DEBUG

@@ -15,7 +15,9 @@ from antioch import conf, messaging
 import simplejson
 
 from twisted.application import service
-from twisted.internet import defer, task
+from twisted.internet import defer, task, reactor
+
+log = logging.getLogger(__name__)
 
 class AppService(service.Service):
 	"""
@@ -30,32 +32,41 @@ class AppService(service.Service):
 		"""
 		Create a new TaskService.
 		"""
-		self.stopped = False
+		self.stopped = True
 		self.msg_service = msg_service
 		self.ident = messaging.getLocalIdent('appserver')
 		self.loop = task.LoopingCall(self.check_queue)
 		self.loop.interval = 1
 	
-	@defer.inlineCallbacks
 	def startService(self):
 		"""
 		Start the loop.
 		"""
+		self.loop.start(self.loop.interval)
+		reactor.addSystemEventTrigger("after", "startup", self._startService)
+	
+	@defer.inlineCallbacks
+	def _startService(self):
 		yield self.msg_service.connect()
 		
 		self.chan = yield self.msg_service.open_channel()
 		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=False, auto_delete=False)
-		yield self.chan.queue_declare(queue='appserver', durable=True, exclusive=False, auto_delete=False)
-		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key=self.ident)
-		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=True)
+		yield self.chan.queue_declare(queue='appserver', durable=False, exclusive=False, auto_delete=False)
+		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key='appserver')
+		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=False)
+		
+		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
 		
 		self.queue = yield self.msg_service.connection.queue("appserver")
-		self.loop.start(self.loop.interval)
+		self.stopped = False
 	
-	@defer.inlineCallbacks
 	def stopService(self):
 		self.stopped = True
 		self.loop.stop()
+		reactor.addSystemEventTrigger("before", "shutdown", self._stopService)
+	
+	@defer.inlineCallbacks
+	def _stopService(self):
 		if(hasattr(self, 'chan')):
 			try:
 				yield self.chan.basic_cancel(self.ident)
@@ -74,7 +85,9 @@ class AppService(service.Service):
 		
 		from txamqp.queue import Closed as QueueClosed
 		try:
+			log.debug('checking for message with %s' % (self.ident,))
 			msg = yield self.queue.get()
+			log.debug('found message with %s: %s' % (self.ident, msg))
 		except QueueClosed, e:
 			defer.returnValue(None)
 		
@@ -88,5 +101,6 @@ class AppService(service.Service):
 		
 		from txamqp import content
 		c = content.Content(simplejson.dumps(result), properties={'content type':'application/json'})
+		log.debug('returning response %s to %s' % (c, self.ident))
 		yield selfchan.basic_publish(exchange="responder", content=c, routing_key=data['responder_id'])
 

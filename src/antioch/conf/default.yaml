@@ -216,9 +216,9 @@
             'antioch': {
                 'handlers':['console'],
                 'propagate': false,
-                'level':'INFO',
+                'level':'DEBUG',
             },
-            'antioch.appserver': {
+            'antioch.twisted': {
                 'handlers':['console'],
                 'propagate': false,
                 'level':'INFO',
@@ -226,7 +226,7 @@
             'antioch.core': {
                 'handlers':['console'],
                 'propagate': false,
-                'level':'INFO',
+                'level':'DEBUG',
             },
             'antioch.child': {
                 'handlers':['console'],

@@ -8,13 +8,16 @@
 Manage asynchronous tasks.
 """
 
+import logging
+
 from twisted.application import service
 from twisted.internet import defer, reactor, task
-from twisted.python import log
 
 from antioch.core import transact
 
 MAX_DELAY = 10
+
+log = logging.getLogger(__name__)
 
 class TaskService(service.Service):
 	"""
@@ -78,4 +81,4 @@ class TaskService(service.Service):
 		# an EnvironmentError Exception during IterateTasks will have already printed itself
 		# if it's something else, though, make sure we print something.
 		if not(failure.check(EnvironmentError)):
-			raise EnvironmentError("delayed tasks will not be run: %s" % failure.getErrorMessage())
+			log.error("delayed tasks will not be run: %s" % failure.getErrorMessage())

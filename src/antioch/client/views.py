@@ -1,4 +1,4 @@
-import os.path, threading, time
+import os.path, threading, time, logging
 
 from django import template, shortcuts, http
 from django.conf import settings
@@ -14,6 +14,8 @@ from antioch.core import parser
 
 _msg_service = None
 _msg_service_lock = threading.Lock()
+
+log = logging.getLogger(__name__)
 
 def get_msg_service():
 	global _msg_service, _msg_service_lock
@@ -53,13 +55,32 @@ def call(command, **kwargs):
 	from amqplib import client_0_8 as amqp
 	msg = amqp.Message(simplejson.dumps({'command':command, 'kwargs':kwargs, 'responder_id':responder_id}))
 	msg.properties["delivery_mode"] = 2
+	log.debug('published message %s via exchange "responder" with key "appserver", responder: %s' % (msg, responder_id))
 	chan.basic_publish(msg, exchange="responder", routing_key='appserver')
 	
+	# result = None
+	# def recv_callback(msg):
+	# 	log.debug('got msg: %s' % msg)
+	# 	result = msg
+	# 
+	# log.debug('listening to queue %s for responses' % responder_id)
+	# chan.basic_consume(queue=responder_id, no_ack=True,
+	# 	callback=recv_callback, consumer_tag=responder_id)
+	# while True:
+	# 	log.debug('waiting for message on %s' % responder_id)
+	# 	chan.wait()
+	# chan.basic_cancel("consume-%s" % responder_id)
+	# if(result):
+	# 	return result.body
+	# else:
+	# 	log.error("Never got a result from the queue.")
 	msg = None
+	log.debug('listening to queue %s for responses' % responder_id)
 	while(not msg):
 		msg = chan.basic_get(responder_id)
 		if not(msg):
 			time.sleep(1)
+	result = None
 	
 	chan.basic_ack(msg.delivery_tag)
 	return msg.body
@@ -73,6 +94,7 @@ def client(request):
 
 @login_required
 def comet(request):
+	import urlparse
 	url = urlparse.urlparse(settings.APPSERVER_URL)
 	conn = httplib.HTTPConnection(url.netloc)
 	conn.request('GET', '/comet/%d' % request.user.avatar.id)
