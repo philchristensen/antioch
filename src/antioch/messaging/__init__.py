@@ -14,6 +14,7 @@ from zope import interface
 
 from antioch import conf
 from antioch.core import parser
+from antioch.util import mnemo
 
 log = logging.getLogger(__name__)
 
@@ -23,11 +24,15 @@ scheme_trans = dict(
 )
 
 def getLocalIdent(prefix):
-	return '%(prefix)s-P%(process_id)s-T%(thread_id)s-%(ip_address)s' % dict(
+	thread_id = threading.currentThread().ident
+	short_ip = socket.gethostbyname(socket.gethostname())
+	long_ip = long(''.join(["%02X" % long(i) for i in short_ip.split('.')]), 16)
+	
+	return '%(prefix)s-%(process_id)s-%(thread_id)s-%(ip_address)s' % dict(
 		prefix		= prefix,
-		process_id	= os.getpid(),
-		thread_id	= threading.currentThread().ident,
-		ip_address	= socket.gethostbyname(socket.gethostname()),
+		process_id	= mnemo.encode(os.getpid()),
+		thread_id	= mnemo.encode(abs(thread_id)) if thread_id < 0 else 'local',
+		ip_address	= mnemo.encode(long_ip),
 	)
 
 def getService(queue_url, profile=False):

@@ -38,6 +38,12 @@ def call(command, **kwargs):
 	conn = get_msg_service()
 	chan = conn.channel()
 	chan.queue_declare(
+		queue		= 'appserver',
+		durable		= True,
+		exclusive	= False,
+		auto_delete	= False,
+	)
+	chan.queue_declare(
 		queue		= responder_id,
 		durable		= True,
 		exclusive	= False,
