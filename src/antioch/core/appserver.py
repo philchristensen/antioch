@@ -50,10 +50,10 @@ class AppService(service.Service):
 		yield self.msg_service.connect()
 		
 		self.chan = yield self.msg_service.open_channel()
-		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=False, auto_delete=False)
-		yield self.chan.queue_declare(queue='appserver', durable=False, exclusive=False, auto_delete=False)
+		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=True, auto_delete=False)
+		yield self.chan.queue_declare(queue='appserver', durable=True, exclusive=False, auto_delete=False)
 		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key='appserver')
-		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=False)
+		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=True)
 		
 		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
 		

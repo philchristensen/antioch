@@ -39,14 +39,14 @@ def call(command, **kwargs):
 	chan = conn.channel()
 	chan.queue_declare(
 		queue		= responder_id,
-		durable		= False,
+		durable		= True,
 		exclusive	= False,
 		auto_delete	= True,
 	)
 	chan.exchange_declare(
 		exchange	= "responder",
 		type		= "direct",
-		durable		= False,
+		durable		= True,
 		auto_delete	= False,
 	)
 	chan.queue_bind(queue=responder_id, exchange="responder",
@@ -58,31 +58,15 @@ def call(command, **kwargs):
 	log.debug('published message %s via exchange "responder" with key "appserver", responder: %s' % (msg, responder_id))
 	chan.basic_publish(msg, exchange="responder", routing_key='appserver')
 	
-	# result = None
-	# def recv_callback(msg):
-	# 	log.debug('got msg: %s' % msg)
-	# 	result = msg
-	# 
-	# log.debug('listening to queue %s for responses' % responder_id)
-	# chan.basic_consume(queue=responder_id, no_ack=True,
-	# 	callback=recv_callback, consumer_tag=responder_id)
-	# while True:
-	# 	log.debug('waiting for message on %s' % responder_id)
-	# 	chan.wait()
-	# chan.basic_cancel("consume-%s" % responder_id)
-	# if(result):
-	# 	return result.body
-	# else:
-	# 	log.error("Never got a result from the queue.")
 	msg = None
 	log.debug('listening to queue %s for responses' % responder_id)
 	while(not msg):
 		msg = chan.basic_get(responder_id)
 		if not(msg):
 			time.sleep(1)
-	result = None
 	
 	chan.basic_ack(msg.delivery_tag)
+	log.debug('returning %s' % msg.body)
 	return msg.body
 
 @login_required
