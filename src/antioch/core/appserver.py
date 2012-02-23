@@ -86,7 +86,6 @@ class AppService(service.Service):
 		Look for requests.
 		"""
 		if(self.stopped):
-			log.debug("check_queue called when queue stopped, taking no action")
 			defer.returnValue(None)
 		
 		from txamqp.queue import Closed as QueueClosed
@@ -95,7 +94,6 @@ class AppService(service.Service):
 			msg = yield self.queue.get()
 			log.debug('found message with %s: %s' % (self.ident, msg))
 		except QueueClosed, e:
-			log.debug('queue closed, taknig no action')
 			defer.returnValue(None)
 		
 		data = simplejson.loads(msg.content.body)
