@@ -72,6 +72,36 @@ def call(command, **kwargs):
 	log.debug('returning %s' % msg.body)
 	return msg.body
 
+def get_messages(user_id):
+	conn = get_msg_service()
+	chan = conn.channel()
+	chan.queue_declare(
+		queue		= "user-%s-queue" % user_id,
+		durable		= False,
+		exclusive	= False,
+		auto_delete	= True,
+	)
+	chan.exchange_declare(
+		exchange	= "user-exchange",
+		type		= "direct",
+		durable		= False,
+		auto_delete	= False,
+	)
+	chan.queue_bind(queue="user-%s-queue" % user_id, exchange="user-exchange", routing_key="user-%s" % user_id)
+	
+	timeout = 30
+	messages = []
+	while(timeout):
+		msg = chan.basic_get("user-%s-queue" % user_id)
+		if(msg):
+			messages.append(simplejson.loads(msg.body))
+		elif(not messages):
+			time.sleep(1)
+			timeout -= 1
+		else:
+			break
+	return messages
+
 @login_required
 def client(request):
 	return shortcuts.render_to_response('client.html', dict(
@@ -81,12 +111,8 @@ def client(request):
 
 @login_required
 def comet(request):
-	import urlparse
-	url = urlparse.urlparse(settings.APPSERVER_URL)
-	conn = httplib.HTTPConnection(url.netloc)
-	conn.request('GET', '/comet/%d' % request.user.avatar.id)
-	response = conn.getresponse()
-	return http.HttpResponse(response.read(), content_type="application/json")
+	messages = get_messages(request.user.avatar.id)
+	return http.HttpResponse(simplejson.dumps(messages), content_type="application/json")
 
 @login_required
 @csrf_exempt
