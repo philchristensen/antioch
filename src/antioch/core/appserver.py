@@ -19,18 +19,21 @@ from twisted.internet import defer, task, reactor
 
 log = logging.getLogger(__name__)
 
+def get_command_support(class_name):
+	from antioch import plugins
+	for plugin in plugins.iterate():
+		available_commands = plugin.get_commands()
+		if(class_name in available_commands):
+			klass = available_commands[class_name]
+			child = getattr(plugin, 'transaction_child', None)
+			return klass, child
+	return None
+
+
 class AppService(service.Service):
-	"""
-	Provides a service that iterates through queued tasks.
-	
-	The LoopingCall created by this service changes intervals depending on the
-	success of the previous attempt. Every time a task is completed, the next
-	interval before checking again is halved. If no task is found or an exception
-	occurs, the time before checking again is doubled, up to MAX_DELAY seconds.
-	"""
 	def __init__(self, msg_service):
 		"""
-		Create a new TaskService.
+		Create a new AppService.
 		"""
 		self.stopped = True
 		self.msg_service = msg_service
@@ -42,6 +45,7 @@ class AppService(service.Service):
 		"""
 		Start the loop.
 		"""
+		log.info("started processing appserver queue")
 		self.loop.start(self.loop.interval)
 		reactor.addSystemEventTrigger("after", "startup", self._startService)
 	
@@ -50,17 +54,18 @@ class AppService(service.Service):
 		yield self.msg_service.connect()
 		
 		self.chan = yield self.msg_service.open_channel()
-		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=True, auto_delete=False)
-		yield self.chan.queue_declare(queue='appserver', durable=True, exclusive=False, auto_delete=False)
+		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=False, auto_delete=False)
+		yield self.chan.queue_declare(queue='appserver', durable=False, exclusive=False, auto_delete=False)
 		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key='appserver')
 		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=True)
 		
-		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
-		
-		self.queue = yield self.msg_service.connection.queue("appserver")
+		self.queue = yield self.msg_service.connection.queue(self.ident)
 		self.stopped = False
+		
+		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
 	
 	def stopService(self):
+		log.info("stopped processing appserver queue")
 		self.stopped = True
 		self.loop.stop()
 		reactor.addSystemEventTrigger("before", "shutdown", self._stopService)
@@ -81,6 +86,7 @@ class AppService(service.Service):
 		Look for requests.
 		"""
 		if(self.stopped):
+			log.debug("check_queue called when queue stopped, taking no action")
 			defer.returnValue(None)
 		
 		from txamqp.queue import Closed as QueueClosed
@@ -89,9 +95,10 @@ class AppService(service.Service):
 			msg = yield self.queue.get()
 			log.debug('found message with %s: %s' % (self.ident, msg))
 		except QueueClosed, e:
+			log.debug('queue closed, taknig no action')
 			defer.returnValue(None)
 		
-		data = simplejson.loads(msg.content.body.decode('utf8'))
+		data = simplejson.loads(msg.content.body)
 		
 		klass, child = get_command_support(data['command'])
 		if(klass is None):
@@ -102,5 +109,5 @@ class AppService(service.Service):
 		from txamqp import content
 		c = content.Content(simplejson.dumps(result), properties={'content type':'application/json'})
 		log.debug('returning response %s to %s' % (c, self.ident))
-		yield selfchan.basic_publish(exchange="responder", content=c, routing_key=data['responder_id'])
+		yield self.chan.basic_publish(exchange="responder", content=c, routing_key=data['responder_id'])
 

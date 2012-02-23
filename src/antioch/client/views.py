@@ -39,31 +39,28 @@ def call(command, **kwargs):
 	chan = conn.channel()
 	chan.queue_declare(
 		queue		= 'appserver',
-		durable		= True,
+		durable		= False,
 		exclusive	= False,
 		auto_delete	= False,
 	)
 	chan.queue_declare(
 		queue		= responder_id,
-		durable		= True,
+		durable		= False,
 		exclusive	= False,
 		auto_delete	= True,
 	)
 	chan.exchange_declare(
 		exchange	= "responder",
 		type		= "direct",
-		durable		= True,
+		durable		= False,
 		auto_delete	= False,
 	)
-	chan.queue_bind(queue=responder_id, exchange="responder",
-		routing_key=responder_id)
+	chan.queue_bind(queue=responder_id, exchange="responder", routing_key=responder_id)
 	
 	from amqplib import client_0_8 as amqp
 	msg = amqp.Message(simplejson.dumps({'command':command, 'kwargs':kwargs, 'responder_id':responder_id}))
-	msg.properties["delivery_mode"] = 2
 	log.debug('published message %s via exchange "responder" with key "appserver", responder: %s' % (msg, responder_id))
 	chan.basic_publish(msg, exchange="responder", routing_key='appserver')
-	
 	msg = None
 	log.debug('listening to queue %s for responses' % responder_id)
 	while(not msg):
@@ -96,7 +93,11 @@ def comet(request):
 def rest(request, command):
 	data = simplejson.loads(request.read())
 	data['user_id'] = request.user.avatar.id
-	response = call(command, **data)
+	try:
+		response = call(command, **data)
+	except Exception, e:
+		import traceback; traceback.print_exc()
+		log.error(str(e))
 	return http.HttpResponse(response, content_type="application/json")
 
 def logout(request):

@@ -59,7 +59,7 @@ def discover_commands(plugin):
 	from antioch.core import transact
 	t = plugin.__dict__.items()
 	return dict(
-		[(k,v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]
+		[(k.lower(),v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]
 	)
 
 def instantiate(plugin_mod):
