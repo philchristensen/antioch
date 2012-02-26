@@ -16,7 +16,7 @@ from antioch.core import transact
 from antioch.plugins.editors.transactions import EditorTransactionChild
 
 def edit(p, item):
-	p.exchange.queue.append(p.caller.get_id(), dict(
+	p.exchange.send_message(p.caller.get_id(), dict(
 		command		= 'edit',
 		details		= item.get_details(),
 	))
@@ -36,7 +36,7 @@ def access(p, item):
 		) for rule in acl]
 	)
 	
-	p.exchange.queue.append(p.caller.get_id(), dict(
+	p.exchange.send_message(p.caller.get_id(), dict(
 		command			= 'access',
 		details			= details,
 	))
