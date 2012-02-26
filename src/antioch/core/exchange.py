@@ -17,8 +17,7 @@ import crypt, string, random, time, logging
 from twisted.internet import defer
 from twisted.python import util
 
-from txamqp.client import Closed
-
+from antioch import conf
 from antioch.core import model, errors, messaging
 from antioch.util import sql, json
 
@@ -184,7 +183,7 @@ class ObjectExchange(object):
 		self.cache._order = []
 		if(self.queue):
 			for user_id, msg in self.queue:
-				queue_id = '%s-%s' % (settings.USER_QUEUE_PREFIX, user_id)
+				queue_id = '%s-%s' % (conf.get('user-queue-prefix'), user_id)
 				log.debug("flushing message to #%s: %s" % (user_id, msg))
 				consumer = yield messaging.get_async_consumer()
 				yield consumer.send_message(queue_id, msg)
