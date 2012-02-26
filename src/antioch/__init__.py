@@ -12,8 +12,15 @@ from zope import interface
 
 from twisted.python import versions
 
+from antioch import conf
+conf.init()
+
+from antioch.client import DebugLoggingWSGIHandler
+
 version = versions.Version('antioch', 2, 0, 0)
 __version__ = version.short()
+
+wsgi_handler = DebugLoggingWSGIHandler()
 
 class IPlugin(interface.Interface):
 	name = interface.Attribute('Name of this module.')
