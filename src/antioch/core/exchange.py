@@ -73,6 +73,7 @@ class ObjectExchange(object):
 		"""
 		self.cache = util.OrderedDict()
 		self.pool = pool
+		self.use_queue = queue
 		self.queue = [] if queue else None
 		
 		self.default_grants_active = False
@@ -168,7 +169,7 @@ class ObjectExchange(object):
 		self.pool.runOperation('ROLLBACK')
 	
 	def send_message(self, user_id, msg):
-		if not(self.queue):
+		if not(self.use_queue):
 			log.warning("attempted to send a message to user #%s on an unqueued exchange: %s" % (user_id, msg))
 			return
 		
