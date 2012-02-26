@@ -19,7 +19,7 @@ from twisted.python import util
 
 from txamqp.client import Closed
 
-from antioch.core import model, errors
+from antioch.core import model, errors, messaging
 from antioch.util import sql, json
 
 group_definitions = dict(
@@ -63,7 +63,7 @@ class ObjectExchange(object):
 	
 	permission_list = None
 	
-	def __init__(self, pool, queue=None, ctx=None):
+	def __init__(self, pool, queue=False, ctx=None):
 		"""
 		Create a new object exchange.
 		
@@ -73,17 +73,22 @@ class ObjectExchange(object):
 		"""
 		self.cache = util.OrderedDict()
 		self.pool = pool
-		self.queue = queue
+		self.queue = [] if queue else None
 		
 		self.default_grants_active = False
 		self.load_permissions()
 		
 		if(queue and not ctx):
-			raise RuntimeError("Queues can't be written to without a context.")
+			raise RuntimeError("Exchanges can't use queues without a context.")
 		
 		self.ctx = ctx
 		if(isinstance(ctx, (int, long))):
+			self.ctx_id = ctx
 			self.ctx = self.get_object(ctx)
+			self.ctx_name = self.ctx.name
+		elif(ctx):
+			self.ctx_id = ctx.id
+			self.ctx_name = self.ctx.name
 	
 	def __enter__(self):
 		"""
@@ -93,26 +98,6 @@ class ObjectExchange(object):
 		if(profile_exchange):
 			self.transaction_started = time.time()
 		return self
-	
-	def begin(self):
-		"""
-		Start a database transaction.
-		"""
-		self.pool.runOperation('BEGIN')
-	
-	def commit(self):
-		"""
-		Complete a database transaction.
-		"""
-		if(profile_exchange):
-			print '[exchange] transaction took %s seconds' % (time.time() - self.transaction_started)
-		self.pool.runOperation('COMMIT')
-	
-	def rollback(self):
-		"""
-		Roll-back a database transaction.
-		"""
-		self.pool.runOperation('ROLLBACK')
 	
 	def __exit__(self, etype, e, trace):
 		"""
@@ -134,8 +119,8 @@ class ObjectExchange(object):
 				self.commit()
 				err = str(e)
 				log.info('Sending normal exception to user: %s' % err)
-				if(self.queue):
-					self.queue.push(self.ctx.get_id(), dict(
+				if(self.queue is not None):
+					self.queue.append(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= err,
 						is_error	= True,
@@ -150,8 +135,8 @@ class ObjectExchange(object):
 				io = StringIO.StringIO()
 				traceback.print_exception(etype, e, trace, None, io)
 				log.error('Sending fatal exception to user: %s' % str(e))
-				if(self.queue):
-					self.queue.push(self.ctx.get_id(), dict(
+				if(self.queue is not None):
+					self.queue.append(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= io.getvalue(),
 						is_error	= True,
@@ -162,6 +147,40 @@ class ObjectExchange(object):
 		finally:
 			d = self.flush()
 			d.addErrback(log.error)
+	
+	def begin(self):
+		"""
+		Start a database transaction.
+		"""
+		self.pool.runOperation('BEGIN')
+	
+	def commit(self):
+		"""
+		Complete a database transaction.
+		"""
+		if(profile_exchange):
+			print '[exchange] transaction took %s seconds' % (time.time() - self.transaction_started)
+		self.pool.runOperation('COMMIT')
+	
+	def rollback(self):
+		"""
+		Roll-back a database transaction.
+		"""
+		self.pool.runOperation('ROLLBACK')
+	
+	@defer.inlineCallbacks
+	def flush(self):
+		"""
+		Clear and save the cache, and send all pending messages.
+		"""
+		self.cache.clear()
+		self.cache._order = []
+		if(self.queue):
+			queue_id = '%s-%s' % (settings.USER_QUEUE_PREFIX, self.ctx_id)
+			for msg in self.queue:
+				log.debug("flushing message to %s: %s" % (self.ctx_name, msg))
+				consumer = yield messaging.get_async_consumer()
+				yield consumer.send_message(queue_id, msg)
 	
 	def get_context(self):
 		"""
@@ -329,16 +348,6 @@ class ObjectExchange(object):
 		perm.group = record.get('group', 'everyone')
 		
 		return perm
-	
-	@defer.inlineCallbacks
-	def flush(self):
-		"""
-		Clear and save the cache, and send all pending messages.
-		"""
-		self.cache.clear()
-		self.cache._order = []
-		if(self.queue):
-			yield self.queue.flush()
 	
 	def load(self, obj_type, obj_id):
 		"""

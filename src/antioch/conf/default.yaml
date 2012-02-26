@@ -17,6 +17,14 @@
     "APPSERVER_URL": "http://localhost:8887/",
     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
     
+    "APPSERVER_EXCHANGE": "antioch",
+    "APPSERVER_QUEUE": "appserver",
+    "USER_QUEUE_PREFIX": "user",
+    "RESPONSE_QUEUE_PREFIX": "responses",
+    
+    "USER_QUEUE_TIMEOUT": 10,
+    "RESPONSE_QUEUE_TIMEOUT": 10,
+    
     "JQUERY_VERSION": "1.7.1",
     "JQUERY_UI_VERSION": "1.8.17",
     
@@ -214,6 +222,11 @@
         },
         'loggers': {
             'antioch': {
+                'handlers':['console'],
+                'propagate': false,
+                'level':'DEBUG',
+            },
+            'django.request': {
                 'handlers':['console'],
                 'propagate': false,
                 'level':'DEBUG',

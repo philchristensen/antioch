@@ -10,7 +10,8 @@ Setup the application service.
 
 import os.path, logging
 
-from antioch import conf, messaging
+from antioch import conf
+from antioch.core import messaging
 
 import simplejson
 
@@ -29,15 +30,13 @@ def get_command_support(class_name):
 			return klass, child
 	return None
 
-
 class AppService(service.Service):
-	def __init__(self, msg_service):
+	def __init__(self):
 		"""
 		Create a new AppService.
 		"""
 		self.stopped = True
-		self.msg_service = msg_service
-		self.ident = messaging.getLocalIdent('appserver')
+		self.consumer = None
 		self.loop = task.LoopingCall(self.check_queue)
 		self.loop.interval = 1
 	
@@ -51,18 +50,9 @@ class AppService(service.Service):
 	
 	@defer.inlineCallbacks
 	def _startService(self):
-		yield self.msg_service.connect()
-		
-		self.chan = yield self.msg_service.open_channel()
-		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=False, auto_delete=False)
-		yield self.chan.queue_declare(queue='appserver', durable=False, exclusive=False, auto_delete=False)
-		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key='appserver')
-		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=True)
-		
-		self.queue = yield self.msg_service.connection.queue(self.ident)
+		self.consumer = yield messaging.get_async_consumer()
+		yield self.consumer.start_consuming()
 		self.stopped = False
-		
-		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
 	
 	def stopService(self):
 		log.info("stopped processing appserver queue")
@@ -72,40 +62,22 @@ class AppService(service.Service):
 	
 	@defer.inlineCallbacks
 	def _stopService(self):
-		if(hasattr(self, 'chan')):
-			try:
-				yield self.chan.basic_cancel(self.ident)
-				yield self.chan.channel_close()
-			except:
-				pass
-		yield self.msg_service.disconnect()
+		yield self.consumer.disconnect()
 	
 	@defer.inlineCallbacks
 	def check_queue(self, *args, **kwargs):
-		"""
-		Look for requests.
-		"""
 		if(self.stopped):
 			defer.returnValue(None)
 		
-		from txamqp.queue import Closed as QueueClosed
-		try:
-			log.debug('checking for message with %s' % (self.ident,))
-			msg = yield self.queue.get()
-			log.debug('found message with %s: %s' % (self.ident, msg))
-		except QueueClosed, e:
-			defer.returnValue(None)
+		msg = yield self.consumer.get_message()
+		log.debug("got message from %s: %s" % (consumer, msg))
 		
-		data = simplejson.loads(msg.content.body)
-		
-		klass, child = get_command_support(data['command'])
+		klass, child = get_command_support(msg['command'])
 		if(klass is None):
-			defer.returnValue({'error':'No such command: %s' % data['command']});
+			defer.returnValue({'error':'No such command: %s' % msg['command']});
 		
-		result = yield klass.run(transaction_child=child, **data['kwargs'])
+		result = yield klass.run(transaction_child=child, **msg['kwargs'])
 		
-		from txamqp import content
-		c = content.Content(simplejson.dumps(result), properties={'content type':'application/json'})
-		log.debug('returning response %s to %s' % (c, self.ident))
-		yield self.chan.basic_publish(exchange="responder", content=c, routing_key=data['responder_id'])
+		log.debug("sending response to %s: %s" % (data['responder_id'], result))
+		yield consumer.send_message(data['responder_id'], result)
 

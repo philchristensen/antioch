@@ -20,7 +20,7 @@ from ampoule import child, pool, main, util
 import simplejson
 from simplejson.decoder import JSONDecodeError
 
-from antioch import conf, messaging
+from antioch import conf
 from antioch.core import dbapi, code, exchange, errors, parser
 from antioch.util import sql, json
 
@@ -215,18 +215,16 @@ class TransactionChild(child.AMPChild):
 			debug_syntax	= conf.get('debug-sql-syntax'),
 			profile			= conf.get('profile-db'),
 		))
-
+		
 		if(profile_transactions):
 			log.info("db connection took %s seconds" % (time.time() - t))
-
-		self.msg_service = messaging.getService(conf.get('queue-url'), conf.get('profile-queue'))
-
+	
 	def get_exchange(self, ctx=None):
 		"""
 		Get an ObjectExchange instance for the provided context.
 		"""
 		if(ctx):
-			return exchange.ObjectExchange(self.pool, self.msg_service.get_queue(ctx), ctx)
+			return exchange.ObjectExchange(self.pool, queue=True, ctx=ctx)
 		else:
 			return exchange.ObjectExchange(self.pool)
 

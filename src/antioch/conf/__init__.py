@@ -169,13 +169,16 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	# some debug pages use this variable (improperly, imho)
 	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
 	
+	from django.core.signals import got_request_exception
+	got_request_exception.connect(lambda s, **kw: log.error('error'))
+	
 	# Settings are configured, so we can set up the logger if required
 	if initLogging and settings.LOGGING_CONFIG:
 		# First find the logging configuration function ...
 		logging_config_path, logging_config_func_name = settings.LOGGING_CONFIG.rsplit('.', 1)
 		logging_config_module = importlib.import_module(logging_config_path)
 		logging_config_func = getattr(logging_config_module, logging_config_func_name)
-
+		
 		# ... then invoke it with the logging settings
 		logging_config_func(settings.LOGGING)
 	

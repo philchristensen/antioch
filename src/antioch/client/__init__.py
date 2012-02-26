@@ -26,7 +26,7 @@ class DjangoServer(internet.TCPServer):
 	"""
 	Provides a service that responds to web requests.
 	"""
-	def __init__(self, msg_service, port=None):
+	def __init__(self, port=None):
 		import django.core.handlers.wsgi
 		handler = django.core.handlers.wsgi.WSGIHandler()
 		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)

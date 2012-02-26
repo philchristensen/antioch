@@ -49,10 +49,9 @@ class antiochServer(object):
 		"""
 		Option-parsing for the antioch twistd plugin.
 		"""
-		optParameters =	[["port", "p", None, "antioch appserver port.", int],
-						 ["web-port", "w", None, "antioch webserver port.", int],
+		optParameters =	[["port", "p", 8888, "web service port", int],
 						]
-		optFlags =		[["no-client", "c", "Don't run the internal WSGI/Django-powered frontend client."],
+		optFlags =		[["no-web", "c", "Don't run the internal web service."],
 						]
 	
 	@classmethod
@@ -77,24 +76,20 @@ class antiochServer(object):
 		
 		master_service = PythonLoggingMultiService()
 		
-		from antioch import messaging
-		messaging.installServices(master_service, conf.get('queue-url'), conf.get('profile-queue'))
-		msg_service = master_service.getServiceNamed('message-service')	
-		
 		from antioch.core import tasks
 		task_service = tasks.TaskService()
-		task_service.setName("task-daemon")
+		task_service.setName("task-service")
 		task_service.setServiceParent(master_service)
 		
 		from antioch.core import appserver
-		app_service = appserver.AppService(msg_service)
+		app_service = appserver.AppService()
 		app_service.setName("app-service")
 		app_service.setServiceParent(master_service)
 		
-		if not(config['no-client']):
+		if not(config['no-web']):
 			from antioch import client
-			web_service = client.DjangoServer(msg_service, port=config['port'])
-			web_service.setName("django-server")
+			web_service = client.DjangoServer(port=config['port'])
+			web_service.setName("web-service")
 			web_service.setServiceParent(master_service)
 		
 		reactor.addSystemEventTrigger("before", "startup", lambda: pylog.info(messages['startup']))
