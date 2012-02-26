@@ -85,10 +85,9 @@ class ObjectExchange(object):
 		if(isinstance(ctx, (int, long))):
 			self.ctx_id = ctx
 			self.ctx = self.get_object(ctx)
-			self.ctx_name = self.ctx.name
 		elif(ctx):
 			self.ctx_id = ctx.id
-			self.ctx_name = self.ctx.name
+
 	
 	def __enter__(self):
 		"""
@@ -168,6 +167,13 @@ class ObjectExchange(object):
 		"""
 		self.pool.runOperation('ROLLBACK')
 	
+	def send_message(self, user_id, msg):
+		if not(self.queue):
+			log.warning("attempted to send a message to user #%s on an unqueued exchange: %s" % (user_id, msg))
+			return
+		
+		self.queue.append((user_id, msg))
+	
 	@defer.inlineCallbacks
 	def flush(self):
 		"""
@@ -176,9 +182,9 @@ class ObjectExchange(object):
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
-			queue_id = '%s-%s' % (settings.USER_QUEUE_PREFIX, self.ctx_id)
-			for msg in self.queue:
-				log.debug("flushing message to %s: %s" % (self.ctx_name, msg))
+			for user_id, msg in self.queue:
+				queue_id = '%s-%s' % (settings.USER_QUEUE_PREFIX, user_id)
+				log.debug("flushing message to #%s: %s" % (user_id, msg))
 				consumer = yield messaging.get_async_consumer()
 				yield consumer.send_message(queue_id, msg)
 	

@@ -8,7 +8,7 @@
 Enable access to the messaging server
 """
 
-import logging, threading
+import logging, threading, time
 
 from twisted.internet import task, protocol, reactor, defer
 
@@ -21,6 +21,19 @@ _blocking_consumer = None
 _blocking_consumer_lock = threading.Lock()
 
 _async_consumer = None
+
+def getLocalIdent(prefix):
+	import os, threading, socket
+	thread_id = threading.currentThread().ident
+	short_ip = socket.gethostbyname(socket.gethostname())
+	long_ip = long(''.join(["%02X" % long(i) for i in short_ip.split('.')]), 16)
+	
+	return '%(prefix)s-%(process_id)s-%(thread_id)s-%(ip_address)s' % dict(
+		prefix		= prefix,
+		process_id	= mnemo.encode(os.getpid()),
+		thread_id	= mnemo.encode(abs(thread_id)) if thread_id < 0 else 'local',
+		ip_address	= mnemo.encode(long_ip),
+	)
 
 def get_blocking_consumer():
 	global _blocking_consumer, _blocking_consumer_lock
@@ -51,7 +64,7 @@ class BlockingMessageConsumer(object):
 			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
 		))
 		self.channel = self.connection.channel()
-		log.debug("declaring exchange %s" % queue_id)
+		log.debug("declaring exchange %s" % conf.get('appserver-exchange'))
 		self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
@@ -84,14 +97,21 @@ class BlockingMessageConsumer(object):
 		log.debug("checking %s for messages" % queue_id)
 		while(timeout):
 			response = self.channel.basic_get(queue=queue_id, no_ack=True)
+			# if we find a message, append it
 			if(len(response) == 3):
 				method, header, body = response
 				result.append(json.loads(body) if decode else body)
-			timeout -= 1
-		timeout = ['', 'timeout: '][bool(timeout)]
-		log = [log.debug, log.warning][bool(timeout)]
-		log("%s%s received: %s" % (timeouterr, queue_id, result))
-		return result if decode else '[%s]' % ', '.join(result)
+			# if not, and there's been no messages at all yet, wait
+			elif(not result):
+				time.sleep(1)
+				timeout -= 1
+			# otherwise, if we have some messages to return, do so
+			else:
+				break
+		prefix = ['', 'timeout: '][bool(timeout)]
+		level = [log.debug, log.warning][bool(prefix)]
+		level("%s%s received: %s" % (prefix, queue_id, result))
+		return result if decode else '[%s]' % ', '.join([str(x) for x in result])
 	
 	def expect_message(self, queue_id, timeout=10, decode=True):
 		self._setup_queue(queue_id)
@@ -102,6 +122,7 @@ class BlockingMessageConsumer(object):
 				method, header, body = response
 				log.debug("%s received: %s" % (queue_id, body))
 				return json.loads(body) if decode else body
+			time.sleep(1)
 			timeout -= 1
 		log.warning("timeout waiting for %s" % queue_id)
 		return None

@@ -240,7 +240,7 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 	)
 	
 	# #force exception here if undumpable
-	# p.exchange.queue.push(p.caller, dict(
+	# p.exchange.send_message(p.caller, dict(
 	# 	command		= 'task',
 	# 	delay		= int(delay),
 	# 	origin		= str(origin),
@@ -279,7 +279,7 @@ def write(p, user, text, is_error=False, escape_html=True):
 	"""
 	Verb API: Print a string of text to the user's console.
 	"""
-	p.exchange.queue.push(user.get_id(), dict(
+	p.exchange.send_message(user.get_id(), dict(
 		command		= 'write',
 		text		= str(text),
 		is_error	= is_error,
@@ -294,7 +294,7 @@ def broadcast(p, text, escape_html=True):
 	if(p.caller.location is None):
 		return
 	for obj in p.caller.location.get_contents():
-		p.exchange.queue.push(obj.get_id(), dict(
+		p.exchange.send_message(obj.get_id(), dict(
 			command		= 'write',
 			text		= str(text),
 			is_error	= False,
@@ -306,7 +306,7 @@ def observe(p, user, observations):
 	"""
 	Verb API: Send a dict of observations to the user's client.
 	"""
-	p.exchange.queue.push(user.get_id(), dict(
+	p.exchange.send_message(user.get_id(), dict(
 		command			= 'observe',
 		observations	= observations,
 	))

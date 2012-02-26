@@ -44,8 +44,8 @@ def comet(request):
 @login_required
 @csrf_exempt
 def rest(request, command):
-	data = simplejson.loads(request.read())
-	data['user_id'] = request.user.avatar.id
+	kwargs = simplejson.loads(request.read())
+	kwargs['user_id'] = request.user.avatar.id
 	
 	responder_id = messaging.getLocalIdent('responses')
 	

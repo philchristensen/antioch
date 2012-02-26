@@ -70,7 +70,7 @@ class AppService(service.Service):
 			defer.returnValue(None)
 		
 		msg = yield self.consumer.get_message()
-		log.debug("got message from %s: %s" % (consumer, msg))
+		log.debug("got message from %s: %s" % (self.consumer, msg))
 		
 		klass, child = get_command_support(msg['command'])
 		if(klass is None):
@@ -78,6 +78,6 @@ class AppService(service.Service):
 		
 		result = yield klass.run(transaction_child=child, **msg['kwargs'])
 		
-		log.debug("sending response to %s: %s" % (data['responder_id'], result))
-		yield consumer.send_message(data['responder_id'], result)
+		log.debug("sending response to %s: %s" % (msg['responder_id'], result))
+		yield self.consumer.send_message(msg['responder_id'], result)
 
