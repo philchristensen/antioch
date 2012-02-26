@@ -105,26 +105,26 @@ class BlockingMessageConsumer(object):
 				result.append(json.loads(body) if decode else body)
 			# if not, and there's been no messages at all yet, wait
 			elif(not result):
-				log.debug("%s sleeping" % queue_id)
+				log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
 				time.sleep(1)
 				timeout -= 1
 			# otherwise, if we have some messages to return, do so
 			else:
 				break
-		prefix = ['', 'timeout: '][bool(timeout)]
-		level = [log.debug, log.warning][bool(prefix)]
-		level("%s%s returned" % (prefix, queue_id))
+		prefix = ['', 'timeout(%s): ' % timeout][timeout == 0]
+		log.debug("%s%s returned" % (prefix, queue_id))
 		return result if decode else '[%s]' % ', '.join([str(x) for x in result])
 	
 	def expect_message(self, queue_id, timeout=10, decode=True):
 		self._setup_queue(queue_id)
 		log.debug("waiting on %s for messages" % queue_id)
-		while(timeout):
+		while(timeout and self.connected):
 			response = self.channel.basic_get(queue=queue_id, no_ack=True)
 			if(len(response) == 3):
 				method, header, body = response
 				log.debug("%s received: %s" % (queue_id, body))
 				return json.loads(body) if decode else body
+			log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
 			time.sleep(1)
 			timeout -= 1
 		log.warning("timeout waiting for %s" % queue_id)
