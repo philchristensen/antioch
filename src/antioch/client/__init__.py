@@ -8,9 +8,12 @@
 Setup the web client interface.
 """
 
-import crypt, logging
+import crypt, logging, traceback
+
+from django.core.handlers.wsgi import WSGIHandler
 
 from django.contrib.auth import backends
+from django.conf import settings
 
 from twisted.internet import reactor
 from twisted.application import internet
@@ -26,13 +29,21 @@ class DjangoServer(internet.TCPServer):
 	"""
 	Provides a service that responds to web requests.
 	"""
-	def __init__(self, port=None):
-		import django.core.handlers.wsgi
-		handler = django.core.handlers.wsgi.WSGIHandler()
-		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
-		log_path = conf.get('access-log') or AccessLogOnnaStick('antioch.client.access')
-		self.factory = AccessLoggingSite(self.root, logPath=log_path)
-		internet.TCPServer.__init__(self, port or conf.get('web-port'), self.factory)
+	def __init__(self, port):
+		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), DebugLoggingWSGIHandler())
+		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('antioch.client.access'))
+		internet.TCPServer.__init__(self, port, self.factory)
+
+class DebugLoggingWSGIHandler(WSGIHandler):
+	def handle_uncaught_exception(self, request, resolver, exc_info):
+		"""
+		Log exceptions in request handling even if debugging is on.
+		"""
+		if settings.DEBUG_PROPAGATE_EXCEPTIONS or settings.DEBUG:
+			backtrace = traceback.format_exception(*exc_info)
+			log = logging.getLogger('django.request')
+			log.error('Internal Server Error: %s\n%s' % (request.path, ''.join(backtrace)))
+		return WSGIHandler.handle_uncaught_exception(self, request, resolver, exc_info)
 
 class DjangoBackend(backends.ModelBackend):
 	"""
@@ -62,7 +73,6 @@ class DjangoBackend(backends.ModelBackend):
 			log.error("Player auth failed.")
 			return None
 		except Exception, e:
-			import traceback
 			log.error("Error in authenticate(): %s" % traceback.format_exc())
 
 	def get_user(self, user_id):
