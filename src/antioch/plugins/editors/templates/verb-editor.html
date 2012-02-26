@@ -7,7 +7,7 @@
 <script type="text/javascript" src="/assets/js/global.js"></script>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
-<script type="text/javascript" src="/assets/js/CodeMirror-0.91/js/codemirror.js"></script>
+<script type="text/javascript" src="/assets/js/vendor/CodeMirror-0.91/js/codemirror.js"></script>
 <script type="text/javascript" src="/assets/js/ajax_select.js"></script>
 {% endblock %}
 
@@ -47,8 +47,8 @@ $(document).ready(function(){
 	
 	var editor = new CodeMirror(CodeMirror.replace("code-field"), {
 		parserfile: ["parseantioch.js", "parsedummy.js"],
-		path: "/assets/js/CodeMirror-0.91/js/",
-		stylesheet: "/assets/js/CodeMirror-0.91/css/antiochcolors.css",
+		path: "/assets/js/vendor/CodeMirror-0.91/js/",
+		stylesheet: "/assets/js/vendor/CodeMirror-0.91/css/antiochcolors.css",
 		content: $('#id_code').val(),
 		textWrapping: false,
 		lineNumbers: true,
