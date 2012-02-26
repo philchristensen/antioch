@@ -7,5 +7,5 @@ RestrictedPython>=3.6.0
 termcolor>=1.1.0
 PyYAML>=0.1
 django-ajax-selects>=1.2.4
-pika>=0.9.6-pre0
+pika>=pika-0.9.5-60
 gunicorn>=0.13.4

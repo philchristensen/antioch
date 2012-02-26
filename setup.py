@@ -49,7 +49,7 @@ def autosetup():
 		install_requires = open('requirements.txt', 'rU'),
 
 		dependency_links = [
-			"https://github.com/pika/pika/tarball/11f7633d20956a57cca61d188d490d2ca0daff29#egg=pika-0.9.6-pre0"
+			"https://github.com/pika/pika/tarball/11f7633d20956a57cca61d188d490d2ca0daff29#egg=pika-0.9.5-60"
 		]
 
 		# metadata for upload to PyPI
