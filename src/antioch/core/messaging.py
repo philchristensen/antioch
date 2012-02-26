@@ -119,9 +119,8 @@ class BlockingMessageConsumer(object):
 		self._setup_queue(queue_id)
 		log.debug("waiting on %s for messages" % queue_id)
 		while(timeout and self.connected):
-			response = self.channel.basic_get(queue=queue_id, no_ack=True)
-			if(len(response) == 3):
-				method, header, body = response
+			method, header, body = self.channel.basic_get(queue=queue_id, no_ack=True)
+			if(body):
 				log.debug("%s received: %s" % (queue_id, body))
 				return json.loads(body) if decode else body
 			log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))

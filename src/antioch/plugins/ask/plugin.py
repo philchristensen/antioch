@@ -15,7 +15,7 @@ def ask(p, question, callback, *args, **kwargs):
 	details = dict(
 		question	= question,
 	)
-	p.exchange.queue.append(p.caller.get_id(), dict(
+	p.exchange.send_message(p.caller.get_id(), dict(
 		command		= 'ask',
 		details		= details,
 		callback	= dict(

@@ -119,7 +119,7 @@ class ObjectExchange(object):
 				err = str(e)
 				log.info('Sending normal exception to user: %s' % err)
 				if(self.queue is not None):
-					self.queue.append(self.ctx.get_id(), dict(
+					self.send_message(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= err,
 						is_error	= True,
@@ -135,7 +135,7 @@ class ObjectExchange(object):
 				traceback.print_exception(etype, e, trace, None, io)
 				log.error('Sending fatal exception to user: %s' % str(e))
 				if(self.queue is not None):
-					self.queue.append(self.ctx.get_id(), dict(
+					self.send_message(self.ctx.get_id(), dict(
 						command		= 'write',
 						text		= io.getvalue(),
 						is_error	= True,
