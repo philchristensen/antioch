@@ -7,5 +7,5 @@ RestrictedPython>=3.6.0
 termcolor>=1.1.0
 PyYAML>=0.1
 django-ajax-selects>=1.2.4
-pika==0.9.6-twisted
+-e git+https://github.com/pika/pika.git@11f7633d20956a57cca61d188d490d2ca0daff29#egg=pika-0.9.6-twisted
 gunicorn>=0.13.4
