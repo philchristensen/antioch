@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 _blocking_consumer = None
 _blocking_consumer_lock = threading.Lock()
-_blocking_sleep_interval = 0.10
+_blocking_sleep_interval = 0.010
 
 _async_consumer = None
 
