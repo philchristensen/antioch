@@ -29,9 +29,7 @@ Feature Set
 Copyright
 ---------
 
-All code in this distribution is (C) Phil Christensen, except
-CodePress, Copyright (C) Fernando M.A.d.S. <fermads@gmail.com>
-and other modules where indicated.
+antioch, (c) Phil Christensen, <phil@bubblehouse.org>
 
 antioch is made available under the MIT/X Consortium license.
 The included LICENSE file describes this in detail.
