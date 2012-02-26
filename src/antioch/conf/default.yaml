@@ -202,7 +202,7 @@
             }
         },
         "handlers": {
-            "console": {
+            "default": {
                 "class": "logging.StreamHandler",
                 "formatter": "default",
                 "level": "DEBUG",
@@ -222,35 +222,65 @@
         },
         'loggers': {
             'antioch': {
-                'handlers':['console'],
+                'handlers':['default'],
                 'propagate': false,
                 'level':'DEBUG',
-            },
-            'django.request': {
-                'handlers':['console'],
-                'propagate': false,
-                'level':'DEBUG',
-            },
-            'antioch.twisted': {
-                'handlers':['console'],
-                'propagate': false,
-                'level':'INFO',
             },
             'antioch.core': {
-                'handlers':['console'],
-                'propagate': false,
-                'level':'DEBUG',
-            },
-            'antioch.child': {
-                'handlers':['console'],
+                'handlers':['default'],
                 'propagate': false,
                 'level':'INFO',
             },
-            'antioch.appserver.access': {
-                'handlers':['null'],
+            # uncaught django exceptions
+            'django.request': {
+                'handlers':['default'],
                 'propagate': false,
+                'level':'INFO',
             },
-            'antioch.client.access': {
+            # client view messages
+            'antioch.client.views': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            # # appserver messages
+            # 'antioch.core.appserver': {
+            #     'handlers':['default'],
+            #     'propagate': false,
+            #     'level':'INFO',
+            # },
+            # # transaction interface messages
+            # 'antioch.core.transact': {
+            #     'handlers':['default'],
+            #     'propagate': false,
+            #     'level':'INFO',
+            # },
+            # # object exchange interface messages
+            # 'antioch.core.exchange': {
+            #     'handlers':['default'],
+            #     'propagate': false,
+            #     'level':'INFO',
+            # },
+            # low-level queue-related messages
+            'antioch.core.messaging': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            # twisted-related main process messages
+            'antioch.twisted': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            # twisted-related process child messages
+            'antioch.child': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            # optional embedded django server access log
+            'django.request.access': {
                 'handlers':['null'],
                 'propagate': false,
             }

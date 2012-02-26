@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 _blocking_consumer = None
 _blocking_consumer_lock = threading.Lock()
+_blocking_sleep_interval = 0.100
 
 _async_consumer = None
 
@@ -97,7 +98,7 @@ class BlockingMessageConsumer(object):
 		result = []
 		self._setup_queue(queue_id)
 		log.debug("checking %s for messages" % queue_id)
-		while(timeout and self.connected):
+		while(timeout > 0 and self.connected):
 			method, header, body = self.channel.basic_get(queue=queue_id, no_ack=True)
 			# if we find a message, append it
 			if(body):
@@ -106,27 +107,27 @@ class BlockingMessageConsumer(object):
 			# if not, and there's been no messages at all yet, wait
 			elif(not result):
 				log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
-				time.sleep(1)
-				timeout -= 1
+				time.sleep(_blocking_sleep_interval)
+				timeout -= _blocking_sleep_interval
 			# otherwise, if we have some messages to return, do so
 			else:
 				break
-		prefix = ['', 'timeout(%s): ' % timeout][timeout == 0]
+		prefix = ['', 'timeout(%s): ' % timeout][timeout <= 0]
 		log.debug("%s%s returned" % (prefix, queue_id))
 		return result if decode else '[%s]' % ', '.join([str(x) for x in result])
 	
 	def expect_message(self, queue_id, timeout=10, decode=True):
 		self._setup_queue(queue_id)
 		log.debug("waiting on %s for messages" % queue_id)
-		while(timeout and self.connected):
+		while(timeout > 0 and self.connected):
 			method, header, body = self.channel.basic_get(queue=queue_id, no_ack=True)
 			if(body):
 				log.debug("%s received: %s" % (queue_id, body))
 				return json.loads(body) if decode else body
 			log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
-			time.sleep(1)
-			timeout -= 1
-		log.warning("timeout waiting for %s" % queue_id)
+			time.sleep(_blocking_sleep_interval)
+			timeout -= _blocking_sleep_interval
+		log.warning("timed out while waiting for %s" % queue_id)
 		return None
 	
 	def send_message(self, routing_key, msg):

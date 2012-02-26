@@ -31,7 +31,7 @@ class DjangoServer(internet.TCPServer):
 	"""
 	def __init__(self, port):
 		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), DebugLoggingWSGIHandler())
-		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('antioch.client.access'))
+		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('django.request.access'))
 		internet.TCPServer.__init__(self, port, self.factory)
 
 class DebugLoggingWSGIHandler(WSGIHandler):
