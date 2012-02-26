@@ -1,3 +1,9 @@
+# antioch
+# Copyright (c) 1999-2012 Phil Christensen
+#
+#
+# See LICENSE for details
+
 from ajax_select import LookupChannel
 from django.utils.html import escape
 from django.db.models import Q

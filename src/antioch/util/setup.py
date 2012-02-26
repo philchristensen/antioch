@@ -1,3 +1,9 @@
+# antioch
+# Copyright (c) 1999-2012 Phil Christensen
+#
+#
+# See LICENSE for details
+
 import sys, os, os.path, subprocess, warnings
 
 has_git = None

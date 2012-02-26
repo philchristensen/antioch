@@ -1,3 +1,13 @@
+2012-02-26    Phil Christensen <phil@bubblehouse.org>
+
+* Another massive set of refactorings
+* Client interface and plugin system now Django-based
+* Messaging revamped, standardized on RabbitMQ and Pika
+* Implemented queue-based appserver access
+* Logging improved, standardized on using Python logging
+* Appserver split from web client process
+* Developed Heroku-/Foreman-compatible architecture
+
 2011-06-19    Phil Christensen <phil@bubblehouse.org>
 
 * Renamed txspace to antioch

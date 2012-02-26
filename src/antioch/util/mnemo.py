@@ -1,9 +1,13 @@
+# antioch
+# Copyright (c) 1999-2012 Phil Christensen
+#
+#
+# See LICENSE for details
+
 
 # Port of rufus-mnemo to Python
 # https://github.com/jmettraux/rufus-mnemo
-# Copyright (c) 2007-2011, John Mettraux, jmettraux@gmail.com
-
-# didn't add the special spellings yet
+# Original copyright (c) 2007-2011, John Mettraux, jmettraux@gmail.com
 
 consonants = list('bdghjkmnprstz')
 vowels = list('aeiou')
