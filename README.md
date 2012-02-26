@@ -1,11 +1,9 @@
 antioch 2.0 alpha
 =================
 
+(c) Phil Christensen, <phil@bubblehouse.org>
+
 26 February 2012
-
-by Phil Christensen
-
-`mailto:phil@bubblehouse.org`
 
 Introduction
 -------------
@@ -26,10 +24,6 @@ Feature Set
 * Flexible plugin system, highly scalable messaging using RabbitMQ
 
 
-Copyright
----------
-
-antioch, (c) Phil Christensen, <phil@bubblehouse.org>
-
 antioch is made available under the MIT/X Consortium license.
+
 The included LICENSE file describes this in detail.
