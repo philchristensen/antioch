@@ -27,12 +27,12 @@ def autosetup():
 	return setup(
 		name			= "antioch",
 		version			= "2.0pre1",
-
+		
 		packages		= find_packages('src') + ['twisted.plugins'],
 		package_dir		= {
 			''			: 'src',
 		},
-
+		
 		entry_points	= {
 			'setuptools.file_finders'	: [
 				'git = antioch.util.setup:find_files_for_git',
@@ -41,27 +41,21 @@ def autosetup():
 				'mkspace = antioch.scripts.mkspace:main',
 			]
 		},
-
+		
 		test_suite				= "antioch.test",
 		include_package_data	= True,
 		zip_safe				= False,
-
-		install_requires = open('requirements.txt', 'rU'),
-
-		dependency_links = [
-			"https://github.com/pika/pika/tarball/11f7633d20956a57cca61d188d490d2ca0daff29#egg=pika-0.9.6-twisted"
-		]
-
+		
 		# metadata for upload to PyPI
 		author			= "Phil Christensen",
 		author_email	= "phil@bubblehouse.org",
-		description		= "a MOO-like system for building virtual worlds",
+		description		= "a next-generation MUD/MOO-like virtual world engine",
 		license			= "MIT",
 		keywords		= "antioch moo lambdamoo mud game",
 		url				= "https://github.com/philchristensen/antioch",
 		# could also include long_description, download_url, classifiers, etc.
 		long_description = """antioch is a web application for building scalable, interactive virtual worlds.
-								 Begun as a MOO-like system for building virtual worlds, the goal was to
+								 Begun as a MOO-like system for building virtual worlds, antioch aims to
 								 take the LambdaMOO approach to creating online worlds, and update it in hopes
 								 of attracting new players to an old idea.
 							""".replace('\t', '').replace('\n', ''),
