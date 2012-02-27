@@ -57,7 +57,7 @@ class BlockingMessageConsumer(object):
 		from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 		from antioch.core import parser
 		self.url = parser.URL(conf.get('queue-url'))
-		log.debug("connecting to RabbitMQ server on %(host)s:%(port)s" % self.url)
+		log.info("connecting to rabbitmq server at %(host)s:%(port)s with %(user)s" % self.url)
 		self.connection = BlockingConnection(ConnectionParameters(
 			host            = self.url['host'],
 			port            = int(self.url['port']),
@@ -147,7 +147,7 @@ class AsyncMessageConsumer(object):
 	def __init__(self):
 		from antioch.core import parser
 		self.url = parser.URL(conf.get('queue-url'))
-		
+		log.info("connecting to rabbitmq server at %(host)s:%(port)s with %(user)s" % self.url)
 		from pika.adapters.twisted_connection import TwistedProtocolConnection
 		from pika import ConnectionParameters, PlainCredentials
 		self.cc = protocol.ClientCreator(reactor, TwistedProtocolConnection, ConnectionParameters(

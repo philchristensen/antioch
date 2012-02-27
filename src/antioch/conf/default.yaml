@@ -11,10 +11,7 @@
     "PROFILE_DB": false,
     
     "WEB_PORT": 8888,
-    "APPSERVER_PORT": 8887,
-    "APPSERVER_INTERFACE": "127.0.0.1",
     
-    "APPSERVER_URL": "http://localhost:8887/",
     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
     
     "APPSERVER_EXCHANGE": "antioch",
