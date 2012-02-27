@@ -10,8 +10,6 @@ Setup the web client interface.
 
 import crypt, logging, traceback
 
-from django.core.handlers.wsgi import WSGIHandler
-
 from django.contrib.auth import backends
 from django.conf import settings
 
@@ -21,6 +19,7 @@ from twisted.web import wsgi, server
 
 from antioch import conf
 from antioch.client import models
+from antioch.core.wsgi import handler 
 from antioch.util.logs import AccessLogOnnaStick, AccessLoggingSite
 
 log = logging.getLogger(__name__)
@@ -33,20 +32,9 @@ class DjangoServer(internet.TCPServer):
 		"""
 		Create a web server on the provided port.
 		"""
-		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), DebugLoggingWSGIHandler())
+		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
 		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('django.request.access'))
 		internet.TCPServer.__init__(self, port, self.factory)
-
-class DebugLoggingWSGIHandler(WSGIHandler):
-	def handle_uncaught_exception(self, request, resolver, exc_info):
-		"""
-		Log exceptions in request handling even if debugging is on.
-		"""
-		if settings.DEBUG_PROPAGATE_EXCEPTIONS or settings.DEBUG:
-			backtrace = traceback.format_exception(*exc_info)
-			log = logging.getLogger('django.request')
-			log.error('Internal Server Error: %s\n%s' % (request.path, ''.join(backtrace)))
-		return WSGIHandler.handle_uncaught_exception(self, request, resolver, exc_info)
 
 class DjangoBackend(backends.ModelBackend):
 	"""
