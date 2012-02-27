@@ -21,6 +21,9 @@ from twisted.internet import defer, task, reactor
 log = logging.getLogger(__name__)
 
 def get_command_support(class_name):
+	"""
+	Get the command class for the provided class name.
+	"""
 	from antioch import plugins
 	for plugin in plugins.iterate():
 		available_commands = plugin.get_commands()
@@ -31,6 +34,9 @@ def get_command_support(class_name):
 	return None
 
 class AppService(service.Service):
+	"""
+	A service that scans the appserver queue for messages to execute.
+	"""
 	def __init__(self):
 		"""
 		Create a new AppService.
@@ -50,11 +56,17 @@ class AppService(service.Service):
 	
 	@defer.inlineCallbacks
 	def _startService(self):
+		"""
+		Start consuming messages asynchronously.
+		"""
 		self.consumer = yield messaging.get_async_consumer()
 		yield self.consumer.start_consuming()
 		self.stopped = False
 	
 	def stopService(self):
+		"""
+		Stop the loop.
+		"""
 		log.info("stopped processing appserver queue")
 		self.stopped = True
 		self.loop.stop()
@@ -62,10 +74,16 @@ class AppService(service.Service):
 	
 	@defer.inlineCallbacks
 	def _stopService(self):
+		"""
+		Stop consuming messages.
+		"""
 		yield self.consumer.disconnect()
 	
 	@defer.inlineCallbacks
 	def check_queue(self, *args, **kwargs):
+		"""
+		Check the queue for a message to execute.
+		"""
 		if(self.stopped):
 			defer.returnValue(None)
 		

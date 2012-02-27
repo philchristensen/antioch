@@ -28,6 +28,9 @@ configured_lock = threading.BoundedSemaphore()
 log = logging.getLogger(__name__)
 
 def get(key):
+	"""
+	Return the config variable for the provided key.
+	"""
 	translated_key = key.upper().replace('-', '_')
 	return getattr(settings, translated_key)
 
@@ -73,6 +76,9 @@ def merge(content, into):
 	return result
 
 def get_heroku_db(env):
+	"""
+	Support Heroku environment DB_URLs
+	"""
 	import urlparse
 
 	# Register database schemes in URLs.

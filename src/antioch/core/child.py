@@ -46,14 +46,14 @@ def bootstrap():
 			}
 		},
 		"handlers": {
-			"console": {
+			"default": {
 				"class": "logging.StreamHandler",
 				"formatter": "default",
 				"level": "DEBUG",
 			}
 		},
 		'root': {
-			'handlers':['console'],
+			'handlers':['default'],
 			'level':'DEBUG',
 		}
 	})

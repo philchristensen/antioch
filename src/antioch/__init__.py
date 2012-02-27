@@ -17,7 +17,7 @@ conf.init()
 
 from antioch.client import DebugLoggingWSGIHandler
 
-version = versions.Version('antioch', 2, 0, 0)
+version = versions.Version('antioch', 2, 0, 0, 1)
 __version__ = version.short()
 
 wsgi_handler = DebugLoggingWSGIHandler()

@@ -25,11 +25,20 @@ styles = dict(
 )
 
 class DjangoColorFormatter(object):
+	"""
+	Colorize log output when outputting to a terminal.
+	"""
 	def __init__(self, logformat=None, datefmt=None):
+		"""
+		Create a formatter with the provided formats.
+		"""
 		self.logformat = logformat if logformat else '[%(asctime)s] %(levelname)s: %(msg)s'
 		self.datefmt = datefmt if datefmt else '%d/%b/%Y %H:%M:%S'
 	
 	def format(self, log):
+		"""
+		Format a message.
+		"""
 		supports_color = True
 		unsupported_platform = (sys.platform in ('win32', 'Pocket PC'))
 		is_a_tty = hasattr(sys.__stdout__, 'isatty') and sys.__stdout__.isatty()
@@ -45,7 +54,13 @@ class DjangoColorFormatter(object):
 			return styles[log.levelname](result)
 
 class JSONFormatter(object):
+	"""
+	Log formatter that outputs JSON objects.
+	"""
 	def format(self, log):
+		"""
+		Format the log entry as a JSON object.
+		"""
 		return simplejson.dumps(dict(
 			name		= log.name,
 			levelname	= log.levelname,
@@ -53,12 +68,20 @@ class JSONFormatter(object):
 		))
 
 class AccessLoggingSite(server.Site):
+	"""
+	This subclass enables twisted.web access logs to use Python logging.
+	"""
 	def __init__(self, resource, logPath=None, timeout=60*60*12):
-		# get around the superclass constructor checking for a string for no reason
+		"""
+		Get around the superclass constructor checking for a string for no reason
+		"""
 		server.Site.__init__(self, resource, '/dev/null', timeout)
 		self.logPath = logPath
 	
 	def _openLogFile(self, path):
+		"""
+		Allow either a path or a file to be given as logPath.
+		"""
 		if(isinstance(path, basestring)):
 			f = open(path, "a", 1)
 			return f
@@ -68,11 +91,20 @@ class AccessLoggingSite(server.Site):
 			raise ValueError("Unexpected logFile argument: %r" % path)
 
 class AccessLogOnnaStick(log.StdioOnnaStick):
+	"""
+	Used to send accesslog writes to the logging system.
+	"""
 	def __init__(self, loggerName):
+		"""
+		Send this access log's messages to the provided logger.
+		"""
 		log.StdioOnnaStick.__init__(self)
 		self.log = logging.getLogger(loggerName)
 	
 	def write(self, data):
+		"""
+		Some part of a log entry or entries, separated by \n
+		"""
 		if isinstance(data, unicode):
 			data = data.encode(self.encoding)
 		d = (self.buf + data).split('\n')
@@ -82,6 +114,9 @@ class AccessLogOnnaStick(log.StdioOnnaStick):
 			self.log.info(message)
 	
 	def writelines(self, lines):
+		"""
+		Write several log lines.
+		"""
 		for line in lines:
 			if isinstance(line, unicode):
 				line = line.encode(self.encoding)

@@ -30,6 +30,9 @@ class DjangoServer(internet.TCPServer):
 	Provides a service that responds to web requests.
 	"""
 	def __init__(self, port):
+		"""
+		Create a web server on the provided port.
+		"""
 		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), DebugLoggingWSGIHandler())
 		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('django.request.access'))
 		internet.TCPServer.__init__(self, port, self.factory)
@@ -54,6 +57,9 @@ class DjangoBackend(backends.ModelBackend):
 	supports_inactive_user = False
 
 	def authenticate(self, username=None, password=None, request=None):
+		"""
+		Attempt to authenticate the provided request with the given credentials.
+		"""
 		try:
 			p = models.Player.objects.filter(
 				avatar__name__iexact = username,
@@ -76,6 +82,9 @@ class DjangoBackend(backends.ModelBackend):
 			log.error("Error in authenticate(): %s" % traceback.format_exc())
 
 	def get_user(self, user_id):
+		"""
+		Return the user object represented by user_id
+		"""
 		try:
 			p = models.Player.objects.get(pk=user_id)
 			if(p):

@@ -1,3 +1,13 @@
+# antioch
+# Copyright (c) 1999-2012 Phil Christensen
+#
+#
+# See LICENSE for details
+
+"""
+Django view for serving static assets via XSendfile
+"""
+
 import os, posixpath, urllib
 
 from django.conf import settings

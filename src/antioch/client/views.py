@@ -26,6 +26,9 @@ log = logging.getLogger(__name__)
 
 @login_required
 def client(request):
+	"""
+	Return the main client window.
+	"""
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
 		scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
@@ -33,6 +36,9 @@ def client(request):
 
 @login_required
 def comet(request):
+	"""
+	Check for messages for this user.
+	"""
 	log.debug("checking for messages for %s" % request.user.avatar)
 	consumer = messaging.get_blocking_consumer()
 	messages = consumer.get_messages('%(queuename)s-%(userid)s' % dict(
@@ -44,6 +50,9 @@ def comet(request):
 @login_required
 @csrf_exempt
 def rest(request, command):
+	"""
+	Query the appserver and wait for a response.
+	"""
 	kwargs = simplejson.loads(request.read())
 	kwargs['user_id'] = request.user.avatar.id
 	
@@ -61,5 +70,8 @@ def rest(request, command):
 	return http.HttpResponse(msg, content_type="application/json")
 
 def logout(request):
+	"""
+	Logout of antioch.
+	"""
 	auth.logout(request)
 	return shortcuts.redirect('client')

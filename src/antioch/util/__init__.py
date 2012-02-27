@@ -4,3 +4,6 @@
 #
 # See LICENSE for details
 
+"""
+General utilities.
+"""

@@ -4,6 +4,11 @@
 #
 # See LICENSE for details
 
+"""
+Generates nonsense words out of integers to make it easier to remember them.
+
+Used to name response queues.
+"""
 
 # Port of rufus-mnemo to Python
 # https://github.com/jmettraux/rufus-mnemo
@@ -23,6 +28,9 @@ replacements = [
 ]
 
 def encode(i):
+	"""
+	Convert an integer to a base-70 gibberish string.
+	"""
 	if i == 0:
 		return ''
 	
@@ -39,6 +47,9 @@ def encode(i):
 	return result
 
 def decode(s):
+	"""
+	Convert a base-70 gibberish string back to an integer.
+	"""
 	if not s:
 		return 0
 	
