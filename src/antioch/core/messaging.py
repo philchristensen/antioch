@@ -69,6 +69,7 @@ class BlockingMessageConsumer(object):
 		self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
+			nowait          = True,
 			auto_delete     = False,
 			durable         = False,
 		)
@@ -85,6 +86,7 @@ class BlockingMessageConsumer(object):
 		self.channel.queue_declare(
 			queue           = queue_id,
 			auto_delete     = True,
+			nowait          = True,
 			durable         = False,
 			exclusive       = False,
 		)
@@ -92,6 +94,7 @@ class BlockingMessageConsumer(object):
 			queue           = queue_id,
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = queue_id,
+			nowait          = True,
 		)
 	
 	def get_messages(self, queue_id, timeout=10, decode=True):
