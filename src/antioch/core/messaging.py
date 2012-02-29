@@ -61,7 +61,7 @@ class BlockingMessageConsumer(object):
 		self.connection = BlockingConnection(ConnectionParameters(
 			host            = self.url['host'],
 			port            = int(self.url['port']),
-			virtual_host    = self.url['path'][1:],
+			virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works,
 			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
 		))
 		self.channel = self.connection.channel()
@@ -153,14 +153,20 @@ class AsyncMessageConsumer(object):
 		self.cc = protocol.ClientCreator(reactor, TwistedProtocolConnection, ConnectionParameters(
 			host            = self.url['host'],
 			port            = int(self.url['port']),
-			virtual_host    = self.url['path'][1:],
+			virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works
 			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
 		))
 	
 	@defer.inlineCallbacks
 	def connect(self):
 		self.protocol = yield self.cc.connectTCP(self.url['host'], int(self.url['port']))
-		self.connection = yield self.protocol.ready
+		try:
+			self.connection = yield self.protocol.ready
+		except:
+			import traceback
+			log.error("Error in connect: %s" % traceback.format_exc())
+			raise
+		
 		self.channel = yield self.connection.channel()
 		yield self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),

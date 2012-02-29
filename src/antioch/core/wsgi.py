@@ -8,6 +8,9 @@
 WSGI handler
 """
 
+import traceback, logging
+
+from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
 class DebugLoggingWSGIHandler(WSGIHandler):

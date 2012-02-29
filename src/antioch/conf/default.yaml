@@ -228,6 +228,12 @@
                 'propagate': false,
                 'level':'INFO',
             },
+            # pika message library
+            'pika': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'DEBUG',
+            },
             # uncaught django exceptions
             'django.request': {
                 'handlers':['default'],
@@ -264,11 +270,11 @@
                 'propagate': false,
                 'level':'INFO',
             },
-            # twisted-related main process messages
+            # twisted-related main process messages, stdout
             'antioch.twisted': {
                 'handlers':['default'],
                 'propagate': false,
-                'level':'INFO',
+                'level':'DEBUG',
             },
             # twisted-related process child messages
             'antioch.child': {
