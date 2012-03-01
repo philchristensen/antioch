@@ -40,11 +40,13 @@ def comet(request):
 	Check for messages for this user.
 	"""
 	log.debug("checking for messages for %s" % request.user.avatar)
-	consumer = messaging.get_blocking_consumer()
-	messages = consumer.get_messages('%(queuename)s-%(userid)s' % dict(
+	queue_id = '%(queuename)s-%(userid)s' % dict(
 		queuename	= settings.USER_QUEUE_PREFIX,
 		userid		= request.user.avatar.id,
-	), timeout=settings.USER_QUEUE_TIMEOUT, decode=False)
+	)
+	consumer = messaging.get_blocking_consumer()
+	consumer.declare_queue(queue_id)
+	messages = consumer.get_messages(queue_id, decode=False)
 	return http.HttpResponse(messages, content_type="application/json")
 
 @login_required
@@ -60,13 +62,14 @@ def rest(request, command):
 	
 	log.debug("sending appserver message [responder:%s]: %s(%s)" % (responder_id, command, kwargs))
 	consumer = messaging.get_blocking_consumer()
+	consumer.declare_queue(responder_id)
 	consumer.send_message(settings.APPSERVER_QUEUE, dict(
 		command			= command,
 		kwargs			= kwargs,
 		responder_id	= responder_id
 	))
 	
-	msg = consumer.expect_message(responder_id, timeout=settings.RESPONSE_QUEUE_TIMEOUT, decode=False)
+	msg = consumer.expect_message(responder_id, decode=False)
 	return http.HttpResponse(msg, content_type="application/json")
 
 def logout(request):

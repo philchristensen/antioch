@@ -69,7 +69,7 @@ class BlockingMessageConsumer(object):
 		self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
-			nowait          = True,
+			#nowait          = True,
 			auto_delete     = False,
 			durable         = False,
 		)
@@ -81,12 +81,12 @@ class BlockingMessageConsumer(object):
 		self.channel.close()
 		self.connection.close()
 	
-	def _setup_queue(self, queue_id):
+	def declare_queue(self, queue_id):
 		log.debug("declaring queue %s" % queue_id)
 		self.channel.queue_declare(
 			queue           = queue_id,
 			auto_delete     = True,
-			nowait          = True,
+			#nowait          = True,
 			durable         = False,
 			exclusive       = False,
 		)
@@ -94,44 +94,37 @@ class BlockingMessageConsumer(object):
 			queue           = queue_id,
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = queue_id,
-			nowait          = True,
+			#nowait          = True,
 		)
 	
-	def get_messages(self, queue_id, timeout=10, decode=True):
+	def get_messages(self, queue_id, decode=True):
 		result = []
-		self._setup_queue(queue_id)
+		ctag = None
 		log.debug("checking %s for messages" % queue_id)
-		while(timeout > 0 and self.connected):
-			method, header, body = self.channel.basic_get(queue=queue_id, no_ack=True)
-			# if we find a message, append it
-			if(body):
-				log.debug("%s received: %s" % (queue_id, body))
-				result.append(json.loads(body) if decode else body)
-			# if not, and there's been no messages at all yet, wait
-			elif(not result):
-				log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
-				time.sleep(_blocking_sleep_interval)
-				timeout -= _blocking_sleep_interval
-			# otherwise, if we have some messages to return, do so
-			else:
-				break
-		prefix = ['', 'timeout(%s): ' % timeout][timeout <= 0]
-		log.debug("%s%s returned" % (prefix, queue_id))
-		return result if decode else '[%s]' % ', '.join([str(x) for x in result])
+		
+		def handle_delivery(channel, method_frame, header_frame, body):
+			log.debug("%s received: %s" % (queue_id, body))
+			result.append(json.loads(body) if decode else body)
+			self.channel.stop_consuming(ctag)
+		
+		ctag = self.channel.basic_consume(handle_delivery, queue=queue_id)
+		self.channel.start_consuming()
+		
+		return result
 	
 	def expect_message(self, queue_id, timeout=10, decode=True):
-		self._setup_queue(queue_id)
 		log.debug("waiting on %s for messages" % queue_id)
-		while(timeout > 0 and self.connected):
-			method, header, body = self.channel.basic_get(queue=queue_id, no_ack=True)
-			if(body):
-				log.debug("%s received: %s" % (queue_id, body))
-				return json.loads(body) if decode else body
-			log.debug("%s sleeping, %ss remaining" % (queue_id, timeout))
-			time.sleep(_blocking_sleep_interval)
-			timeout -= _blocking_sleep_interval
-		log.warning("timed out while waiting for %s" % queue_id)
-		return None
+		
+		ctag = None
+		result = []
+		def handle_delivery(channel, method_frame, header_frame, body):
+			log.debug("%s received: %s" % (queue_id, body))
+			result.append(json.loads(body) if decode else body)
+			self.channel.stop_consuming(ctag)
+		
+		ctag = self.channel.basic_consume(handle_delivery, queue=queue_id)
+		self.channel.start_consuming()
+		return result.pop()
 	
 	def send_message(self, routing_key, msg):
 		from pika import BasicProperties
