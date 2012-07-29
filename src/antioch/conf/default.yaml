@@ -237,7 +237,7 @@
             'pika': {
                 'handlers':['default'],
                 'propagate': false,
-                'level':'DEBUG',
+                'level':'INFO',
             },
             # uncaught django exceptions
             'django.request': {
@@ -279,7 +279,7 @@
             'antioch.twisted': {
                 'handlers':['default'],
                 'propagate': false,
-                'level':'DEBUG',
+                'level':'INFO',
             },
             # twisted-related process child messages
             'antioch.child': {

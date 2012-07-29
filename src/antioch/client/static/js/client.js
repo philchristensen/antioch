@@ -1,3 +1,10 @@
+if(!window.console){
+	console = {
+		log: function(x){
+		}
+	}
+}
+
 (function($) {
 	var commandHistory = [];
 	var historyPosition = -1;

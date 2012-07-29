@@ -31,7 +31,7 @@ def get_command_support(class_name):
 			klass = available_commands[class_name]
 			child = getattr(plugin, 'transaction_child', None)
 			return klass, child
-	return None
+	return None, None
 
 class AppService(service.Service):
 	"""
@@ -92,7 +92,9 @@ class AppService(service.Service):
 		
 		klass, child = get_command_support(msg['command'])
 		if(klass is None):
-			defer.returnValue({'error':'No such command: %s' % msg['command']});
+			log.debug("no such command %s: %s" % (msg['command'], msg))
+			yield self.consumer.send_message(msg['responder_id'], {'error':'No such command: %s' % msg['command']})
+			defer.returnValue(None)
 		
 		result = yield klass.run(transaction_child=child, **msg['kwargs'])
 		

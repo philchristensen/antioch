@@ -63,11 +63,11 @@ class BlockingMessageConsumer(object):
 			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
 		))
 		self.channel = self.connection.channel()
+		self.channel.confirm_delivery(lambda *args, **kwargs: None)
 		log.debug("declaring exchange %s" % conf.get('appserver-exchange'))
 		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
-			#nowait          = True,
 			auto_delete     = False,
 			durable         = False,
 		)
@@ -85,7 +85,6 @@ class BlockingMessageConsumer(object):
 		self.channel.queue_declare(
 			queue           = queue_id,
 			auto_delete     = True,
-			#nowait          = True,
 			durable         = False,
 			exclusive       = False,
 		)
@@ -93,7 +92,6 @@ class BlockingMessageConsumer(object):
 			queue           = queue_id,
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = queue_id,
-			#nowait          = True,
 		)
 	
 	def get_messages(self, queue_id, decode=True, timeout=10):
@@ -102,13 +100,13 @@ class BlockingMessageConsumer(object):
 		check = True
 		start_time = time.time()
 		while(True):
-			check = self.channel.basic_get(ticket=0, queue=queue_id)
+			check = self.channel.basic_get(ticket=0, queue=queue_id, no_ack=True)
 			if(check[0].NAME == 'Basic.GetEmpty'):
 				if(result or start_time + timeout < time.time()):
 					return result
 				time.sleep(_blocking_sleep_interval)
 			else:
-				log.warn("%s received: %s" % (queue_id, check[2]))
+				log.debug("%s received: %s" % (queue_id, check[2]))
 				result.append(self.parse_message(*check, decode=decode))
 	
 	def parse_message(self, method_frame, header_frame, body, decode=True):
@@ -198,138 +196,3 @@ class AsyncMessageConsumer(object):
 				delivery_mode   = 1,
 			)
 		)
-
-###############################################################################################
-# 
-# self.url = parser.URL(queue_url)
-# 
-# 	from amqplib import client_0_8 as amqp
-# 	msg = amqp.Message(simplejson.dumps())
-# 	log.debug('published message %s via exchange "responder" with key "appserver", responder: %s' % (msg, responder_id))
-# 	chan.basic_publish(msg, exchange="responder", routing_key='appserver')
-# 	msg = None
-# 	log.debug('listening to queue %s for responses' % responder_id)
-# 	while(not msg):
-# 		msg = chan.basic_get(responder_id)
-# 		if not(msg):
-# 			time.sleep(1)
-# 	
-# 	chan.basic_ack(msg.delivery_tag)
-# 	log.debug('returning %s' % msg.body)
-# 	return msg.body
-# 
-# 
-# 
-# 	responder_id = messaging.getLocalIdent('responses')
-# 	conn = get_msg_service()
-# 	chan = conn.channel()
-# 	chan.queue_declare(
-# 		queue		= 'appserver',
-# 		durable		= False,
-# 		exclusive	= False,
-# 		auto_delete	= False,
-# 	)
-# 	chan.queue_declare(
-# 		queue		= responder_id,
-# 		durable		= False,
-# 		exclusive	= False,
-# 		auto_delete	= True,
-# 	)
-# 	chan.exchange_declare(
-# 		exchange	= "responder",
-# 		type		= "direct",
-# 		durable		= False,
-# 		auto_delete	= False,
-# 	)
-# 	chan.queue_bind(queue=responder_id, exchange="responder", routing_key=responder_id)
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# def get_msg_service():
-# 	global _msg_service, _msg_service_lock
-# 	if(_msg_service is not None):
-# 		return _msg_service
-# 	with _msg_service_lock:
-# 		url = parser.URL(settings.QUEUE_URL)
-# 		from amqplib import client_0_8 as amqp
-# 		_msg_service = amqp.Connection(
-# 			host         = "%(host)s:%(port)s" % url,
-# 			userid       = url['user'],
-# 			password     = url['passwd'],
-# 			virtual_host = url['path'],
-# 			insist       = False,
-# 		)
-# 		return _msg_service
-# 
-# 
-# def get_messages(user_id):
-# 	conn = get_msg_service()
-# 	chan = conn.channel()
-# 	chan.queue_declare(
-# 		queue		= "user-%s-queue" % user_id,
-# 		durable		= False,
-# 		exclusive	= False,
-# 		auto_delete	= True,
-# 	)
-# 	chan.exchange_declare(
-# 		exchange	= "user-exchange",
-# 		type		= "direct",
-# 		durable		= False,
-# 		auto_delete	= False,
-# 	)
-# 	chan.queue_bind(queue="user-%s-queue" % user_id, exchange="user-exchange", routing_key="user-%s" % user_id)
-# 	
-# 	timeout = 30
-# 	messages = []
-# 	while(timeout):
-# 		msg = chan.basic_get("user-%s-queue" % user_id)
-# 		if(msg):
-# 			messages.append(simplejson.loads(msg.body))
-# 		elif(not messages):
-# 			time.sleep(1)
-# 			timeout -= 1
-# 		else:
-# 			break
-# 	return messages
-# 
-# 
-# 
-# 
-# 
-# 
-# 		from txamqp import content
-# 		c = content.Content(simplejson.dumps(result), properties={'content type':'application/json'})
-# 		log.debug('returning response %s to %s' % (c, self.ident))
-# 		yield self.chan.basic_publish(exchange="responder", content=c, routing_key=data['responder_id'])
-# 
-# 
-# 
-# 
-# 		from txamqp.queue import Closed as QueueClosed
-# 		try:
-# 			log.debug('checking for message with %s' % (self.ident,))
-# 			msg = yield self.queue.get()
-# 			log.debug('found message with %s: %s' % (self.ident, msg))
-# 		except QueueClosed, e:
-# 			defer.returnValue(None)
-# 		
-# 		data = simplejson.loads(msg.content.body)
-# 
-# 
-# 
-# 		yield self.msg_service.connect()
-# 		
-# 		self.chan = yield self.msg_service.open_channel()
-# 		yield self.chan.exchange_declare(exchange='responder', type="direct", durable=False, auto_delete=False)
-# 		yield self.chan.queue_declare(queue='appserver', durable=False, exclusive=False, auto_delete=False)
-# 		yield self.chan.queue_bind(queue='appserver', exchange='responder', routing_key='appserver')
-# 		yield self.chan.basic_consume(queue='appserver', consumer_tag=self.ident, no_ack=True)
-# 		
-# 		self.queue = yield self.msg_service.connection.queue(self.ident)
-# 		self.stopped = False
-# 		
-# 		log.debug('declared exchange "responder" with queue/key "appserver", consumer: %s' % (self.ident,))
