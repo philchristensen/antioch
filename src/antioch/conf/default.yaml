@@ -16,8 +16,8 @@
     
     "APPSERVER_EXCHANGE": "antioch",
     "APPSERVER_QUEUE": "appserver",
-    "USER_QUEUE_PREFIX": "user",
-    "RESPONSE_QUEUE_PREFIX": "responses",
+    "USER_QUEUE": "user-messages",
+    "RESPONSE_QUEUE": "appserver-responses",
     
     "USER_QUEUE_TIMEOUT": 10,
     "RESPONSE_QUEUE_TIMEOUT": 10,

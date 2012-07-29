@@ -39,14 +39,11 @@ def comet(request):
 	"""
 	Check for messages for this user.
 	"""
-	log.debug("checking for messages for %s" % request.user.avatar)
-	queue_id = '%(queuename)s-%(userid)s' % dict(
-		queuename	= settings.USER_QUEUE_PREFIX,
-		userid		= request.user.avatar.id,
-	)
+	correlation_id = 'user-%s' % request.user.avatar.id
+	log.debug("checking for messages for %s" % correlation_id)
 	consumer = messaging.get_blocking_consumer()
-	consumer.declare_queue(queue_id)
-	messages = consumer.get_messages(queue_id, decode=False, timeout=10)
+	consumer.declare_queue(settings.USER_QUEUE)
+	messages = consumer.get_messages(settings.USER_QUEUE, correlation_id, decode=False, timeout=10)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
 
 @login_required
@@ -58,18 +55,19 @@ def rest(request, command):
 	kwargs = simplejson.loads(request.read())
 	kwargs['user_id'] = request.user.avatar.id
 	
-	responder_id = messaging.getLocalIdent('responses')
+	correlation_id = messaging.getLocalIdent('response')
 	
-	log.debug("sending appserver message [responder:%s]: %s(%s)" % (responder_id, command, kwargs))
+	log.debug("sending appserver message [correlation:%s]: %s(%s)" % (correlation_id, command, kwargs))
 	consumer = messaging.get_blocking_consumer()
-	consumer.declare_queue(responder_id)
+	consumer.declare_queue(settings.RESPONSE_QUEUE)
 	consumer.send_message(settings.APPSERVER_QUEUE, dict(
 		command			= command,
 		kwargs			= kwargs,
-		responder_id	= responder_id
+		reply_to		= settings.RESPONSE_QUEUE,
+		correlation_id	= correlation_id,
 	))
 	
-	msg = consumer.get_messages(responder_id, decode=False)
+	msg = consumer.get_messages(settings.RESPONSE_QUEUE, correlation_id, decode=False)
 	while(len(msg) > 1):
 		log.warn('discarding queue cruft: %s' % msg.pop(0))
 	

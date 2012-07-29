@@ -68,7 +68,7 @@ class BlockingMessageConsumer(object):
 		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
-			auto_delete     = False,
+			auto_delete     = True,
 			durable         = False,
 		)
 		self.connected = True
@@ -94,20 +94,22 @@ class BlockingMessageConsumer(object):
 			routing_key     = queue_id,
 		)
 	
-	def get_messages(self, queue_id, decode=True, timeout=10):
+	def get_messages(self, queue_id, correlation_id, decode=True, timeout=10):
 		assert self.connected
 		result = []
 		check = True
 		start_time = time.time()
 		while(True):
-			check = self.channel.basic_get(ticket=0, queue=queue_id, no_ack=True)
-			if(check[0].NAME == 'Basic.GetEmpty'):
+			method_frame, header_frame, body = self.channel.basic_get(ticket=0, queue=queue_id)
+			
+			if(method_frame.NAME == 'Basic.GetEmpty'):
 				if(result or start_time + timeout < time.time()):
 					return result
 				time.sleep(_blocking_sleep_interval)
-			else:
-				log.debug("%s received: %s" % (queue_id, check[2]))
-				result.append(self.parse_message(*check, decode=decode))
+			elif(header_frame.correlation_id == correlation_id):
+				log.debug("%s received: %s" % (correlation_id, body))
+				result.append(self.parse_message(method_frame, header_frame, body, decode=decode))
+				self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 	
 	def parse_message(self, method_frame, header_frame, body, decode=True):
 		return json.loads(body) if decode else body
@@ -123,6 +125,8 @@ class BlockingMessageConsumer(object):
 			properties      = BasicProperties(
 				content_type    = "application/json",
 				delivery_mode   = 1,
+				reply_to        = msg.get('reply_to'),
+				correlation_id  = msg.get('correlation_id'),
 			)
 		)
 
@@ -154,7 +158,7 @@ class AsyncMessageConsumer(object):
 		yield self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
-			auto_delete     = False,
+			auto_delete     = True,
 			durable         = False,
 		)
 		yield self.channel.queue_declare(
@@ -183,7 +187,7 @@ class AsyncMessageConsumer(object):
 	@defer.inlineCallbacks
 	def get_message(self):
 		channel, method_frame, header_frame, body = yield self.queue.get()
-		defer.returnValue(json.loads(body))
+		defer.returnValue((json.loads(body), header_frame))
 	
 	def send_message(self, routing_key, msg):
 		from pika import BasicProperties
@@ -194,5 +198,7 @@ class AsyncMessageConsumer(object):
 			properties      = BasicProperties(
 				content_type    = "application/json",
 				delivery_mode   = 1,
+				reply_to        = msg.get('reply_to'),
+				correlation_id  = msg.get('correlation_id'),
 			)
 		)

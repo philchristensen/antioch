@@ -172,7 +172,7 @@ class ObjectExchange(object):
 			log.warning("attempted to send a message to user #%s on an unqueued exchange: %s" % (user_id, msg))
 			return
 		
-		self.queue.append((user_id, msg))
+		self.queue.append((self.get_object(user_id), msg))
 	
 	@defer.inlineCallbacks
 	def flush(self):
@@ -182,11 +182,14 @@ class ObjectExchange(object):
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
-			for user_id, msg in self.queue:
-				queue_id = '%s-%s' % (conf.get('user-queue-prefix'), user_id)
-				log.debug("flushing message to #%s: %s" % (user_id, msg))
+			for user, msg in self.queue:
+				if not(user.is_connected_player()):
+					log.debug("ignoring message for unconnected player %s" % user)
+					continue
+				correlation_id = 'user-%s' % user.id
+				log.debug("flushing message to #%s: %s" % (user.id, msg))
 				consumer = yield messaging.get_async_consumer()
-				yield consumer.send_message(queue_id, msg)
+				yield consumer.send_message(conf.get('user-queue'), dict(correlation_id=correlation_id, **msg))
 	
 	def get_context(self):
 		"""
