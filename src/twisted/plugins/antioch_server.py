@@ -10,7 +10,7 @@ twistd plugin support
 This module adds a 'antioch' server type to the twistd service list.
 """
 
-import warnings, logging
+import os.path, warnings, logging
 
 from zope.interface import classProvides
 
@@ -63,6 +63,10 @@ class antiochServer(object):
 			warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
 		if(conf.get('suppress-user-warnings')):
 			warnings.filterwarnings('ignore', r'.*', UserWarning)
+		
+		if(conf.get('new-relic-conf')):
+			import newrelic.agent
+			newrelic.agent.initialize(os.path.abspath(os.path.normpath(conf.get('new-relic-conf'))))
 		
 		class PythonLoggingMultiService(service.MultiService):
 			def setServiceParent(self, parent):

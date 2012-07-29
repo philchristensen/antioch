@@ -11,7 +11,7 @@ Initialization code for child processes.
 import warnings
 warnings.filterwarnings('ignore', r'.*', UserWarning)
 
-import sys
+import sys, os.path
 import logging
 
 import simplejson
@@ -65,11 +65,15 @@ def bootstrap():
 	ampChildInstance = ampChild(*childArgs)
 	stdio.StandardIO(ampChildInstance, TO_CHILD, FROM_CHILD)
 	
-	reactor.run()
+	if(conf.get('new-relic-conf')):
+		import newrelic.agent
+		newrelic.agent.initialize(os.path.abspath(os.path.normpath(conf.get('new-relic-conf'))))
 	
 	if(conf.get('suppress-deprecation-warnings')):
 		import warnings
 		warnings.filterwarnings('ignore', r'.*', DeprecationWarning)
+	
+	reactor.run()
 
 class JSONObserver:
 	def emit(self, eventDict):

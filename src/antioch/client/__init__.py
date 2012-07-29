@@ -32,7 +32,12 @@ class DjangoServer(internet.TCPServer):
 		"""
 		Create a web server on the provided port.
 		"""
-		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), handler)
+		if(conf.get('new-relic-conf')):
+			import newrelic.agent
+			h = newrelic.agent.wsgi_application()(handler)
+		else:
+			h = handler
+		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), h)
 		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('django.request.access'))
 		internet.TCPServer.__init__(self, port, self.factory)
 

@@ -13,7 +13,10 @@ import logging, threading, time
 from twisted.internet import task, protocol, reactor, defer
 
 from antioch import conf
-from antioch.util import mnemo, json
+from antioch.util import mnemo, json, profile
+
+#import pika.log
+#pika.log.setup(level=pika.log.DEBUG)
 
 log = logging.getLogger(__name__)
 
@@ -94,7 +97,8 @@ class BlockingMessageConsumer(object):
 			routing_key     = queue_id,
 		)
 	
-	def get_messages(self, queue_id, correlation_id, decode=True, timeout=10):
+	@profile
+	def get_messages(self, queue_id, correlation_id, timeout=10):
 		assert self.connected
 		result = []
 		check = True
@@ -108,12 +112,10 @@ class BlockingMessageConsumer(object):
 				time.sleep(_blocking_sleep_interval)
 			elif(header_frame.correlation_id == correlation_id):
 				log.debug("%s received: %s" % (correlation_id, body))
-				result.append(self.parse_message(method_frame, header_frame, body, decode=decode))
+				result.append(body)
 				self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 	
-	def parse_message(self, method_frame, header_frame, body, decode=True):
-		return json.loads(body) if decode else body
-	
+	@profile
 	def send_message(self, routing_key, msg):
 		assert self.connected
 		from pika import BasicProperties

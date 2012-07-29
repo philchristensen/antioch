@@ -12,6 +12,8 @@
     
     "WEB_PORT": 8888,
     
+    "NEW_RELIC_CONF": "",
+    
     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
     
     "APPSERVER_EXCHANGE": "antioch",
@@ -287,8 +289,19 @@
                 'propagate': false,
                 'level':'INFO',
             },
+            # newrelic messages
+            'newrelic': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
             # optional embedded django server access log
             'django.request.access': {
+                'handlers':['null'],
+                'propagate': false,
+            },
+            # django orm queries
+            'django.db': {
                 'handlers':['null'],
                 'propagate': false,
             }
