@@ -30,7 +30,6 @@ group_definitions = dict(
 salt = list(string.printable[:])
 
 rollback_after_fatal_errors = True
-profile_exchange = False
 
 log = logging.getLogger(__name__)
 
@@ -94,8 +93,6 @@ class ObjectExchange(object):
 		Within the cotext, wrap everything in a database transaction, and queue messages.
 		"""
 		self.begin()
-		if(profile_exchange):
-			self.transaction_started = time.time()
 		return self
 	
 	def __exit__(self, etype, e, trace):
@@ -157,8 +154,6 @@ class ObjectExchange(object):
 		"""
 		Complete a database transaction.
 		"""
-		if(profile_exchange):
-			print '[exchange] transaction took %s seconds' % (time.time() - self.transaction_started)
 		self.pool.runOperation('COMMIT')
 	
 	def rollback(self):
