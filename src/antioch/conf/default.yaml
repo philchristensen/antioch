@@ -196,6 +196,11 @@
                 "()": "antioch.util.logs.DjangoColorFormatter",
                 "logformat": "[%(levelname)s] [%(name)s] %(msg)s",
                 "datefmt": "%d/%b/%Y %H:%M:%S"
+            },
+            "dated": {
+                "()": "antioch.util.logs.DjangoColorFormatter",
+                "logformat": "%(asctime)s [%(levelname)s] [%(name)s] %(msg)s",
+                "datefmt": "%d/%b/%Y %H:%M:%S"
             }
         },
         "handlers": {
