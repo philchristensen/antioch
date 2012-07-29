@@ -46,8 +46,8 @@ def comet(request):
 	)
 	consumer = messaging.get_blocking_consumer()
 	consumer.declare_queue(queue_id)
-	messages = consumer.get_messages(queue_id, decode=False)
-	return http.HttpResponse(messages, content_type="application/json")
+	messages = consumer.get_messages(queue_id, decode=False, timeout=10)
+	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
 
 @login_required
 @csrf_exempt
@@ -69,8 +69,11 @@ def rest(request, command):
 		responder_id	= responder_id
 	))
 	
-	msg = consumer.expect_message(responder_id, decode=False)
-	return http.HttpResponse(msg, content_type="application/json")
+	msg = consumer.get_messages(responder_id, decode=False)
+	while(len(msg) > 1):
+		log.warn('discarding queue cruft: %s' % msg.pop(0))
+	
+	return http.HttpResponse(msg[0], content_type="application/json")
 
 def logout(request):
 	"""

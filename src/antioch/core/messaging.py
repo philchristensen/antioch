@@ -17,8 +17,7 @@ from antioch.util import mnemo, json
 
 log = logging.getLogger(__name__)
 
-_blocking_consumer = None
-_blocking_consumer_lock = threading.Lock()
+_blocking_consumers = dict()
 _blocking_sleep_interval = 0.010
 
 _async_consumer = None
@@ -37,12 +36,11 @@ def getLocalIdent(prefix):
 	)
 
 def get_blocking_consumer():
-	global _blocking_consumer, _blocking_consumer_lock
-	if(_blocking_consumer is None):
-		with _blocking_consumer_lock:
-			_blocking_consumer = BlockingMessageConsumer()
-			_blocking_consumer.connect()
-	return _blocking_consumer
+	ident = getLocalIdent('consumer')
+	if(ident not in _blocking_consumers):
+		_blocking_consumers[ident] = BlockingMessageConsumer()
+		_blocking_consumers[ident].connect()
+	return _blocking_consumers[ident]
 
 @defer.inlineCallbacks
 def get_async_consumer():
@@ -66,7 +64,7 @@ class BlockingMessageConsumer(object):
 		))
 		self.channel = self.connection.channel()
 		log.debug("declaring exchange %s" % conf.get('appserver-exchange'))
-		self.channel.exchange_declare(
+		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
 			#nowait          = True,
@@ -82,6 +80,7 @@ class BlockingMessageConsumer(object):
 		self.connection.close()
 	
 	def declare_queue(self, queue_id):
+		assert self.connected
 		log.debug("declaring queue %s" % queue_id)
 		self.channel.queue_declare(
 			queue           = queue_id,
@@ -97,36 +96,26 @@ class BlockingMessageConsumer(object):
 			#nowait          = True,
 		)
 	
-	def get_messages(self, queue_id, decode=True):
+	def get_messages(self, queue_id, decode=True, timeout=10):
+		assert self.connected
 		result = []
-		ctag = None
-		log.debug("checking %s for messages" % queue_id)
-		
-		def handle_delivery(channel, method_frame, header_frame, body):
-			log.debug("%s received: %s" % (queue_id, body))
-			result.append(json.loads(body) if decode else body)
-			self.channel.stop_consuming(ctag)
-		
-		ctag = self.channel.basic_consume(handle_delivery, queue=queue_id)
-		self.channel.start_consuming()
-		
-		return result
+		check = True
+		start_time = time.time()
+		while(True):
+			check = self.channel.basic_get(ticket=0, queue=queue_id)
+			if(check[0].NAME == 'Basic.GetEmpty'):
+				if(result or start_time + timeout < time.time()):
+					return result
+				time.sleep(_blocking_sleep_interval)
+			else:
+				log.warn("%s received: %s" % (queue_id, check[2]))
+				result.append(self.parse_message(*check, decode=decode))
 	
-	def expect_message(self, queue_id, timeout=10, decode=True):
-		log.debug("waiting on %s for messages" % queue_id)
-		
-		ctag = None
-		result = []
-		def handle_delivery(channel, method_frame, header_frame, body):
-			log.debug("%s received: %s" % (queue_id, body))
-			result.append(json.loads(body) if decode else body)
-			self.channel.stop_consuming(ctag)
-		
-		ctag = self.channel.basic_consume(handle_delivery, queue=queue_id)
-		self.channel.start_consuming()
-		return result.pop()
+	def parse_message(self, method_frame, header_frame, body, decode=True):
+		return json.loads(body) if decode else body
 	
 	def send_message(self, routing_key, msg):
+		assert self.connected
 		from pika import BasicProperties
 		log.debug("sending to %s: %s" % (routing_key, msg))
 		self.channel.basic_publish(

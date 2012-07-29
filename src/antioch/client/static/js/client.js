@@ -117,6 +117,7 @@
 						listen(function(msgs){
 							for(index in msgs){
 								msg = msgs[index];
+								console.log(msg)
 								methods.handleMessage(msg);
 							}
 						});
