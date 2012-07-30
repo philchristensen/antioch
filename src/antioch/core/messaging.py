@@ -13,7 +13,7 @@ import logging, threading, time
 from twisted.internet import task, protocol, reactor, defer
 
 from antioch import conf
-from antioch.util import mnemo, json, profile
+from antioch.util import mnemo, json
 
 #import pika.log
 #pika.log.setup(level=pika.log.DEBUG)
@@ -113,43 +113,36 @@ class BlockingMessageConsumer(object):
 			routing_key     = queue_id,
 		)
 	
-	@profile
 	def get_messages(self, queue_id, correlation_id, timeout=10):
 		assert self.connected
 		result = []
-		# check = True
-		# start_time = time.time()
-		# while(True):
-		# 	method_frame, header_frame, body = self.channel.basic_get(ticket=0, queue=queue_id)
-		# 	
-		# 	if(method_frame.NAME == 'Basic.GetEmpty'):
-		# 		if(result or start_time + timeout < time.time()):
-		# 			return result
-		# 		time.sleep(_blocking_sleep_interval)
-		# 	elif(header_frame.correlation_id == correlation_id):
-		# 		log.debug("%s received: %s" % (correlation_id, body))
-		# 		result.append(body)
-		# 		self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-		consumer_tag = None
 		
+		consumer_tag = None
+		self.channel.stopping = False
+
 		def on_request(channel, method_frame, header_frame, body):
 			if(header_frame.correlation_id == correlation_id):
 				log.debug("%s received: %s" % (correlation_id, body))
 				result.append(body)
 				channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-				channel.stop_consuming()
+				if not(channel.stopping):
+					channel.stopping = True
+					channel.stop_consuming(consumer_tag)
 		
-		def on_timeout():
-			self.channel.stop_consuming()
+		# def on_timeout():
+		# 	if not(self.channel.stopping):
+		# 		self.channel.stopping = True
+		# 		self.channel.stop_consuming(consumer_tag)
+		# 
+		# timeout_id = self.connection.add_timeout(timeout, on_timeout)
 		
-		timeout_id = self.connection.add_timeout(timeout, on_timeout)
-		
-		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id, consumer_tag=consumer_tag)
+		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id)
 		self.channel.start_consuming()
+		
+		# self.connection.remove_timeout(timeout_id)
 		
 		return result
 	
-	@profile
 	def send_message(self, routing_key, msg):
 		assert self.connected
 		from pika import BasicProperties
