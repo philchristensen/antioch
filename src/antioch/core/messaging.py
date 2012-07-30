@@ -18,6 +18,22 @@ from antioch.util import mnemo, json, profile
 #import pika.log
 #pika.log.setup(level=pika.log.DEBUG)
 
+from pika.callback import CallbackManager
+
+def sanitize(self, key):
+	if hasattr(key, 'method') and hasattr(key.method, 'NAME'):
+		return key.method.NAME
+
+	if hasattr(key, 'NAME'):
+		return key.NAME
+
+	if hasattr(key, '__dict__') and 'NAME' in key.__dict__:
+		return key.__dict__['NAME']
+
+	return str(key)
+
+CallbackManager.sanitize = sanitize  # monkey-patch
+
 log = logging.getLogger(__name__)
 
 _blocking_consumers = dict()
@@ -101,19 +117,37 @@ class BlockingMessageConsumer(object):
 	def get_messages(self, queue_id, correlation_id, timeout=10):
 		assert self.connected
 		result = []
-		check = True
-		start_time = time.time()
-		while(True):
-			method_frame, header_frame, body = self.channel.basic_get(ticket=0, queue=queue_id)
-			
-			if(method_frame.NAME == 'Basic.GetEmpty'):
-				if(result or start_time + timeout < time.time()):
-					return result
-				time.sleep(_blocking_sleep_interval)
-			elif(header_frame.correlation_id == correlation_id):
+		# check = True
+		# start_time = time.time()
+		# while(True):
+		# 	method_frame, header_frame, body = self.channel.basic_get(ticket=0, queue=queue_id)
+		# 	
+		# 	if(method_frame.NAME == 'Basic.GetEmpty'):
+		# 		if(result or start_time + timeout < time.time()):
+		# 			return result
+		# 		time.sleep(_blocking_sleep_interval)
+		# 	elif(header_frame.correlation_id == correlation_id):
+		# 		log.debug("%s received: %s" % (correlation_id, body))
+		# 		result.append(body)
+		# 		self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+		consumer_tag = None
+		
+		def on_request(channel, method_frame, header_frame, body):
+			if(header_frame.correlation_id == correlation_id):
 				log.debug("%s received: %s" % (correlation_id, body))
 				result.append(body)
-				self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+				channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+				channel.stop_consuming()
+		
+		def on_timeout():
+			self.channel.stop_consuming()
+		
+		timeout_id = self.connection.add_timeout(timeout, on_timeout)
+		
+		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id, consumer_tag=consumer_tag)
+		self.channel.start_consuming()
+		
+		return result
 	
 	@profile
 	def send_message(self, routing_key, msg):
