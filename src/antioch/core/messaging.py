@@ -129,17 +129,18 @@ class BlockingMessageConsumer(object):
 					channel.stopping = True
 					channel.stop_consuming(consumer_tag)
 		
-		# def on_timeout():
-		# 	if not(self.channel.stopping):
-		# 		self.channel.stopping = True
-		# 		self.channel.stop_consuming(consumer_tag)
-		# 
-		# timeout_id = self.connection.add_timeout(timeout, on_timeout)
+		def on_timeout(*args, **kwargs):
+			log.debug('timeout %r, %r' % (args, kwargs))
+			if not(self.channel.stopping):
+				self.channel.stopping = True
+				self.channel.stop_consuming(consumer_tag)
+		
+		timeout_id = self.connection.add_timeout(time.time() + timeout, on_timeout)
 		
 		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id)
 		self.channel.start_consuming()
 		
-		# self.connection.remove_timeout(timeout_id)
+		self.connection.remove_timeout(timeout_id)
 		
 		return result
 	
