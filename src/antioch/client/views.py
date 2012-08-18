@@ -39,11 +39,11 @@ def comet(request):
 	"""
 	Check for messages for this user.
 	"""
-	correlation_id = 'user-%s' % request.user.avatar.id
-	log.debug("checking for messages for %s" % correlation_id)
+	queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
+	log.debug("checking for messages for %s" % queue_id)
 	consumer = messaging.get_blocking_consumer()
-	consumer.declare_queue(settings.USER_QUEUE)
-	messages = consumer.get_messages(settings.USER_QUEUE, correlation_id, timeout=10)
+	consumer.declare_queue(queue_id)
+	messages = consumer.get_messages(queue_id, None, timeout=10)
 	log.debug('returning to client: %s' % messages)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
 

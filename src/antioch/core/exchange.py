@@ -181,10 +181,10 @@ class ObjectExchange(object):
 				if not(user.is_connected_player()):
 					log.debug("ignoring message for unconnected player %s" % user)
 					continue
-				correlation_id = 'user-%s' % user.id
-				log.debug("flushing message to #%s: %s" % (user.id, msg))
+				queue_id = '-'.join([conf.get('user-queue'), str(user.id)])
+				log.debug("flushing message to #%s: %s" % (queue_id, msg))
 				consumer = yield messaging.get_async_consumer()
-				yield consumer.send_message(conf.get('user-queue'), dict(correlation_id=correlation_id, **msg))
+				yield consumer.send_message(queue_id, dict(**msg))
 	
 	def get_context(self):
 		"""
