@@ -1,38 +1,19 @@
 {% extends 'base.html' %}
 
 {% block header %}
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/client.css"/>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/client.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-1.4.2-min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dimensions-1.1.2-min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.splitter-1.5.1.js"></script>
+	{{ media }}
+{% endblock %}
+
+{% block sidebar %}
+	
 {% endblock %}
 
 {% block content %}
-	<div id="client">
-	<div class="name">antioch</div>
-	<div id="client-wrapper">
-		<div id="top-pane">
-			<div id="contents-area">
-				<ul>
-				<li class="look-me"><strong>&#171; myself</strong></li>
-				<li class="look-here"><strong>&#171; my location</strong></li>
-				</ul>
-				<br/>
-				<div class="contents">
-				</div>
-			</div>
-			<div class="description"></div>
-		</div>
-		<div id="bottom-pane">
-			<div id="actions"></div>
-			<div id="prompt-area">
-				<input type="text" id="connection" class="client-prompt" size="80" />
-			</div>
-		</div>
+	<div id="command-line">
+		<input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
 	</div>
+	<div id="actions">
 	</div>
-	<div id="status-line"></div>
 {% endblock %}
 
 {% block footer %}
@@ -40,42 +21,38 @@
 	$(document).ready(function(){
 		$('#connection').antioch({
 			listen: true,
-			error_handler: function(err){
-				$('#status-line').html(err);
-			},
 			
 			actions_selector: "#actions",
-			name_selector: ".name",
-			description_selector: ".description",
-			contents_selector: '.contents',
 			
-			issued_command_template: "<br/><span class=\"issued-command\">$content</span>",
-			error_template: "<br/><span class=\"error-response\">$content</span>",
-			message_template: "<br/>$content",
-			player_image_template: "<img src=\"$content\" />",
+			observation_template: "<div class=\"alert alert-info\"></span>",
+			issued_command_template: "<div class=\"alert\">$content</div>",
+			error_template: "<div class=\"alert alert-error\">$content</div>",
+			message_template: "<div class=\"alert alert-info\">$content</div>",
 			
-			players_wrapper_node: '<div id="players-list"></div>',
-			contents_wrapper_node: '<div id="contents-list"></div>',
+			players_wrapper_node: '<div class="players-list"></div>',
 			players_list_node: '<ul></ul>',
-			contents_list_node: '<ul></ul>',
+			player_list_item_node: '<li class="btn btn-small"></li>',
 			player_image_node: '<div class="player-image"></div>',
-			default_image_node: '<img src="/assets/images/silhouette.png" />',
+			player_image_template: "<img src=\"$content\" >",
+			default_image_node: '<img src="/assets/images/silhouette.png" >',
 			player_name_node: '<div class="player-name"></div>',
 			player_mood_node: '<div class="player-mood"></div>',
 			people_here_node: '<strong>people here:</strong>',
+			
+			contents_wrapper_node: '<div class="contents-list"></div>',
+			contents_list_node: '<ul></ul>',
+			content_list_item_node: '<li class="btn btn-small"></li>',
 			contents_here_node: '<strong>obvious contents:</strong>',
 			clear_both_node: '<br style="clear: both;"/>',
-			player_list_item_node: '<li></li>',
-			content_list_item_node: '<li></li>',
 		});
 		
-		$('.look-me').click(function(){
-			$('#connection').antioch('look', 'me');
-		});
-		
-		$('.look-here').click(function(){
-			$('#connection').antioch('look', 'here');
-		});
+		// $('.look-me').click(function(){
+		// 	$('#connection').antioch('look', 'me');
+		// });
+		// 
+		// $('.look-here').click(function(){
+		// 	$('#connection').antioch('look', 'here');
+		// });
 		
 		{% for script_url in scripts %}
 		$('body').append('\x3Cscript type="text/javascript" src="{{ script_url }}">\x3C/script>');

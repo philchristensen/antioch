@@ -1,0 +1,3 @@
+[submodule "src/antioch/static/bootstrap"]
+	path = src/antioch/static/bootstrap
+	url = git://github.com/twitter/bootstrap.git

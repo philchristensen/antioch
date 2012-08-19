@@ -33,7 +33,7 @@ if(!window.console){
 				comet_url: "/comet/",
 				rest_url: "/rest/",
 				error_handler: function(err){
-					alert(err);
+					methods.write(err, true, true);
 				},
 				// // The rest of these settings are defined in the client template
 				// // when the plugin is instantiated, keeping all template-related
@@ -156,8 +156,8 @@ if(!window.console){
 			 */
 			methods.callRemote('parse', {sentence: text});
 			var actions = $(settings.actions_selector);
-			actions.append(settings.issued_command_template.replace('$content', text))
-			actions.scrollTo('max');
+			actions.prepend(settings.issued_command_template.replace('$content', text))
+			//actions.scrollTo('max');
 		},
 		
 		look: function(item){
@@ -189,21 +189,22 @@ if(!window.console){
 			}
 			
 			if(error){
-				actions.append(settings.error_template.replace('$content', text));
+				actions.prepend(settings.error_template.replace('$content', text));
 			}
 			else{
-				actions.append(settings.message_template.replace('$content', text));
+				actions.prepend(settings.message_template.replace('$content', text));
 			}
 			
-			actions.scrollTo('max');
+			//actions.scrollTo('max');
 		},
 		
 		setObservations: function(observations){
 			/*
 			 * Called by the server to change the main client display.
 			 */
-			$(settings.name_selector).html(observations['name']);
-			$(settings.description_selector).html(observations['description']);
+			var t = $(settings.observation_template);
+			t.append($('<div class="name">').html(observations['name']));
+			t.append($('<div class="description">').html(observations['description']));
 			
 			var player_content = $(settings.players_wrapper_node);
 			var item_content = $(settings.contents_wrapper_node);
@@ -262,10 +263,10 @@ if(!window.console){
 				}
 			}
 			
-			var contents_area = $(settings.contents_selector);
-			contents_area.empty();
-			contents_area.append(player_content);
-			contents_area.append(item_content);
+			t.append(player_content);
+			t.append(item_content);
+			
+			$('#actions').prepend(t);
 			
 			$(this).focus();
 		},

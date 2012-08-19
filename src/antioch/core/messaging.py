@@ -122,28 +122,28 @@ class BlockingMessageConsumer(object):
 
 		def on_request(channel, method_frame, header_frame, body):
 			if(header_frame.correlation_id == correlation_id):
-				log.debug("%s received: %s" % (correlation_id, body))
+				log.debug("%s received: %s" % (queue_id, body))
 				result.append(body)
 				channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 				if not(channel.stopping):
-					log.debug('stopping %s' % correlation_id)
+					log.debug('stopping %s' % queue_id)
 					channel.stopping = True
 					channel.stop_consuming(consumer_tag)
 		
 		def on_timeout():
-			log.debug('%s timeout' % correlation_id)
+			log.debug('%s timeout' % queue_id)
 			if not(self.channel.stopping):
 				self.channel.stopping = True
-				log.debug('stopping %s consumer' % correlation_id)
+				log.debug('stopping %s consumer' % queue_id)
 				self.channel.stop_consuming(consumer_tag)
 		
 		timeout_id = self.connection.add_timeout(time.time() + timeout, on_timeout)
 		
 		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id)
 		self.channel.start_consuming()
-		log.debug('removing timeout for %s' % correlation_id)
+		log.debug('removing timeout for %s' % queue_id)
 		self.connection.remove_timeout(timeout_id)
-		log.debug("%s returned to client: %s" % (correlation_id, result))
+		log.debug("%s returned to client: %s" % (queue_id, result))
 		return result
 	
 	def send_message(self, routing_key, msg):

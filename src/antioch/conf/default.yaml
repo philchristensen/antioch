@@ -32,6 +32,7 @@
     "SUPPRESS_DEPRECATION_WARNINGS": true,
     "SUPPRESS_USER_WARNINGS": true,
     "XSENDFILE": false,
+    "RENDER_LESS": true,
     
     # define the lookup channels in use on the site
     "AJAX_LOOKUP_CHANNELS": {

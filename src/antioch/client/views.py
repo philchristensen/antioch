@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import simplejson
 
-from antioch import plugins
+from antioch import plugins, assets
 from antioch.core import parser, messaging
 
 log = logging.getLogger(__name__)
@@ -32,6 +32,17 @@ def client(request):
 	return shortcuts.render_to_response('client.html', dict(
 		title           = "antioch client",
 		scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
+		media           = assets.LessMedia(
+			less        = dict(
+				screen  = ['%sless/client.less' % settings.STATIC_URL],
+			),
+			js          = [
+				"%sjs/client.js" % settings.STATIC_URL,
+				# "%sjs/jquery.scrollTo-1.4.2-min.js" % settings.STATIC_URL,
+				# "%sjs/jquery.dimensions-1.1.2-min.js" % settings.STATIC_URL,
+				# "%sjs/jquery.splitter-1.5.1.js" % settings.STATIC_URL,
+			]
+		),
 	), context_instance=template.RequestContext(request))
 
 @login_required
