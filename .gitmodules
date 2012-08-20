@@ -1,3 +1,6 @@
 [submodule "src/antioch/static/bootstrap"]
 	path = src/antioch/static/bootstrap
 	url = git://github.com/twitter/bootstrap.git
+[submodule "src/antioch/static/js/relative-date"]
+	path = src/antioch/static/js/relative-date
+	url = git://github.com/azer/relative-date.git

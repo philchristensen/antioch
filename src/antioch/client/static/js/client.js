@@ -133,6 +133,16 @@ if(!window.console){
 			});
 		},
 		
+		logAction: function(content){
+			var d = new Date();
+			var real_date = $('<div class="real-date">').html(d.toString());
+			var relative_date = $('<div class="relative-date">');
+			var date = $('<h6 class="date keep-relative">').append(real_date).append(relative_date);
+			content = $(content);
+			content.prepend(date);
+			$('#actions').prepend(content);
+		},
+		
 		callRemote: function(command, options, callback){
 			$.ajax(settings.rest_url + command, {
 				type: 'POST',
@@ -156,8 +166,7 @@ if(!window.console){
 			 */
 			methods.callRemote('parse', {sentence: text});
 			var actions = $(settings.actions_selector);
-			actions.prepend(settings.issued_command_template.replace('$content', text))
-			//actions.scrollTo('max');
+			methods.logAction(settings.issued_command_template.replace('$content', text))
 		},
 		
 		look: function(item){
@@ -189,13 +198,12 @@ if(!window.console){
 			}
 			
 			if(error){
-				actions.prepend(settings.error_template.replace('$content', text));
+				text = settings.error_template.replace('$content', text);
 			}
 			else{
-				actions.prepend(settings.message_template.replace('$content', text));
+				text = settings.message_template.replace('$content', text);
 			}
-			
-			//actions.scrollTo('max');
+			methods.logAction(text);
 		},
 		
 		setObservations: function(observations){
@@ -203,8 +211,8 @@ if(!window.console){
 			 * Called by the server to change the main client display.
 			 */
 			var t = $(settings.observation_template);
-			t.append($('<div class="name">').html(observations['name']));
-			t.append($('<div class="description">').html(observations['description']));
+			t.append($('<h3 class="name">').html(observations['name']));
+			t.append($('<p class="lead description">').html(observations['description']));
 			
 			var player_content = $(settings.players_wrapper_node);
 			var item_content = $(settings.contents_wrapper_node);
@@ -266,7 +274,7 @@ if(!window.console){
 			t.append(player_content);
 			t.append(item_content);
 			
-			$('#actions').prepend(t);
+			methods.logAction(t);
 			
 			$(this).focus();
 		},

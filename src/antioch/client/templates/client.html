@@ -2,10 +2,25 @@
 
 {% block header %}
 	{{ media }}
+	<script src="{{ STATIC_URL }}/js/relative-date/lib/relative-date.js"></script>
 {% endblock %}
 
 {% block sidebar %}
-	
+	<div class="current-player">
+		<div class="player-image">
+			<img src="/assets/images/silhouette.png" >
+		</div>
+		<h2>{{ request.user.avatar.name }}</h2>
+		<ul>
+			<li><a class="inventory-cmd">inventory</a></li>
+			<li><a class="description-cmd">description</a></li>
+			<li><a class="password-cmd">change password</a></li>
+			<li><a href="/logout">logout</a></li>
+			{% if request.user.wizard %}
+			<li><a href="/admin" target="_blank">administration</a></li>
+			{% endif %}
+		</ul>
+	</div>
 {% endblock %}
 
 {% block content %}
@@ -27,7 +42,7 @@
 			observation_template: "<div class=\"alert alert-info\"></span>",
 			issued_command_template: "<div class=\"alert\">$content</div>",
 			error_template: "<div class=\"alert alert-error\">$content</div>",
-			message_template: "<div class=\"alert alert-info\">$content</div>",
+			message_template: "<div class=\"well\">$content</div>",
 			
 			players_wrapper_node: '<div class="players-list"></div>',
 			players_list_node: '<ul></ul>',
@@ -46,13 +61,24 @@
 			clear_both_node: '<br style="clear: both;"/>',
 		});
 		
-		// $('.look-me').click(function(){
-		// 	$('#connection').antioch('look', 'me');
-		// });
-		// 
-		// $('.look-here').click(function(){
-		// 	$('#connection').antioch('look', 'here');
-		// });
+		$('.inventory-cmd').click(function(){
+			$('#connection').antioch('callRemote', 'parse', {sentence: 'look me'});
+		});
+		
+		$('.description-cmd').click(function(){
+			$('#connection').antioch('callRemote', 'parse', {sentence: 'edit description on me'});
+		});
+		
+		$('.password-cmd').click(function(){
+			$('#connection').antioch('callRemote', 'parse', {sentence: 'passwd'});
+		});
+		
+		setInterval(function(){
+			$('.keep-relative').each(function(){
+				var dstr = $(this).find('.real-date').html();
+				$(this).find('.relative-date').html(relativeDate(new Date(dstr)));
+			});
+		}, 10);
 		
 		{% for script_url in scripts %}
 		$('body').append('\x3Cscript type="text/javascript" src="{{ script_url }}">\x3C/script>');
