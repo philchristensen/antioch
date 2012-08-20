@@ -135,12 +135,17 @@ if(!window.console){
 		
 		logAction: function(content){
 			var d = new Date();
-			var real_date = $('<div class="real-date">').html(d.toString());
+			var real_date = $('<div class="real-date hidden">').html(d.toString());
 			var relative_date = $('<div class="relative-date">');
 			var date = $('<h6 class="date keep-relative">').append(real_date).append(relative_date);
 			content = $(content);
-			content.prepend(date);
+			content.css('display', 'none').prepend(date);
 			$('#actions').prepend(content);
+			content.queue(function(next){
+				//$(this).show('slide', { direction: "up" }, 500);
+				$(this).slideDown('fast');
+				next();
+			});
 		},
 		
 		callRemote: function(command, options, callback){
