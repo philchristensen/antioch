@@ -1,17 +1,20 @@
 .field-row label {
 	display: inline-block;
 	padding-left: 5px;
-	min-width: 120px;
+	min-width: 90px;
 }
 
 .field-row input {
 	margin-top: 5px;
 }
 
+#id_id {
+	width: 100px;
+}
+
 #access-button {
 	position: relative;
-	top: 5px;
-	left: 132px;
+	top: -2px;
 }
 
 .attributes {
@@ -42,4 +45,27 @@
 	position: relative;
 	top: 7px;
 	height: 27px;
+}
+
+.results_on_deck {
+	margin-left: 100px;
+}
+
+.ui-icon {
+	display: inline-block;
+	margin-right: 3px;
+	position: relative;
+	top: 2px;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+	vertical-align: text-top;
+	background-image: url("../bootstrap/img/glyphicons-halflings.png");
+	background-position: 14px 14px;
+	background-repeat: no-repeat;
+	color: transparent;
+}
+
+.ui-icon-trash {
+	background-position: -48px  -96px;
 }

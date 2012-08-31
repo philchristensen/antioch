@@ -1,42 +1,42 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui/jquery-ui.custom.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/object-editor.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/ajax_select.css"/>
 <script type="text/javascript" src="/assets/js/global.js"></script>
 <script type="text/javascript" src="/assets/js/client.js"></script>
 <script type="text/javascript" src="/assets/js/editor-plugin.js"></script>
 <script type="text/javascript" src="/assets/js/ajax_select.js"></script>
+<script type="text/javascript" src="/assets/js/less-1.3.0.min.js"></script>
 {% endblock %}
 
 {% block content %}
 <form method="POST" action="">
 	{% csrf_token %}
-	<div class="editor ui-widget ui-widget-content ui-corner-all">
+	<div class="editor">
 		{{ form.errors }}
 		<div class="controls">
 			<div class="field-row">
-			<label id="name-label" for="name-field">name:</label>
+			<label class="control-label" id="id-label" for="id-field">id:</label>
+			{{ form.id }}
+			<button type="button" class="btn" id="access-button">access...</button>
+			</div>
+			<div class="field-row">
+			<label class="control-label" id="name-label" for="id_name">name:</label>
 			{{ form.name }}
 			</div>
 			<div class="field-row">
-			<label id="parent-label" for="parent-field">parents:</label>
+			<label class="control-label" id="parent-label" for="id_parents_text">parents:</label>
 			{{ form.parents }}
 			</div>
 			<div class="field-row">
-			<label id="location-label" for="location-field">location:</label>
+			<label class="control-label" id="location-label" for="id_location_text">location:</label>
 			{{ form.location }}
 			</div>
 			<div class="field-row">
-			<label id="owner-label" for="owner-field">owner:</label>
+			<label class="control-label" id="owner-label" for="id_owner_text">owner:</label>
 			{{ form.owner }}
 			</div>
-			<div class="field-row">
-			<label id="id-label" for="id-field">id:</label>
-			{{ form.id }}
-			</div>
-			<button type="button" id="access-button">access...</button>
 		</div>
 		<div class="attributes">
 			<div class="verbs">
@@ -46,8 +46,8 @@
 					<option value="{{ verb.id }}">{{ verb.annotated }}</option>
 					{% endfor %}
 				</select>
-				<button type="button" id="add-verb"></button>
-				<button type="button" id="remove-verb"></button>
+				<button type="button" class="btn" id="add-verb"></button>
+				<button type="button" class="btn" id="remove-verb"></button>
 			</div>
 			<div class="properties">
 				<label id="properties-label" for="properties-select">properties:</label>
@@ -56,13 +56,14 @@
 					<option value="{{ property.id }}">{{ property.name }}</option>
 					{% endfor %}
 				</select>
-				<button type="button" id="add-prop"></button>
-				<button type="button" id="remove-prop"></button>
+				<button type="button" class="btn" id="add-prop"></button>
+				<button type="button" class="btn" id="remove-prop"></button>
 			</div>
 		</div>
 	</div>
-	<div class="controls">
-		<input type="submit" class="action-button" id="save-button" value="save" />
+	<div class="controls form-actions">
+		<button type="submit" id="save-button" class="action-button btn btn-primary">Save changes</button>
+		<button type="button" class="btn">Cancel</button>
 	</div>
 </form>
 {% endblock %}

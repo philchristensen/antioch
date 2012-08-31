@@ -38,9 +38,6 @@ def client(request):
 			),
 			js          = [
 				"%sjs/client.js" % settings.STATIC_URL,
-				# "%sjs/jquery.scrollTo-1.4.2-min.js" % settings.STATIC_URL,
-				# "%sjs/jquery.dimensions-1.1.2-min.js" % settings.STATIC_URL,
-				# "%sjs/jquery.splitter-1.5.1.js" % settings.STATIC_URL,
 			]
 		),
 	), context_instance=template.RequestContext(request))

@@ -10,6 +10,7 @@ class ObjectForm(forms.ModelForm):
 		model = models.Object
 		exclude = ('observers',)
 	
+	id = forms.IntegerField(forms.TextInput(attrs={'disabled':'disabled'}))
 	owner = fields.AutoCompleteSelectField('object')
 	location = fields.AutoCompleteSelectField('object', required=False)
 	parents = fields.AutoCompleteSelectMultipleField('object')

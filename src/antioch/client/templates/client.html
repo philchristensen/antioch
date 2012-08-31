@@ -5,6 +5,27 @@
 	<script src="{{ STATIC_URL }}/js/relative-date/lib/relative-date.js"></script>
 {% endblock %}
 
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</a>
+			<a class="brand" href="#">antioch</a>
+			<div class="nav-collapse">
+				<ul class="nav">
+					<li class="active"><a href="#">client</a></li>
+					<li><a href="https://github.com/philchristensen/antioch" target="_blank">github</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
 {% block sidebar %}
 	<div class="current-player">
 		<div class="player-image">
