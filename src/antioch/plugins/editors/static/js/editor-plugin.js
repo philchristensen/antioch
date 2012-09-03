@@ -14,8 +14,8 @@
 			height: 590,
 		},
 		access: {
-			width: 740,
-			height: 495,
+			width: 650,
+			height: 250,
 		}
 	};
 	$(document).antioch('addMessageListener', 'edit', function(msg){

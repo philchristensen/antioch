@@ -15,42 +15,38 @@ function addRule(access){
 	
 	var thumb = $('<div class="drag-thumb"></div>');
 	
-	var allow_deny = $('<button type="button" class="rule-toggle ' + access['rule'] + '"></button>');
-	allow_deny.button({
-		label	: access['rule'],
-	});
-	
+	var allow_deny = $('<button type="button" class="rule-toggle ' + access['rule'] + '">' + access['rule'] + '</button>');
 	allow_deny.click(function(e){
 		if($(this).hasClass('allow')){
-			$(this).button('option', 'label', 'deny');
+			$(this).html('deny');
 			$(this).removeClass('allow').addClass('deny');
 		}
 		else{
-			$(this).button('option', 'label', 'allow');
+			$(this).html('allow');
 			$(this).removeClass('deny').addClass('allow');
 		}
 		e.stopImmediatePropagation();
 	});
 	
-	var group_accessor = $('<button type="button" class="access-toggle ' + access['access'] + '"></button>');
+	var group_accessor = $('<button type="button" class="access-toggle ' + access['access'] + '">' + access['access'] + '</button>');
 	group_accessor.button({
 		label	: access['access'],
 	});
 	group_accessor.click(function(e){
 		if($(this).hasClass('group')){
-			$(this).button('option', 'label', 'accessor');
+			$(this).html('accessor');
 			$(this).removeClass('group').addClass('accessor');
 		}
 		else{
-			$(this).button('option', 'label', 'group');
+			$(this).html('group');
 			$(this).removeClass('accessor').addClass('group');
 		}
 		e.stopImmediatePropagation();
 	});
 	
-	var accessor = $('<input type="text" class="accessor-field ui-widget" size="30" value="' + access['accessor'] + '" />');
+	var accessor = $('<input type="text" class="accessor-field" size="30" value="' + access['accessor'] + '" />');
 	
-	var permissions = $('<select class="permission-field ui-widget ui-widget-content"></select>');
+	var permissions = $('<select class="permission-field"></select>');
 	for(index in default_permissions){
 		var permission = default_permissions[index];
 		if(permission == access['permission']){
@@ -61,15 +57,13 @@ function addRule(access){
 		}
 	}
 	
-	var delete_rule = $('<button type="button" class="delete-rule"></button>');
-	delete_rule.button({
-		icons	: {primary: 'ui-icon-trash'},
-	}).click(function(){
+	var delete_rule = $('<button type="button" class="delete-rule"><span class="icon-trash"></span></button>');
+	delete_rule.click(function(){
 		$(this).parent().toggleClass('deleted');
 	});
 	
 	
-	var row = $('<div id="access-' + access['access_id'] + '" class="access-rule"></div>');
+	var row = $('<div id="access-' + access['access_id'] + '" class="form-inline access-rule"></div>');
 	row.append(thumb);
 	row.append(allow_deny);
 	row.append(group_accessor);
