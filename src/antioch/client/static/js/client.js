@@ -71,7 +71,7 @@ if(!window.console){
 									settings.error_handler('Error in listen: ' + errorThrown);
 								}
 								else{
-									settings.error_handler('Server Gone');
+									settings.error_handler('Error in listen: Server Gone');
 								}
 							}
 						},
@@ -167,7 +167,12 @@ if(!window.console){
 				processData: false,
 				data: JSON.stringify(options),
 				error:	function(jqXHR, textStatus, errorThrown){
-					settings.error_handler('Error in callRemote: ' + errorThrown);
+					if(errorThrown){
+						settings.error_handler('Error in callRemote: ' + errorThrown);
+					}
+					else{
+						settings.error_handler('Error in callRemote: Server Gone');
+					}
 				},
 				success: function(data, textStatus, jqXHR){
 					if(callback){
