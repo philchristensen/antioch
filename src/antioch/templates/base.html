@@ -30,11 +30,9 @@
 	{% endblock %}
 	<div class="container-fluid">
 		<div class="row-fluid">
-			<div class="span2">
-				{% block sidebar %}
-				{% endblock %}
-			</div>
-			<div class="span10">
+			{% block sidebar %}
+			{% endblock %}
+			<div class="{% block content_class %}span12{% endblock %}">
 				{% block content %}
 				{% endblock %}
 			</div>

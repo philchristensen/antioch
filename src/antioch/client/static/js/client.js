@@ -32,12 +32,20 @@ if(!window.console){
 				listen: false,
 				comet_url: "/comet/",
 				rest_url: "/rest/",
+				
 				callback: function(){
 					methods.write('Connected...');
 				},
+				
 				error_handler: function(err){
 					methods.write(err, true, true);
 				},
+				
+				observation_template: "<div class=\"alert alert-info\"></span>",
+				issued_command_template: "<div class=\"alert\">$content</div>",
+				error_template: "<div class=\"alert alert-error\">$content</div>",
+				message_template: "<div class=\"well\">$content</div>",
+				
 				// // The rest of these settings are defined in the client template
 				// // when the plugin is instantiated, keeping all template-related
 				// // code together. The setting names are also listed here:

@@ -27,6 +27,7 @@
 {% endblock %}
 
 {% block sidebar %}
+<div class="span2">
 	<div class="current-player">
 		<div class="player-image">
 			<img src="/assets/images/silhouette.png" >
@@ -42,7 +43,10 @@
 			{% endif %}
 		</ul>
 	</div>
+</div>
 {% endblock %}
+
+{% block content_class %}span12{% endblock %}
 
 {% block content %}
 	<div id="observations">
@@ -64,11 +68,6 @@
 			},
 			
 			actions_selector: "#actions",
-			
-			observation_template: "<div class=\"alert alert-info\"></span>",
-			issued_command_template: "<div class=\"alert\">$content</div>",
-			error_template: "<div class=\"alert alert-error\">$content</div>",
-			message_template: "<div class=\"well\">$content</div>",
 			
 			players_wrapper_node: '<div class="players-list"></div>',
 			players_list_node: '<ul></ul>',
