@@ -49,4 +49,9 @@ else:
 		contents		= [],
 	)
 
-observe(target, observations)
+if(obj.id == caller.location.id):
+	observe(target, observations)
+else:
+	output = '<h3 class="name">%s</h3>' % observations['name']
+	output = output + '<p class="lead description">%s</p>' % observations['description']
+	write(target, output, escape_html=False)

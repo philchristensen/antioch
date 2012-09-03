@@ -67,7 +67,12 @@ if(!window.console){
 								listen(handler);
 							}
 							else if(textStatus != 'abort'){
-								settings.error_handler('Error in listen: ' + errorThrown);
+								if(errorThrown){
+									settings.error_handler('Error in listen: ' + errorThrown);
+								}
+								else{
+									settings.error_handler('Server Gone');
+								}
 							}
 						},
 						success: function(data, textStatus, jqXHR){
@@ -286,7 +291,8 @@ if(!window.console){
 			t.append(player_content);
 			t.append(item_content);
 			
-			methods.logAction(t);
+			$('#observations').empty();
+			$('#observations').append(t);
 			
 			$(this).focus();
 		},
