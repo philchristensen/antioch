@@ -67,7 +67,7 @@ class AppService(service.Service):
 		"""
 		Stop the loop.
 		"""
-		log.info("stopped processing appserver queue")
+		log.info("stopping appserver queue, please wait...")
 		self.stopped = True
 		self.loop.stop()
 		reactor.addSystemEventTrigger("before", "shutdown", self._stopService)

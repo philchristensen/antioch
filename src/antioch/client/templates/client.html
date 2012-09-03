@@ -57,6 +57,9 @@
 	$(document).ready(function(){
 		$('#connection').antioch({
 			listen: true,
+			callback: function(){
+				$('#connection').antioch('callRemote', 'parse', {sentence: 'look here'});
+			},
 			
 			actions_selector: "#actions",
 			

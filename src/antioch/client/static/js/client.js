@@ -32,6 +32,9 @@ if(!window.console){
 				listen: false,
 				comet_url: "/comet/",
 				rest_url: "/rest/",
+				callback: function(){
+					methods.write('Connected...');
+				},
 				error_handler: function(err){
 					methods.write(err, true, true);
 				},
@@ -128,7 +131,11 @@ if(!window.console){
 								methods.handleMessage(msg);
 							}
 						});
+						settings.callback()
 					}, 500);
+				}
+				else{
+					settings.callback();
 				}
 			});
 		},
