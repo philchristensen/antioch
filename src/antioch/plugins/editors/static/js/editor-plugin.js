@@ -3,7 +3,7 @@
 	var sizes = {
 		object: {
 			width: 470,
-			height: 595,
+			height: 625,
 		},
 		verb: {
 			width: 815,

@@ -49,7 +49,7 @@ class LessMedia(widgets.Media):
 			if(media):
 				self.add_js(('/assets/js/less-1.3.0.min.js',))
 			return chain(*[
-				[u'<link href="%(href)s" type="text/css" media="%(medium)s" rel="stylesheet/less" />' % dict(
+				[u'<link href="%(href)s" type="text/css" media="%(medium)s" rel="stylesheet/less">' % dict(
 					href    = self.absolute_path(path),
 					medium  = medium,
 				) for path in self._less[medium]]

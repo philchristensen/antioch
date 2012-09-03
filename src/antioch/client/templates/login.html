@@ -2,7 +2,8 @@
 {% load url from future %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/client-login.css"/>
+<link href="{{ STATIC_URL }}less/client-login.less" type="text/css" media="screen" rel="stylesheet/less" />
+<script type="text/javascript" src="{{ STATIC_URL }}js/less-1.3.0.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +18,7 @@
 		{% csrf_token %}
 		<label>{{ form.username.label_tag }}</label>{{ form.username }}
 		<label>{{ form.password.label_tag }}</label>{{ form.password }}
-		<input type="submit" name="submit" value="login"/>
+		<input class="btn btn-primary" type="submit" name="submit" value="login"/>
 	</form>
 </div>
 {% endblock %}
