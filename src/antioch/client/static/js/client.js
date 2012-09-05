@@ -140,7 +140,6 @@ if(!window.console){
 						listen(function(msgs){
 							for(index in msgs){
 								msg = msgs[index];
-								console.log(msg)
 								methods.handleMessage(msg);
 							}
 						});
@@ -252,41 +251,42 @@ if(!window.console){
 				var contents_list = $(settings.contents_list_node);
 				
 				for(index in observations['contents']){
-					var details = observations['contents'][index];
-					if(details.type){
-						image_div = ($(settings.player_image_node));
-						if(details.image){
-							image_div.append($(settings.player_image_template.replace('$content', details.image)));
+					(function(details){
+						if(details.type){
+							image_div = ($(settings.player_image_node));
+							if(details.image){
+								image_div.append($(settings.player_image_template.replace('$content', details.image)));
+							}
+							else{
+								image_div.append($(settings.default_image_node));
+							}
+						
+							name_div = $(settings.player_name_node);
+							name_div.html(details.name);
+						
+							list_item = $(settings.player_list_item_node);
+							list_item.click(function(){
+								methods.look(details.name);
+							});
+							list_item.append(image_div);
+							list_item.append(name_div);
+						
+							if(details.mood){
+								mood_div = $(settings.player_mood_node);
+								mood_div.html(details.mood);
+								list_item.append(mood_div);
+							}
+							player_list.append(list_item);
 						}
 						else{
-							image_div.append($(settings.default_image_node));
+							list_item = $(settings.content_list_item_node);
+							list_item.html(details.name);
+							list_item.click(function(){
+								methods.look(details.name);
+							});
+							contents_list.append(list_item);
 						}
-						
-						name_div = $(settings.player_name_node);
-						name_div.html(details.name);
-						
-						list_item = $(settings.player_list_item_node);
-						list_item.click(function(){
-							methods.look(details.name);
-						});
-						list_item.append(image_div);
-						list_item.append(name_div);
-						
-						if(details.mood){
-							mood_div = $(settings.player_mood_node);
-							mood_div.html(details.mood);
-							list_item.append(mood_div);
-						}
-						player_list.append(list_item);
-					}
-					else{
-						list_item = $(settings.content_list_item_node);
-						list_item.html(details.name);
-						list_item.click(function(){
-							methods.look(details.name);
-						});
-						contents_list.append(list_item);
-					}
+					})(observations['contents'][index]);
 				}
 				
 				if(player_list[0].children.length){
