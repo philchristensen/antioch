@@ -1,9 +1,9 @@
-antioch 2.0pre1
+antioch 2.0pre2
 =================
 
 (c) Phil Christensen, <phil@bubblehouse.org>
 
-26 February 2012
+5 September 2012
 
 Introduction
 -------------
@@ -12,10 +12,12 @@ antioch is a next-generation [MUD](http://en.wikipedia.org/wiki/MUD)/[MOO](http:
 virtual world engine. A scalable architecture lays the foundation for huge, highly customizable virtual worlds, while
 sandboxed code execution allows users to author content in a secure and robust environment.
 
+![screenshot](https://github.com/philchristensen/antioch/raw/master/doc/img/screenshot.png "Sample Screenshot")
+
 Feature Set
 -----------
 
-* Django-powered, standards-compliant web interface using HTML5, CSS3, jQuery, REST and COMET
+* Django-powered, standards-compliant web interface using Bootstrap, jQuery, REST and COMET
 
 * Sandboxed Pure-Python execution enables live programming of in-game code
 

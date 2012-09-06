@@ -1,0 +1,63 @@
+@import "../bootstrap/less/bootstrap.less";
+
+body {
+	padding: 10px 0 0 0;
+}
+
+#editor {
+	padding: 10px 0;
+	
+	#add-button {
+		margin-bottom: 10px;
+	}
+	
+	.access-rule.deleted .delete-rule {
+		.btn-danger;
+	}
+	
+	.access-rule {
+		margin-bottom: 3px;
+		
+		button, input, select {
+			margin-right: 5px;
+		}
+		
+		.drag-thumb {
+			width: 10px;
+			height: 25px;
+			background-image: url('/assets/images/drag-thumb.gif');
+			display: inline-block;
+			vertical-align: -10px;
+		}
+		
+		.permission-field {
+			width: 140px;
+		}
+		
+		.access-toggle {
+			.btn;
+			min-width: 80px !important;
+		}
+		
+		.rule-toggle {
+			.btn;
+			min-width: 80px !important;
+		}
+		
+		.delete-rule {
+			.btn;
+		}
+		
+		.allow {
+			.btn-success;
+		}
+		
+		.deny {
+			.btn-danger;
+		}
+		
+		.accessor {
+			.btn-primary;
+		}
+	}
+}
