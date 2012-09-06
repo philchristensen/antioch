@@ -8,7 +8,7 @@
 Provide the verb execution environment
 """
 
-import time, sys, os.path
+import time, sys, os.path, logging
 
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
@@ -20,6 +20,8 @@ allowed_modules = (
 	'hashlib',
 	'string',
 )
+
+pylog = logging.getLogger(__name__)
 
 def is_frame_access_allowed():
 	"""
@@ -285,6 +287,18 @@ def write(p, user, text, is_error=False, escape_html=True):
 		is_error	= is_error,
 		escape_html	= escape_html,
 	))
+
+@api
+def log(p, text, is_error=False):
+	"""
+	Verb API: Print a string of text to the server's console.
+	"""
+	if not(p.caller.is_wizard()):
+		return
+	if(is_error):
+		pylog.error(text)
+	else:
+		pylog.info(text)
 
 @api
 def broadcast(p, text, escape_html=True):
