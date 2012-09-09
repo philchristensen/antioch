@@ -1,13 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link href="{{ STATIC_URL }}less/object-editor.less" type="text/css" media="screen" rel="stylesheet/less" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/ajax_select.css"/>
-<script type="text/javascript" src="{{ STATIC_URL }}js/global.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/client.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/editor-plugin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/ajax_select.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/less/dist/less-1.3.0.min.js"></script>
+	{{ media }}
 {% endblock %}
 
 {% block content %}
@@ -92,11 +86,6 @@ $(document).ready(function(){
 			}
 		});
 	});
-	
-	$('#add-verb').button({icons:{primary:'ui-icon-plusthick'}});
-	$('#remove-verb').button({icons:{primary:'ui-icon-minusthick'}});
-	$('#add-prop').button({icons:{primary:'ui-icon-plusthick'}});
-	$('#remove-prop').button({icons:{primary:'ui-icon-minusthick'}});
 	
 	$('#access-button').click(function(){
 		$(document).antioch('handleMessage', {

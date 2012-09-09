@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link href="{{ STATIC_URL }}less/access-editor.less" type="text/css" media="screen" rel="stylesheet/less" />
-<script type="text/javascript" src="{{ STATIC_URL }}js/client.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/editor-plugin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/access-editor.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/less/dist/less-1.3.0.min.js"></script>
+	{{ media }}
 {% endblock %}
 
 {% block content %}

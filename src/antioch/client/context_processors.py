@@ -10,6 +10,8 @@ Add some essential variables to the template environment.
 
 from django.conf import settings
 
+from antioch import assets
+
 def default_variables(request):
 	"""
 	Adds default context variables to the template.
@@ -17,5 +19,13 @@ def default_variables(request):
 	return {
 		'JQUERY_VERSION': settings.JQUERY_VERSION,
 		'JQUERY_UI_VERSION': settings.JQUERY_UI_VERSION,
+		'LOGIN_MEDIA': assets.LessMedia(
+			less        = dict(
+				screen  = [
+					'%sless/client-login.less' % settings.STATIC_URL,
+				],
+			),
+		),
+
 	}
 
