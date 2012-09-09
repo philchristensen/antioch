@@ -1,12 +1,11 @@
-LESS_FILES= $(shell find static -name '*.less')
-BOOTSTRAP_FILES= $(shell find static -name 'bootstrap.less')
-CSS_FILES=$(LESS_FILES:.less=.css)
+LESS_FILES= $(shell find static/less -name '*.less')
+BOOTSTRAP_FILES= $(shell find static/bootstrap -name 'bootstrap.less')
 
-all: less
+all: bootstrap less
 
-bootstrap: $(BOOTSTRAP_FILES)
+bootstrap: $(BOOTSTRAP_FILES:.less=.css)
 
-less: $(CSS_FILES) | bootstrap
+less: $(LESS_FILES:.less=.css)
 
 %.css: %.less
-    lessc $< > $@
+	lessc $< > $@
