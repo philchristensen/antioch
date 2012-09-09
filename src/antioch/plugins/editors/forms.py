@@ -20,10 +20,6 @@ class PropertyForm(forms.ModelForm):
 		model = models.Property
 		exclude = ('origin',)
 	
-	def __init__(self, *args, **kwargs):
-		forms.ModelForm.__init__(self, *args, **kwargs)
-		self.fields['type'].widget.attrs['class'] = 'ui-widget ui-widget-content'
-	
 	value = forms.CharField(widget=widgets.HiddenInput)
 	owner = fields.AutoCompleteSelectField('object')
 

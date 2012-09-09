@@ -10,8 +10,8 @@
 			height: 590,
 		},
 		property: {
-			width: 815,
-			height: 590,
+			width: 975,
+			height: 585,
 		},
 		access: {
 			width: 650,
