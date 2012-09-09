@@ -26,7 +26,7 @@ def autosetup():
 	from setuptools import setup, find_packages
 	return setup(
 		name			= "antioch",
-		version			= "2.0pre1",
+		version			= "2.0pre2",
 		
 		packages		= find_packages('src') + ['twisted.plugins'],
 		package_dir		= {
