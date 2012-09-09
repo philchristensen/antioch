@@ -26,6 +26,13 @@ def default_variables(request):
 				],
 			),
 		),
-
+		'BOOTSTRAP_MEDIA': assets.LessMedia(
+			less        = dict(
+				screen  = [
+					'%sbootstrap/less/bootstrap.less' % settings.STATIC_URL,
+					'%sbootstrap/less/responsive.less' % settings.STATIC_URL,
+				],
+			),
+		),
 	}
 
