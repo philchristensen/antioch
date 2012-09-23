@@ -2,13 +2,14 @@
 (function($) {
 	$(document).antioch('addMessageListener', 'ask', function(msg){
 		var response = prompt(msg.details.question);
-		var callback = msg.callback
-		$(document).antioch('callRemote', 'register-task', {
+		var callback = msg.callback;
+		callback.args.push(response);
+		$(document).antioch('callRemote', 'registertask', {
 			delay:      0,
-			origin_id:  msg.callback.origin_id.toString(),
-			verb_name:  msg.callback.verb_name,
-			args:       JSON.stringify(msg.callback.args),
-			kwargs:     JSON.stringify(msg.callback.kwargs),
+			origin_id:  callback.origin_id.toString(),
+			verb_name:  callback.verb_name,
+			args:       JSON.stringify(callback.args),
+			kwargs:     JSON.stringify(callback.kwargs),
 		});
 	});
 })(jQuery);

@@ -20,15 +20,15 @@ from twisted.internet import defer, task, reactor
 
 log = logging.getLogger(__name__)
 
-def get_command_support(class_name):
+def get_command_support(command):
 	"""
 	Get the command class for the provided class name.
 	"""
 	from antioch import plugins
 	for plugin in plugins.iterate():
 		available_commands = plugin.get_commands()
-		if(class_name in available_commands):
-			klass = available_commands[class_name]
+		if(command in available_commands):
+			klass = available_commands[command]
 			child = getattr(plugin, 'transaction_child', None)
 			return klass, child
 	return None, None
@@ -93,7 +93,7 @@ class AppService(service.Service):
 		
 		klass, child = get_command_support(msg['command'])
 		if(klass is None):
-			log.debug("no such command %s: %s" % (msg['command'], msg))
+			log.error("no such command %s: %s" % (msg['command'], msg))
 			yield self.consumer.send_message(header.reply_to, {
 				'correlation_id': msg['correlation_id'],
 				'error':'No such command: %s' % msg['command']
