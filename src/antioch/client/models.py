@@ -9,12 +9,11 @@ from django.db import models
 class Object(models.Model):
 	class Meta:
 		db_table = 'object'
-		managed = False
 	
 	name = models.CharField(max_length=255)
 	unique_name = models.BooleanField()
-	owner = models.ForeignKey('self', related_name='+')
-	location = models.ForeignKey('self', related_name='contents', null=True)
+	owner = models.ForeignKey('self', related_name='+', on_delete=models.SET_NULL)
+	location = models.ForeignKey('self', related_name='contents', null=True, on_delete=models.SET_NULL)
 	parents = models.ManyToManyField('self', related_name='children', symmetrical=False, through='Relationship')
 	observers = models.ManyToManyField('self', related_name='observing', symmetrical=False, through='Observation')
 	
@@ -24,38 +23,34 @@ class Object(models.Model):
 class Relationship(models.Model):
 	class Meta:
 		db_table = 'object_relation'
-		managed = False
 	
-	child = models.ForeignKey(Object, related_name='parent')
-	parent = models.ForeignKey(Object, related_name='child')
+	child = models.ForeignKey(Object, related_name='parent', on_delete=models.CASCADE)
+	parent = models.ForeignKey(Object, related_name='child', on_delete=models.CASCADE)
 	weight = models.IntegerField()
 
 class Observation(models.Model):
 	class Meta:
 		db_table = 'object_observer'
-		managed = False
 	
-	object = models.ForeignKey(Object, related_name='observer')
-	observer = models.ForeignKey(Object, related_name='object')
+	object = models.ForeignKey(Object, related_name='observer', on_delete=models.CASCADE)
+	observer = models.ForeignKey(Object, related_name='object', on_delete=models.CASCADE)
 
 class Alias(models.Model):
 	class Meta:
 		verbose_name_plural = 'aliases'
 		db_table = 'object_alias'
-		managed = False
 	
-	object = models.ForeignKey(Object, related_name='aliases')
+	object = models.ForeignKey(Object, related_name='aliases', on_delete=models.CASCADE)
 	alias = models.CharField(max_length=255)
 
 class Verb(models.Model):
 	class Meta:
 		db_table = 'verb'
-		managed = False
 	
 	code = models.TextField()
 	filename = models.CharField(max_length=255, blank=True)
-	owner = models.ForeignKey(Object, related_name='+')
-	origin = models.ForeignKey(Object, related_name='verbs')
+	owner = models.ForeignKey(Object, related_name='+', on_delete=models.SET_NULL)
+	origin = models.ForeignKey(Object, related_name='verbs', on_delete=models.CASCADE)
 	ability = models.BooleanField()
 	method = models.BooleanField()
 	
@@ -76,9 +71,8 @@ class Verb(models.Model):
 class VerbName(models.Model):
 	class Meta:
 		db_table = 'verb_name'
-		managed = False
 	
-	verb = models.ForeignKey(Verb, related_name='names')
+	verb = models.ForeignKey(Verb, related_name='names', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 	
 	def __unicode__(self):
@@ -91,13 +85,12 @@ class Property(models.Model):
 	class Meta:
 		verbose_name_plural = 'properties'
 		db_table = 'property'
-		managed = False
 	
 	name = models.CharField(max_length=255)
 	value = models.TextField()
 	type = models.CharField(max_length=255, choices=[(x,x) for x in ('string', 'python', 'dynamic')])
-	owner = models.ForeignKey(Object, related_name='+')
-	origin = models.ForeignKey(Object, related_name='properties')
+	owner = models.ForeignKey(Object, related_name='+', on_delete=models.SET_NULL)
+	origin = models.ForeignKey(Object, related_name='properties', on_delete=models.CASCADE)
 	
 	def __unicode__(self):
 		return u'%s {#%s on %s}' % (self.name, self.id, self.origin)
@@ -105,7 +98,6 @@ class Property(models.Model):
 class Permission(models.Model):
 	class Meta:
 		db_table = 'permission'
-		managed = False
 	
 	name = models.CharField(max_length=255)
 	
@@ -116,16 +108,15 @@ class Access(models.Model):
 	class Meta:
 		verbose_name_plural = 'access controls'
 		db_table = 'access'
-		managed = False
 	
-	object = models.ForeignKey(Object, related_name='acl', null=True)
-	verb = models.ForeignKey(Verb, related_name='acl', null=True)
-	property = models.ForeignKey(Property, related_name='acl', null=True)
-	rule = models.CharField(max_length=5, choices=(('allow', 'allow'), ('deny', 'deny')))
-	permission = models.ForeignKey(Permission, related_name='usage')
-	type = models.CharField(max_length=8, choices=(('accessor', 'accessor'), ('group', 'group')))
-	accessor = models.ForeignKey(Object, related_name='rights')
-	group = models.CharField(max_length=8, choices=(('everyone', 'everyone'), ('owners', 'owners'), ('wizards', 'wizards')))
+	object = models.ForeignKey(Object, related_name='acl', null=True, on_delete=models.CASCADE)
+	verb = models.ForeignKey(Verb, related_name='acl', null=True, on_delete=models.CASCADE)
+	property = models.ForeignKey(Property, related_name='acl', null=True, on_delete=models.CASCADE)
+	rule = models.CharField(max_length=5, choices=[(x,x) for x in ('allow', 'deny')])
+	permission = models.ForeignKey(Permission, related_name='usage', on_delete=models.CASCADE)
+	type = models.CharField(max_length=8, choices=[(x,x) for x in ('accessor', 'group')])
+	accessor = models.ForeignKey(Object, related_name='rights', on_delete=models.CASCADE)
+	group = models.CharField(max_length=8, choices=[(x,x) for x in ('everyone', 'owners', 'wizards')])
 	weight = models.IntegerField()
 	
 	def actor(self):
@@ -168,7 +159,6 @@ class Access(models.Model):
 class Player(models.Model):
 	class Meta:
 		db_table = 'player'
-		managed = False
 	
 	def __unicode__(self):
 		return self.email
@@ -188,7 +178,7 @@ class Player(models.Model):
 	def is_superuser(self):
 		return False
 	
-	avatar = models.ForeignKey(Object)
+	avatar = models.ForeignKey(Object, on_delete=models.SET_NULL)
 	session_id = models.CharField(max_length=255)
 	wizard = models.BooleanField()
 	crypt = models.CharField(max_length=255)
@@ -198,10 +188,9 @@ class Player(models.Model):
 class Task(models.Model):
 	class Meta:
 		db_table = 'task'
-		managed = False
 	
-	user = models.ForeignKey(Object, related_name='tasks')
-	origin = models.ForeignKey(Object, related_name='+')
+	user = models.ForeignKey(Object, related_name='tasks', on_delete=models.CASCADE)
+	origin = models.ForeignKey(Object, related_name='+', on_delete=models.CASCADE)
 	verb_name = models.CharField(max_length=255)
 	args = models.TextField()
 	kwargs = models.TextField()
