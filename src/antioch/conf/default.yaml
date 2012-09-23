@@ -29,7 +29,7 @@
     "JQUERY_UI_VERSION": "1.8.17",
     
     "PSQL_PATH": "psql",
-    "JOB_TIMEOUT": 3,
+    "JOB_TIMEOUT": 5,
     "SUPPRESS_DEPRECATION_WARNINGS": true,
     "SUPPRESS_USER_WARNINGS": true,
     "XSENDFILE": false,
