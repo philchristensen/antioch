@@ -3,7 +3,7 @@ from django.forms import widgets
 
 from ajax_select import fields
 
-from antioch.client import models
+from antioch.core import models
 
 class ObjectForm(forms.ModelForm):
 	class Meta:

@@ -18,7 +18,7 @@ from twisted.application import internet
 from twisted.web import wsgi, server
 
 from antioch import conf
-from antioch.client import models
+from antioch.core import models
 from antioch.core.wsgi import handler 
 from antioch.util.logs import AccessLogOnnaStick, AccessLoggingSite
 

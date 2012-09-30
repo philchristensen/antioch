@@ -4,8 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
 from antioch import assets
-from antioch.core import appserver
-from antioch.client import models
+from antioch.core import appserver, models
 from antioch.plugins.editors import forms
 
 @login_required
