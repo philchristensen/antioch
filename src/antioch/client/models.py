@@ -12,7 +12,7 @@ class Object(models.Model):
 	
 	name = models.CharField(max_length=255)
 	unique_name = models.BooleanField()
-	owner = models.ForeignKey('self', related_name='+', on_delete=models.SET_NULL)
+	owner = models.ForeignKey('self', related_name='+', null=True, on_delete=models.SET_NULL)
 	location = models.ForeignKey('self', related_name='contents', null=True, on_delete=models.SET_NULL)
 	parents = models.ManyToManyField('self', related_name='children', symmetrical=False, through='Relationship')
 	observers = models.ManyToManyField('self', related_name='observing', symmetrical=False, through='Observation')
@@ -26,7 +26,7 @@ class Relationship(models.Model):
 	
 	child = models.ForeignKey(Object, related_name='parent', on_delete=models.CASCADE)
 	parent = models.ForeignKey(Object, related_name='child', on_delete=models.CASCADE)
-	weight = models.IntegerField()
+	weight = models.IntegerField(default=0)
 
 class Observation(models.Model):
 	class Meta:
@@ -48,8 +48,8 @@ class Verb(models.Model):
 		db_table = 'verb'
 	
 	code = models.TextField()
-	filename = models.CharField(max_length=255, blank=True)
-	owner = models.ForeignKey(Object, related_name='+', on_delete=models.SET_NULL)
+	filename = models.CharField(max_length=255, blank=True, null=True)
+	owner = models.ForeignKey(Object, related_name='+', null=True, on_delete=models.SET_NULL)
 	origin = models.ForeignKey(Object, related_name='verbs', on_delete=models.CASCADE)
 	ability = models.BooleanField()
 	method = models.BooleanField()
@@ -89,7 +89,7 @@ class Property(models.Model):
 	name = models.CharField(max_length=255)
 	value = models.TextField()
 	type = models.CharField(max_length=255, choices=[(x,x) for x in ('string', 'python', 'dynamic')])
-	owner = models.ForeignKey(Object, related_name='+', on_delete=models.SET_NULL)
+	owner = models.ForeignKey(Object, related_name='+', null=True, on_delete=models.SET_NULL)
 	origin = models.ForeignKey(Object, related_name='properties', on_delete=models.CASCADE)
 	
 	def __unicode__(self):
@@ -115,9 +115,9 @@ class Access(models.Model):
 	rule = models.CharField(max_length=5, choices=[(x,x) for x in ('allow', 'deny')])
 	permission = models.ForeignKey(Permission, related_name='usage', on_delete=models.CASCADE)
 	type = models.CharField(max_length=8, choices=[(x,x) for x in ('accessor', 'group')])
-	accessor = models.ForeignKey(Object, related_name='rights', on_delete=models.CASCADE)
-	group = models.CharField(max_length=8, choices=[(x,x) for x in ('everyone', 'owners', 'wizards')])
-	weight = models.IntegerField()
+	accessor = models.ForeignKey(Object, related_name='rights', null=True, on_delete=models.CASCADE)
+	group = models.CharField(max_length=8, null=True, choices=[(x,x) for x in ('everyone', 'owners', 'wizards')])
+	weight = models.IntegerField(default=0)
 	
 	def actor(self):
 		return self.accessor if self.type == 'accessor' else self.group
@@ -178,12 +178,12 @@ class Player(models.Model):
 	def is_superuser(self):
 		return False
 	
-	avatar = models.ForeignKey(Object, on_delete=models.SET_NULL)
-	session_id = models.CharField(max_length=255)
+	avatar = models.ForeignKey(Object, null=True, on_delete=models.SET_NULL)
+	session_id = models.CharField(max_length=255, null=True)
 	wizard = models.BooleanField()
 	crypt = models.CharField(max_length=255)
-	last_login = models.DateTimeField()
-	last_logout = models.DateTimeField()
+	last_login = models.DateTimeField(null=True)
+	last_logout = models.DateTimeField(null=True)
 
 class Task(models.Model):
 	class Meta:
@@ -196,6 +196,6 @@ class Task(models.Model):
 	kwargs = models.TextField()
 	created = models.DateTimeField()
 	delay = models.IntegerField()
-	killed = models.BooleanField()
-	error = models.CharField(max_length=255)
-	trace = models.TextField()
+	killed = models.BooleanField(default=False)
+	error = models.CharField(max_length=255, blank=True, null=True)
+	trace = models.TextField(blank=True, null=True)

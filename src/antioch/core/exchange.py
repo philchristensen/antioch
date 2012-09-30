@@ -612,7 +612,7 @@ class ObjectExchange(object):
 		Add the given parent to this child's list of immediate ancestors.
 		"""
 		self.pool.runOperation(sql.interp(
-			"INSERT INTO object_relation (child_id, parent_id) VALUES (%s, %s)",
+			"INSERT INTO object_relation (child_id, parent_id, weight) VALUES (%s, %s, 0)",
 			child_id, parent_id))
 	
 	def has(self, origin_id, item_type, name, recurse=True, unrestricted=True):

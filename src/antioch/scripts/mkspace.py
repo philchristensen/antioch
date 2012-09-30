@@ -63,9 +63,9 @@ def main():
 		bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', default_bootstrap_path % config['dataset-name'])
 	bootstrap_path = os.path.abspath(bootstrap_path)
 	
-	if not(config['no-init']):
-		bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)
-	bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path)
+	# if not(config['no-init']):
+	# 	bootstrap.initialize_database(config['with-psql'], config['db-url'], config['psql-args'], quiet=False)
+	# bootstrap.load_schema(config['with-psql'], config['db-url'], schema_path)
 
 	pool = dbapi.connect(config['db-url'])
 	bootstrap.load_python(pool, bootstrap_path)
