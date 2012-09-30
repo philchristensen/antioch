@@ -9,7 +9,7 @@ from twisted.trial import unittest
 from twisted.internet import defer
 
 from antioch import test
-from antioch.core import exchange, model, errors
+from antioch.core import exchange, interface, errors
 
 exchange.ObjectExchange.permission_list = dict(
 	anything   = 1,
@@ -222,7 +222,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		ctx = test.Anything()
 		ex = exchange.ObjectExchange(pool, queue, ctx)
 		for index in range(1, 6):
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(index)
 			ex.cache['object-%s' % index] = o
 		
@@ -246,7 +246,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		ex.save(o)
 		
 		self.failUnlessEqual(o.get_id(), 1024)
@@ -271,8 +271,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
-		v = model.Verb(o)
+		o = interface.Object(ex)
+		v = interface.Verb(o)
 		ex.save(v)
 		
 		self.failUnlessEqual(v.get_id(), 1024)
@@ -296,8 +296,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
-		p = model.Property(o)
+		o = interface.Object(ex)
+		p = interface.Property(o)
 		ex.save(p)
 		
 		self.failUnlessEqual(p.get_id(), 1024)
@@ -323,7 +323,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_name('test object', real=True)
 		ex.cache['object-1024'] = o
 		
@@ -347,7 +347,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_name('test object', real=True)
 		ex.cache['object-1024'] = o
 		
@@ -363,7 +363,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything()
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(1024)
 		ex.cache['object-1024'] = o
 		
@@ -421,7 +421,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [1024, 2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		
@@ -535,7 +535,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		
@@ -586,9 +586,9 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(1024)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		ex.cache['object-1024'] = o
@@ -676,12 +676,12 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(512)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
-		o2 = model.Object(ex)
+		o2 = interface.Object(ex)
 		o2.set_id(1024)
 		
 		ex.cache['object-512'] = o
@@ -739,9 +739,9 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(1024)
-		p = model.Property(o)
+		p = interface.Property(o)
 		p.set_id(2048)
 		p.set_name('description')
 		
@@ -765,12 +765,12 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(512)
-		p = model.Property(o)
+		p = interface.Property(o)
 		p.set_id(2048)
 		
-		o2 = model.Object(ex)
+		o2 = interface.Object(ex)
 		o2.set_id(1024)
 		
 		ex.cache['object-512'] = o
@@ -846,7 +846,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		ex.cache['object-1024'] = model.Object(ex)
+		ex.cache['object-1024'] = interface.Object(ex)
 		ex.cache['object-1024'].set_id(1024)
 		
 		ex.remove('object', 1024)
@@ -918,7 +918,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.set_id(1024)
 		ex.cache['object-1024'] = o
 		
@@ -959,10 +959,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		accessor = model.Object(ex)
+		accessor = interface.Object(ex)
 		accessor.set_id(1024)
 		
-		subject = model.Object(ex)
+		subject = interface.Object(ex)
 		subject.set_id(2048)
 		
 		ex.cache['object-1024'] = accessor
@@ -997,7 +997,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.allow('owners', 'anything')
 		o.allow(o, 'write')
 	
@@ -1024,7 +1024,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		)
 		ex = exchange.ObjectExchange(pool)
 		
-		o = model.Object(ex)
+		o = interface.Object(ex)
 		o.deny('owners', 'anything')
 	
 	def test_is_wizard(self):
@@ -1215,7 +1215,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		pool = test.Anything(
 			runQuery	= runQuery,
 		)
-		o = model.Object('test')
+		o = interface.Object('test')
 		ex = exchange.ObjectExchange(pool)
 		ex.cache['object--1'] = o
 		observers = ex.get_observers(-1)
@@ -1364,7 +1364,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		
@@ -1401,7 +1401,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		
@@ -1432,7 +1432,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		
@@ -1469,7 +1469,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
 		
 		expected_ids = [256, 512, 2048, 4096]
 		for obj_id in expected_ids:
-			o = model.Object(ex)
+			o = interface.Object(ex)
 			o.set_id(obj_id)
 			ex.cache['object-%s' % obj_id] = o
 		

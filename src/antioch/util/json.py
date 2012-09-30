@@ -57,15 +57,15 @@ def dumps(obj):
 	"""
 	Create some antioch-flavored JSON (containing antioch object references).
 	"""
-	from antioch.core import model
+	from antioch.core import interface
 	def from_entity(o):
-		if not(isinstance(o, model.Entity)):
+		if not(isinstance(o, interface.Entity)):
 			return o
-		if(isinstance(o, model.Object)):
+		if(isinstance(o, interface.Object)):
 			return {'o#%d' % o.get_id():o.get_name(real=True)}
-		elif(isinstance(o, model.Verb)):
+		elif(isinstance(o, interface.Verb)):
 			return {'v#%d' % o.get_id():o.name}
-		elif(isinstance(o, model.Property)):
+		elif(isinstance(o, interface.Property)):
 			return {'p#%d' % o.get_id():o.name}
 	
 	return simplejson.dumps(obj, default=from_entity)

@@ -13,14 +13,14 @@ except ImportError, e:
 	from StringIO import StringIO
 
 from antioch.util import sql
-from antioch.core import model
+from antioch.core import interface
 
 ADDRESS_REGEX = re.compile(r'^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$')
 
 def get_user_email(user):
 	ex = user.get_exchange()
 	system = ex.get_object(1)
-	if(not isinstance(user, model.Object)):
+	if(not isinstance(user, interface.Object)):
 		raise ValueError('Expecting player Object, got %r instead' % user)
 	elif(user == system):
 		return system.get('admin_email', 'daemon@antioch.local').value

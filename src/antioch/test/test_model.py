@@ -6,7 +6,7 @@
 from twisted.trial import unittest
 
 from antioch import test
-from antioch.core import model, errors
+from antioch.core import interface, errors
 
 class EntityTestCase(unittest.TestCase):
 	def setUp(self):
@@ -17,7 +17,7 @@ class EntityTestCase(unittest.TestCase):
 	
 	def test_id(self):
 		e = test.Anything()
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		self.failUnlessEqual(o.get_id(), 1024)
@@ -31,13 +31,13 @@ class EntityTestCase(unittest.TestCase):
 			save		= lambda s: True,
 		)
 		
-		owner = model.Object(e)
+		owner = interface.Object(e)
 		owner_mock = test.Anything(
 			get_id	= lambda: 1024,
 		)
-		subject = model.Object(e)
-		subject2 = model.Property(subject)
-		subject3 = model.Verb(subject)
+		subject = interface.Object(e)
+		subject2 = interface.Property(subject)
+		subject3 = interface.Verb(subject)
 		
 		subject.set_owner(owner_mock)
 		self.failUnlessEqual(subject.get_owner(), owner)
@@ -57,26 +57,26 @@ class EntityTestCase(unittest.TestCase):
 			get_context	= lambda: None,
 		)
 		
-		origin = model.Object(e)
-		p = model.Property(origin)
+		origin = interface.Object(e)
+		p = interface.Property(origin)
 		
 		self.failUnlessEqual(p.get_origin(), origin)
 		self.failUnlessEqual(p.origin, origin)
 		
-		v = model.Verb(origin)
+		v = interface.Verb(origin)
 		self.failUnlessEqual(v.get_origin(), origin)
 		self.failUnlessEqual(v.origin, origin)
 	
 	def test_get_exchange(self):
 		e = test.Anything()
-		o = model.Object(e)
+		o = interface.Object(e)
 		self.failUnlessEqual(o.get_exchange(), e)
 	
 	def test_get_context(self):
 		e = test.Anything(
 			get_context	= lambda: o
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		self.failUnlessEqual(o.get_context(), o)
 	
 	def test_get_obj_details(self):
@@ -89,7 +89,7 @@ class EntityTestCase(unittest.TestCase):
 			get_verb_list		= lambda i: [],
 			get_property_list	= lambda i: [],
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		o.set_name('test object', real=True)
 		
@@ -118,9 +118,9 @@ class EntityTestCase(unittest.TestCase):
 			add_verb_name		= lambda i, n: self.failUnlessEqual(n, 'test'),
 			instantiate			= lambda *a, **kw: o if a[0] == 'object' else v,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_names(['test'])
 		
 		details = v.get_details()
@@ -138,7 +138,7 @@ class EntityTestCase(unittest.TestCase):
 		e = test.Anything(
 			save = lambda x: test.raise_e(errors.TestError())
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		self.failUnlessRaises(errors.TestError, o.save)
 	
 	def test_destroy(self):
@@ -146,7 +146,7 @@ class EntityTestCase(unittest.TestCase):
 			destroy		= lambda x: test.raise_e(errors.TestError()),
 			get_context = lambda: None,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		self.failUnlessRaises(errors.TestError, o.destroy)
 
 class ObjectTestCase(unittest.TestCase):
@@ -162,9 +162,9 @@ class ObjectTestCase(unittest.TestCase):
 			save		= lambda x: None,
 			instantiate	= lambda *a, **kw: owner if kw['id'] == 1024 else subject,
 		)
-		owner = model.Object(e)
+		owner = interface.Object(e)
 		owner.set_id(1024)
-		subject = model.Object(e)
+		subject = interface.Object(e)
 		subject.set_id(2048)
 		subject.set_owner(owner)
 		
@@ -176,8 +176,8 @@ class ObjectTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			is_allowed	= lambda *a: True,
 		)
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		self.failUnlessEqual(getattr(o, 'look'), v)
 		self.failUnlessEqual(o.get_verb('look', recurse=False), v)
 	
@@ -192,8 +192,8 @@ class ObjectTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		
 		self.failUnlessEqual(o.add_verb('look'), v)
 	
@@ -201,7 +201,7 @@ class ObjectTestCase(unittest.TestCase):
 		e = test.Anything(
 			has		=	lambda *a, **kw: (a, kw),
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		v = test.Anything(
 		)
@@ -214,7 +214,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			remove_verb		= lambda *a, **kw: self.failUnlessEqual(kw, {'name': 'test', 'origin_id': 1024})
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		o.remove_verb('test')
@@ -225,7 +225,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: o,
 			is_allowed		= lambda *a: True,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		p = test.Anything(
 			origin		= lambda: o,
 			get_type	= lambda: 'string',
@@ -251,7 +251,7 @@ class ObjectTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		p = test.Anything(
 			origin	= lambda: o
@@ -264,7 +264,7 @@ class ObjectTestCase(unittest.TestCase):
 		e = test.Anything(
 			has		=	lambda *a, **kw: results.pop(),
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		v = test.Anything(
 		)
@@ -278,7 +278,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			remove_property	= lambda **kw: self.failUnlessEqual(kw, {'name': 'test', 'origin_id': 1024})
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		o.remove_property('test')
@@ -288,7 +288,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			get_ancestor_with	= lambda *a: self.failUnlessEqual(a, (1024, 'verb', 'test'))
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		o.get_ancestor_with('verb', 'test')
@@ -297,7 +297,7 @@ class ObjectTestCase(unittest.TestCase):
 		e = test.Anything(
 			is_player	=	lambda *a, **kw: (a, kw),
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		self.failUnlessEqual(o.is_player(),  ((1024,), {}))
@@ -307,7 +307,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			is_connected_player	= lambda *a, **kw: self.failUnlessEqual(a[0], 1024)
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		o.is_connected_player()
@@ -317,7 +317,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			set_player	= lambda *a, **kw: self.failUnlessEqual(a, (1024, True, True, 'passwd'))
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
 		o.set_player(True, True, 'passwd')
@@ -339,8 +339,8 @@ class ObjectTestCase(unittest.TestCase):
 			get_id				=	lambda: -1
 		)
 		
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		
 		self.failUnlessRaises(ValueError, o.set_name, 'phil', real=True)
 		o.set_name('phil', real=True)
@@ -368,13 +368,13 @@ class ObjectTestCase(unittest.TestCase):
 			save		= lambda s: True,
 			clear_observers	= lambda s: None,
 		)
-		room = model.Object(e)
+		room = interface.Object(e)
 		room_mock = test.Anything(
 			get_id	= lambda: 1024,
 			has_verb = lambda v: None,
 			notify_observers = lambda: None,
 		)
-		subject = model.Object(e)
+		subject = interface.Object(e)
 		
 		self.failUnlessRaises(errors.RecursiveError, subject.set_location, room_mock)
 		
@@ -387,7 +387,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			find			= lambda *a: self.failUnlessEqual(a, (1024, 'thing'))
 		)
-		container = model.Object(e)
+		container = interface.Object(e)
 		container.set_id(1024)
 		
 		container.find('thing')
@@ -397,9 +397,9 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			contains		= lambda *a: self.failUnlessEqual(a, (1024, 2048, True))
 		)
-		container = model.Object(e)
+		container = interface.Object(e)
 		container.set_id(1024)
-		thing = model.Object(e)
+		thing = interface.Object(e)
 		thing.set_id(2048)
 		
 		container.contains(thing)
@@ -409,7 +409,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			get_contents	= lambda *a: self.failUnlessEqual(a[0], 1024)
 		)
-		container = model.Object(e)
+		container = interface.Object(e)
 		container.set_id(1024)
 		
 		container.get_contents()
@@ -423,7 +423,7 @@ class ObjectTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
 		)
-		child = model.Object(e)
+		child = interface.Object(e)
 		child.set_id(1024)
 		
 		child_mock = test.Anything(
@@ -431,7 +431,7 @@ class ObjectTestCase(unittest.TestCase):
 			get_id		= lambda: parent.get_id(),
 		)
 		
-		parent = model.Object(e)
+		parent = interface.Object(e)
 		parent.set_id(2048)
 		
 		parent_mock = test.Anything(
@@ -450,9 +450,9 @@ class ObjectTestCase(unittest.TestCase):
 			get_context		= lambda: None,
 			remove_parent	= lambda *a: self.failUnlessEqual(a, (2048, 1024))
 		)
-		child = model.Object(e)
+		child = interface.Object(e)
 		child.set_id(1024)
-		parent = model.Object(e)
+		parent = interface.Object(e)
 		parent.set_id(2048)
 		
 		child.remove_parent(parent)
@@ -464,10 +464,10 @@ class ObjectTestCase(unittest.TestCase):
 			get_context	= lambda: ctx,
 			is_wizard	= lambda *a: False,
 		)
-		ctx = model.Object(e)
+		ctx = interface.Object(e)
 		
-		person = model.Object(e)
-		item = model.Object(e)
+		person = interface.Object(e)
+		item = interface.Object(e)
 		
 		self.failUnlessRaises(errors.PermissionError, person.check, 'move', item)
 		self.failUnlessEqual(person.is_allowed('move', item), True)
@@ -482,8 +482,8 @@ class VerbTestCase(unittest.TestCase):
 	
 	def test_id(self):
 		e = test.Anything()
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		v.set_id(1024)
 		
 		self.failUnlessEqual(v.get_id(), 1024)
@@ -496,9 +496,9 @@ class VerbTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		
 		self.failUnlessEqual(v.get_origin(), (('object',), {'id': 1024}))
 	
@@ -506,8 +506,8 @@ class VerbTestCase(unittest.TestCase):
 		e = test.Anything(
 			get_verb_names	= lambda *a, **kw: (a, kw),
 		)
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		self.failUnlessEqual(v.get_names(), ((2048,), {}))
@@ -518,9 +518,9 @@ class VerbTestCase(unittest.TestCase):
 			get_verb_names	= lambda i: [],
 			add_verb_name	= lambda *a: self.failUnlessEqual(a, (2048, 'test'))
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		v.set_names(['test'])
@@ -532,8 +532,8 @@ class VerbTestCase(unittest.TestCase):
 			get_context	= lambda: o,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		self.failUnlessEqual(v.add_name('look'), ((2048, 'look'), {}))
@@ -544,9 +544,9 @@ class VerbTestCase(unittest.TestCase):
 			get_verb_names	= lambda i: [],
 			remove_verb_name	= lambda *a: self.failUnlessEqual(a, (2048, 'test'))
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		v.remove_name('test')
@@ -558,8 +558,8 @@ class VerbTestCase(unittest.TestCase):
 			save		= lambda s: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		
 		v.set_code('test code')
 		self.failUnlessEqual(v.get_code(), 'test code')
@@ -587,10 +587,10 @@ class VerbTestCase(unittest.TestCase):
 			get_context	= lambda: ctx,
 			is_wizard	= lambda *a: False,
 		)
-		ctx = model.Object(e)
+		ctx = interface.Object(e)
 		
-		o = model.Object(e)
-		v = model.Verb(o)
+		o = interface.Object(e)
+		v = interface.Verb(o)
 		
 		self.failUnlessRaises(errors.PermissionError, v.check, 'move', o)
 	
@@ -602,8 +602,8 @@ class VerbTestCase(unittest.TestCase):
 			instantiate	= lambda *a, **kw: o,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		
 		self.failUnlessEqual(p.is_readable(), True)
 		self.failUnlessEqual(p.is_readable(), False)
@@ -616,10 +616,10 @@ class VerbTestCase(unittest.TestCase):
 			save			= lambda i: None,
 			instantiate		= lambda *a, **kw: o if a[0] == 'object' else v
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
 		
-		v = model.Verb(o)
+		v = interface.Verb(o)
 		v.set_id(2048)
 		
 		self.failUnlessEqual(v.performable_by(o), False)
@@ -641,8 +641,8 @@ class PropertyTestCase(unittest.TestCase):
 		
 	def test_id(self):
 		e = test.Anything()
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		p.set_id(1024)
 		
 		self.failUnlessEqual(p.get_id(), 1024)
@@ -655,9 +655,9 @@ class PropertyTestCase(unittest.TestCase):
 			is_allowed	= lambda *a: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
+		o = interface.Object(e)
 		o.set_id(1024)
-		p = model.Property(o)
+		p = interface.Property(o)
 		
 		self.failUnlessEqual(p.get_origin(), (('object',), {'id': 1024}))
 	
@@ -668,8 +668,8 @@ class PropertyTestCase(unittest.TestCase):
 			save		= lambda s: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		p.set_name('prop')
 		
 		self.failUnlessEqual(p.get_name(), 'prop')
@@ -681,8 +681,8 @@ class PropertyTestCase(unittest.TestCase):
 			save		= lambda s: True,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		p.set_value('prop')
 		
 		self.failUnlessEqual(p.get_value(), 'prop')
@@ -695,8 +695,8 @@ class PropertyTestCase(unittest.TestCase):
 			instantiate	= lambda *a, **kw: o,
 			is_wizard	= lambda *a: False,
 		)
-		o = model.Object(e)
-		p = model.Property(o)
+		o = interface.Object(e)
+		p = interface.Property(o)
 		
 		self.failUnlessEqual(p.is_readable(), True)
 		self.failUnlessRaises(errors.PermissionError, p.get_value)

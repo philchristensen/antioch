@@ -18,7 +18,7 @@ from twisted.internet import defer
 from twisted.python import util
 
 from antioch import conf
-from antioch.core import model, errors, messaging
+from antioch.core import interface, errors, messaging
 from antioch.util import sql, json
 
 group_definitions = dict(
@@ -278,9 +278,9 @@ class ObjectExchange(object):
 	
 	def _mkobject(self, record):
 		"""
-		Instantiate a model.Object
+		Instantiate a interface.Object
 		"""
-		obj = model.Object(self)
+		obj = interface.Object(self)
 		
 		obj._name = record.get('name', '')
 		obj._unique_name = record.get('unique_name', False)
@@ -291,10 +291,10 @@ class ObjectExchange(object):
 	
 	def _mkverb(self, record):
 		"""
-		Instantiate a model.Verb
+		Instantiate a interface.Verb
 		"""
 		origin = self.instantiate('object', id=record['origin_id'])
-		v = model.Verb(origin)
+		v = interface.Verb(origin)
 		
 		v._code = record.get('code', '')
 		v._filename = record.get('filename', '')
@@ -311,10 +311,10 @@ class ObjectExchange(object):
 	
 	def _mkproperty(self, record):
 		"""
-		Instantiate a model.Property
+		Instantiate a interface.Property
 		"""
 		origin = self.instantiate('object', id=record['origin_id'])
-		p = model.Property(origin)
+		p = interface.Property(origin)
 		
 		p._name = record['name']
 		p._origin_id = record['origin_id']
@@ -328,7 +328,7 @@ class ObjectExchange(object):
 	
 	def _mkpermission(self, record):
 		"""
-		Instantiate a model.Permission
+		Instantiate a interface.Permission
 		"""
 		origin = None
 		for origin_type in ('object', 'verb', 'property'):
@@ -339,7 +339,7 @@ class ObjectExchange(object):
 		
 		assert origin is not None, "Can't determine an origin for permission record: %s" % record
 		
-		perm = model.Permission(origin)
+		perm = interface.Permission(origin)
 		
 		perm.object_id = record.get('object_id', None)
 		perm.verb_id = record.get('verb_id', None)
@@ -570,7 +570,7 @@ class ObjectExchange(object):
 				recurse = False
 		
 		result = self.instantiate('object', *parent_ids)
-		return [result] if isinstance(result, model.Object) else result
+		return [result] if isinstance(result, interface.Object) else result
 	
 	def has_parent(self, child_id, object_id):
 		"""
@@ -936,7 +936,7 @@ class ObjectExchange(object):
 			else:
 				recurse = False
 		result = self.instantiate('object', *nested_location_ids)
-		return [result] if isinstance(result, model.Object) else result
+		return [result] if isinstance(result, interface.Object) else result
 	
 	def find(self, container_id, name):
 		"""
@@ -1074,9 +1074,9 @@ class ObjectExchange(object):
 		anything_id = self.permission_list['anything']
 		
 		access_query = sql.build_select('access', dict(
-			object_id		= subject.get_id() if isinstance(subject, model.Object) else None,
-			verb_id			= subject.get_id() if isinstance(subject, model.Verb) else None,
-			property_id		= subject.get_id() if isinstance(subject, model.Property) else None,
+			object_id		= subject.get_id() if isinstance(subject, interface.Object) else None,
+			verb_id			= subject.get_id() if isinstance(subject, interface.Verb) else None,
+			property_id		= subject.get_id() if isinstance(subject, interface.Property) else None,
 			permission_id	= (permission_id, anything_id),
 			__order_by		= 'weight DESC',
 		))
@@ -1125,9 +1125,9 @@ class ObjectExchange(object):
 			raise ValueError("No such permission %r" % permission)
 		
 		self.pool.runOperation(sql.build_insert('access', {
-			'object_id'		: subject.get_id() if isinstance(subject, model.Object) else None,
-			'verb_id'		: subject.get_id() if isinstance(subject, model.Verb) else None,
-			'property_id'	: subject.get_id() if isinstance(subject, model.Property) else None,
+			'object_id'		: subject.get_id() if isinstance(subject, interface.Object) else None,
+			'verb_id'		: subject.get_id() if isinstance(subject, interface.Verb) else None,
+			'property_id'	: subject.get_id() if isinstance(subject, interface.Property) else None,
 			'rule'			: rule,
 			'permission_id'	: permission_id,
 			'type'			: 'accessor' if isinstance(accessor, (int, long)) else 'group',

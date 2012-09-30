@@ -143,7 +143,7 @@ def access_editor(request, type, pk, app=appserver):
 		raise http.Http404()
 	
 	Model = getattr(models, type.capitalize())
-	model = Model.objects.get(pk=pk)
+	m = Model.objects.get(pk=pk)
 	
 	if(request.method == 'POST'):
 		print request.POST

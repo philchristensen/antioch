@@ -19,7 +19,7 @@ import sys, time, re, string, types
 
 from twisted.python import log
 
-from antioch.core import exchange, model, errors, dbapi
+from antioch.core import exchange, interface, errors, dbapi
 from antioch.core.errors import *
 
 URL_REGEXP = r'(?P<scheme>[+a-z0-9]+)\:(\/\/)?'
@@ -325,7 +325,7 @@ class TransactionParser(object):
 		if(name and search):
 			result = search.find(name)
 		
-		if(isinstance(result, model.Object)):
+		if(isinstance(result, interface.Object)):
 			return result
 		elif(return_list):
 			return result

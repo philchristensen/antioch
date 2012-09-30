@@ -38,8 +38,8 @@ def is_frame_access_allowed():
 	c1 = f.f_back.f_code
 	c2 = f.f_back.f_back.f_code
 	try:
-		from antioch.core import model
-		model_source_path = os.path.abspath(model.__file__)
+		from antioch.core import interface
+		model_source_path = os.path.abspath(interface.__file__)
 		if(model_source_path.endswith('pyc')):
 			model_source_path = model_source_path[:-1]
 		if(c2.co_filename == model_source_path):
