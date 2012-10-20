@@ -96,7 +96,7 @@ feels like an eternity.
 
 wizard.set_location(laboratory)
 
-wizard.set_player(True, is_wizard=True, passwd='wizard')
+wizard.set_player(True, is_wizard=True, passwd='wizard', first_name="Wizard", last_name="Greyhame")
 
 wizard_class.add_verb('reload', **dict(
 	ability		= True,

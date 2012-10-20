@@ -178,14 +178,6 @@ class Player(models.Model):
 	def is_superuser(self):
 		return self.wizard
 	
-	@property
-	def first_name(self):
-		return ''
-	
-	@property
-	def first_name(self):
-		return self.avatar.name
-	
 	def has_module_perms(self, app):
 		return True
 	
@@ -196,6 +188,9 @@ class Player(models.Model):
 	session_id = models.CharField(max_length=255, null=True)
 	wizard = models.BooleanField()
 	crypt = models.CharField(max_length=255)
+	email = models.CharField(max_length=255, blank=True, null=True)
+	first_name = models.CharField(max_length=255, blank=True, null=True)
+	last_name = models.CharField(max_length=255, blank=True, null=True)
 	last_login = models.DateTimeField(null=True)
 	last_logout = models.DateTimeField(null=True)
 

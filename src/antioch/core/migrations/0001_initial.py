@@ -103,6 +103,9 @@ class Migration(SchemaMigration):
             ('session_id', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
             ('wizard', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('crypt', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('email', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('last_login', self.gf('django.db.models.fields.DateTimeField')(null=True)),
             ('last_logout', self.gf('django.db.models.fields.DateTimeField')(null=True)),
         ))
@@ -205,9 +208,12 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Player', 'db_table': "'player'"},
             'avatar': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Object']", 'null': 'True', 'on_delete': 'models.SET_NULL'}),
             'crypt': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'email': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'last_logout': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'session_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'wizard': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },

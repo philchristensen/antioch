@@ -420,11 +420,11 @@ class Object(Entity):
 		"""
 		return self._ex.is_wizard(self.get_id())
 	
-	def set_player(self, is_player=None, is_wizard=None, passwd=None):
+	def set_player(self, is_player=None, is_wizard=None, passwd=None, **attribs):
 		"""
 		Set player-specific attributes of this object.
 		"""
-		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd)
+		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd, **attribs)
 	
 	def validate_password(self, passwd):
 		"""

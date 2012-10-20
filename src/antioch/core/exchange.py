@@ -871,12 +871,11 @@ class ObjectExchange(object):
 			""", avatar_id))
 		return bool(result)
 	
-	def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None):
+	def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None, **attribs):
 		"""
 		Edit the player attributes of an object.
 		"""
 		if(player is not False):
-			attribs = {}
 			if(passwd):
 				random.shuffle(salt)
 				attribs['crypt'] = crypt.crypt(passwd, test_salt or ''.join(salt[0:2]))
