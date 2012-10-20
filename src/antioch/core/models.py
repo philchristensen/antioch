@@ -172,11 +172,25 @@ class Player(models.Model):
 	
 	@property
 	def is_staff(self):
-		return False
+		return self.wizard
 	
 	@property
 	def is_superuser(self):
-		return False
+		return self.wizard
+	
+	@property
+	def first_name(self):
+		return ''
+	
+	@property
+	def first_name(self):
+		return self.avatar.name
+	
+	def has_module_perms(self, app):
+		return True
+	
+	def has_perm(self, perm):
+		return True
 	
 	avatar = models.ForeignKey(Object, null=True, on_delete=models.SET_NULL)
 	session_id = models.CharField(max_length=255, null=True)

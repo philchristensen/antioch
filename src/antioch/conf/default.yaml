@@ -175,8 +175,7 @@
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",
 
     "AUTHENTICATION_BACKENDS" : [
-        'antioch.client.DjangoBackend',
-        'django.contrib.auth.backends.ModelBackend'
+        'antioch.client.DjangoBackend'
     ],
 
     # A sample logging configuration. The only tangible logging
