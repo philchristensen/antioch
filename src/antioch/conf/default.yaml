@@ -169,7 +169,8 @@
         'antioch.client',
         'antioch.assets',
         'antioch.plugins.ask',
-        'antioch.plugins.editors'
+        'antioch.plugins.editors',
+        'south'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",

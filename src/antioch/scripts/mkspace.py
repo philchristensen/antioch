@@ -68,6 +68,7 @@ def main():
 	
 	from django.core.management import call_command
 	call_command('syncdb', interactive=False)
+	call_command('migrate', interactive=False)
 	
 	pool = dbapi.connect(config['db-url'])
 	bootstrap.load_python(pool, bootstrap_path)
