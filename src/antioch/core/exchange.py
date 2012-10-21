@@ -19,15 +19,13 @@ from twisted.python import util
 
 from antioch import conf
 from antioch.core import interface, errors, messaging
-from antioch.util import sql, json
+from antioch.util import sql, json, hash_password
 
 group_definitions = dict(
 	owners		= lambda x,a,s: a.owns(s),
 	wizards		= lambda x,a,s: x.is_wizard(a.get_id()),
 	everyone	= lambda x,a,s: True,
 )
-
-salt = list(string.printable[:])
 
 rollback_after_fatal_errors = True
 
@@ -877,8 +875,7 @@ class ObjectExchange(object):
 		"""
 		if(player is not False):
 			if(passwd):
-				random.shuffle(salt)
-				attribs['crypt'] = crypt.crypt(passwd, test_salt or ''.join(salt[0:2]))
+				attribs['crypt'] = hash_password(passwd)
 			else:
 				attribs['crypt'] = '!'
 			if(wizard is not None):

@@ -1,0 +1,5 @@
+An account has been created for you.
+
+{{ activation_key }}
+
+You have {{ expiration_days }} days to activate your account.

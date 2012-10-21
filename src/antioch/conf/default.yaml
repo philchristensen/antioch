@@ -35,6 +35,9 @@
     "XSENDFILE": false,
     "RENDER_LESS": true,
     
+    # django-registration
+    "ACCOUNT_ACTIVATION_DAYS": 7,
+    
     # define the lookup channels in use on the site
     "AJAX_LOOKUP_CHANNELS": {
         'object': ['antioch.client.lookups', 'ObjectLookup']
@@ -165,12 +168,14 @@
         'django.contrib.admin',
         'django.contrib.admindocs',
         'ajax_select',
+        'south',
+        'registration',
         'antioch.core',
         'antioch.client',
         'antioch.assets',
         'antioch.plugins.ask',
         'antioch.plugins.editors',
-        'south'
+        'antioch.plugins.registration'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",

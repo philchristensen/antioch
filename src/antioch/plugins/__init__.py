@@ -38,8 +38,7 @@ def urlconfs():
 	for app in settings.INSTALLED_APPS:
 		p = get_app_submodule(app, submodule='plugin')
 		if(p and get_app_submodule(app, submodule='urls')):
-			p = instantiate(p)
-			urlconf = url(r'^%s/' % p.name, include('%s.urls' % app))
+			urlconf = url(r'', include('%s.urls' % app))
 			result.append(urlconf)
 	return result
 
