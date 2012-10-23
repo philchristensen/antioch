@@ -186,11 +186,10 @@ class Player(models.Model):
 	
 	avatar = models.ForeignKey(Object, null=True, on_delete=models.SET_NULL)
 	session_id = models.CharField(max_length=255, null=True)
-	wizard = models.BooleanField()
+	wizard = models.BooleanField(default=False)
 	crypt = models.CharField(max_length=255)
 	email = models.CharField(max_length=255, blank=True, null=True)
-	first_name = models.CharField(max_length=255, blank=True, null=True)
-	last_name = models.CharField(max_length=255, blank=True, null=True)
+	activation_key = models.CharField(max_length=255, blank=True, null=True)
 	last_login = models.DateTimeField(null=True)
 	last_logout = models.DateTimeField(null=True)
 

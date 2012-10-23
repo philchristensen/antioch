@@ -4,10 +4,9 @@ from django.forms import widgets
 from antioch.core import models
 from antioch.util import hash_password
 
-class PlayerForm(forms.ModelForm):
+class RegistrationForm(forms.ModelForm):
+	character_name = forms.CharField(max_length=255, required=True)
 	email = forms.EmailField(max_length=255, required=True)
-	first_name = forms.CharField(max_length=255, required=True)
-	last_name = forms.CharField(max_length=255, required=True)
 	passwd = forms.CharField(max_length=255, widget=widgets.PasswordInput, required=True)
 	confirm_passwd = forms.CharField(max_length=255, widget=widgets.PasswordInput, required=True)
 	
