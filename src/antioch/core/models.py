@@ -188,8 +188,6 @@ class Player(models.Model):
 	session_id = models.CharField(max_length=255, null=True)
 	wizard = models.BooleanField(default=False)
 	crypt = models.CharField(max_length=255)
-	email = models.CharField(max_length=255, blank=True, null=True)
-	activation_key = models.CharField(max_length=255, blank=True, null=True)
 	last_login = models.DateTimeField(null=True)
 	last_logout = models.DateTimeField(null=True)
 
