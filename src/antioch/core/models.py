@@ -159,6 +159,7 @@ class Access(models.Model):
 class Player(models.Model):
 	class Meta:
 		db_table = 'player'
+		app_label = 'core'
 	
 	def __unicode__(self):
 		return self.email

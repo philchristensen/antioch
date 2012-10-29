@@ -175,7 +175,7 @@
         'antioch.assets',
         'antioch.plugins.ask',
         'antioch.plugins.editors',
-        'antioch.plugins.registration'
+        'antioch.plugins.signup'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",

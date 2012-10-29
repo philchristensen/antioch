@@ -12,10 +12,10 @@ from zope.interface import classProvides
 
 from antioch import IPlugin
 
-class RegistrationModule(object):
+class SignupModule(object):
 	classProvides(IPlugin)
 	
-	name = u'registration'
+	script_url = None
 	
 	def get_environment(self):
 		return dict()

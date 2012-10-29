@@ -4,7 +4,7 @@ from django.forms import widgets
 from antioch.core import models
 from antioch.util import hash_password
 
-class RegistrationForm(forms.ModelForm):
+class SignupForm(forms.ModelForm):
 	character_name = forms.CharField(max_length=255, required=True)
 	email = forms.EmailField(max_length=255, required=True)
 	passwd = forms.CharField(max_length=255, widget=widgets.PasswordInput, required=True)
@@ -15,7 +15,7 @@ class RegistrationForm(forms.ModelForm):
 		exclude = ('avatar', 'session_id', 'last_login', 'last_logout', 'wizard', 'crypt')
 	
 	def clean(self):
-		d = super(PlayerForm, self).clean()
+		d = super(SignupForm, self).clean()
 		
 		passwd = d.get('passwd')
 		if(passwd and d.get('passwd') != d.get('confirm_passwd')):

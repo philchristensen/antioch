@@ -170,7 +170,7 @@ def access_editor(request, type, pk, app=appserver):
 	
 	return shortcuts.render_to_response('access-editor.html', dict(
 		title           = "access editor",
-		model           = model,
+		model           = m,
 		media           = assets.LessMedia(
 			less        = dict(
 				screen  = [

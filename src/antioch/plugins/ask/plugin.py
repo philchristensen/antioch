@@ -29,7 +29,6 @@ def ask(p, question, callback, *args, **kwargs):
 class AskModule(object):
 	classProvides(IPlugin)
 	
-	name = u'ask'
 	script_url = u'/assets/js/ask-plugin.js'
 	
 	def get_environment(self):

@@ -8,7 +8,7 @@
 General utilities.
 """
 
-import logging, time, string, crypt
+import logging, time, string, crypt, random
 
 salt_data = list(string.printable[:])
 
