@@ -149,16 +149,6 @@ wizard_class.add_verb('passwd', **dict(
 	filename	= bootstrap.get_verb_path('wizard_class_passwd.py'),
 )).allow('everyone', 'execute')
 
-wizard_class.add_verb('register', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('guest_class_register.py'),
-))
-
-wizard_hammer.add_verb('add_user', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('wizard_hammer_add_user.py'),
-)).allow('wizards', 'execute')
-
 author_class.add_verb('alias', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_alias.py'),
@@ -177,11 +167,6 @@ author_class.add_verb('tunnel', **dict(
 author_class.add_verb('describe', **dict(
 	ability		= True,
 	filename	= bootstrap.get_verb_path('author_class_describe.py'),
-)).allow('everyone', 'execute')
-
-guest_class.add_verb('register', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('guest_class_register.py'),
 )).allow('everyone', 'execute')
 
 guest_class.add_verb('passwd', **dict(
