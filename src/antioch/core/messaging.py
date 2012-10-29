@@ -41,6 +41,36 @@ _blocking_sleep_interval = 0.010
 
 _async_consumer = None
 
+def blocking_run(command=None, as_user=None, appserver_queue=None, response_queue=None, **kwargs):
+	if(appserver_queue is None and response_queue is None):
+		from django.conf import settings
+		appserver_queue = settings.APPSERVER_QUEUE
+		response_queue = settings.RESPONSE_QUEUE
+	
+	required_args = (command, as_user, appserver_queue, response_queue)
+	if(None in required_args):
+		raise RuntimeError("Invalid arguments for blocking_run(): %s" % required_args)
+	
+	correlation_id = getLocalIdent('response')
+	
+	kwargs['user_id'] = as_user
+	
+	log.debug("sending appserver message [correlation:%s]: %s(%s)" % (correlation_id, command, kwargs))
+	consumer = get_blocking_consumer()
+	consumer.declare_queue(response_queue)
+	consumer.send_message(appserver_queue, dict(
+		command			= command,
+		kwargs			= kwargs,
+		reply_to		= response_queue,
+		correlation_id	= correlation_id,
+	))
+	
+	msg = consumer.get_messages(response_queue, correlation_id)
+	while(len(msg) > 1):
+		log.warn('discarding queue cruft: %s' % msg.pop(0))
+	
+	return msg[0]
+
 def getLocalIdent(prefix):
 	import os, threading, socket
 	thread_id = threading.currentThread().ident

@@ -63,25 +63,9 @@ def rest(request, command):
 	Query the appserver and wait for a response.
 	"""
 	kwargs = simplejson.loads(request.read())
-	kwargs['user_id'] = request.user.avatar.id
+	response = messaging.blocking_run(command, request.user.avatar.id, **kwargs)
 	
-	correlation_id = messaging.getLocalIdent('response')
-	
-	log.debug("sending appserver message [correlation:%s]: %s(%s)" % (correlation_id, command, kwargs))
-	consumer = messaging.get_blocking_consumer()
-	consumer.declare_queue(settings.RESPONSE_QUEUE)
-	consumer.send_message(settings.APPSERVER_QUEUE, dict(
-		command			= command,
-		kwargs			= kwargs,
-		reply_to		= settings.RESPONSE_QUEUE,
-		correlation_id	= correlation_id,
-	))
-	
-	msg = consumer.get_messages(settings.RESPONSE_QUEUE, correlation_id)
-	while(len(msg) > 1):
-		log.warn('discarding queue cruft: %s' % msg.pop(0))
-	
-	return http.HttpResponse(msg[0], content_type="application/json")
+	return http.HttpResponse(response, content_type="application/json")
 
 def logout(request):
 	"""
