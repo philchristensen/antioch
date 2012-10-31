@@ -211,6 +211,11 @@ def get_restricted_environment(writer, p=None):
 	
 	return env
 
+def run_system_verb(exchange, verb_name, *args, **kwargs):
+	origin = exchange.get_object(0)
+	verb = origin.get_verb(verb_name)
+	return verb(*args, **kwargs)
+
 def api(func):
 	"""
 	Mark a function in this module as being part of the verb API.
