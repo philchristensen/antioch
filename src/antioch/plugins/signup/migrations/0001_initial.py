@@ -43,6 +43,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Player', 'db_table': "'player'"},
             'avatar': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Object']", 'null': 'True', 'on_delete': 'models.SET_NULL'}),
             'crypt': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'enabled': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'last_logout': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),

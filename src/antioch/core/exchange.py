@@ -873,22 +873,20 @@ class ObjectExchange(object):
 		"""
 		Edit the player attributes of an object.
 		"""
-		if(player is not False):
-			if(passwd):
-				attribs['crypt'] = hash_password(passwd)
-			else:
-				attribs['crypt'] = '!'
-			if(wizard is not None):
-				attribs['wizard'] = wizard
-			if(self.is_player(object_id)):
-				if not(attribs):
-					return
-				self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
-			else:
-				attribs['wizard'] = wizard or False
-				self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
+		if(passwd):
+			attribs['crypt'] = hash_password(passwd)
 		else:
-			self.pool.runOperation(sql.build_delete('player', dict(avatar_id=object_id)))
+			attribs['crypt'] = '!'
+		if(wizard is not None):
+			attribs['wizard'] = wizard
+		if(self.is_player(object_id)):
+			if not(attribs):
+				return
+			self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
+		else:
+			attribs['enabled'] = player
+			attribs['wizard'] = wizard or False
+			self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
 
 	
 	def login_player(self, avatar_id, session_id):
