@@ -41,7 +41,7 @@ def access(p, item):
 		details			= details,
 	))
 
-class EditorModule(object):
+class EditorPlugin(object):
 	classProvides(IPlugin)
 	
 	script_url = u'%sjs/editor-plugin.js' % conf.get('static-url')

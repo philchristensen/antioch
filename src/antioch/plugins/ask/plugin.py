@@ -26,7 +26,7 @@ def ask(p, question, callback, *args, **kwargs):
 		)
 	))
 
-class AskModule(object):
+class AskPlugin(object):
 	classProvides(IPlugin)
 	
 	script_url = u'/assets/js/ask-plugin.js'

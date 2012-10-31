@@ -35,7 +35,7 @@ class EnablePlayer(transact.WorldTransaction):
 	]
 	response = [('response', amp.Boolean())]
 
-class SignupModule(object):
+class SignupPlugin(object):
 	classProvides(IPlugin)
 	
 	script_url = None

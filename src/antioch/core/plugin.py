@@ -12,7 +12,7 @@ from zope.interface import classProvides
 from antioch import IPlugin
 from antioch.core import transact
 
-class CoreModule(object):
+class CorePlugin(object):
 	classProvides(IPlugin)
 	
 	name = u'core'
