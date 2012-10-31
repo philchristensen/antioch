@@ -10,7 +10,7 @@ Registration backend for django-registration support.
 
 import hashlib, random, logging
 
-from antioch.core import models
+from antioch.core import models, messaging
 from antioch.plugins.signup import forms
 from antioch.plugins.signup.models import RegisteredPlayer
 
@@ -27,30 +27,31 @@ def get_activation_key(username):
 
 class SignupBackend(DefaultBackend):
 	def register(self, request, **cleaned_data):
-		player_class = models.Object.objects.get(name='player class')
-		lobby = models.Object.objects.get(name='The Lobby')
+		user_id = messaging.blocking_run('addplayer', request.user.avatar.id
+			name	= cleaned_data['character_name'],
+			passwd	= cleaned_data['crypt'],
+			enabled	= False,
+		)
 		
-		avatar = models.Object()
-		avatar.name = cleaned_data['character_name']
-		avatar.unique_name = True
-		avatar.location = lobby
-		avatar.owner = avatar
-		avatar.save()
-		avatar.parents.add(player_class)
-		
-		player = RegisteredPlayer()
-		player.email = cleaned_data['email']
-		player.activation_key = get_activation_key(avatar.name)
-		player.crypt = cleaned_data['crypt']
-		player.avatar = avatar
-		player.save()
+		player = models.Player.get(avatar_id=user_id)
+		activation_key = get_activation_key(cleaned_data['character_name'])
+		reg = models.RegisteredPlayer(
+			player			= player,
+			email			= cleaned_data['email']
+			activation_key	= activation_key,
+		)
+		reg.save()
 		
 		user_registered.send(self.__class__, player, request)
 		
-		return player
+		return reg
 	
 	def activate(self, request, activation_key):
 		player = models.RegisteredPlayer.objects.get(activation_key=activation_key)
+		result = messaging.blocking_run('enableplayer', request.user.avatar.id
+			player_id = player.id,
+		)
+		
 		user_activated.send(self.__class__, player, request)
 		return player
 	
