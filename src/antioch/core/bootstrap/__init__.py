@@ -14,6 +14,7 @@ import pkg_resources as pkg
 
 import traceback, subprocess
 
+from antioch import plugins
 from antioch.core import dbapi, exchange, parser
 
 def initialize_database(psql_path, db_url, psql_args=[], quiet=True):
@@ -94,6 +95,13 @@ def load_python(pool, python_path):
 	"""
 	with exchange.ObjectExchange(pool) as x:
 		execfile(python_path, globals(), dict(exchange=x))
+
+def initialize_plugins(pool):
+	for plugin in plugins.iterate():
+		with exchange.ObjectExchange(pool) as x:
+			if not(callable(getattr(plugin, 'initialize', None))): 
+				continue
+			plugin.initialize(x)
 
 def get_verb_path(filename, dataset='default'):
 	return pkg.resource_filename('antioch.core.bootstrap', '%s_verbs/%s' % (dataset, filename))

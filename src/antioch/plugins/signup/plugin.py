@@ -17,7 +17,6 @@ from twisted.protocols import amp
 from antioch import IPlugin
 from antioch.util import json
 from antioch.core import transact, parser, code
-from antioch.plugins.signup import transactions 
 
 class AddPlayer(transact.WorldTransaction):
 	arguments = [
@@ -41,12 +40,16 @@ class SignupPlugin(object):
 	script_url = None
 	
 	def initialize(self, exchange):
-		from antioch.plugins.signup import verbs
-		
+		p = 'antioch.plugins.signup.verbs'
 		system = exchange.get_object(1)
 		system.add_verb('add_player', **dict(
 			method		= True,
-			filename	= pkg.resource_filename(verbs, 'system_add_player.py')
+			filename	= pkg.resource_filename(p, 'system_add_player.py')
+		))
+		
+		system.add_verb('enable_player', **dict(
+			method		= True,
+			filename	= pkg.resource_filename(p, 'system_enable_player.py')
 		))
 	
 	def get_environment(self):
@@ -57,7 +60,7 @@ class SignupPlugin(object):
 	
 	def get_commands(self):
 		return dict(
-			addplayer		= AddUser,
+			addplayer		= AddPlayer,
 			enableplayer	= EnablePlayer,
 		)
 	

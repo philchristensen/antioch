@@ -72,6 +72,7 @@ def main():
 	
 	pool = dbapi.connect(config['db-url'])
 	bootstrap.load_python(pool, bootstrap_path)
+	bootstrap.initialize_plugins(pool)
 
 if(__name__ == '__main__'):
 	main()

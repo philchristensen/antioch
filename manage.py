@@ -32,7 +32,7 @@ from django.conf import settings
 settings.SETTINGS_MODULE = 'antioch.settings'
 
 def main():
-	monkey_patch_for_multi_threaded()
+	# monkey_patch_for_multi_threaded()
 	
 	from django.core import management
 	u = management.ManagementUtility(sys.argv)

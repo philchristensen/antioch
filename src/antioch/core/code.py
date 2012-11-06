@@ -197,7 +197,10 @@ def get_restricted_environment(writer, p=None):
 	from antioch import plugins
 	for plugin in plugins.iterate():
 		for name, func in plugin.get_environment().items():
-			func.func_name = name
+			if(hasattr(func, 'im_func')):
+				func.im_func.func_name = name
+			else:
+				func.func_name = name
 			api(func) if callable(func) else None
 	
 	for name, func in api.locals.items():

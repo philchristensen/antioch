@@ -12,13 +12,13 @@ class SignupForm(forms.ModelForm):
 	
 	class Meta:
 		model = models.Player
-		exclude = ('avatar', 'session_id', 'last_login', 'last_logout', 'wizard', 'crypt')
+		fields = []
 	
 	def clean(self):
 		d = super(SignupForm, self).clean()
 		
 		passwd = d.get('passwd')
-		if(passwd and d.get('passwd') != d.get('confirm_passwd')):
+		if(passwd and d.get('passwd') == d.get('confirm_passwd')):
 			d['crypt'] = hash_password(passwd)
 		
 		d.pop('passwd', None)
