@@ -41,19 +41,15 @@ _blocking_sleep_interval = 0.010
 
 _async_consumer = None
 
-def blocking_run(command=None, as_user=None, appserver_queue=None, response_queue=None, **kwargs):
-	if(appserver_queue is None and response_queue is None):
-		from django.conf import settings
-		appserver_queue = settings.APPSERVER_QUEUE
-		response_queue = settings.RESPONSE_QUEUE
-	
-	required_args = (command, as_user, appserver_queue, response_queue)
-	if(None in required_args):
-		raise RuntimeError("Invalid arguments for blocking_run(): %s" % required_args)
+def blocking_run(command, as_user=None, appserver_queue=None, response_queue=None, **kwargs):
+	from django.conf import settings
+	appserver_queue = appserver_queue or settings.APPSERVER_QUEUE
+	response_queue = response_queue or settings.RESPONSE_QUEUE
 	
 	correlation_id = getLocalIdent('response')
 	
-	kwargs['user_id'] = as_user
+	if(as_user is not None):
+		kwargs['user_id'] = as_user
 	
 	log.debug("sending appserver message [correlation:%s]: %s(%s)" % (correlation_id, command, kwargs))
 	consumer = get_blocking_consumer()

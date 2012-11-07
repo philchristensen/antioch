@@ -27,7 +27,7 @@ def get_activation_key(username):
 
 class SignupBackend(DefaultBackend):
 	def register(self, request, **cleaned_data):
-		user_id = messaging.blocking_run('addplayer', 0,
+		user_id = messaging.blocking_run('addplayer',
 			name	= cleaned_data['character_name'],
 			passwd	= cleaned_data['crypt'],
 			enabled	= False,
@@ -48,7 +48,7 @@ class SignupBackend(DefaultBackend):
 	
 	def activate(self, request, activation_key):
 		player = models.RegisteredPlayer.objects.get(activation_key=activation_key)
-		result = messaging.blocking_run('enableplayer', 0,
+		result = messaging.blocking_run('enableplayer',
 			player_id = player.id,
 		)
 		

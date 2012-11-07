@@ -185,6 +185,7 @@ def get_restricted_environment(writer, p=None):
 		safe_builtins[name] = __builtins__[name]
 	
 	env = dict(
+		_apply_			= lambda f,*a,**kw: f(*a, **kw),
 		_print_			= lambda: _print_(),
 		_write_			= _write_,
 		_getattr_		= get_protected_attribute,
@@ -215,7 +216,7 @@ def get_restricted_environment(writer, p=None):
 	return env
 
 def run_system_verb(exchange, verb_name, *args, **kwargs):
-	origin = exchange.get_object(0)
+	origin = exchange.get_object(1)
 	verb = origin.get_verb(verb_name)
 	return verb(*args, **kwargs)
 

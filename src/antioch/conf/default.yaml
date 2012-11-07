@@ -237,6 +237,11 @@
                 'propagate': false,
                 'level':'INFO',
             },
+            'antioch.plugins': {
+                'handlers':['default'],
+                'propagate': false,
+                'level':'DEBUG',
+            },
             # pika message library
             'pika': {
                 'handlers':['default'],

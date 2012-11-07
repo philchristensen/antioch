@@ -92,6 +92,7 @@ class AppService(service.Service):
 		log.debug("got message from %s: %s" % (self.consumer, msg))
 		
 		klass, child = get_command_support(msg['command'])
+		log.debug("Command support: %s with %s" % (klass, child))
 		if(klass is None):
 			log.error("no such command %s: %s" % (msg['command'], msg))
 			yield self.consumer.send_message(header.reply_to, {

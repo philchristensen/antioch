@@ -8,6 +8,8 @@
 Online signup for new players.
 """
 
+import logging
+
 import pkg_resources as pkg
 
 from zope.interface import classProvides
@@ -17,6 +19,8 @@ from twisted.protocols import amp
 from antioch import IPlugin
 from antioch.util import json
 from antioch.core import transact, parser, code
+
+log = logging.getLogger(__name__)
 
 class AddPlayer(transact.WorldTransaction):
 	arguments = [
@@ -34,10 +38,30 @@ class EnablePlayer(transact.WorldTransaction):
 	]
 	response = [('response', amp.Boolean())]
 
+class SignupTransactionChild(transact.TransactionChild):
+	@AddPlayer.responder
+	def add_player(self, name, passwd, enabled=True):
+		try:
+			log.debug("Creating a player for %r" % name)
+			with self.get_exchange() as x:
+				user = code.run_system_verb(x, 'add_player', name, passwd, enabled)
+		
+			return dict(avatar_id=user.id)
+		except Exception, e:
+			log.error(e)
+	
+	@EnablePlayer.responder
+	def enable_player(self, player_id):
+		with self.get_exchange() as x:
+			code.run_system_verb(x, 'enable_player', x.get_object(player_id))
+		
+		return dict(result=True)
+
 class SignupPlugin(object):
 	classProvides(IPlugin)
 	
 	script_url = None
+	transaction_child = SignupTransactionChild
 	
 	def initialize(self, exchange):
 		p = 'antioch.plugins.signup.verbs'
@@ -75,20 +99,4 @@ class SignupPlugin(object):
 	
 	def enable_player(self, p, user):
 		user.set_player(True)
-
-class SignupTransactionChild(transact.TransactionChild):
-	@AddPlayer.responder
-	def add_player(self, name, email, passwd, enabled=True):
-		with self.get_exchange() as x:
-			user = code.run_system_verb('add_player', name, email, passwd, enabled)
-		
-		return dict(avatar_id=user.id)
-	
-	@EnablePlayer.responder
-	def enable_player(self, player_id):
-		with self.get_exchange() as x:
-			code.run_system_verb('enable_player', x.get_object(player_id))
-		
-		return dict(result=True)
-
 
