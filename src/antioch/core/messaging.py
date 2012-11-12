@@ -10,6 +10,8 @@ Enable access to the messaging server
 
 import logging, threading, time
 
+import pkg_resources as pkg
+
 from twisted.internet import task, protocol, reactor, defer
 
 from antioch import conf
@@ -192,33 +194,40 @@ class AsyncMessageConsumer(object):
 	def __init__(self):
 		from antioch.core import parser
 		self.url = parser.URL(conf.get('queue-url'))
-		log.info("[a] connecting to rabbitmq server at %(host)s:%(port)s with %(user)s" % self.url)
-		from pika.adapters.twisted_connection import TwistedProtocolConnection
-		from pika import ConnectionParameters, PlainCredentials
-		self.cc = protocol.ClientCreator(reactor, TwistedProtocolConnection, ConnectionParameters(
-			host            = self.url['host'],
-			port            = int(self.url['port']),
-			virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works
-			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
-		))
+		from twisted.internet.protocol import ClientCreator
+		from txamqp import spec, protocol
+		from txamqp.client import TwistedDelegate
+		self.cc = ClientCreator(reactor, protocol.AMQClient,
+			delegate = TwistedDelegate(),
+			vhost	 = self.url['path'][1:] or '/', # not sure about this, but it's all that works
+			spec	 = spec.loadString(
+				pkg.resource_string('antioch', 'static/spec/amqp0-8.xml'), 'amqp0-8.xml'
+			),
+		)
 	
 	@defer.inlineCallbacks
 	def connect(self):
-		self.protocol = yield self.cc.connectTCP(self.url['host'], int(self.url['port']))
+		log.info("[a] connecting to rabbitmq server at %(host)s:%(port)s" % self.url)
 		try:
-			self.connection = yield self.protocol.ready
+			self.protocol = yield self.cc.connectTCP(self.url['host'], int(self.url['port']))
 		except:
 			import traceback
 			log.error("Error in connect: %s" % traceback.format_exc())
 			raise
 		
-		self.channel = yield self.connection.channel()
+		log.debug("[a] authenticating to rabbitmq server as %(user)s" % self.url)
+		yield self.protocol.authenticate(self.url['user'], self.url['passwd'])
+		
+		self.channel = yield self.protocol.channel(1)
+		yield self.channel.channel_open()
+		log.debug("[a] declaring exchange %s" % conf.get('appserver-exchange'))
 		yield self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
 			auto_delete     = True,
 			durable         = False,
 		)
+		log.debug("[a] declaring queue %s" % conf.get('appserver-queue'))
 		yield self.channel.queue_declare(
 			queue           = conf.get('appserver-queue'),
 			auto_delete     = True,
@@ -230,33 +239,39 @@ class AsyncMessageConsumer(object):
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = conf.get('appserver-queue'),
 		)
+		log.debug("[a] queue bound")
 	
 	@defer.inlineCallbacks
 	def start_consuming(self):
-		self.queue, self.consumer_tag = yield self.channel.basic_consume(
+		result = yield self.channel.basic_consume(
 			queue           = conf.get('appserver-queue'),
 			no_ack          = True,
 		)
+		self.consumer_tag = result[0]
+		log.debug("[a] consuming messages for tag %s" % self.consumer_tag)
+		self.queue = yield self.protocol.queue(self.consumer_tag)
+		log.debug("[a] queue opened for tag %s" % self.consumer_tag)
 	
 	def disconnect(self):
 		yield self.channel.close()
-		yield self.connection.close()
+		yield self.protocol.close()
 	
 	@defer.inlineCallbacks
 	def get_message(self):
-		channel, method_frame, header_frame, body = yield self.queue.get()
-		defer.returnValue((json.loads(body), header_frame))
+		log.debug("[a] looking for message")
+		msg = yield self.queue.get()
+		defer.returnValue(json.loads(msg.content.body))
 	
 	def send_message(self, routing_key, msg):
-		from pika import BasicProperties
-		self.channel.basic_publish(
+		from txamqp import content
+		log.warning('[a] sending %s to %s' % (msg, routing_key))
+		yield self.channel.basic_publish(
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = routing_key,
-			body            = json.dumps(msg),
-			properties      = BasicProperties(
-				content_type    = "application/json",
-				delivery_mode   = 1,
-				reply_to        = msg.get('reply_to'),
-				correlation_id  = msg.get('correlation_id'),
-			)
+			content         = content.Content(json.dumps(msg), properties={
+				'content type'    :'application/json',
+				'delivery mode'   : 1,
+				'reply to'        : msg.get('reply_to'),
+				'correlation id'  : msg.get('correlation_id'),
+			}),
 		)

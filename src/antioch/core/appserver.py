@@ -88,7 +88,7 @@ class AppService(service.Service):
 			defer.returnValue(None)
 		
 		log.debug("checking for message for appserver: %s" % (self.consumer))
-		msg, header = yield self.consumer.get_message()
+		msg = yield self.consumer.get_message()
 		log.debug("got message from %s: %s" % (self.consumer, msg))
 		
 		klass, child = get_command_support(msg['command'])
@@ -103,6 +103,6 @@ class AppService(service.Service):
 		
 		result = yield klass.run(transaction_child=child, **msg['kwargs'])
 		
-		log.debug("sending response to %s: %s" % (header.reply_to, result))
-		yield self.consumer.send_message(header.reply_to, dict(correlation_id=msg['correlation_id'], **result))
+		log.debug("sending response to %s: %s" % (msg['reply_to'], result))
+		yield self.consumer.send_message(msg['reply_to'], dict(correlation_id=msg['correlation_id'], **result))
 
