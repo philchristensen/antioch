@@ -60,17 +60,18 @@ class AppService(service.Service):
 		Start consuming messages asynchronously.
 		"""
 		self.consumer = yield messaging.get_async_consumer()
-		yield self.consumer.start_consuming()
 		self.stopped = False
+		yield self.consumer.start_consuming()
 	
 	def stopService(self):
 		"""
 		Stop the loop.
 		"""
 		log.info("stopping appserver queue, please wait...")
-		self.stopped = True
-		self.loop.stop()
-		reactor.addSystemEventTrigger("before", "shutdown", self._stopService)
+		if not(self.stopped):
+			self.stopped = True
+			self.loop.stop()
+			reactor.addSystemEventTrigger("before", "shutdown", self._stopService)
 	
 	@defer.inlineCallbacks
 	def _stopService(self):
@@ -89,6 +90,11 @@ class AppService(service.Service):
 		
 		log.debug("checking for message for appserver: %s" % (self.consumer))
 		msg = yield self.consumer.get_message()
+		if(msg is None):
+			log.info("appserver queue returned None, shutting down...")
+			self.stopService()
+			defer.returnValue(None)
+		
 		log.debug("got message from %s: %s" % (self.consumer, msg))
 		
 		klass, child = get_command_support(msg['command'])

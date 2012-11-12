@@ -252,19 +252,36 @@ class AsyncMessageConsumer(object):
 		self.queue = yield self.protocol.queue(self.consumer_tag)
 		log.debug("[a] queue opened for tag %s" % self.consumer_tag)
 	
+	@defer.inlineCallbacks
 	def disconnect(self):
-		yield self.channel.close()
-		yield self.protocol.close()
+		from txamqp import client
+		try:
+			yield self.channel.basic_cancel(self.consumer_tag)
+			yield self.channel.channel_close()
+		except client.Closed, e:
+			pass
+			
+		log.debug("[a] disconnecting from RabbitMQ server at %(host)s:%(port)s" % self.url)
+		if(self.protocol):
+			chan0 = yield self.protocol.channel(0)
+			yield chan0.connection_close()
+			self.protocol = None
 	
 	@defer.inlineCallbacks
 	def get_message(self):
+		from txamqp import queue
 		log.debug("[a] looking for message")
-		msg = yield self.queue.get()
-		defer.returnValue(json.loads(msg.content.body))
+		try:
+			msg = yield self.queue.get()
+		except queue.Closed:
+			defer.returnValue(None)
+		else:
+			defer.returnValue(json.loads(msg.content.body))
 	
+	@defer.inlineCallbacks
 	def send_message(self, routing_key, msg):
 		from txamqp import content
-		log.warning('[a] sending %s to %s' % (msg, routing_key))
+		log.debug('[a] sending %s to %s' % (msg, routing_key))
 		yield self.channel.basic_publish(
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = routing_key,
