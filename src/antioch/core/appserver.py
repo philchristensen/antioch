@@ -50,7 +50,7 @@ class AppService(service.Service):
 		"""
 		Start the loop.
 		"""
-		log.info("started processing appserver queue")
+		log.info("preparing to start appserver queue")
 		self.loop.start(self.loop.interval)
 		reactor.addSystemEventTrigger("after", "startup", self._startService)
 	
@@ -59,6 +59,7 @@ class AppService(service.Service):
 		"""
 		Start consuming messages asynchronously.
 		"""
+		log.info("started processing appserver queue")
 		self.consumer = yield messaging.get_async_consumer()
 		self.stopped = False
 		yield self.consumer.start_consuming()
@@ -67,8 +68,8 @@ class AppService(service.Service):
 		"""
 		Stop the loop.
 		"""
-		log.info("stopping appserver queue, please wait...")
 		if not(self.stopped):
+			log.info("preparing to stop appserver queue, please wait...")
 			self.stopped = True
 			self.loop.stop()
 			reactor.addSystemEventTrigger("before", "shutdown", self._stopService)
@@ -78,6 +79,7 @@ class AppService(service.Service):
 		"""
 		Stop consuming messages.
 		"""
+		log.info("stopping appserver queue, please wait...")
 		yield self.consumer.disconnect()
 	
 	@defer.inlineCallbacks
@@ -91,8 +93,8 @@ class AppService(service.Service):
 		log.debug("checking for message for appserver: %s" % (self.consumer))
 		msg = yield self.consumer.get_message()
 		if(msg is None):
-			log.info("appserver queue returned None, shutting down...")
-			self.stopService()
+			log.info("appserver queue returned None, probably shutting down...")
+			# self.stopService()
 			defer.returnValue(None)
 		
 		log.debug("got message from %s: %s" % (self.consumer, msg))

@@ -39,8 +39,6 @@ CallbackManager.sanitize = sanitize  # monkey-patch
 log = logging.getLogger(__name__)
 
 _blocking_consumers = dict()
-_blocking_sleep_interval = 0.010
-
 _async_consumer = None
 
 def blocking_run(command, as_user=None, appserver_queue=None, response_queue=None, **kwargs):
@@ -260,15 +258,22 @@ class AsyncMessageConsumer(object):
 	def disconnect(self):
 		from txamqp import client
 		try:
+			log.debug("[a] cancelling consumer %s" % self.consumer_tag)
 			yield self.channel.basic_cancel(self.consumer_tag)
+			log.debug("[a] closing the channel")
 			yield self.channel.channel_close()
 		except client.Closed, e:
-			pass
+			log.debug("[a] received client.Closed exception")
 			
 		log.debug("[a] disconnecting from RabbitMQ server at %(host)s:%(port)s" % self.url)
 		if(self.protocol):
 			chan0 = yield self.protocol.channel(0)
-			yield chan0.connection_close()
+			try:
+				yield chan0.connection_close()
+				log.debug('[a] connection closed')
+			except Exception, e:
+				log.error("[a] received exception %s" % e)
+				
 			self.protocol = None
 	
 	@defer.inlineCallbacks
