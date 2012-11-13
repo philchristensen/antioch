@@ -55,7 +55,9 @@ def blocking_run(command, as_user=None, appserver_queue=None, response_queue=Non
 	
 	log.debug("sending appserver message [correlation:%s]: %s(%s)" % (correlation_id, command, kwargs))
 	consumer = get_blocking_consumer()
+	log.debug("declaring response queue %r" % response_queue)
 	consumer.declare_queue(response_queue)
+	log.debug("sending message to %r: %r" % (appserver_queue, (command, kwargs)))
 	consumer.send_message(appserver_queue, dict(
 		command			= command,
 		kwargs			= kwargs,
@@ -63,6 +65,7 @@ def blocking_run(command, as_user=None, appserver_queue=None, response_queue=Non
 		correlation_id	= correlation_id,
 	))
 	
+	log.debug("waiting for response from %s" % response_queue)
 	msg = consumer.get_messages(response_queue, correlation_id)
 	while(len(msg) > 1):
 		log.warn('discarding queue cruft: %s' % msg.pop(0))
@@ -109,9 +112,10 @@ class BlockingMessageConsumer(object):
 			virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works,
 			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
 		))
+		log.debug("[s] opening channel on %(host)s:%(port)s" % self.url)
 		self.channel = self.connection.channel()
-		self.channel.confirm_delivery(lambda *args, **kwargs: None)
-		log.debug("declaring exchange %s" % conf.get('appserver-exchange'))
+		self.channel.confirm_delivery()
+		log.debug("[s] declaring exchange %s" % conf.get('appserver-exchange'))
 		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
 			type            = 'direct',
@@ -121,14 +125,14 @@ class BlockingMessageConsumer(object):
 		self.connected = True
 	
 	def disconnect(self):
-		log.debug("disconnecting from RabbitMQ server on %(host)s:%(port)s" % self.url)
+		log.debug("[s] disconnecting from RabbitMQ server on %(host)s:%(port)s" % self.url)
 		self.connected = False
 		self.channel.close()
 		self.connection.close()
 	
 	def declare_queue(self, queue_id):
 		assert self.connected
-		log.debug("declaring queue %s" % queue_id)
+		log.debug("[s] declaring queue %s" % queue_id)
 		self.channel.queue_declare(
 			queue           = queue_id,
 			auto_delete     = True,
@@ -169,15 +173,15 @@ class BlockingMessageConsumer(object):
 		
 		consumer_tag = self.channel.basic_consume(on_request, queue=queue_id)
 		self.channel.start_consuming()
-		log.debug('removing timeout for %s' % queue_id)
+		log.debug('[s] removing timeout for %s' % queue_id)
 		self.connection.remove_timeout(timeout_id)
-		log.debug("%s returned to client: %s" % (queue_id, result))
+		log.debug("[s] %s returned to client: %s" % (queue_id, result))
 		return result
 	
 	def send_message(self, routing_key, msg):
 		assert self.connected
 		from pika import BasicProperties
-		log.debug("sending to %s: %s" % (routing_key, msg))
+		log.debug("[s] sending to %s: %s" % (routing_key, msg))
 		self.channel.basic_publish(
 			exchange        = conf.get('appserver-exchange'),
 			routing_key     = routing_key,
