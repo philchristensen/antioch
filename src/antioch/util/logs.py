@@ -44,8 +44,17 @@ class DjangoColorFormatter(object):
 		is_a_tty = hasattr(sys.__stdout__, 'isatty') and sys.__stdout__.isatty()
 		
 		result = self.logformat % dict(
+			name = log.name,
 			asctime = time.strftime(self.datefmt, time.gmtime(log.created)),
-			**log.__dict__
+			levelname = log.levelname,
+			pathname = log.pathname,
+			funcName = log.funcName,
+			lineno = log.lineno,
+			msg = log.msg % log.args,
+			thread = log.thread,
+			threadName = log.threadName,
+			process = log.process,
+			processName = log.processName,
 		)
 		
 		if log.levelname not in styles or unsupported_platform or not is_a_tty:
