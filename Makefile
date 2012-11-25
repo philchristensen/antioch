@@ -1,5 +1,5 @@
-BOOTSTRAP_FILES= $(shell find static -name 'bootstrap.less' -or -name 'responsive.less')
-LESS_FILES= $(shell find static/less -name '*.less')
+BOOTSTRAP_FILES= $(shell find . -name 'bootstrap.less' -or -name 'responsive.less')
+LESS_FILES= $(shell find . -name '*.less' -and -not -path '*src*')
 
 all: static bootstrap less
 
