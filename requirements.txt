@@ -8,4 +8,4 @@ PyYAML>=0.1
 django-ajax-selects>=1.2.4
 gunicorn>=0.13.4
 pika>=0.9.5
-txAMQP>=0.9.7
+txAMQP>=0.6.1
