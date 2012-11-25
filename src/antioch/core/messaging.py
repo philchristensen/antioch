@@ -17,25 +17,6 @@ from twisted.internet import task, protocol, reactor, defer
 from antioch import conf
 from antioch.util import mnemo, json
 
-#import pika.log
-#pika.log.setup(level=pika.log.DEBUG)
-
-from pika.callback import CallbackManager
-
-def sanitize(self, key):
-	if hasattr(key, 'method') and hasattr(key.method, 'NAME'):
-		return key.method.NAME
-
-	if hasattr(key, 'NAME'):
-		return key.NAME
-
-	if hasattr(key, '__dict__') and 'NAME' in key.__dict__:
-		return key.__dict__['NAME']
-
-	return str(key)
-
-CallbackManager.sanitize = sanitize  # monkey-patch
-
 log = logging.getLogger(__name__)
 
 _blocking_consumers = dict()
@@ -99,6 +80,9 @@ def get_async_consumer():
 	defer.returnValue(_async_consumer)
 
 class BlockingMessageConsumer(object):
+	def __init__(self):
+		reactor.addSystemEventTrigger("before", "shutdown", self.disconnect)
+	
 	def connect(self):
 		from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 		from antioch.core import parser
@@ -113,6 +97,7 @@ class BlockingMessageConsumer(object):
 		log.debug("[s] opening channel on %(host)s:%(port)s" % self.url)
 		self.channel = self.connection.channel()
 		self.channel.confirm_delivery()
+		self.channel.stopping = False
 		log.debug("[s] declaring exchange %s" % conf.get('appserver-exchange'))
 		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
@@ -123,10 +108,21 @@ class BlockingMessageConsumer(object):
 		self.connected = True
 	
 	def disconnect(self):
-		log.debug("[s] disconnecting from RabbitMQ server on %(host)s:%(port)s" % self.url)
-		self.connected = False
-		self.channel.close()
-		self.connection.close()
+		if(self.connected):
+			# try:
+			log.debug("[s] disconnecting from RabbitMQ server on %(host)s:%(port)s" % self.url)
+			# self.channel.stopping = True
+			try:
+				self.channel.close()
+			except:
+			 	log.error("Exception during channel close: %s" % e)
+			
+			try:
+				self.connection.close()
+			except:
+			 	log.error("Exception during channel close: %s" % e)
+			
+			self.connected = False
 	
 	def declare_queue(self, queue_id):
 		assert self.connected
@@ -148,7 +144,6 @@ class BlockingMessageConsumer(object):
 		result = []
 		
 		consumer_tag = None
-		self.channel.stopping = False
 
 		def on_request(channel, method_frame, header_frame, body):
 			if(header_frame.correlation_id == correlation_id):
