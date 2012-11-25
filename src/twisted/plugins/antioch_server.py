@@ -90,11 +90,13 @@ class antiochServer(object):
 		app_service.setName("app-service")
 		app_service.setServiceParent(master_service)
 		
+		from antioch.core import messaging
 		if not(config['no-web']):
 			from antioch import client
 			web_service = client.DjangoServer(port=config['port'])
 			web_service.setName("web-service")
 			web_service.setServiceParent(master_service)
+			messaging.configure_twisted_shutdown()
 		
 		reactor.addSystemEventTrigger("before", "startup", lambda: pylog.info(messages['startup']))
 		reactor.addSystemEventTrigger("before", "shutdown", lambda: pylog.info(messages['shutdown']))

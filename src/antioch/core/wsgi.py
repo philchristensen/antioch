@@ -28,5 +28,8 @@ def handler(environ, start_response):
 	from antioch import conf
 	conf.init()
 	
+	from antioch.core import messaging
+	messaging.configure_django_shutdown()
+	
 	f = DebugLoggingWSGIHandler()
 	return f(environ, start_response)

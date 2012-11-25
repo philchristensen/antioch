@@ -51,6 +51,9 @@ def comet(request):
 	queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
 	log.debug("checking for messages for %s" % queue_id)
 	consumer = messaging.get_blocking_consumer()
+	if(consumer is None):
+		return http.HttpResponse('["SHUTDOWN"]', content_type="application/json")
+	
 	consumer.declare_queue(queue_id)
 	messages = consumer.get_messages(queue_id, None, timeout=10)
 	log.debug('returning to client: %s' % messages)

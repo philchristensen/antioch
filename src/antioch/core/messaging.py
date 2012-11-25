@@ -8,7 +8,7 @@
 Enable access to the messaging server
 """
 
-import logging, threading, time
+import logging, threading, time, atexit, warnings
 
 import pkg_resources as pkg
 
@@ -21,6 +21,8 @@ log = logging.getLogger(__name__)
 
 _blocking_consumers = dict()
 _async_consumer = None
+
+_server_is_shutting_down = False
 
 def blocking_run(command, as_user=None, appserver_queue=None, response_queue=None, **kwargs):
 	from django.conf import settings
@@ -64,7 +66,24 @@ def getLocalIdent(prefix):
 		ip_address	= mnemo.encode(long_ip),
 	)
 
+def shutdown_blocking_consumers():
+	global _server_is_shutting_down, _blocking_consumers
+	_server_is_shutting_down = True
+	for ident, consumer in _blocking_consumers.items():
+		consumer.disconnect()
+	_blocking_consumers = {}
+
+def configure_twisted_shutdown():
+	log.debug('Configuring Twisted shutdown')
+	reactor.addSystemEventTrigger("before", "shutdown", shutdown_blocking_consumers)
+
+def configure_django_shutdown():
+	warnings.warn('Should be configuring Django shutdown')
+
 def get_blocking_consumer():
+	if(_server_is_shutting_down):
+		return None
+	
 	ident = getLocalIdent('consumer')
 	if(ident not in _blocking_consumers):
 		_blocking_consumers[ident] = BlockingMessageConsumer()
@@ -80,9 +99,6 @@ def get_async_consumer():
 	defer.returnValue(_async_consumer)
 
 class BlockingMessageConsumer(object):
-	def __init__(self):
-		reactor.addSystemEventTrigger("before", "shutdown", self.disconnect)
-	
 	def connect(self):
 		from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 		from antioch.core import parser
@@ -97,7 +113,6 @@ class BlockingMessageConsumer(object):
 		log.debug("[s] opening channel on %(host)s:%(port)s" % self.url)
 		self.channel = self.connection.channel()
 		self.channel.confirm_delivery()
-		self.channel.stopping = False
 		log.debug("[s] declaring exchange %s" % conf.get('appserver-exchange'))
 		frame = self.channel.exchange_declare(
 			exchange        = conf.get('appserver-exchange'),
@@ -109,19 +124,15 @@ class BlockingMessageConsumer(object):
 	
 	def disconnect(self):
 		if(self.connected):
-			# try:
 			log.debug("[s] disconnecting from RabbitMQ server on %(host)s:%(port)s" % self.url)
-			# self.channel.stopping = True
 			try:
 				self.channel.close()
 			except:
-			 	log.error("Exception during channel close: %s" % e)
-			
+				pass
 			try:
 				self.connection.close()
 			except:
-			 	log.error("Exception during channel close: %s" % e)
-			
+				pass
 			self.connected = False
 	
 	def declare_queue(self, queue_id):
@@ -144,7 +155,8 @@ class BlockingMessageConsumer(object):
 		result = []
 		
 		consumer_tag = None
-
+		self.channel.stopping = False
+		
 		def on_request(channel, method_frame, header_frame, body):
 			if(header_frame.correlation_id == correlation_id):
 				log.debug("%s received: %s" % (queue_id, body))

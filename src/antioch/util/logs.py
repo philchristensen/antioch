@@ -43,6 +43,11 @@ class DjangoColorFormatter(object):
 		unsupported_platform = (sys.platform in ('win32', 'Pocket PC'))
 		is_a_tty = hasattr(sys.__stdout__, 'isatty') and sys.__stdout__.isatty()
 		
+		try:
+			msg = log.msg % log.args
+		except:
+			msg = '%s %s' % (log.msg, log.args)
+		
 		result = self.logformat % dict(
 			name = log.name,
 			asctime = time.strftime(self.datefmt, time.gmtime(log.created)),
@@ -50,7 +55,7 @@ class DjangoColorFormatter(object):
 			pathname = log.pathname,
 			funcName = log.funcName,
 			lineno = log.lineno,
-			msg = log.msg % log.args,
+			msg = msg,
 			thread = log.thread,
 			threadName = log.threadName,
 			process = log.process,
@@ -130,4 +135,3 @@ class AccessLogOnnaStick(log.StdioOnnaStick):
 			if isinstance(line, unicode):
 				line = line.encode(self.encoding)
 			self.log.info(line)
-

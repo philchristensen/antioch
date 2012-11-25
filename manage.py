@@ -27,6 +27,9 @@ def monkey_patch_for_multi_threaded():
 from antioch import conf
 conf.init()
 
+from antioch.core import messaging
+messaging.configure_django_shutdown()
+
 # some debug pages use this variable (improperly, imho)
 from django.conf import settings
 settings.SETTINGS_MODULE = 'antioch.settings'

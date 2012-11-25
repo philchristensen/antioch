@@ -30,8 +30,8 @@
     
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 5,
-    "SUPPRESS_DEPRECATION_WARNINGS": true,
-    "SUPPRESS_USER_WARNINGS": true,
+    "SUPPRESS_DEPRECATION_WARNINGS": false,
+    "SUPPRESS_USER_WARNINGS": false,
     "XSENDFILE": false,
     "RENDER_LESS": true,
     
@@ -242,12 +242,6 @@
                 'propagate': false,
                 'level':'DEBUG',
             },
-            # pika message library
-            'pika': {
-                'handlers':['default'],
-                'propagate': false,
-                'level':'INFO',
-            },
             # uncaught django exceptions
             'django.request': {
                 'handlers':['default'],
@@ -305,6 +299,12 @@
             # newrelic messages
             'newrelic': {
                 'handlers':['default'],
+                'propagate': false,
+                'level':'INFO',
+            },
+            # pika message library
+            'pika': {
+                'handlers':['null'],
                 'propagate': false,
                 'level':'INFO',
             },

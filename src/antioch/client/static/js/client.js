@@ -84,8 +84,16 @@ if(!window.console){
 							}
 						},
 						success: function(data, textStatus, jqXHR){
+							if(data.length == 1 && data[0] == "SHUTDOWN"){
+								settings.error_handler('Server Shutting Down');
+								return;
+							}
+							
 							handler(data);
-							listen(handler);
+							
+							setTimeout(function(){
+								listen(handler);
+							}, 1);
 						}
 					});
 				}
