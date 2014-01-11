@@ -178,9 +178,9 @@
         'antioch.core',
         'antioch.client',
         'antioch.assets',
-        'antioch.plugins.ask',
-        'antioch.plugins.editors',
-        'antioch.plugins.signup'
+        # 'antioch.plugins.ask',
+        # 'antioch.plugins.editors',
+        # 'antioch.plugins.signup'
     ],
 
     "MESSAGE_STORAGE": "django.contrib.messages.storage.session.SessionStorage",
@@ -283,12 +283,6 @@
             #     'propagate': false,
             #     'level':'INFO',
             # },
-            # low-level queue-related messages
-            'antioch.core.messaging': {
-                'handlers':['default'],
-                'propagate': false,
-                'level':'INFO',
-            },
             # twisted-related main process messages, stdout
             'antioch.twisted': {
                 'handlers':['default'],

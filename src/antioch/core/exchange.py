@@ -18,7 +18,7 @@ from twisted.internet import defer
 from twisted.python import util
 
 from antioch import conf, celery
-from antioch.core import interface, errors, messaging
+from antioch.core import interface, errors
 from antioch.util import sql, json, hash_password
 
 group_definitions = dict(
@@ -177,7 +177,7 @@ class ObjectExchange(object):
 				from kombu import Exchange, Queue
 				unbound_exchange = Exchange('antioch',
 					type            = 'direct',
-					auto_delete     = True,
+					auto_delete     = False,
 					durable         = False,
 				)
 				channel = conn.channel()

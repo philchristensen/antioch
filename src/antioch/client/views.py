@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 import simplejson
 
 from antioch import plugins, assets, celery
-from antioch.core import parser, messaging, tasks
+from antioch.core import parser, tasks
 
 log = logging.getLogger(__name__)
 
@@ -50,38 +50,32 @@ def comet(request):
 	"""
 	queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
 	log.debug("checking for messages for %s" % queue_id)
-	# consumer = messaging.get_blocking_consumer()
-	# if(consumer is None):
-	# 	return http.HttpResponse('["SHUTDOWN"]', content_type="application/json")
-	# 
-	# consumer.declare_queue(queue_id)
-	# messages = consumer.get_messages(queue_id, None, timeout=10)
 
 	with celery.app.default_connection() as conn:
 		from kombu import simple, Exchange, Queue
 		exchange = Exchange('antioch',
 			type            = 'direct',
-			auto_delete     = True,
+			auto_delete     = False,
 			durable         = False,
 		)
 		channel = conn.channel()
 		unbound_queue = Queue(queue_id,
 			exchange        = exchange,
 			routing_key     = queue_id,
-			auto_delete     = True,
+			auto_delete     = False,
 			durable         = False,
 			exclusive       = False,
 		)
 		queue = unbound_queue(channel)
 		queue.declare()
 
-		sq = simple.SimpleQueue(channel, queue)
-
+		sq = simple.SimpleBuffer(channel, queue, no_ack=True)
 		try:
 			msg = sq.get(block=True, timeout=10)
 			messages = [msg.body]
 		except sq.Empty, e:
 			messages = []
+		sq.close()
 	
 	log.debug('returning to client: %s' % messages)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")

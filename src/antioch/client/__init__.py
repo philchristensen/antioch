@@ -8,38 +8,15 @@
 Setup the web client interface.
 """
 
-import crypt, logging, traceback
+import logging, traceback, crypt
 
 from django.contrib.auth import backends
 from django.conf import settings
 
-from twisted.internet import reactor
-from twisted.application import internet
-from twisted.web import wsgi, server
-
 from antioch import conf
 from antioch.core import models
-from antioch.core.wsgi import handler 
-from antioch.util.logs import AccessLogOnnaStick, AccessLoggingSite
 
 log = logging.getLogger(__name__)
-
-class DjangoServer(internet.TCPServer):
-	"""
-	Provides a service that responds to web requests.
-	"""
-	def __init__(self, port):
-		"""
-		Create a web server on the provided port.
-		"""
-		if(conf.get('new-relic-conf')):
-			import newrelic.agent
-			h = newrelic.agent.wsgi_application()(handler)
-		else:
-			h = handler
-		self.root = wsgi.WSGIResource(reactor, reactor.getThreadPool(), h)
-		self.factory = AccessLoggingSite(self.root, logPath=AccessLogOnnaStick('django.request.access'))
-		internet.TCPServer.__init__(self, port, self.factory)
 
 class DjangoBackend(backends.ModelBackend):
 	"""
