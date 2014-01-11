@@ -10,8 +10,8 @@ Registration backend for django-registration support.
 
 import hashlib, random, logging
 
-from antioch.core import models, messaging
-from antioch.plugins.signup import forms
+from antioch.core import models
+from antioch.plugins.signup import forms, tasks
 from antioch.plugins.signup.models import RegisteredPlayer
 
 from registration.backends.default import DefaultBackend
@@ -27,13 +27,13 @@ def get_activation_key(username):
 
 class SignupBackend(DefaultBackend):
 	def register(self, request, **cleaned_data):
-		user_id = messaging.blocking_run('addplayer',
+		user_id = tasks.addplayer.delay(
 			name	= cleaned_data['character_name'],
 			passwd	= cleaned_data['crypt'],
 			enabled	= False,
-		)
+		).get(timeout=5)
 		
-		player = models.Player.get(avatar_id=user_id)
+		player = models.Player.objects.get(avatar_id=user_id)
 		activation_key = get_activation_key(cleaned_data['character_name'])
 		reg = models.RegisteredPlayer(
 			player			= player,
@@ -48,9 +48,9 @@ class SignupBackend(DefaultBackend):
 	
 	def activate(self, request, activation_key):
 		player = models.RegisteredPlayer.objects.get(activation_key=activation_key)
-		result = messaging.blocking_run('enableplayer',
+		result = tasks.enableplayer.delay(
 			player_id = player.id,
-		)
+		).get(timeout=5)
 		
 		user_activated.send(self.__class__, player, request)
 		return player

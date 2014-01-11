@@ -13,7 +13,7 @@ from twisted.python import usage
 from antioch import conf
 conf.init()
 
-from antioch.core import dbapi, bootstrap, transact
+from antioch.core import dbapi, bootstrap
 
 default_bootstrap_path = '%s.py'
 default_schema_path = 'schema.sql'
@@ -35,7 +35,7 @@ class Options(usage.Options):
 
 	def parseArgs(self, db_url='default', dataset_name='default', *psql_args):
 		if(db_url == 'default'):
-			self['db-url'] = transact.default_db_url
+			self['db-url'] = conf.get('db-url-default')
 		else:
 			self['db-url'] = db_url
 		self['dataset-name'] = dataset_name

@@ -12,7 +12,7 @@ import pkg_resources as pkg
 from antioch import conf
 conf.init()
 
-from antioch.core import dbapi, bootstrap, transact
+from antioch.core import dbapi, bootstrap
 
 psql_path = conf.get('psql-path')
 

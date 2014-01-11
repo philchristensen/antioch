@@ -15,7 +15,7 @@ by the (BNF?) form:
 There are a long list of prepositions supported, some of which are interchangeable.
 """
 
-import sys, time, re, string, types
+import sys, time, re, string, types, logging
 
 from antioch.core import exchange, interface, errors, dbapi
 from antioch.core.errors import *
