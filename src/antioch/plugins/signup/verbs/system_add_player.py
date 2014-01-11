@@ -1,3 +1,3 @@
 #!antioch
 
-add_player(*args, **kwargs)
+return add_player(*args, **kwargs)
