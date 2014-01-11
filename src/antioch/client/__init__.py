@@ -33,6 +33,7 @@ class DjangoBackend(backends.ModelBackend):
 		try:
 			p = models.Player.objects.filter(
 				avatar__name__iexact = username,
+				enabled = True
 			)[:1]
 			
 			if not(p):
