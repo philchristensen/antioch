@@ -58,7 +58,7 @@ def comet(request):
 	# messages = consumer.get_messages(queue_id, None, timeout=10)
 
 	with celery.app.default_connection() as conn:
-		from kombu import Exchange, Queue
+		from kombu import simple, Exchange, Queue
 		exchange = Exchange('antioch',
 			type            = 'direct',
 			auto_delete     = True,
@@ -74,11 +74,14 @@ def comet(request):
 		)
 		queue = unbound_queue(channel)
 		queue.declare()
-		msg = queue.get()
-		if(msg == None):
-			messages = []
-		else:
+
+		sq = simple.SimpleQueue(channel, queue)
+
+		try:
+			msg = sq.get(block=True, timeout=10)
 			messages = [msg.body]
+		except sq.Empty, e:
+			messages = []
 	
 	log.debug('returning to client: %s' % messages)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
