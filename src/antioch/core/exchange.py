@@ -14,7 +14,6 @@ during a single verb transaction.
 """
 import crypt, string, random, time, logging
 
-from twisted.internet import defer
 from twisted.python import util
 
 from antioch import conf, celery

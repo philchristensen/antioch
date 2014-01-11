@@ -3,11 +3,9 @@ PyYAML>=3.10
 RestrictedPython>=3.6.0
 South>=0.8.4
 Twisted>=13.2.0
-ampoule>=0.2.0
 django-ajax-selects>=1.3.3
 django-registration==0.8
 gunicorn>=18.0
-pika>=0.9.13
 psycopg2>=2.4.1
 simplejson>=3.3.2
-txAMQP>=0.6.2
+django-celery>=3.1.1
