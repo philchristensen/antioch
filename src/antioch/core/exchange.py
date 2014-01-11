@@ -175,9 +175,14 @@ class ObjectExchange(object):
 		if(self.queue):
 			with celery.app.default_connection() as conn:
 				from kombu import Exchange, Queue
-				unbound_exchange = Exchange('antioch', type='direct')
+				unbound_exchange = Exchange('antioch',
+					type            = 'direct',
+					auto_delete     = True,
+					durable         = False,
+				)
 				channel = conn.channel()
 				exchange = unbound_exchange(channel)
+				exchange.declare()
 				for user, msg in self.queue:
 					if not(user.is_connected_player()):
 						log.debug("ignoring message for unconnected player %s" % user)

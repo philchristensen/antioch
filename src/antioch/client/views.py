@@ -59,12 +59,27 @@ def comet(request):
 
 	with celery.app.default_connection() as conn:
 		from kombu import Exchange, Queue
-		exchange = Exchange('antioch', type='direct')
-		unbound_queue = Queue(queue_id, exchange=exchange, routing_key=queue_id)
+		exchange = Exchange('antioch',
+			type            = 'direct',
+			auto_delete     = True,
+			durable         = False,
+		)
 		channel = conn.channel()
+		unbound_queue = Queue(queue_id,
+			exchange        = exchange,
+			routing_key     = queue_id,
+			auto_delete     = True,
+			durable         = False,
+			exclusive       = False,
+		)
 		queue = unbound_queue(channel)
-
-	messages = [queue.get()]
+		queue.declare()
+		msg = queue.get()
+		if(msg == None):
+			messages = []
+		else:
+			messages = [msg.body]
+	
 	log.debug('returning to client: %s' % messages)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
 
