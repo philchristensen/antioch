@@ -17,7 +17,7 @@ import crypt, string, random, time, logging
 from twisted.internet import defer
 from twisted.python import util
 
-from antioch import conf
+from antioch import conf, celery
 from antioch.core import interface, errors, messaging
 from antioch.util import sql, json, hash_password
 
@@ -139,8 +139,7 @@ class ObjectExchange(object):
 			else:
 				self.commit()
 		finally:
-			d = self.flush()
-			d.addErrback(log.error)
+			self.flush()
 	
 	def begin(self):
 		"""
@@ -167,7 +166,6 @@ class ObjectExchange(object):
 		
 		self.queue.append((self.get_object(user_id), msg))
 	
-	@defer.inlineCallbacks
 	def flush(self):
 		"""
 		Clear and save the cache, and send all pending messages.
@@ -175,14 +173,19 @@ class ObjectExchange(object):
 		self.cache.clear()
 		self.cache._order = []
 		if(self.queue):
-			for user, msg in self.queue:
-				if not(user.is_connected_player()):
-					log.debug("ignoring message for unconnected player %s" % user)
-					continue
-				queue_id = '-'.join([conf.get('user-queue'), str(user.id)])
-				log.debug("flushing message to #%s: %s" % (queue_id, msg))
-				consumer = yield messaging.get_async_consumer()
-				yield consumer.send_message(queue_id, dict(**msg))
+			with celery.app.default_connection() as conn:
+				from kombu import Exchange, Queue
+				unbound_exchange = Exchange('antioch', type='direct')
+				channel = conn.channel()
+				exchange = unbound_exchange(channel)
+				for user, msg in self.queue:
+					if not(user.is_connected_player()):
+						log.debug("ignoring message for unconnected player %s" % user)
+						continue
+					queue_id = '-'.join([conf.get('user-queue'), str(user.id)])
+					log.debug("flushing message to #%s: %s" % (queue_id, msg))
+					exchange.publish(exchange.Message(json.dumps(msg), content_type="application/json"), routing_key=queue_id)
+
 	
 	def get_context(self):
 		"""

@@ -19,8 +19,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 import simplejson
 
-from antioch import plugins, assets
-from antioch.core import parser, messaging
+from antioch import plugins, assets, celery
+from antioch.core import parser, messaging, tasks
 
 log = logging.getLogger(__name__)
 
@@ -50,12 +50,21 @@ def comet(request):
 	"""
 	queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
 	log.debug("checking for messages for %s" % queue_id)
-	consumer = messaging.get_blocking_consumer()
-	if(consumer is None):
-		return http.HttpResponse('["SHUTDOWN"]', content_type="application/json")
-	
-	consumer.declare_queue(queue_id)
-	messages = consumer.get_messages(queue_id, None, timeout=10)
+	# consumer = messaging.get_blocking_consumer()
+	# if(consumer is None):
+	# 	return http.HttpResponse('["SHUTDOWN"]', content_type="application/json")
+	# 
+	# consumer.declare_queue(queue_id)
+	# messages = consumer.get_messages(queue_id, None, timeout=10)
+
+	with celery.app.default_connection() as conn:
+		from kombu import Exchange, Queue
+		exchange = Exchange('antioch', type='direct')
+		unbound_queue = Queue(queue_id, exchange=exchange, routing_key=queue_id)
+		channel = conn.channel()
+		queue = unbound_queue(channel)
+
+	messages = [queue.get()]
 	log.debug('returning to client: %s' % messages)
 	return http.HttpResponse('[%s]' % ','.join(messages), content_type="application/json")
 
@@ -66,8 +75,12 @@ def rest(request, command):
 	Query the appserver and wait for a response.
 	"""
 	kwargs = simplejson.loads(request.read())
-	response = messaging.blocking_run(command, request.user.avatar.id, **kwargs)
-	
+
+	task = getattr(tasks, command)
+	result = task.delay(request.user.avatar.id, **kwargs)
+	data = result.get(timeout=settings.JOB_TIMEOUT)
+	response = simplejson.dumps(data)
+
 	return http.HttpResponse(response, content_type="application/json")
 
 def logout(request):

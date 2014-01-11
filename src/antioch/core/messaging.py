@@ -99,17 +99,23 @@ def get_async_consumer():
 	defer.returnValue(_async_consumer)
 
 class BlockingMessageConsumer(object):
+	def __init__(self):
+		self.connected = False
+		self.connection = None
+		self.channel = None
+		self.url = None
+	
 	def connect(self):
 		from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 		from antioch.core import parser
 		self.url = parser.URL(conf.get('queue-url'))
 		log.info("[s] connecting to rabbitmq server at %(host)s:%(port)s with %(user)s" % self.url)
-		self.connection = BlockingConnection(ConnectionParameters(
-			host            = self.url['host'],
-			port            = int(self.url['port']),
-			virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works,
-			credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
-		))
+		self.connection = BlockingConnection() #ConnectionParameters(
+		# 	host            = self.url['host'],
+		# 	port            = int(self.url['port']),
+		# 	virtual_host    = self.url['path'][1:] or '/', # not sure about this, but it's all that works,
+		# 	credentials     = PlainCredentials(self.url['user'], self.url['passwd']),
+		# ))
 		log.debug("[s] opening channel on %(host)s:%(port)s" % self.url)
 		self.channel = self.connection.channel()
 		self.channel.confirm_delivery()

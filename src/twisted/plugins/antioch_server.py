@@ -80,15 +80,15 @@ class antiochServer(object):
 		
 		master_service = PythonLoggingMultiService()
 		
-		from antioch.core import tasks
-		task_service = tasks.TaskService()
-		task_service.setName("task-service")
-		task_service.setServiceParent(master_service)
+		# from antioch.core import tasks
+		# task_service = tasks.TaskService()
+		# task_service.setName("task-service")
+		# task_service.setServiceParent(master_service)
 		
-		from antioch.core import appserver
-		app_service = appserver.AppService()
-		app_service.setName("app-service")
-		app_service.setServiceParent(master_service)
+		# from antioch.core import appserver
+		# app_service = appserver.AppService()
+		# app_service.setName("app-service")
+		# app_service.setServiceParent(master_service)
 		
 		from antioch.core import messaging
 		if not(config['no-web']):

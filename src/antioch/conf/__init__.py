@@ -22,9 +22,6 @@ import pkg_resources as pkg
 from django.conf import settings
 from django.utils import importlib
 
-configured = False
-configured_lock = threading.BoundedSemaphore()
-
 log = logging.getLogger(__name__)
 
 def get(key):
@@ -114,10 +111,6 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	"""
 	Bootstrap the Django settings module.
 	"""
-	global configured
-	if(configured):
-		return
-	
 	# with no config, it's a development environment
 	env = 'development'
 	
@@ -155,41 +148,6 @@ def init(site_config='/etc/antioch.yaml', package='antioch.conf', filter=None, i
 	# external passwords are kept in the site config.)
 	if(os.path.isfile(site_config)):
 		environ = merge(load_yaml(site_config, package=None), environ)
-	else:
-		log.info("Cannot find site-specific Django settings in %r" % site_config)
 
-	# the optional filter is a method that returns updates to the
-	# final settings dict. this is used to override the database
-	# config during unit testing.
-	if(callable(filter)):
-		log.info("Overriding Django settings with %r" % filter)
-		environ = merge(filter(environ), environ)
-	
-	if('HEROKU_ENV' in environ):
-		for k,v in environ['HEROKU_ENV'].items():
-			environ[k] = os.environ[v]
-		environ['DATABASES'] = get_heroku_db(environ)
-	
-	settings.configure(ENVIRONMENT=env, **environ)
-	
-	# some debug pages use this variable (improperly, imho)
-	settings.SETTINGS_MODULE = os.environ['DJANGO_SETTINGS_MODULE'] = 'antioch.settings'
-	
-	from django.core.signals import got_request_exception
-	got_request_exception.connect(lambda s, **kw: log.error('error'))
-	
-	# Settings are configured, so we can set up the logger if required
-	if initLogging and settings.LOGGING_CONFIG:
-		# First find the logging configuration function ...
-		logging_config_path, logging_config_func_name = settings.LOGGING_CONFIG.rsplit('.', 1)
-		logging_config_module = importlib.import_module(logging_config_path)
-		logging_config_func = getattr(logging_config_module, logging_config_func_name)
-		
-		# ... then invoke it with the logging settings
-		logging_config_func(settings.LOGGING)
-	
-	try:
-		configured_lock.acquire()
-		configured = True
-	finally:
-		configured_lock.release()
+	return environ
+

@@ -4,81 +4,159 @@
 #
 # See LICENSE for details
 
-"""
-Manage asynchronous tasks.
-"""
+from __future__ import absolute_import
 
 import logging
 
-from twisted.application import service
-from twisted.internet import defer, reactor, task
+from celery import shared_task
 
-from antioch.core import transact
-
-MAX_DELAY = 10
+from antioch import conf
+from antioch.core import dbapi, code, exchange, errors, parser
+from antioch.util import sql, json
 
 log = logging.getLogger(__name__)
 
-class TaskService(service.Service):
+log.debug("%s started" % __name__)
+pool = dbapi.connect(conf.get('db-url-default'), **dict(
+	autocommit		= False,
+	debug			= conf.get('debug-sql'),
+	debug_writes	= conf.get('debug-sql-writes'),
+	debug_syntax	= conf.get('debug-sql-syntax'),
+	profile			= conf.get('profile-db'),
+))
+
+def get_exchange(ctx=None):
 	"""
-	Provides a service that iterates through queued tasks.
-	
-	The LoopingCall created by this service changes intervals depending on the
-	success of the previous attempt. Every time a task is completed, the next
-	interval before checking again is halved. If no task is found or an exception
-	occurs, the time before checking again is doubled, up to MAX_DELAY seconds.
+	Get an ObjectExchange instance for the provided context.
 	"""
-	def __init__(self):
-		"""
-		Create a new TaskService.
-		"""
-		self.stopped = False
-		self.loop = task.LoopingCall(self.check)
-		self.reset_timer()
-	
-	def reset_timer(self):
-		"""
-		Reset the timer
-		"""
-		self.loop.interval = 1.0
-	
-	def startService(self):
-		"""
-		Start the loop.
-		"""
-		self.loop.start(self.loop.interval)
-	
-	def stopService(self):
-		self.stopped = True
-		self.loop.stop()
-	
-	def check(self, *args, **kwargs):
-		"""
-		Attempt to execute one task.
-		"""
-		if(self.stopped):
-			return
-		d = transact.IterateTasks.run()
-		d.addCallbacks(self._check_cb, self._check_eb)
-		return d
-	
-	def _check_cb(self, result):
-		"""
-		Adjust the check interval based on the result.
-		"""
-		if(result):
-			self.reset_timer()
-		else:
-			self.loop.interval = self.loop.interval / 2 if result is None else self.loop.interval * 2
-			if(self.loop.interval > MAX_DELAY):
-				self.loop.interval = MAX_DELAY
-	
-	def _check_eb(self, failure):
-		"""
-		Adjust the check interval based on the result.
-		"""
-		self.stopService()
-		# an EnvironmentError Exception during IterateTasks will have already printed itself
-		# if it's something else, though, make sure we print something.
-		if not(failure.check(EnvironmentError)):
-			log.error("delayed tasks will not be run: %s" % failure.getErrorMessage())
+	if(ctx):
+		return exchange.ObjectExchange(pool, queue=True, ctx=ctx)
+	else:
+		return exchange.ObjectExchange(pool)
+
+@shared_task
+def authenticate(username, password, ip_address):
+	"""
+	Return the user id for the username/password combo, if valid.
+	"""
+	with get_exchange() as x:
+		connect = x.get_verb(1, 'connect')
+		if(connect):
+			connect(ip_address)
+
+		authentication = x.get_verb(1, 'authenticate')
+		if(authentication):
+			u = authentication(username, password, ip_address)
+			if(u):
+				return {'user_id': u.get_id()}
+		try:
+			u = x.get_object(username)
+			if not(u):
+				raise errors.PermissionError("Invalid login credentials. (2)")
+		except errors.NoSuchObjectError, e:
+			raise errors.PermissionError("Invalid login credentials. (3)")
+		except errors.AmbiguousObjectError, e:
+			raise errors.PermissionError("Invalid login credentials. (4)")
+
+		multilogin_accounts = x.get_property(1, 'multilogin_accounts')
+		if(u.is_connected_player()):
+			if(not multilogin_accounts or u not in multilogin_accounts.value):
+				raise errors.PermissionError('User is already logged in.')
+
+		if not(u.validate_password(password)):
+			raise errors.PermissionError("Invalid login credentials. (6)")
+
+	return {'user_id': u.get_id()}
+
+@shared_task
+def login(user_id, session_id, ip_address):
+	"""
+	Register a login for the provided user_id.
+	"""
+	with get_exchange(user_id) as x:
+		x.login_player(user_id, session_id)
+
+		system = x.get_object(1)
+		if(system.has_verb("login")):
+			system.login()
+		log.info('user #%s logged in from %s' % (user_id, ip_address))
+
+	return {'response': True}
+
+@shared_task
+def logout(user_id):
+	"""
+	Register a logout for the provided user_id.
+	"""
+	# we want to make sure to logout the user even
+	# if the logout verb fails
+	with get_exchange(user_id) as x:
+		x.logout_player(user_id)
+
+	with get_exchange(user_id) as x:
+		system = x.get_object(1)
+		if(system.has_verb("logout")):
+			system.logout()
+	 	log.info('user #%s logged out' % user_id)
+
+	return {'response': True}
+
+@shared_task
+def parse(user_id, sentence):
+	"""
+	Parse a command sentence for the provided user_id.
+	"""
+	with get_exchange(user_id) as x:
+		caller = x.get_object(user_id)
+
+		log.info('%s: %s' % (caller, sentence))
+		parser.parse(caller, sentence)
+
+	return {'response': True}
+
+@shared_task
+def registertask(user_id, delay, origin_id, verb_name, args, kwargs):
+	"""
+	Register a delayed task for the provided user_id.
+	"""
+	print 'registering task'
+	with get_exchange(user_id) as x:
+		try:
+			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+		except Exception, e:
+			print e
+			raise e
+
+	return {'task_id': task_id}
+
+@shared_task
+def runtask(user_id, task_id):
+	"""
+	Run a task for a particular user.
+	"""
+	with get_exchange(user_id) as x:
+		task = x.get_task(task_id)
+		if(not task or task['killed']):
+			return {'response': False}
+
+		origin = x.get_object(task['origin_id'])
+		args = json.loads(task['args'])
+		kwargs = json.loads(task['kwargs'])
+
+		v = origin.get_verb(task['verb_name'])
+		v(*args, **kwargs)
+
+	return {'response': True}
+
+@shared_task
+def iteratetasks():
+	"""
+	Run one waiting task, if possible.
+	"""
+	# note this is a 'superuser exchange'
+	# should be fine, since all iterate_task does
+	# is create another subprocess for the proper user
+	with get_exchange() as x:
+		task = x.iterate_task(self)
+
+	return {'response':task}

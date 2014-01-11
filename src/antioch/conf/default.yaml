@@ -15,6 +15,10 @@
     
     "NEW_RELIC_CONF": "",
     
+    
+    "CELERY_RESULT_BACKEND": "amqp",
+    "CELERY_TASK_RESULT_EXPIRES": 18000,
+    
     "QUEUE_URL": "rabbitmq://guest:guest@localhost:5672/",
     
     "APPSERVER_EXCHANGE": "antioch",
@@ -170,6 +174,7 @@
         'ajax_select',
         'south',
         'registration',
+        'djcelery',
         'antioch.core',
         'antioch.client',
         'antioch.assets',
