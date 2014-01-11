@@ -240,8 +240,8 @@ def task(p, delay, origin, verb_name, *args, **kwargs):
 	Verb API: queue up a new task.
 	"""
 	# remind me again why we can't do this?
-	from antioch.core import transact
-	transact.RegisterTask.run(
+	from antioch.core import tasks
+	tasks.registertask.delay(
 		user_id		= p.caller.id,
 		delay		= str(delay),
 		origin_id	= str(origin.id),

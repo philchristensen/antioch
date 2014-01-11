@@ -17,10 +17,10 @@ There are a long list of prepositions supported, some of which are interchangeab
 
 import sys, time, re, string, types
 
-from twisted.python import log
-
 from antioch.core import exchange, interface, errors, dbapi
 from antioch.core.errors import *
+
+log = logging.getLogger(__name__)
 
 URL_REGEXP = r'(?P<scheme>[+a-z0-9]+)\:(\/\/)?'
 URL_REGEXP += r'((?P<user>\w+?)(\:(?P<passwd>\w+?))?\@)?'
@@ -82,7 +82,7 @@ def parse(caller, sentence, debug=False):
 	def _profile(name):
 		if(debug):
 			query_seconds = dbapi.get_total_query_time()
-			log.msg("%s took %4f seconds, %4f query seconds" % (
+			log.debug("%s took %4f seconds, %4f query seconds" % (
 				name, time.time() - t['time'], query_seconds
 			))
 			db.reset_total_query_time()

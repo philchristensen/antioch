@@ -12,9 +12,7 @@ during a transaction. it is responsible for loading and saving objects,
 verbs, properties and permissions, as well as caching objects loaded
 during a single verb transaction.
 """
-import crypt, string, random, time, logging
-
-from twisted.python import util
+import crypt, string, random, time, logging, collections
 
 from antioch import conf, celery
 from antioch.core import interface, errors
@@ -66,7 +64,7 @@ class ObjectExchange(object):
 		and if the object context (`ctx`) is passed along, ensures rights
 		enforcement for all objects.
 		"""
-		self.cache = util.OrderedDict()
+		self.cache = collections.OrderedDict()
 		self.pool = pool
 		self.use_queue = queue
 		self.queue = [] if queue else None
