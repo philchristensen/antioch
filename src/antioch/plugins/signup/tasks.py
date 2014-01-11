@@ -17,14 +17,11 @@ log = logging.getLogger(__name__)
 
 @shared_task
 def addplayer(name, passwd, enabled=True):
-	try:
-		log.debug("Creating a player for %r" % name)
-		with tasks.get_exchange() as x:
-			user = code.run_system_verb(x, 'add_player', name, passwd, enabled)
-	
-		return dict(avatar_id=user.id)
-	except Exception, e:
-		log.error(e)
+	log.debug("Creating a player for %r" % name)
+	with tasks.get_exchange() as x:
+		user = code.run_system_verb(x, 'add_player', name, passwd, enabled)
+
+	return user.id
 
 @shared_task
 def enableplayer(player_id):
