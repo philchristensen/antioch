@@ -874,23 +874,29 @@ class ObjectExchange(object):
 			""", avatar_id))
 		return bool(result)
 	
+	def get_avatar_id(self, player_id):
+		result = self.pool.runQuery(sql.build_select('player', dict(id=player_id)))
+		return result[0]['avatar_id']
+	
 	def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None, **attribs):
 		"""
 		Edit the player attributes of an object.
 		"""
-		if(passwd):
+		if(passwd is not None):
 			attribs['crypt'] = hash_password(passwd)
-		else:
+		elif(player is False):
 			attribs['crypt'] = '!'
+		
+		if(player is not None):
+			attribs['enabled'] = player
 		if(wizard is not None):
 			attribs['wizard'] = wizard
+		
 		if(self.is_player(object_id)):
 			if not(attribs):
 				return
 			self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
 		else:
-			attribs['enabled'] = player
-			attribs['wizard'] = wizard or False
 			self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
 
 	

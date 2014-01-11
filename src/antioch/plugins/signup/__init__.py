@@ -50,11 +50,9 @@ class SignupBackend(DefaultBackend):
 	
 	def activate(self, request, activation_key):
 		player = models.RegisteredPlayer.objects.get(activation_key=activation_key)
-		result = tasks.enableplayer.delay(
-			player_id = player.id,
-		).get(timeout=5)
+		result = tasks.enableplayer.delay(player.id).get(timeout=5)
 		
-		user_activated.send(self.__class__, player, request)
+		user_activated.send(sender=self.__class__, user=player, request=request)
 		return player
 	
 	def get_form_class(self, request):

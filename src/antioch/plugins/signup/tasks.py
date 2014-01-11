@@ -26,6 +26,6 @@ def addplayer(name, passwd, enabled=True):
 @shared_task
 def enableplayer(player_id):
 	with tasks.get_exchange() as x:
-		code.run_system_verb(x, 'enable_player', x.get_object(player_id))
+		code.run_system_verb(x, 'enable_player', x.get_object(x.get_avatar_id(player_id)))
 	
 	return dict(result=True)

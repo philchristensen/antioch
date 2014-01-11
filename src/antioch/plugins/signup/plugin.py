@@ -47,12 +47,11 @@ class SignupPlugin(object):
 			klass = p.exchange.get_object('player class')
 			user = p.exchange.instantiate('object', name=name, unique_name=True)
 			user.set_owner(user)
-			log.info('Player?(%s) %s password to %s' % (enabled, user, passwd))
 			user.set_player(is_player=False, passwd=passwd)
 			return user
 	
 		def enable_player(p, user):
-			user.set_player(True)
+			user.set_player(is_player=True)
 			
 		return dict(
 			add_player		= add_player,
