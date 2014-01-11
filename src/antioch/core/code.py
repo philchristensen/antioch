@@ -222,7 +222,7 @@ def run_system_verb(exchange, verb_name, *args, **kwargs):
 
 def api(func):
 	"""
-	Mark a function in this module as being part of the verb API.
+	Bless a function into the verb API.
 	"""
 	def _api(p):
 		def __api(*args, **kwargs):
@@ -302,7 +302,7 @@ def log(p, text, is_error=False):
 	"""
 	Verb API: Print a string of text to the server's console.
 	"""
-	if not(p.caller.is_wizard()):
+	if p.caller and not(p.caller.is_wizard()):
 		return
 	if(is_error):
 		pylog.error(text)

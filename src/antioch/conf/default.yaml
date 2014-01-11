@@ -3,9 +3,9 @@
     "DEBUG_STATIC": false,
     "TEMPLATE_DEBUG": true,
     
-    "DEBUG_SQL": false,
-    "DEBUG_SQL_WRITES": false,
-    "DEBUG_SQL_SYNTAX": false,
+    "DEBUG_SQL": true,
+    "DEBUG_SQL_WRITES": true,
+    "DEBUG_SQL_SYNTAX": true,
     
     "PROFILE_TRANSACTIONS": false,
     "PROFILE_QUEUE": false,

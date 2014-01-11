@@ -2,7 +2,6 @@ from django import forms
 from django.forms import widgets
 
 from antioch.core import models
-from antioch.util import hash_password
 
 class SignupForm(forms.ModelForm):
 	character_name = forms.CharField(max_length=255, required=True)
@@ -16,12 +15,9 @@ class SignupForm(forms.ModelForm):
 	
 	def clean(self):
 		d = super(SignupForm, self).clean()
-		
 		passwd = d.get('passwd')
-		if(passwd and d.get('passwd') == d.get('confirm_passwd')):
-			d['crypt'] = hash_password(passwd)
 		
-		d.pop('passwd', None)
-		d.pop('confirm_passwd', None)
+		if(d.get('passwd') != d.get('confirm_passwd')):
+			self._errors["confirm_passwd"] = self.error_class(["Passwords do not match."])
 		
 		return d

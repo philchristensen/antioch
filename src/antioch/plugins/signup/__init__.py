@@ -29,22 +29,24 @@ class SignupBackend(DefaultBackend):
 	def register(self, request, **cleaned_data):
 		user_id = tasks.addplayer.delay(
 			name	= cleaned_data['character_name'],
-			passwd	= cleaned_data['crypt'],
+			passwd	= cleaned_data['passwd'],
 			enabled	= False,
 		).get(timeout=5)
 		
+		assert user_id is not None, "Didn't get an entity ID back from addplayer"
+		
 		player = models.Player.objects.get(avatar_id=user_id)
 		activation_key = get_activation_key(cleaned_data['character_name'])
-		reg = models.RegisteredPlayer(
-			player			= player,
-			email			= cleaned_data['email'],
-			activation_key	= activation_key,
-		)
-		reg.save()
 		
-		user_registered.send(self.__class__, player, request)
+		# it's a hack, but it works well
+		player.__class__ = models.RegisteredPlayer
+		player.email = cleaned_data['email']
+		player.activation_key = activation_key
+		player.save()
 		
-		return reg
+		user_registered.send(sender=self.__class__, user=player, request=request)
+		
+		return player
 	
 	def activate(self, request, activation_key):
 		player = models.RegisteredPlayer.objects.get(activation_key=activation_key)

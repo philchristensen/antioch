@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 def addplayer(name, passwd, enabled=True):
 	log.debug("Creating a player for %r" % name)
 	with tasks.get_exchange() as x:
-		user = code.run_system_verb(x, 'add_player', name, passwd, enabled)
+		user = code.run_system_verb(x, 'add_player', name=name, passwd=passwd, enabled=enabled)
 
 	return user.id
 

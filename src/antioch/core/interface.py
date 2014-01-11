@@ -424,7 +424,7 @@ class Object(Entity):
 		"""
 		Set player-specific attributes of this object.
 		"""
-		return self._ex.set_player(self.get_id(), is_player, is_wizard, passwd, **attribs)
+		return self._ex.set_player(self.get_id(), player=is_player, wizard=is_wizard, passwd=passwd, **attribs)
 	
 	def validate_password(self, passwd):
 		"""
