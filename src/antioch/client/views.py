@@ -56,7 +56,7 @@ def comet(request):
 		exchange = Exchange('antioch',
 			type            = 'direct',
 			auto_delete     = False,
-			durable         = False,
+			durable         = True,
 		)
 		channel = conn.channel()
 		unbound_queue = Queue(queue_id,

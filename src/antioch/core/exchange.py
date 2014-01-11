@@ -178,7 +178,7 @@ class ObjectExchange(object):
 				unbound_exchange = Exchange('antioch',
 					type            = 'direct',
 					auto_delete     = False,
-					durable         = False,
+					durable         = True,
 				)
 				channel = conn.channel()
 				exchange = unbound_exchange(channel)
