@@ -143,8 +143,7 @@
         "django.core.context_processors.media",
         "django.core.context_processors.static",
         "django.core.context_processors.request",
-        "django.contrib.messages.context_processors.messages",
-        "antioch.client.context_processors.default_variables"
+        "django.contrib.messages.context_processors.messages"
     ],
 
     "MIDDLEWARE_CLASSES" : [

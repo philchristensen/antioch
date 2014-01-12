@@ -2,10 +2,7 @@
 {% load staticfiles %}
 
 {% block header %}
-	{{ media }}
-	{% for script_url in scripts %}
-	<script type="text/javascript" src="{{ script_url }}"></script>
-	{% endfor %}
+  <link rel="stylesheet/less" type="text/css" href="{% static 'client/css/client.less' %}" />
 {% endblock %}
 
 {% block navbar %}
@@ -46,6 +43,11 @@
 {% endblock %}
 
 {% block footer %}
+<script type="text/javascript" src="{% static 'common/js/libs/relative-date.js' %}"></script>
+<script type="text/javascript" src="{% static 'client/js/client.js' %}"></script>
+{% for script_url in scripts %}
+<script type="text/javascript" src="{{ script_url }}"></script>
+{% endfor %}
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#connection').antioch({

@@ -32,15 +32,6 @@ def client(request):
 	return shortcuts.render_to_response('client/main.html', dict(
 		title           = "antioch client",
 		scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
-		media           = assets.LessMedia(
-			less        = dict(
-				screen  = ['%sclient/less/client.less' % settings.STATIC_URL],
-			),
-			js          = [
-				"%sclient/js/client.js" % settings.STATIC_URL,
-				"%scommon/js/libs/relative-date.js" % settings.STATIC_URL,
-			]
-		),
 	), context_instance=template.RequestContext(request))
 
 @login_required
