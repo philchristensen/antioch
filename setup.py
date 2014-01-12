@@ -12,6 +12,12 @@ import os
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
 os.environ['COPYFILE_DISABLE'] = 'true'
 
+def relative_path(path):
+	"""
+	Return the given path relative to this file.
+	"""
+	return os.path.join(os.path.dirname(__file__), path)
+
 def autosetup():
 	from setuptools import setup, find_packages
 	return setup(
@@ -25,6 +31,7 @@ def autosetup():
 		
 		# setuptools won't auto-detect Git managed files without this
 		setup_requires = [ "setuptools_git >= 0.4.2", ],
+		install_requires = open(relative_path('requirements.txt'), 'rU'),
 		
 		entry_points	= {
 			# Dependencies suck, but this is definitely preferable
