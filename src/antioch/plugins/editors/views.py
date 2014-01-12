@@ -40,7 +40,7 @@ def object_editor(request, object_id):
 				],
 			),
 			js          = [
-				"%sjs/global.js" % settings.STATIC_URL,
+				"%scommon/js/global.js" % settings.STATIC_URL,
 				"%sjs/client.js" % settings.STATIC_URL,
 				"%sjs/editor-plugin.js" % settings.STATIC_URL,
 				"%sjs/ajax_select.js" % settings.STATIC_URL,
@@ -82,7 +82,7 @@ def property_editor(request, property_id):
 				],
 			),
 			js          = [
-				"%sjs/global.js" % settings.STATIC_URL,
+				"%scommon/js/global.js" % settings.STATIC_URL,
 				"%sjs/client.js" % settings.STATIC_URL,
 				"%sjs/editor-plugin.js" % settings.STATIC_URL,
 				"%sjs/ajax_select.js" % settings.STATIC_URL,
@@ -127,7 +127,7 @@ def verb_editor(request, verb_id):
 				],
 			),
 			js          = [
-				"%sjs/global.js" % settings.STATIC_URL,
+				"%scommon/js/global.js" % settings.STATIC_URL,
 				"%sjs/client.js" % settings.STATIC_URL,
 				"%sjs/editor-plugin.js" % settings.STATIC_URL,
 				"%sjs/ajax_select.js" % settings.STATIC_URL,
@@ -178,7 +178,7 @@ def access_editor(request, type, pk):
 				],
 			),
 			js          = [
-				"%sjs/global.js" % settings.STATIC_URL,
+				"%scommon/js/global.js" % settings.STATIC_URL,
 				"%sjs/client.js" % settings.STATIC_URL,
 				"%sjs/editor-plugin.js" % settings.STATIC_URL,
 			]

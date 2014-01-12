@@ -29,8 +29,9 @@ def default_variables(request):
 		'BOOTSTRAP_MEDIA': assets.LessMedia(
 			less        = dict(
 				screen  = [
-					'%sbootstrap/less/bootstrap.less' % settings.STATIC_URL,
-					'%sbootstrap/less/responsive.less' % settings.STATIC_URL,
+					'%scommon/css/libs/bootstrap-3.0.3.min.css' % settings.STATIC_URL,
+					'%scommon/css/libs/bootstrap-theme-3.0.3.min.css' % settings.STATIC_URL,
+					'%scommon/css/libs/jquery.ui.theme.css' % settings.STATIC_URL,
 				],
 			),
 		),

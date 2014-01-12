@@ -47,7 +47,7 @@ class LessMedia(widgets.Media):
 			# If RENDER_LESS is true, also add the JS interpreter
 			# This only works because 'javascript' comes before 'less' in MEDIA_TYPES.
 			if(media):
-				self.add_js(('%sjs/less/dist/less-1.3.0.min.js' % settings.STATIC_URL,))
+				self.add_js(('%scommon/js/libs/less-1.5.0.min.js' % settings.STATIC_URL,))
 			return chain(*[
 				[u'<link href="%(href)s" type="text/css" media="%(medium)s" rel="stylesheet/less">' % dict(
 					href    = self.absolute_path(path),

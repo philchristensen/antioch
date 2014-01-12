@@ -38,7 +38,7 @@ def client(request):
 			),
 			js          = [
 				"%sjs/client.js" % settings.STATIC_URL,
-				"%sjs/relative-date/lib/relative-date.js" % settings.STATIC_URL,
+				"%scommon/js/libs/relative-date.js" % settings.STATIC_URL,
 			]
 		),
 	), context_instance=template.RequestContext(request))

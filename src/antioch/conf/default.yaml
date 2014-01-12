@@ -170,6 +170,7 @@
         'south',
         'registration',
         'djcelery',
+        'antioch.common',
         'antioch.core',
         'antioch.client',
         'antioch.assets',
