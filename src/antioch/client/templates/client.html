@@ -16,39 +16,21 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</a>
-			<a class="brand" href="#">antioch</a>
+			<a class="brand" href="#">{{ request.user.avatar.name }}</a>
 			<div class="nav-collapse">
 				<ul class="nav">
-					<li class="active"><a href="#">client</a></li>
-					<li><a href="https://github.com/philchristensen/antioch" target="_blank">github</a></li>
+    			<li><a class="inventory-cmd">inventory</a></li>
+    			<li><a class="password-cmd">change password</a></li>
+    			{% if request.user.wizard %}
+    			<li><a href="/admin" target="_blank">administration</a></li>
+    			{% endif %}
+    			<li><a href="/logout">logout</a></li>
 				</ul>
 			</div>
 		</div>
 	</div>
 </div>
 {% endblock %}
-
-{% block sidebar %}
-<div class="span2">
-	<div class="current-player">
-		<div class="player-image">
-			<img src="{{ STATIC_URL }}images/silhouette.png" >
-		</div>
-		<h2>{{ request.user.avatar.name }}</h2>
-		<ul>
-			<li><a class="inventory-cmd">inventory</a></li>
-			<li><a class="description-cmd">description</a></li>
-			<li><a class="password-cmd">change password</a></li>
-			<li><a href="/logout">logout</a></li>
-			{% if request.user.wizard %}
-			<li><a href="/admin" target="_blank">administration</a></li>
-			{% endif %}
-		</ul>
-	</div>
-</div>
-{% endblock %}
-
-{% block content_class %}span10{% endblock %}
 
 {% block content %}
 	<div id="observations">

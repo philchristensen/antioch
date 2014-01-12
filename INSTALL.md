@@ -10,16 +10,16 @@ Requirements for Server
 As long as you're using Python 2.6 or better, most recent versions of
 everything else should work, but to be specific:
 
-* [Python            >=  2.7  ](http://www.python.org)
-* [PostgreSQL        >=  9.1  ](http://www.postgresql.org)
-* [psycopg2          >=  2.5.2](http://initd.org/psycopg)
 * [RabbitMQ          >=  2.7.1](http://www.rabbitmq.com)
-* [Django            >=  1.6  ](http://www.djangoproject.com)
-* [Celery            >=  3.0  ](http://www.celeryproject.com)
-* [Twisted           >= 11.0  ](http://www.twistedmatrix.com)
+* [PostgreSQL        >=  9.1  ](http://www.postgresql.org)
+* [Python            >=  2.7  ](http://www.python.org)
+* [Django            >=  1.6.1](http://www.djangoproject.com)
+* [South             >=  0.8.4](http://south.aeracode.org)
+* [Celery            >=  3.1.7](http://www.celeryproject.com)
+* [Twisted           >= 13.2  ](http://www.twistedmatrix.com)
 * [RestrictedPython  >=  3.6.0](http://pypi.python.org/pypi/RestrictedPython)
-* [simplejson        >=  2.3.2](http://pypi.python.org/pypi/simplejson)
 
+There are various other requirements
 
 Requirements for Client
 -----------------------
@@ -34,11 +34,17 @@ supported at this time.
 
 Running the Server
 -------------------
+Check out the latest version of the code, and cd into the installation directory:
 
-Once you install Python, the rest will be taken care of by
-the setuptools-based installer.
+    cd antioch/
 
-    python setup.py install
+Install the required dependencies:
+
+    pip install -r requirements.txt
+
+Install the base system:
+
+    pip install --editbale .
 
 Next you'll need to create the default database:
 
