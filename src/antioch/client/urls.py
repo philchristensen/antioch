@@ -4,7 +4,7 @@
 #
 # See LICENSE for details
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('django.contrib.auth.views',
 	url(r'^login/$', 'login', {'template_name': 'login.html'}, name='login'),

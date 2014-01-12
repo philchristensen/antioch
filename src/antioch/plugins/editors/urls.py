@@ -1,5 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
-from django.views.generic.simple import redirect_to
+from django.conf.urls import patterns, include, url
 
 from ajax_select import urls as ajax_select_urls
 

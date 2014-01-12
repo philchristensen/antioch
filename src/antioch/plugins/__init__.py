@@ -15,7 +15,7 @@ from zope import interface
 from twisted import plugin
 
 from django.conf import settings
-from django.conf.urls.defaults import include, url
+from django.conf.urls import include, url
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 
