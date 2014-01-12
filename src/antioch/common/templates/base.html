@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
 
     <title>{{ title }}</title>
 
@@ -23,7 +25,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
-    <script src="{{ STATIC_URL }}common/js/global.js"></script>
+    <script src="{% static 'common/js/global.js' %}"></script>
 
     {% block header %}{% endblock %}
   </head>
@@ -48,7 +50,7 @@
     
     </div>
     
-    <script src="{{ STATIC_URL }}common/js/libs/less-1.5.0.min.js"></script>
-    <script src="{{ STATIC_URL }}common/js/libs/bootstrap-3.0.3.min.js"></script>
+    <script src="{% static 'common/js/libs/less-1.5.0.min.js' %}"></script>
+    <script src="{% static 'common/js/libs/bootstrap-3.0.3.min.js' %}"></script>
   </body>
 </html>

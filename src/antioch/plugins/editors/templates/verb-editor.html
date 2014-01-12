@@ -1,5 +1,6 @@
 {% extends 'trivial.html' %}
 {% load widget_tweaks %}
+{% load staticfiles %}
 
 {% block header %}
 	{{ media }}
@@ -53,8 +54,8 @@ $(document).ready(function(){
 	
 	var editor = new CodeMirror(CodeMirror.replace("code-field"), {
 		parserfile: ["parseantioch.js", "parsedummy.js"],
-		path: "{{ STATIC_URL }}js/vendor/CodeMirror-0.91/js/",
-		stylesheet: "{{ STATIC_URL }}js/vendor/CodeMirror-0.91/css/antiochcolors.css",
+		path: "{% static 'js/vendor/CodeMirror-0.91/js/' %}",
+		stylesheet: "{% static 'js/vendor/CodeMirror-0.91/css/antiochcolors.css' %}",
 		content: $('#id_code').val(),
 		textWrapping: false,
 		lineNumbers: true,
