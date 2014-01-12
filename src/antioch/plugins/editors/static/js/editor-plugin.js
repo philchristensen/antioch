@@ -19,10 +19,8 @@
 		}
 	};
 	$(document).antioch('addMessageListener', 'edit', function(msg){
-		window.open(
-			'/editor/' + msg.details.kind + '/' + msg.details.id,
-			[msg.details.kind, 'editor', msg.details.id].join('-'), 
-			buildWindowString(sizes[msg.details.kind.split('/')[0]])
-		);
+    $('#editorWindow').modal({
+      remote: '/editor/' + msg.details.kind + '/' + msg.details.id,
+    });
 	});
 })(jQuery);
