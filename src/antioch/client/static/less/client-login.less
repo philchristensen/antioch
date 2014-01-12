@@ -1,41 +1,52 @@
 body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
 	background: url('../images/nebula-large.jpg');
 }
 
-.login-form {
-	border: 1px #444 solid;
-	background-color: #fff;
-	margin: 50px;
-	width: 400px;
-	padding: 0;
-	
-	p {
-		margin: 0px;
-		padding: 10px;
-	}
-	
-	h1 {
-		background-color: #ccccee;
-		padding: 5px 0 15px 25px;
-		margin: 0 0 10px 0;
-		
-		img {
-			vertical-align: sub;
-			padding: 0;
-			margin: 0 10px 0 0;
-		}
-	}
-	
-	form {
-		padding: 0 15px 0 15px;
-	}
-	
-	label {
-		font-size: 18px;
-		font-weight: bold;
-	}
-	
-	input {
-		display: block;
-	}
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+
+  .form-signin-heading,
+  .checkbox {
+    margin-bottom: 10px;
+  }
+  
+  .form-signin-heading {
+    color: #fff;
+  }
+  
+  .checkbox {
+    font-weight: normal;
+  }
+  
+  .form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+  }
+  
+  .form-control:focus {
+    z-index: 2;
+  }
+  
+  input[type="text"] {
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }
+

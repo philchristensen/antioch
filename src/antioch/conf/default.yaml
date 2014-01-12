@@ -167,6 +167,7 @@
         'django.contrib.admin',
         'django.contrib.admindocs',
         'ajax_select',
+        'widget_tweaks',
         'south',
         'registration',
         'djcelery',
