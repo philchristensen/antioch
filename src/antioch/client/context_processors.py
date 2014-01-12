@@ -27,7 +27,7 @@ def default_variables(request):
 			),
 		),
 		'BOOTSTRAP_MEDIA': assets.LessMedia(
-			less        = dict(
+			css        = dict(
 				screen  = [
 					'%scommon/css/libs/bootstrap-3.0.3.min.css' % settings.STATIC_URL,
 					'%scommon/css/libs/bootstrap-theme-3.0.3.min.css' % settings.STATIC_URL,
