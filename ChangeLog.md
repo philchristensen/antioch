@@ -1,3 +1,11 @@
+2014-01-12    Phil Christensen <phil@bubblehouse.org>
+
+* Another big refactoring, regrettably removing ampoule and most of Twisted
+* Home-grown job server replaced by Celery, removing tons of shady code.
+* Pika/txAMQP/pyamqp replaced by Kombu, using the Celery connection
+* YAML-based config is now more compatible with arbitrary Django
+* Django 1.6 support/dependencies.
+
 2012-02-26    Phil Christensen <phil@bubblehouse.org>
 
 * Another massive set of refactorings

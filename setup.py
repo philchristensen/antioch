@@ -7,16 +7,6 @@
 import distribute_setup
 distribute_setup.use_setuptools()
 
-try:
-	from twisted import plugin
-except ImportError, e:
-	import sys
-	print >>sys.stderr, "setup.py requires Twisted to create a proper antioch installation. Please install it before continuing."
-	sys.exit(1)
-
-from distutils import log
-log.set_threshold(log.INFO)
-
 # disables creation of .DS_Store files inside tarballs on Mac OS X
 import os
 os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
@@ -26,16 +16,21 @@ def autosetup():
 	from setuptools import setup, find_packages
 	return setup(
 		name			= "antioch",
-		version			= "2.0pre2",
+		version			= "2.0pre3",
 		
-		packages		= find_packages('src') + ['twisted.plugins'],
+		packages		= find_packages('src'),
 		package_dir		= {
 			''			: 'src',
 		},
 		
+		# setuptools won't auto-detect Git managed files without this
+		setup_requires = [ "setuptools_git >= 0.4.2", ],
+		
 		entry_points	= {
+			# Dependencies suck, but this is definitely preferable
+			# to writing everything into MANIFEST.in by hand.
 			'setuptools.file_finders'	: [
-				'git = antioch.util.setup:find_files_for_git',
+				'git = setuptools_git:gitlsfiles',
 			],
 			'console_scripts': [
 				'mkspace = antioch.scripts.mkspace:main',
@@ -62,8 +57,4 @@ def autosetup():
 	)
 
 if(__name__ == '__main__'):
-	import sys
-	sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-	
-	from antioch.util.setup import adaptTwistedSetup
-	adaptTwistedSetup(sys.argv[-1], autosetup)
+	autosetup()

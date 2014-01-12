@@ -10,14 +10,13 @@ Requirements for Server
 As long as you're using Python 2.6 or better, most recent versions of
 everything else should work, but to be specific:
 
-* [Python            >=  2.6  ](http://www.python.org)
-* [PostgreSQL        >=  9.0  ](http://www.postgresql.org)
-* [psycopg2          >=  2.4.1](http://initd.org/psycopg)
+* [Python            >=  2.7  ](http://www.python.org)
+* [PostgreSQL        >=  9.1  ](http://www.postgresql.org)
+* [psycopg2          >=  2.5.2](http://initd.org/psycopg)
 * [RabbitMQ          >=  2.7.1](http://www.rabbitmq.com)
-* [Pika              >=  0.9.6](https://launchpad.net/txamqp)
-* [Django            >=  1.3  ](http://www.djangoproject.com)
+* [Django            >=  1.6  ](http://www.djangoproject.com)
+* [Celery            >=  3.0  ](http://www.celeryproject.com)
 * [Twisted           >= 11.0  ](http://www.twistedmatrix.com)
-* [ampoule           >=  0.1  ](https://launchpad.net/ampoule)
 * [RestrictedPython  >=  3.6.0](http://pypi.python.org/pypi/RestrictedPython)
 * [simplejson        >=  2.3.2](http://pypi.python.org/pypi/simplejson)
 
@@ -36,7 +35,7 @@ supported at this time.
 Running the Server
 -------------------
 
-Once you install Python and Twisted, the rest will be taken care of by
+Once you install Python, the rest will be taken care of by
 the setuptools-based installer.
 
     python setup.py install
@@ -48,25 +47,24 @@ Next you'll need to create the default database:
 > By default, `mkspace` tries to connect to a PostgreSQL database running on
 > localhost:5432 as the `postgres` super-user.
 
-This should have created the `antioch` user and a corresponding database. For
-the time, you'll also have to run the Django syncdb script:
+This should have created the `antioch` user and a corresponding database. It
+also ran the Django manage.py commands 'syncdb' and 'migrate'.
 
-    ./manage.py syncdb --noinput
+Next you should be able to start up the web server with:
 
-Next you should be able to start up the server with:
+    ./manage.py runserver
 
-    twistd -n antioch
+While in another terminal, you should start up a Celery worker with:
 
-The -n will keep it in the foreground. Configuration options are kept in the 
-global settings file, *default.json*.
+    celery -A antioch worker --loglevel=info
 
 > The default configuration looks for a PostgreSQL server on localhost:5432 and
-> a RabbitMQ-powered message queue on localhost:5672.
+> a RabbitMQ server on localhost:5672.
 
 Running the Client
 ------------------
 
-Connect to: <http://localhost:8888>
+Connect to: <http://localhost:8000>
 
 Login with username and password: `wizard/wizard`
 
