@@ -29,22 +29,11 @@ def object_editor(request, object_id):
 		title           = "object editor",
 		form            = form,
 		media           = assets.LessMedia(
-			css        = dict(
-				screen  = [
-					'%sss/css/ajax_select.css' % settings.STATIC_URL,
-				],
-			),
 			less        = dict(
 				screen  = [
 					'%sless/object-editor.less' % settings.STATIC_URL,
 				],
 			),
-			js          = [
-				"%scommon/js/global.js" % settings.STATIC_URL,
-				"%sjs/client.js" % settings.STATIC_URL,
-				"%sjs/editor-plugin.js" % settings.STATIC_URL,
-				"%sjs/ajax_select.js" % settings.STATIC_URL,
-			]
 		),
 	), context_instance=template.RequestContext(request))
 
