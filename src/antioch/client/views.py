@@ -29,15 +29,15 @@ def client(request):
 	"""
 	Return the main client window.
 	"""
-	return shortcuts.render_to_response('client.html', dict(
+	return shortcuts.render_to_response('client/main.html', dict(
 		title           = "antioch client",
 		scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
 		media           = assets.LessMedia(
 			less        = dict(
-				screen  = ['%sless/client.less' % settings.STATIC_URL],
+				screen  = ['%sclient/less/client.less' % settings.STATIC_URL],
 			),
 			js          = [
-				"%sjs/client.js" % settings.STATIC_URL,
+				"%sclient/js/client.js" % settings.STATIC_URL,
 				"%scommon/js/libs/relative-date.js" % settings.STATIC_URL,
 			]
 		),

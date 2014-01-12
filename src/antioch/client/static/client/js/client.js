@@ -41,10 +41,10 @@ if(!window.console){
 					methods.write(err, true, true);
 				},
 				
-				observation_template: "<div class=\"alert alert-info\"></span>",
-				issued_command_template: "<div class=\"alert\">$content</div>",
-				error_template: "<div class=\"alert alert-error\">$content</div>",
-				message_template: "<div class=\"well\">$content</div>",
+				observation_template: "<div class=\"jumbotron\"></span>",
+				issued_command_template: "<div class=\"alert alert-warning issued-command\"><div class=\"date-container\"></div>$content</div>",
+				error_template: "<div class=\"alert alert-danger received-error\"><div class=\"date-container\"></div>$content</div>",
+				message_template: "<div class=\"panel panel-info received-message\"><div class=\"panel-body date-container\">$content</div></div>",
 				
 				// // The rest of these settings are defined in the client template
 				// // when the plugin is instantiated, keeping all template-related
@@ -166,7 +166,7 @@ if(!window.console){
 			var relative_date = $('<div class="relative-date">');
 			var date = $('<h6 class="date keep-relative">').append(real_date).append(relative_date);
 			content = $(content);
-			content.css('display', 'none').prepend(date);
+			content.css('display', 'none').find('.date-container').prepend(date);
 			$('#actions').prepend(content);
 			content.queue(function(next){
 				//$(this).show('slide', { direction: "up" }, 500);

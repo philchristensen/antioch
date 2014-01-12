@@ -79,7 +79,7 @@ body {
 
 input#connection {
 	width: 100%;
-	margin: 0px 0px 20px 0px;
+	margin: 0px 0px 0px 0px;
 	font: 1.5em Courier, Courier New;
 	font-weight: bold;
 }
@@ -112,15 +112,48 @@ input#connection {
 	}
 }
 
+h6.date {
+  margin-top: 2px;
+  margin-bottom: 5px;
+  opacity: 0.3;
+}
+
 #observations {
-	.well {
-		padding-bottom: 8px;
+	.jumbotron {
+		padding: 10px;
+    margin-bottom: 10px;
 	}
 }
 
 #actions {
-	.well {
-		padding-bottom: 8px;
+  .received-error + .issued-command,
+  .received-message + .issued-command {
+    margin-top: 0px;
+    border-top-color: transparent;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  
+  .alert {
+    margin-top: 10px;
+    margin-bottom: 0px;
+    padding: 0px 0px 0px 10px;
+  }
+
+  .panel {
+    margin-top: 10px;
+    margin-bottom: 0px;
+    .panel-body {
+      padding: 0px 0px 0px 10px;
+    }
+  }
+
+	.issued-command {
+    margin-bottom: 10px;
+    
+    .date-container {
+      display: none;
+    }
 	}
 	
 	.target-heard-public {

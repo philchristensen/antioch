@@ -22,7 +22,7 @@ def default_variables(request):
 		'LOGIN_MEDIA': assets.LessMedia(
 			less        = dict(
 				screen  = [
-					'%sless/client-login.less' % settings.STATIC_URL,
+					'%sclient/less/client-login.less' % settings.STATIC_URL,
 				],
 			),
 		),
