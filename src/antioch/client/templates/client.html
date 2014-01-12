@@ -2,6 +2,9 @@
 
 {% block header %}
 	{{ media }}
+	{% for script_url in scripts %}
+	<script type="text/javascript" src="{{ script_url }}"></script>
+	{% endfor %}
 {% endblock %}
 
 {% block navbar %}
@@ -103,10 +106,6 @@
 				$(this).find('.relative-date').html(relativeDate(new Date(dstr)));
 			});
 		}, 10);
-		
-		{% for script_url in scripts %}
-		$('body').append('\x3Cscript type="text/javascript" src="{{ script_url }}">\x3C/script>');
-		{% endfor %}
 	});
 </script>
 {% endblock %}

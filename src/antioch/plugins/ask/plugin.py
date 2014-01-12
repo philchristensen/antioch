@@ -35,7 +35,4 @@ class AskPlugin(object):
 		return dict(
 			ask = ask,
 		)
-	
-	def get_commands(self):
-		return {}
-	
+

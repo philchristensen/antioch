@@ -11,9 +11,6 @@ Graphical object editor support.
 from zope.interface import classProvides
 
 from antioch import conf, IPlugin
-from antioch.core import transact
-
-from antioch.plugins.editors.transactions import EditorTransactionChild
 
 def edit(p, item):
 	p.exchange.send_message(p.caller.get_id(), dict(
@@ -45,16 +42,10 @@ class EditorPlugin(object):
 	classProvides(IPlugin)
 	
 	script_url = u'%sjs/editor-plugin.js' % conf.get('static-url')
-	transaction_child = EditorTransactionChild
 	
 	def get_environment(self):
 		return dict(
 			edit			= edit,
 			access			= access,
 		)
-	
-	def get_commands(self):
-		from antioch.plugins.editors import transactions
-		from antioch.plugins import discover_commands
-		return discover_commands(transactions)
 

@@ -173,8 +173,8 @@
         'antioch.core',
         'antioch.client',
         'antioch.assets',
-        # 'antioch.plugins.ask',
-        # 'antioch.plugins.editors',
+        'antioch.plugins.ask',
+        'antioch.plugins.editors',
         'antioch.plugins.signup'
     ],
 
