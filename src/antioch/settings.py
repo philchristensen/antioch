@@ -7,6 +7,3 @@
 from antioch import conf
 
 globals().update(conf.init())
-
-
-
