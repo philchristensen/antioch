@@ -3,15 +3,9 @@
     "DEBUG_STATIC": false,
     "TEMPLATE_DEBUG": true,
     
-    "DEBUG_SQL": true,
-    "DEBUG_SQL_WRITES": true,
-    "DEBUG_SQL_SYNTAX": true,
-    
-    "PROFILE_TRANSACTIONS": false,
-    "PROFILE_QUEUE": false,
-    "PROFILE_DB": false,
-    
-    "WEB_PORT": 8888,
+    "DEBUG_SQL": false,
+    "DEBUG_SQL_WRITES": false,
+    "DEBUG_SQL_SYNTAX": false,
     
     "CELERY_RESULT_BACKEND": "amqp",
     "CELERY_DEFAULT_QUEUE": "antioch-appserver",
@@ -24,13 +18,8 @@
     "USER_QUEUE": "antioch-user",
     "USER_QUEUE_TIMEOUT": 10,
     
-    "JQUERY_VERSION": "1.7.1",
-    "JQUERY_UI_VERSION": "1.8.17",
-    
     "PSQL_PATH": "psql",
     "JOB_TIMEOUT": 5,
-    "SUPPRESS_DEPRECATION_WARNINGS": false,
-    "SUPPRESS_USER_WARNINGS": false,
     "XSENDFILE": false,
     "RENDER_LESS": true,
     
