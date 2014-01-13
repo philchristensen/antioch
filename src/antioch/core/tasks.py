@@ -19,10 +19,6 @@ log = logging.getLogger(__name__)
 log.debug("%s started" % __name__)
 pool = dbapi.connect(conf.get('db-url-default'), **dict(
 	autocommit		= False,
-	debug			= conf.get('debug-sql'),
-	debug_writes	= conf.get('debug-sql-writes'),
-	debug_syntax	= conf.get('debug-sql-syntax'),
-	profile			= conf.get('profile-db'),
 ))
 
 def get_exchange(ctx=None):

@@ -28,13 +28,6 @@ def object_editor(request, object_id):
 	return shortcuts.render_to_response('object-editor.html', dict(
 		title           = "object editor",
 		form            = form,
-		media           = assets.LessMedia(
-			less        = dict(
-				screen  = [
-					'%sless/object-editor.less' % settings.STATIC_URL,
-				],
-			),
-		),
 	), context_instance=template.RequestContext(request))
 
 @login_required
@@ -59,25 +52,6 @@ def property_editor(request, property_id):
 	return shortcuts.render_to_response('property-editor.html', dict(
 		title           = "property editor",
 		form            = form,
-		media           = assets.LessMedia(
-			css        = dict(
-				screen  = [
-					'%sss/css/ajax_select.css' % settings.STATIC_URL,
-				],
-			),
-			less        = dict(
-				screen  = [
-					'%sless/property-editor.less' % settings.STATIC_URL,
-				],
-			),
-			js          = [
-				"%scommon/js/global.js" % settings.STATIC_URL,
-				"%sjs/client.js" % settings.STATIC_URL,
-				"%sjs/editor-plugin.js" % settings.STATIC_URL,
-				"%sjs/ajax_select.js" % settings.STATIC_URL,
-				"%sjs/vendor/CodeMirror-0.91/js/codemirror.js" % settings.STATIC_URL,
-			]
-		),
 	), context_instance=template.RequestContext(request))
 
 @login_required
@@ -104,25 +78,6 @@ def verb_editor(request, verb_id):
 	return shortcuts.render_to_response('verb-editor.html', dict(
 		title           = "verb editor",
 		form            = form,
-		media           = assets.LessMedia(
-			css        = dict(
-				screen  = [
-					'%sss/css/ajax_select.css' % settings.STATIC_URL,
-				],
-			),
-			less        = dict(
-				screen  = [
-					'%sless/verb-editor.less' % settings.STATIC_URL,
-				],
-			),
-			js          = [
-				"%scommon/js/global.js" % settings.STATIC_URL,
-				"%sjs/client.js" % settings.STATIC_URL,
-				"%sjs/editor-plugin.js" % settings.STATIC_URL,
-				"%sjs/ajax_select.js" % settings.STATIC_URL,
-				"%sjs/vendor/CodeMirror-0.91/js/codemirror.js" % settings.STATIC_URL,
-			]
-		),
 	), context_instance=template.RequestContext(request))
 
 @login_required
@@ -160,17 +115,5 @@ def access_editor(request, type, pk):
 	return shortcuts.render_to_response('access-editor.html', dict(
 		title           = "access editor",
 		model           = m,
-		media           = assets.LessMedia(
-			less        = dict(
-				screen  = [
-					'%sless/access-editor.less' % settings.STATIC_URL,
-				],
-			),
-			js          = [
-				"%scommon/js/global.js" % settings.STATIC_URL,
-				"%sjs/client.js" % settings.STATIC_URL,
-				"%sjs/editor-plugin.js" % settings.STATIC_URL,
-			]
-		),
 	), context_instance=template.RequestContext(request))
 

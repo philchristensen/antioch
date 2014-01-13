@@ -36,10 +36,6 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 	
 	pool[dbid] = dbapi.connect(db_url, **dict(
 		autocommit		= autocommit,
-		debug			= conf.get('debug-sql'),
-		debug_writes	= conf.get('debug-sql-writes'),
-		debug_syntax	= conf.get('debug-sql-syntax'),
-		profile			= conf.get('profile-db'),
 	))
 	bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', '%s.py' % dataset)
 	bootstrap.load_python(pool[dbid], bootstrap_path)

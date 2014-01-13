@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block header %}
-	{{ media }}
+<link rel="stylesheet/less" type="text/css" href="{% static 'less/verb-editor.less' %}" />
 {% endblock %}
 
 {% block content %}
@@ -48,6 +48,7 @@
 {% endblock %}
 
 {% block footer %}
+<script type="text/javascript" src="{% static 'js/vendor/CodeMirror-0.91/js/codemirror.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$(document).antioch();
