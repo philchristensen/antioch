@@ -20,10 +20,15 @@
   <div class="modal-body editor">
 		{{ form.errors }}
 		<div class="controls">
-			<div class="form-group">
-			<label class="control-label" id="id-label" for="id-field">id:</label>
-			{{ form.id|add_class:"form-control"  }}
-			<button type="button" class="btn" id="access-button">access...</button>
+			<div class="form-group row">
+        <div class="col-xs-6">
+    			<label class="control-label" id="id-label" for="id-field">id:</label>
+    			{{ form.id|add_class:"form-control"  }}
+        </div>
+        <div class="col-xs-6">
+    			<label class="control-label" id="access-label" for="access-button">&nbsp;</label><br>
+          <button type="button" class="btn block" id="access-button">access...</button>
+  			</div>
 			</div>
 			<div class="form-group">
 			<label class="control-label" id="name-label" for="id_name">name:</label>
@@ -42,8 +47,8 @@
 			{{ form.owner|add_class:"form-control"  }}
 			</div>
 		</div>
-		<div class="attributes">
-			<div class="verbs">
+		<div class="attributes row">
+			<div class="verbs col-xs-6">
 				<label id="verbs-label" for="verbs-select">verbs:</label>
 				<select id="verbs-select" size="8" class="form-control">
 					{% for verb in form.instance.verbs.all %}
@@ -53,7 +58,7 @@
 				<button type="button" class="btn" id="add-verb">add</button>
 				<button type="button" class="btn" id="remove-verb">remove</button>
 			</div>
-			<div class="properties">
+			<div class="properties col-xs-6">
 				<label id="properties-label" for="properties-select">properties:</label>
 				<select id="properties-select" size="8" class="form-control">
 					{% for property in form.instance.properties.all %}
