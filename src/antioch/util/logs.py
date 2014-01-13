@@ -8,12 +8,7 @@
 Log customization support.
 """
 
-import sys, re, time, logging
-
-import simplejson
-
-from twisted.python import log
-from twisted.web import server
+import sys, time
 
 from django.utils import termcolors
 
@@ -66,72 +61,3 @@ class DjangoColorFormatter(object):
 			return result
 		else:
 			return styles[log.levelname](result)
-
-class JSONFormatter(object):
-	"""
-	Log formatter that outputs JSON objects.
-	"""
-	def format(self, log):
-		"""
-		Format the log entry as a JSON object.
-		"""
-		return simplejson.dumps(dict(
-			name		= log.name,
-			levelname	= log.levelname,
-			msg			= str(log.msg),
-		))
-
-class AccessLoggingSite(server.Site):
-	"""
-	This subclass enables twisted.web access logs to use Python logging.
-	"""
-	def __init__(self, resource, logPath=None, timeout=60*60*12):
-		"""
-		Get around the superclass constructor checking for a string for no reason
-		"""
-		server.Site.__init__(self, resource, '/dev/null', timeout)
-		self.logPath = logPath
-	
-	def _openLogFile(self, path):
-		"""
-		Allow either a path or a file to be given as logPath.
-		"""
-		if(isinstance(path, basestring)):
-			f = open(path, "a", 1)
-			return f
-		elif(hasattr(path, 'read')):
-			return path
-		else:
-			raise ValueError("Unexpected logFile argument: %r" % path)
-
-class AccessLogOnnaStick(log.StdioOnnaStick):
-	"""
-	Used to send accesslog writes to the logging system.
-	"""
-	def __init__(self, loggerName):
-		"""
-		Send this access log's messages to the provided logger.
-		"""
-		log.StdioOnnaStick.__init__(self)
-		self.log = logging.getLogger(loggerName)
-	
-	def write(self, data):
-		"""
-		Some part of a log entry or entries, separated by \n
-		"""
-		if isinstance(data, unicode):
-			data = data.encode(self.encoding)
-		d = (self.buf + data).split('\n')
-		self.buf = d[-1]
-		messages = d[0:-1]
-		for message in messages:
-			self.log.info(message)
-	
-	def writelines(self, lines):
-		"""
-		Write several log lines.
-		"""
-		for line in lines:
-			if isinstance(line, unicode):
-				line = line.encode(self.encoding)
-			self.log.info(line)
