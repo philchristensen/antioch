@@ -7,44 +7,40 @@
 {% endblock %}
 
 {% block content %}
-<div class="modal-dialog">
-  <div class="modal-content">
-
-<form id="property-form" method="POST" action="">
-	{% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
-  </div>
-  <div class="modal-body property editor">
-		{{ form.errors }}
-		<div class="controls form-inline">
-			<label id="name-label" for="name-field">name:</label>
-			{{ form.name|add_class:"form-control" }}
+<div class="modal-content">
+  <form id="property-form" method="POST" action="">
+  	{% csrf_token %}
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
+    </div>
+    <div class="modal-body property editor">
+  		{{ form.errors }}
+  		<div class="controls form-inline">
+  			<label id="name-label" for="name-field">name:</label>
+  			{{ form.name|add_class:"form-control" }}
 			
-			<label id="owner-label" for="owner-field">owner:</label>
-			{{ form.owner|add_class:"form-control" }}
+  			<label id="owner-label" for="owner-field">owner:</label>
+  			{{ form.owner|add_class:"form-control" }}
 
-			<label id="type-label" for="type-field">type:</label>
-			{{ form.type|add_class:"form-control" }}
+  			<label id="type-label" for="type-field">type:</label>
+  			{{ form.type|add_class:"form-control" }}
 			
-			<label id="html-label" for="html-checkbox">html:</label>
-			<input type="checkbox" id="html-checkbox" />
+  			<label id="html-label" for="html-checkbox">html:</label>
+  			<input type="checkbox" id="html-checkbox" />
 			
-			<button type="button" class="btn" id="access-button">access...</button>
-		</div>
-		<div class="property-editor">
-			{{ form.value }}
-			<textarea id="value-field"></textarea>
-		</div>
-	</div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-    <button type="submit" class="btn btn-primary">Save changes</button>
-  </div>
-</form>
-
-  </div>
+  			<button type="button" class="btn" id="access-button">access...</button>
+  		</div>
+  		<div class="property-editor">
+  			{{ form.value }}
+  			<textarea id="value-field"></textarea>
+  		</div>
+  	</div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+  </form>
 </div>
 {% endblock %}
 

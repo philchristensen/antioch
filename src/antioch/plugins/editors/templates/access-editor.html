@@ -1,4 +1,5 @@
 {% extends 'trivial.html' %}
+{% load widget_tweaks %}
 {% load staticfiles %}
 
 {% block header %}
@@ -6,19 +7,26 @@
 {% endblock %}
 
 {% block content %}
-<form id="access-form" method="POST" action="">
-	{% csrf_token %}
-	<div id="editor">
-		<button class="btn" id="add-button"><span class="icon-plus-sign"></span> add rule</button>
-	</div>
-	<div class="controls form-actions">
-		<button type="submit" id="save-button" class="action-button btn btn-primary">Save changes</button>
-		<button type="button" class="btn">Cancel</button>
-	</div>
-</form>
+<div class="modal-content">
+  <form id="access-form" method="POST" action="">
+    {% csrf_token %}
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
+    </div>
+    <div class="modal-body access editor">
+      <button class="btn" id="add-button"><span class="icon-plus-sign"></span> add rule</button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+  </form>
+</div>
 {% endblock %}
 
 {% block footer %}
+<script type="text/javascript" src="{% static 'js/access-editor.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$(document).antioch();
