@@ -36,21 +36,17 @@
     {% endblock %}
 
     <div class="container">
-
       <div class="row">
-        {% block sidebar %}
-        {% endblock %}
         <div class="{% block content_class %}col-xs-12{% endblock %}">
           {% block content %}
           {% endblock %}
         </div>
       </div>
-
-      {% block footer %}
-      {% endblock %}
     </div>
     
     <script src="{% static 'common/js/libs/less-1.5.0.min.js' %}"></script>
     <script src="{% static 'common/js/libs/bootstrap-3.0.3.min.js' %}"></script>
+    {% block footer %}
+    {% endblock %}
   </body>
 </html>
