@@ -4,11 +4,11 @@
 
 {% block header %}
 <link rel="stylesheet/less" type="text/css" href="{% static 'less/object-editor.less' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'ajax_select/css/ajax_select.css' %}" />
 {% endblock %}
 
 {% block content %}
 
-<div class="modal-dialog">
   <div class="modal-content">
 
 <form method="POST" action="">
@@ -17,7 +17,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
   </div>
-  <div class="modal-body editor">
+  <div class="modal-body object editor">
 		{{ form.errors }}
 		<div class="controls">
 			<div class="form-group row">
@@ -78,11 +78,12 @@
 </form>
 
   </div>
-</div>
 
 {% endblock %}
 
 {% block footer %}
+<script type="text/javascript" src="{% static 'ajax_select/js/ajax_select.js' %}"></script>
+
 <script type="text/javascript">
 $(document).ready(function(){
 	$(document).antioch();

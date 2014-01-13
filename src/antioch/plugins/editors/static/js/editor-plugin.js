@@ -7,6 +7,7 @@
     rel:    "stylesheet/less"
   }));
   $(document).antioch('addMessageListener', 'edit', function(msg){
+    $('body').modalmanager('loading');
     var lightbox = $('<div>').attr({
       'class': msg.details.kind + "-editor-modal center-block modal fade",
       'tabindex': "-1",
@@ -15,8 +16,7 @@
       'aria-hidden': "true",
     });
     $('body').append(lightbox);
-    lightbox.modal({
-      remote: '/editor/' + msg.details.kind + '/' + msg.details.id,
-    });
+    lightbox.load('/editor/' + msg.details.kind + '/' + msg.details.id)
+    lightbox.modal();
   });
 })(jQuery);

@@ -11,9 +11,9 @@ class ObjectForm(forms.ModelForm):
 		exclude = ('observers',)
 	
 	id = forms.CharField(widget=forms.TextInput(attrs={'disabled':'disabled'}))
-	owner = fields.AutoCompleteSelectField('object')
-	location = fields.AutoCompleteSelectField('object', required=False)
-	parents = fields.AutoCompleteSelectMultipleField('object')
+	owner = fields.AutoCompleteSelectField('object', help_text='')
+	location = fields.AutoCompleteSelectField('object', help_text='', required=False)
+	parents = fields.AutoCompleteSelectMultipleField('object', help_text='')
 
 class PropertyForm(forms.ModelForm):
 	class Meta:
@@ -21,7 +21,7 @@ class PropertyForm(forms.ModelForm):
 		exclude = ('origin',)
 	
 	value = forms.CharField(widget=widgets.HiddenInput)
-	owner = fields.AutoCompleteSelectField('object')
+	owner = fields.AutoCompleteSelectField('object', help_text='')
 
 class VerbForm(forms.ModelForm):
 	class Meta:
@@ -30,4 +30,4 @@ class VerbForm(forms.ModelForm):
 	
 	names = forms.CharField()
 	code = forms.CharField(widget=widgets.HiddenInput)
-	owner = fields.AutoCompleteSelectField('object')
+	owner = fields.AutoCompleteSelectField('object', help_text='')
