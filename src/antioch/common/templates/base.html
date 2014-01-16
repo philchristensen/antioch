@@ -37,11 +37,13 @@
     {% block navbar %}
     {% endblock %}
 
-    <div class="container">
-      <div class="row">
-        <div class="{% block content_class %}col-xs-12{% endblock %}">
-          {% block content %}
-          {% endblock %}
+    <div class="page-container">
+      <div class="container">
+        <div class="row">
+          <div class="{% block content_class %}col-xs-12{% endblock %}">
+            {% block content %}
+            {% endblock %}
+          </div>
         </div>
       </div>
     </div>

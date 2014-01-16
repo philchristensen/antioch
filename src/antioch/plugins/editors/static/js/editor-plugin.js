@@ -15,10 +15,10 @@
       'aria-labelledby': "editorFormLabel",
       'aria-hidden': "true",
     });
-    $('body').append(lightbox);
     lightbox.load('/editor/' + msg.details.kind + '/' + msg.details.id)
     lightbox.modal({
-      keyboard: false
+      keyboard: false,
+      backdrop: false
     });
   });
 })(jQuery);
