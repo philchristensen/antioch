@@ -21,18 +21,14 @@
 		{{ form.errors }}
 		<div class="controls">
 			<div class="form-group row">
-        <div class="col-xs-6">
-    			<label class="control-label" id="id-label" for="id-field">id:</label>
-    			{{ form.id|add_class:"form-control"  }}
+        <div class="col-xs-8">
+    			<label class="control-label" id="name-label" for="id_name">name:</label>
+    			{{ form.name|add_class:"form-control"  }}
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-4">
     			<label class="control-label" id="access-label" for="access-button">&nbsp;</label><br>
           <button type="button" class="btn block" id="access-button">access...</button>
   			</div>
-			</div>
-			<div class="form-group">
-			<label class="control-label" id="name-label" for="id_name">name:</label>
-			{{ form.name|add_class:"form-control"  }}
 			</div>
 			<div class="form-group">
 			<label class="control-label" id="parent-label" for="id_parents_text">parents:</label>
