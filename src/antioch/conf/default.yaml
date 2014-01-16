@@ -26,11 +26,6 @@
     # django-registration
     "ACCOUNT_ACTIVATION_DAYS": 7,
     
-    # define the lookup channels in use on the site
-    "AJAX_LOOKUP_CHANNELS": {
-        'object': ['antioch.client.lookups', 'ObjectLookup']
-    },
-    
     # "SESSION_COOKIE_NAME" : "sessionid",
     
     "LOGIN_URL" : "/login/",
@@ -154,7 +149,7 @@
         'django.contrib.staticfiles',
         'django.contrib.admin',
         'django.contrib.admindocs',
-        'ajax_select',
+        'autocomplete_light',
         'widget_tweaks',
         'south',
         'registration',

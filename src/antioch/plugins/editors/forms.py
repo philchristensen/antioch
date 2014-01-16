@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import widgets
 
-from ajax_select import fields
+import autocomplete_light
 
 from antioch.core import models
 
@@ -11,9 +11,12 @@ class ObjectForm(forms.ModelForm):
 		exclude = ('observers',)
 	
 	id = forms.CharField(widget=forms.TextInput(attrs={'disabled':'disabled'}))
-	owner = fields.AutoCompleteSelectField('object', help_text='')
-	location = fields.AutoCompleteSelectField('object', help_text='', required=False)
-	parents = fields.AutoCompleteSelectMultipleField('object', help_text='')
+	owner = forms.ModelChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
+	location = forms.ModelChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
+	parents = forms.ModelMultipleChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.MultipleChoiceWidget('ObjectAutocomplete'))
 
 class PropertyForm(forms.ModelForm):
 	class Meta:
@@ -21,7 +24,8 @@ class PropertyForm(forms.ModelForm):
 		exclude = ('origin',)
 	
 	value = forms.CharField(widget=widgets.HiddenInput)
-	owner = fields.AutoCompleteSelectField('object', help_text='')
+	owner = forms.ModelChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
 
 class VerbForm(forms.ModelForm):
 	class Meta:
@@ -30,4 +34,5 @@ class VerbForm(forms.ModelForm):
 	
 	names = forms.CharField()
 	code = forms.CharField(widget=widgets.HiddenInput)
-	owner = fields.AutoCompleteSelectField('object', help_text='')
+	owner = forms.ModelChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))

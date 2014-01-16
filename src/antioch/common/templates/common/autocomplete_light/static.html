@@ -1,0 +1,25 @@
+{% load static from staticfiles %}
+
+{% include 'autocomplete_light/_ajax_csrf.html' %}
+<script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.js' %}"></script>
+<script type="text/javascript">
+// Don't add CSS to the result, it screws up in the modal.
+// Calculate and set the outer container's absolute positionning.
+yourlabs.Autocomplete.prototype.fixPosition = function() {
+    // Insert the autocomplete container after the input.
+    var pos = $.extend({}, this.input.position(), {
+        height: this.input.outerHeight()
+    });
+
+    this.input.parents().filter(function() {
+        return $(this).css('overflow') === 'hidden';
+    }).first().css('overflow', 'visible');
+	
+    this.box.insertAfter(this.input);
+}
+</script>
+<script type="text/javascript" src="{% static 'autocomplete_light/widget.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/addanother.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/text_widget.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/remote.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'common/css/autocomplete_light_custom.css' %}" />

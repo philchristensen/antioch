@@ -17,6 +17,8 @@
     });
     $('body').append(lightbox);
     lightbox.load('/editor/' + msg.details.kind + '/' + msg.details.id)
-    lightbox.modal();
+    lightbox.modal({
+      keyboard: false
+    });
   });
 })(jQuery);
