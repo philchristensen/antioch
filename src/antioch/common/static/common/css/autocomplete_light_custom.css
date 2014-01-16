@@ -87,8 +87,14 @@ input.autocomplete {
 {
     list-style-type: none;
     margin-bottom: 5px;
-    padding-right: 8px;
-    padding-bottom: 5px;
+    padding: 2px 8px 2px 4px;
+
+    color: #fff;
+    background-color: #0081c2;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    display: inline-block;
 }
 
 .autocomplete-light-widget .deck [data-value] .remove
@@ -98,9 +104,9 @@ input.autocomplete {
     cursor: pointer;
     float: left;
     height: 15px;
-    margin-right: 10px;
     text-indent: -999px;
     width: 15px;
+    margin: 2px 2px 2px 0;
 }
 
 .autocomplete-light-widget .deck [data-value] .remove:hover
