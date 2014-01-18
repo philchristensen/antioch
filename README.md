@@ -1,5 +1,5 @@
-antioch 2.0pre3
-=================
+antioch 
+=======
 
 (c) Phil Christensen, <phil@bubblehouse.org>
 
