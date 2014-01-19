@@ -1,5 +1,5 @@
-antioch 2.0pre3
-=================
+antioch 
+=======
 
 (c) Phil Christensen, <phil@bubblehouse.org>
 
@@ -23,7 +23,7 @@ Feature Set
 
 * PostgreSQL-backed object store scales to million of objects and provides transactional security during verb execution
 
-* Flexible plugin system, highly scalable execution layour using Celery and RabbitMQ
+* Flexible plugin system, highly scalable execution layer using Celery and RabbitMQ
 
 
 antioch is made available under the MIT/X Consortium license.
