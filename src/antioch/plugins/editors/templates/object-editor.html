@@ -5,21 +5,21 @@
 {% block header %}
 {% include 'common/autocomplete_light/static.html' %}
 <link rel="stylesheet/less" type="text/css" href="{% static 'less/object-editor.less' %}" />
+<script type="text/javascript">
+$(document).ready(function(){
+  less.sheets.push($('link[href="{% static 'less/object-editor.less' %}"]')[0]);
+  less.refresh();
+});
+</script>
 {% endblock %}
 
 {% block content %}
 
-  <div class="modal-content">
-
-<form method="POST" action="">
-	{% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
-  </div>
-  <div class="modal-body object editor">
+<div class="object editor row">
+  <form method="POST" action="">
+  	{% csrf_token %}
 		{{ form.errors }}
-		<div class="controls">
+		<div class="col-xs-6">
 			<div class="form-group row">
         <div class="col-xs-8">
     			<label class="control-label" id="name-label" for="id_name">name:</label>
@@ -43,7 +43,8 @@
 			{{ form.owner|add_class:"form-control"  }}
 			</div>
 		</div>
-		<div class="attributes row">
+    
+		<div class="attributes col-xs-6 row">
 			<div class="verbs col-xs-6">
 				<label id="verbs-label" for="verbs-select">verbs:</label>
 				<select id="verbs-select" size="8" class="form-control">
@@ -65,15 +66,12 @@
 				<button type="button" class="btn" id="remove-prop">remove</button>
 			</div>
 		</div>
-	</div>
-
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-    <button type="submit" class="btn btn-primary">Save changes</button>
-  </div>
-</form>
-
-  </div>
+    <div class="footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+  </form>
+</div>
 
 {% endblock %}
 

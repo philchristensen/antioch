@@ -6,19 +6,40 @@
     media:  "screen",
     rel:    "stylesheet/less"
   }));
+  less.sheets.push($('link[href="/assets/less/editors.less"]')[0]);
+  less.refresh();
+  
+  var editorsPanel = $('<div>').attr({
+    "class":   "editors-panel"
+  });
+  
+  var tabList = $('<ul>').attr({
+    "class":   "nav nav-tabs",
+    "data-tabs": "tabs"
+  });
+  editorsPanel.append(tabList);
+  
+  var tabContent = $('<div>').attr({
+    "class":   "tab-content"
+  });
+  editorsPanel.append(tabContent);
+  
+  $('.page-container').append(editorsPanel);
+  
   $(document).antioch('addMessageListener', 'edit', function(msg){
-    $('body').modalmanager('loading');
-    var lightbox = $('<div>').attr({
-      'class': msg.details.kind + "-editor-modal center-block modal fade",
-      'tabindex': "-1",
-      'role': "dialog",
-      'aria-labelledby': "editorFormLabel",
-      'aria-hidden': "true",
+    var newTabContent = $('<div>').attr({
+      'id': "edit-tab-" + msg.details.kind + '-' + msg.details.id,
+      'class': "tab-pane"
     });
-    lightbox.load('/editor/' + msg.details.kind + '/' + msg.details.id)
-    lightbox.modal({
-      keyboard: false,
-      backdrop: false
-    });
+    newTabContent.load('/editor/' + msg.details.kind + '/' + msg.details.id);
+    
+    var newTab = $('<a>').attr({
+      'href':  "#edit-tab-" + msg.details.kind + '-' + msg.details.id,
+      'data-toggle': "tab"
+    }).html(msg.details.__str__);
+    tabList.append($("<li>").append(newTab));
+    
+    tabContent.append(newTabContent);
+    newTab.tab('show');
   });
 })(jQuery);

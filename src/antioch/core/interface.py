@@ -246,6 +246,7 @@ class Object(Entity):
 		return dict(
 			id			= self._id,
 			kind		= self.get_type(),
+			__str__     = str(self),
 			name		= self._name,
 			parents 	= ', '.join([str(x) for x in self.get_parents()]),
 			owner		= str(self.get_owner()),
@@ -744,6 +745,7 @@ class Verb(Entity):
 		return dict(
 			id			= self.get_id(),
 			kind		= self.get_type(),
+			__str__     = str(self),
 			exec_type	= 'verb' if not self._method else 'method' if not self._ability else 'ability',
 			owner		= str(self.get_owner()),
 			names		= self.get_names(),
@@ -925,6 +927,7 @@ class Property(Entity):
 		return dict(
 			id			= self.get_id(),
 			kind		= self.get_type(),
+			__str__     = str(self),
 			owner		= str(self.get_owner()),
 			name		= self.get_name(),
 			value		= value.encode('utf8'),
