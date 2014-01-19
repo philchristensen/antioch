@@ -47,26 +47,31 @@ $(document).ready(function(){
 		<div class="attributes col-xs-6 row">
 			<div class="verbs col-xs-6">
 				<label id="verbs-label" for="verbs-select">verbs:</label>
-				<select id="verbs-select" size="8" class="form-control">
+				<select id="verbs-select" size="2" class="form-control">
 					{% for verb in form.instance.verbs.all %}
 					<option value="{{ verb.id }}">{{ verb.annotated }}</option>
 					{% endfor %}
 				</select>
-				<button type="button" class="btn" id="add-verb">add</button>
-				<button type="button" class="btn" id="remove-verb">remove</button>
+        <div class="btn-group">
+  				<button type="button" class="btn btn-default" id="add-verb"><span class="glyphicon glyphicon-plus"></span></button>
+  				<button type="button" class="btn btn-default" id="remove-verb"><span class="glyphicon glyphicon-minus"></span></button>
+        </div>
 			</div>
 			<div class="properties col-xs-6">
 				<label id="properties-label" for="properties-select">properties:</label>
-				<select id="properties-select" size="8" class="form-control">
+				<select id="properties-select" size="2" class="form-control">
 					{% for property in form.instance.properties.all %}
 					<option value="{{ property.id }}">{{ property.name }}</option>
 					{% endfor %}
 				</select>
-				<button type="button" class="btn" id="add-prop">add</button>
-				<button type="button" class="btn" id="remove-prop">remove</button>
+        <div class="btn-group">
+  				<button type="button" class="btn btn-default" id="add-prop"><span class="glyphicon glyphicon-plus"></span></button>
+  				<button type="button" class="btn btn-default" id="remove-prop"><span class="glyphicon glyphicon-minus"></span></button>
+  			</div>
 			</div>
 		</div>
-    <div class="footer">
+    
+    <div class="fixed-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       <button type="submit" class="btn btn-primary">Save changes</button>
     </div>
