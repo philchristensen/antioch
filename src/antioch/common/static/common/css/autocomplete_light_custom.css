@@ -93,7 +93,8 @@ input.autocomplete {
     background-color: #0081c2;
     -webkit-border-radius: 12px;
     -moz-border-radius: 12px;
-    border-radius: 12px;
+    border-radius: 21px;
+    font-size: 21px;
     display: inline-block;
 }
 
@@ -106,7 +107,7 @@ input.autocomplete {
     height: 15px;
     text-indent: -999px;
     width: 15px;
-    margin: 2px 2px 2px 0;
+    margin: 7px 2px 2px 0;
 }
 
 .autocomplete-light-widget .deck [data-value] .remove:hover
