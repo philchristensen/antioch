@@ -11,7 +11,7 @@ var default_permissions = [
 ]
 
 function addRule(access){
-	var perms = $('#editor');
+	var perms = $('.access-rules');
 	
 	var thumb = $('<div class="drag-thumb"></div>');
 	
@@ -75,7 +75,7 @@ function addRule(access){
 }
 
 function saveAccess(){
-	var rules = $('#editor').find('.access-rule');
+	var rules = $('.access-rules').find('.access-rule');
 	var weight = 0;
 	rules.each(function(i, e){
 		var access_id = $(this).attr('id').split('-')[1];

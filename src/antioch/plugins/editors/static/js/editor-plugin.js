@@ -28,13 +28,13 @@
   
   $(document).antioch('addMessageListener', 'edit', function(msg){
     var newTabContent = $('<div>').attr({
-      'id': "edit-tab-" + msg.details.kind + '-' + msg.details.id,
+      'id': "edit-tab-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id,
       'class': "tab-pane"
     });
     newTabContent.load('/editor/' + msg.details.kind + '/' + msg.details.id);
     
     var newTab = $('<a>').attr({
-      'href':  "#edit-tab-" + msg.details.kind + '-' + msg.details.id,
+      'href':  "#edit-tab-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id,
       'data-toggle': "tab"
     }).html(msg.details.__str__);
     tabList.append($("<li>").append(newTab));

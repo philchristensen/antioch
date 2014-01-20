@@ -3,39 +3,54 @@
 {% load staticfiles %}
 
 {% block header %}
+<link rel="stylesheet" href="{% static 'common/css/libs/jquery.ui.theme.css' %}" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet/less" type="text/css" href="{% static 'less/access-editor.less' %}" />
+<script type="text/javascript">
+$(document).ready(function(){
+  less.sheets.push($('link[href="{% static 'less/access-editor.less' %}"]')[0]);
+  less.refresh();
+});
+</script>
 {% endblock %}
 
 {% block content %}
-<div class="modal-content">
+<div class="access editor">
   <form id="access-form" method="POST" action="">
     {% csrf_token %}
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h4 class="modal-title" id="editorFormLabel">Edit {{ form.instance }}</h4>
+    <div class="row">
+      <div class="col-xs-12">
+        <button class="btn" id="add-button"><span class="icon-plus-sign"></span> add rule</button>
+      </div>
     </div>
-    <div class="modal-body access editor">
-      <button class="btn" id="add-button"><span class="icon-plus-sign"></span> add rule</button>
+    <div class="row access-rules">
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      <button type="submit" class="btn btn-primary">Save changes</button>
+    <div class="fixed-footer row">
+      <div class="col-xs-12">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
     </div>
   </form>
 </div>
 {% endblock %}
 
 {% block footer %}
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{% static 'js/access-editor.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$(document).antioch();
 	
-	$('#editor').sortable({
-		handle:	".drag-thumb",
-		items: 	".access-rule",  
-	})
-
+  var intervalId = setInterval(function(){
+    if(!jQuery.ui){
+      return;
+    }
+  	$('.access-rules').sortable({
+  		handle:	".drag-thumb",
+  		items: 	".access-rule",  
+  	});
+    clearInterval(intervalId);
+  }, 100)
 	$('#add-button').click(function(){
 		addRule({
 			access_id	: 0,
