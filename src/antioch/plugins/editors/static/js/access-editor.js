@@ -15,7 +15,7 @@ function addRule(access){
 	
 	var thumb = $('<div class="drag-thumb"></div>');
 	
-	var allow_deny = $('<button type="button" class="rule-toggle ' + access['rule'] + '">' + access['rule'] + '</button>');
+	var allow_deny = $('<button type="button" class="btn rule-toggle ' + access['rule'] + '">' + access['rule'] + '</button>');
 	allow_deny.click(function(e){
 		if($(this).hasClass('allow')){
 			$(this).html('deny');
@@ -28,7 +28,7 @@ function addRule(access){
 		e.stopImmediatePropagation();
 	});
 	
-	var group_accessor = $('<button type="button" class="access-toggle ' + access['access'] + '">' + access['access'] + '</button>');
+	var group_accessor = $('<button type="button" class="btn access-toggle ' + access['access'] + '">' + access['access'] + '</button>');
 	group_accessor.button({
 		label	: access['access'],
 	});
@@ -44,9 +44,9 @@ function addRule(access){
 		e.stopImmediatePropagation();
 	});
 	
-	var accessor = $('<input type="text" class="accessor-field" size="30" value="' + access['accessor'] + '" />');
+	var accessor = $('<input type="text" class="accessor-field form-control" size="30" value="' + access['accessor'] + '" />');
 	
-	var permissions = $('<select class="permission-field"></select>');
+	var permissions = $('<select class="permission-field form-control"></select>');
 	for(index in default_permissions){
 		var permission = default_permissions[index];
 		if(permission == access['permission']){
@@ -57,7 +57,7 @@ function addRule(access){
 		}
 	}
 	
-	var delete_rule = $('<button type="button" class="delete-rule"><span class="icon-trash"></span></button>');
+	var delete_rule = $('<button type="button" class="btn delete-rule"><span class="glyphicon glyphicon-trash"></span></button>');
 	delete_rule.click(function(){
 		$(this).parent().toggleClass('deleted');
 	});
