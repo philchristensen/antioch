@@ -16,7 +16,7 @@ $(document).ready(function(){
 {% block content %}
 
 <div class="object editor row">
-  <form method="POST" action="">
+  <form id="object-form" method="POST" action="{{ request.path }}">
   	{% csrf_token %}
 		{{ form.errors }}
 		<div class="col-xs-6">
@@ -85,6 +85,27 @@ $(document).ready(function(){
 $(document).ready(function(){
 	$(document).antioch();
 	
+  $('#object-form').submit(function(){
+    $.ajax({
+      type: $(this).attr('method'),
+      url: $(this).attr('action'),
+      data: $(this).serialize(),
+      success: function(data){
+        $('#object-form .form-group').removeClass('error');
+        console.log('Success.')
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        errors = jQuery.parseJSON(jqXHR.responseText);
+        $('#object-form .form-group').removeClass('error');
+        for(var fieldName in errors){
+          var formGroup = $('#id_' + fieldName).parents('.form-group')
+          formGroup.addClass('error');
+        }
+      }
+    });
+    return false;
+  });
+  
 	$('#verbs-select').dblclick(function(){
 		$(document).antioch('handleMessage', {
 			command: 'edit',

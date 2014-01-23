@@ -1,5 +1,5 @@
-from django import template, shortcuts
-from django.utils import http
+from django import template, shortcuts, http
+from django.utils import simplejson
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
@@ -22,6 +22,9 @@ def object_editor(request, object_id):
 				owner		= request.POST['owner'],
 				parents		= request.POST['parents'].replace('|', ',').strip(','),
 			).get(timeout=5)
+			return http.HttpResponse("Successful update.")
+		else:
+			return http.HttpResponse(simplejson.dumps(form.errors), content_type="application/json", status=422)
 	else:
 		form = forms.ObjectForm(instance=o)
 	
