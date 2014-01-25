@@ -27,19 +27,32 @@
   $('.page-container').append(editorsPanel);
   
   $(document).antioch('addMessageListener', 'edit', function(msg){
+    var tabContentId = "edit-tab-content-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id;
+    var tabId = "edit-tab-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id;
+    var closeTab = function(){
+      $('#' + tabId).remove();
+      $('#' + tabContentId).remove();
+    };
+
     var newTabContent = $('<div>').attr({
-      'id': "edit-tab-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id,
+      'id': tabContentId,
       'class': "tab-pane"
     });
     newTabContent.load('/editor/' + msg.details.kind + '/' + msg.details.id);
     
     var newTab = $('<a>').attr({
-      'href':  "#edit-tab-" + msg.details.kind.replace('/', '-') + '-' + msg.details.id,
+      'id': tabId,
+      'href':  "#" + tabContentId,
       'data-toggle': "tab"
     }).html(msg.details.__str__);
-    tabList.append($("<li>").append(newTab));
     
+    newTab.append($("<a>").attr({
+      'class': 'close-tab glyphicon glyphicon-remove'
+    }).click(closeTab));
+    
+    tabList.append($("<li>").append(newTab));
     tabContent.append(newTabContent);
+    
     newTab.tab('show');
   });
 })(jQuery);
