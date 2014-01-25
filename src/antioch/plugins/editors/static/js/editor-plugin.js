@@ -56,3 +56,26 @@
     newTab.tab('show');
   });
 })(jQuery);
+
+function setupAjaxForm(formQuery){
+  formQuery.submit(function(){
+    $.ajax({
+      type: $(this).attr('method'),
+      url: $(this).attr('action'),
+      data: $(this).serialize(),
+      success: function(data){
+        $(this).find('.form-group').removeClass('error');
+        console.log('Success.')
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        errors = jQuery.parseJSON(jqXHR.responseText);
+        $(this).find('.form-group').removeClass('error');
+        for(var fieldName in errors){
+          var formGroup = $('#id_' + fieldName).parents('.form-group')
+          formGroup.addClass('error');
+        }
+      }
+    });
+    return false;
+  });
+};
