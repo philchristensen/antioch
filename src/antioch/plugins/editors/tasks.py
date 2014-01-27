@@ -48,15 +48,15 @@ def openaccess(user_id, object_id, type, name):
 	return {'response': True}
 
 @shared_task
-def modifyobject(user_id, object_id, name, location, parents, owner):
+def modifyobject(user_id, object, name, location, parents, owner):
 	with tasks.get_exchange(user_id) as x:
-		o = x.get_object(object_id)
+		o = x.get_object(object)
 		o.set_name(name, real=True)
-		o.set_location(x.get_object(location))
+		o.set_location(x.get_object(location) if location else None)
 		o.set_owner(x.get_object(owner))
 		
 		old_parents = o.get_parents()
-		new_parents = [x.get_object(p.strip()) for p in parents.split(',') if p.strip()]
+		new_parents = [x.get_object(p) for p in parents]
 		
 		[o.remove_parent(p) for p in old_parents if p not in new_parents]
 		[o.add_parent(p) for p in new_parents if p not in old_parents]

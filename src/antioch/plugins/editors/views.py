@@ -7,26 +7,31 @@ from antioch import assets
 from antioch.core import models
 from antioch.plugins.editors import forms, tasks
 
+SUCCESS_JSON = '{"msg":"Successful update."}'
+EXCEPTION_JSON = '{"msg":"%s"}'
+
+def get_errors_json(form):
+	return simplejson.dumps(dict(
+		errors = form.errors,
+		non_field_errors = form.non_field_errors
+	))
+
 @login_required
 def object_editor(request, object_id):
 	o = models.Object.objects.get(pk=object_id)
 	
 	if(request.method == 'POST'):
-		form = forms.ObjectForm(request.POST, instance=o)
+		form = forms.ObjectForm(request.user.avatar.id, request.POST, instance=o)
 		if(form.is_valid()):
-			tasks.modifyobject.delay(
-				user_id		= request.user.avatar.id,
-				object_id	= o.id,
-				name		= form.cleaned_data['name'],
-				location	= request.POST['location'],
-				owner		= request.POST['owner'],
-				parents		= request.POST['parents'].replace('|', ',').strip(','),
-			).get(timeout=5)
-			return http.HttpResponse("Successful update.")
+			try:
+				form.save()
+				return http.HttpResponse(SUCCESS_JSON, content_type="application/json")
+			except Exception, e:
+				return http.HttpResponse(EXCEPTION_JSON % e, content_type="application/json", status=500)
 		else:
-			return http.HttpResponse(simplejson.dumps(form.errors), content_type="application/json", status=422)
+			return http.HttpResponse(get_errors_json(form.errors), content_type="application/json", status=422)
 	else:
-		form = forms.ObjectForm(instance=o)
+		form = forms.ObjectForm(request.user.avatar.id, instance=o)
 	
 	return shortcuts.render_to_response('object-editor.html', dict(
 		title           = "object editor",
@@ -49,6 +54,9 @@ def property_editor(request, property_id):
 				type		= form.cleaned_data['type'],
 				owner		= request.POST['owner'],
 			).get(timeout=5)
+			return http.HttpResponse("Successful update.")
+		else:
+			return http.HttpResponse(simplejson.dumps(form.errors), content_type="application/json", status=422)
 	else:
 		form = forms.PropertyForm(instance=p)
 	
@@ -75,6 +83,9 @@ def verb_editor(request, verb_id):
 				method		= form.cleaned_data['method'],
 				owner		= request.POST['owner'],
 			).get(timeout=5)
+			return http.HttpResponse("Successful update.")
+		else:
+			return http.HttpResponse(simplejson.dumps(form.errors), content_type="application/json", status=422)
 	else:
 		form = forms.VerbForm(instance=v, initial=dict(names=names))
 	

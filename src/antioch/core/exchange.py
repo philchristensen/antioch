@@ -445,7 +445,7 @@ class ObjectExchange(object):
 		except:
 			pass
 		
-		if(key in ('', 'none', 'None', 'null', 'NULL')):
+		if(key in ('', 'none', 'None', 'null', 'NULL', None)):
 			return None
 		
 		items = None

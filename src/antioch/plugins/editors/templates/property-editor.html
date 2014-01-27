@@ -15,7 +15,7 @@ $(document).ready(function(){
 
 {% block content %}
 <div class="property editor">
-  <form id="property-form" method="POST" action="">
+  <form id="property-form" method="POST" action="{{ request.path }}">
     {% csrf_token %}
     <div class="row">
       {{ form.errors }}
@@ -104,6 +104,7 @@ $(document).ready(function(){
   $('#property-form').submit(function(){
     $('#id_value').val(editor.getCode());
   });
+  setupAjaxForm($('#property-form'));
   
   $('#access-button').click(function(){
     $(document).antioch('handleMessage', {
