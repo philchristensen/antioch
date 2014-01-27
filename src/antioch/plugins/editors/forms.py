@@ -56,6 +56,25 @@ class PropertyForm(forms.ModelForm):
 	value = forms.CharField(widget=widgets.HiddenInput)
 	owner = forms.ModelChoiceField(models.Object.objects.all(),
 		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
+	
+	def clean_owner(self):
+		value = self.cleaned_data['owner']
+		return value.id if value else None
+	
+	def _post_clean(self):
+		pass
+	
+	def save(self, force_insert=False, force_update=False, commit=True):
+		tasks.modifyproperty.delay(
+			user_id		= self.user_id,
+			object		= self.instance.origin.id,
+			property_id	= self.instance.id,
+			name		= self.cleaned_data['name'],
+			value		= self.cleaned_data['value'],
+			type		= self.cleaned_data['type'],
+			owner		= self.cleaned_data['owner'],
+		).get(timeout=5)
+		return self
 
 class VerbForm(forms.ModelForm):
 	class Meta:
@@ -66,3 +85,23 @@ class VerbForm(forms.ModelForm):
 	code = forms.CharField(widget=widgets.HiddenInput)
 	owner = forms.ModelChoiceField(models.Object.objects.all(),
 		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
+	
+	def clean_owner(self):
+		value = self.cleaned_data['owner']
+		return value.id if value else None
+	
+	def _post_clean(self):
+		pass
+	
+	def save(self, force_insert=False, force_update=False, commit=True):
+			tasks.modifyverb.delay(
+				user_id		= request.user.avatar.id,
+				object		= self.instance.origin.id,
+				verb_id		= self.instance.id,
+				names		= form.cleaned_data['names'],
+				code		= form.cleaned_data['code'],
+				ability		= form.cleaned_data['ability'],
+				method		= form.cleaned_data['method'],
+				owner		= request.POST['owner'],
+			).get(timeout=5)
+		return self
