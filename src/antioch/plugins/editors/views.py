@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.generic import UpdateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.forms.models import modelformset_factory
 
 from antioch import assets
 from antioch.core import models
@@ -54,6 +55,16 @@ class VerbEditorFormView(EditorFormView):
 	template_name = 'verb-editor.html'
 	form_class = forms.VerbForm
 	model = models.Verb
+
+class AccessEditorFormView(LoginRequiredMixin, AjaxFormMixin, UpdateView):
+	template_name = 'access-editor.html'
+	form_class = modelformset_factory(models.Access, extra=0, form=forms.AccessForm)
+	model = models.Access
+	
+	def get_form_kwargs(self):
+		kwargs = dict()
+		kwargs['queryset'] = self.model.objects.filter(**{'%s__pk' % self.kwargs['type']: self.kwargs['pk']})
+		return kwargs
 
 @login_required
 def access_editor(request, type, pk):

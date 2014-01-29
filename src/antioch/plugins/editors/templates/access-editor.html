@@ -23,6 +23,17 @@ $(document).ready(function(){
       </div>
     </div>
     <div class="row access-rules">
+      {% for subform in form %}
+      <div id="access-{{ subform.instance.id }}" class="form-inline access-rule">
+        <div class="drag-thumb"></div>
+        <button type="button" class="btn rule-toggle allow">allow</button>
+        <button type="button" class="btn access-toggle group">group</button>
+        {{ subform.accessor|add_class:"accessor-field"|add_class:"form-control" }}
+        {{ subform.group|add_class:"group-field"|add_class:"form-control" }}
+        {{ subform.permission|add_class:"permission-field"|add_class:"form-control" }}
+        <button type="button" class="btn delete-rule"><span class="glyphicon glyphicon-trash"></span></button>
+      </div>
+      {% endfor %}
     </div>
     <div class="fixed-footer row">
       <div class="col-xs-12">
@@ -60,9 +71,9 @@ $(document).ready(function(){
 			permission	: "anything",
 		});
 	});
-	
+
 	{% for access in model.acl.all %}
-	addRule({access_id: {{ access.id }}, rule: "{{ access.rule }}", access: "{{ access.type }}", accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}", permission: "{{ access.permission }}", weight: {{ access.weight }}});
+  // addRule({access_id: {{ access.id }}, rule: "{{ access.rule }}", access: "{{ access.type }}", accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}", permission: "{{ access.permission }}", weight: {{ access.weight }}});
 	{% endfor %}
 	
 	$('#access-form').submit(saveAccess);

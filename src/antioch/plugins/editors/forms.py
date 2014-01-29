@@ -107,3 +107,11 @@ class VerbForm(AuthenticatedModelForm):
 			owner		= request.POST['owner'],
 		).get(timeout=5)
 		return self
+
+class AccessForm(forms.ModelForm):
+	class Meta:
+		model = models.Access
+	
+	accessor = forms.ModelChoiceField(models.Object.objects.all(),
+		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
+	
