@@ -1,11 +1,13 @@
 from django import template, shortcuts, http
 from django.utils import simplejson
 from django.conf import settings
+from django.views.generic import FormView
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 from antioch import assets
 from antioch.core import models
-from antioch.plugins.editors import tasks
+from antioch.plugins.editors import tasks, forms
 
 SUCCESS_JSON = '{"msg":"Successful update."}'
 EXCEPTION_JSON = '{"msg":"%s"}'
@@ -16,30 +18,41 @@ def get_errors_json(form):
 		non_field_errors = form.non_field_errors
 	))
 
-class EditorFormView(object):
-	def __init__(self, form_class, template):
-		self.form_class = form_class
-		self.template = template
+class EditorFormView(FormView):
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+		return super(FormView, self).dispatch(*args, **kwargs) 
 	
-	def as_view(self):
-		def _view(request, object_id):
-			o = models.Object.objects.get(pk=object_id)
+	def get_form_kwargs(self):
+		kwargs = super(FormView, self).get_form_kwargs()
+		kwargs['user_id'] = self.request.user.avatar.id
+		kwargs['instance'] = self.instance_class.objects.get(pk=self.kwargs['instance_id'])
+		return kwargs
 	
-			if(request.method == 'POST'):
-				form = self.form_class(request.user.avatar.id, request.POST, instance=o)
-				if(form.is_valid()):
-					try:
-						form.save()
-						return http.HttpResponse(SUCCESS_JSON, content_type="application/json")
-					except Exception, e:
-						return http.HttpResponse(EXCEPTION_JSON % e, content_type="application/json", status=500)
-				else:
-					return http.HttpResponse(get_errors_json(form.errors), content_type="application/json", status=422)
-			else:
-				form = self.form_class(request.user.avatar.id, instance=o)
+	def form_valid(self, form):
+		try:
+			form.save()
+			return http.HttpResponse(SUCCESS_JSON, content_type="application/json")
+		except Exception, e:
+			return http.HttpResponse(EXCEPTION_JSON % e, content_type="application/json", status=500)
 	
-			return shortcuts.render_to_response(self.template, dict(form=form), context_instance=template.RequestContext(request))
-		return login_required(_view)
+	def form_invalid(self, form):
+		return http.HttpResponse(get_errors_json(form.errors), content_type="application/json", status=422)
+
+class ObjectEditorFormView(EditorFormView):
+	template_name = 'object-editor.html'
+	form_class = forms.ObjectForm
+	instance_class = models.Object
+	
+class PropertyEditorFormView(EditorFormView):
+	template_name = 'property-editor.html'
+	form_class = forms.PropertyForm
+	instance_class = models.Property
+	
+class VerbEditorFormView(EditorFormView):
+	template_name = 'verb-editor.html'
+	form_class = forms.VerbForm
+	instance_class = models.Verb
 
 @login_required
 def access_editor(request, type, pk):

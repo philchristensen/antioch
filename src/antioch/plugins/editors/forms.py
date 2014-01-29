@@ -6,7 +6,12 @@ import autocomplete_light
 from antioch.core import models
 from antioch.plugins.editors import tasks
 
-class ObjectForm(forms.ModelForm):
+class BaseModelForm(forms.ModelForm):
+	def __init__(self, user_id=None, *args, **kwargs):
+		super(BaseModelForm, self).__init__(*args, **kwargs)
+		self.user_id = user_id
+
+class ObjectForm(BaseModelForm):
 	class Meta:
 		model = models.Object
 		exclude = ('observers',)
@@ -17,10 +22,6 @@ class ObjectForm(forms.ModelForm):
 		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'), required=False)
 	parents = forms.ModelMultipleChoiceField(models.Object.objects.all(),
 		widget=autocomplete_light.MultipleChoiceWidget('ObjectAutocomplete'), required=False)
-	
-	def __init__(self, user_id, *args, **kwargs):
-		super(ObjectForm, self).__init__(*args, **kwargs)
-		self.user_id = user_id
 	
 	def clean_location(self):
 		value = self.cleaned_data['location']
@@ -48,7 +49,7 @@ class ObjectForm(forms.ModelForm):
 		).get(timeout=5)
 		return self
 
-class PropertyForm(forms.ModelForm):
+class PropertyForm(BaseModelForm):
 	class Meta:
 		model = models.Property
 		exclude = ('origin',)
@@ -76,7 +77,7 @@ class PropertyForm(forms.ModelForm):
 		).get(timeout=5)
 		return self
 
-class VerbForm(forms.ModelForm):
+class VerbForm(BaseModelForm):
 	class Meta:
 		model = models.Verb
 		exclude = ('origin',)
@@ -94,14 +95,14 @@ class VerbForm(forms.ModelForm):
 		pass
 	
 	def save(self, force_insert=False, force_update=False, commit=True):
-			tasks.modifyverb.delay(
-				user_id		= request.user.avatar.id,
-				object		= self.instance.origin.id,
-				verb_id		= self.instance.id,
-				names		= form.cleaned_data['names'],
-				code		= form.cleaned_data['code'],
-				ability		= form.cleaned_data['ability'],
-				method		= form.cleaned_data['method'],
-				owner		= request.POST['owner'],
-			).get(timeout=5)
+		tasks.modifyverb.delay(
+			user_id		= request.user.avatar.id,
+			object		= self.instance.origin.id,
+			verb_id		= self.instance.id,
+			names		= form.cleaned_data['names'],
+			code		= form.cleaned_data['code'],
+			ability		= form.cleaned_data['ability'],
+			method		= form.cleaned_data['method'],
+			owner		= request.POST['owner'],
+		).get(timeout=5)
 		return self
