@@ -1,7 +1,7 @@
 from django import template, shortcuts, http
 from django.utils import simplejson
 from django.conf import settings
-from django.views.generic import FormView
+from django.views.generic import UpdateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
@@ -18,17 +18,12 @@ def get_errors_json(form):
 		non_field_errors = form.non_field_errors
 	))
 
-class EditorFormView(FormView):
+class LoginRequiredMixin(object):
 	@method_decorator(login_required)
 	def dispatch(self, *args, **kwargs):
-		return super(FormView, self).dispatch(*args, **kwargs) 
-	
-	def get_form_kwargs(self):
-		kwargs = super(FormView, self).get_form_kwargs()
-		kwargs['user_id'] = self.request.user.avatar.id
-		kwargs['instance'] = self.instance_class.objects.get(pk=self.kwargs['instance_id'])
-		return kwargs
-	
+		return super(LoginRequiredMixin, self).dispatch(*args, **kwargs) 
+
+class AjaxFormMixin(object):
 	def form_valid(self, form):
 		try:
 			form.save()
@@ -39,20 +34,26 @@ class EditorFormView(FormView):
 	def form_invalid(self, form):
 		return http.HttpResponse(get_errors_json(form.errors), content_type="application/json", status=422)
 
+class EditorFormView(LoginRequiredMixin, AjaxFormMixin, UpdateView):
+	def get_form_kwargs(self):
+		kwargs = super(EditorFormView, self).get_form_kwargs()
+		kwargs['user_id'] = self.request.user.avatar.id
+		return kwargs
+	
 class ObjectEditorFormView(EditorFormView):
 	template_name = 'object-editor.html'
 	form_class = forms.ObjectForm
-	instance_class = models.Object
+	model = models.Object
 	
 class PropertyEditorFormView(EditorFormView):
 	template_name = 'property-editor.html'
 	form_class = forms.PropertyForm
-	instance_class = models.Property
+	model = models.Property
 	
 class VerbEditorFormView(EditorFormView):
 	template_name = 'verb-editor.html'
 	form_class = forms.VerbForm
-	instance_class = models.Verb
+	model = models.Verb
 
 @login_required
 def access_editor(request, type, pk):
