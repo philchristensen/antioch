@@ -34,7 +34,7 @@ if(!window.console){
 				rest_url: "/rest/",
 				
 				callback: function(){
-					methods.write('Connected...');
+					// methods.write('Connected...');
 				},
 				
 				error_handler: function(err){
