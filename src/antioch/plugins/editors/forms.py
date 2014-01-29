@@ -1,17 +1,18 @@
 from django import forms
 from django.forms import widgets
+from django.forms.models import BaseModelFormSet
 
 import autocomplete_light
 
 from antioch.core import models
 from antioch.plugins.editors import tasks
 
-class BaseModelForm(forms.ModelForm):
+class AuthenticatedModelForm(forms.ModelForm):
 	def __init__(self, user_id=None, *args, **kwargs):
-		super(BaseModelForm, self).__init__(*args, **kwargs)
+		super(AuthenticatedModelForm, self).__init__(*args, **kwargs)
 		self.user_id = user_id
 
-class ObjectForm(BaseModelForm):
+class ObjectForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Object
 		exclude = ('observers',)
@@ -49,7 +50,7 @@ class ObjectForm(BaseModelForm):
 		).get(timeout=5)
 		return self
 
-class PropertyForm(BaseModelForm):
+class PropertyForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Property
 		exclude = ('origin',)
@@ -77,7 +78,7 @@ class PropertyForm(BaseModelForm):
 		).get(timeout=5)
 		return self
 
-class VerbForm(BaseModelForm):
+class VerbForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Verb
 		exclude = ('origin',)
