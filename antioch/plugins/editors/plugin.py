@@ -10,7 +10,7 @@ Graphical object editor support.
 
 from zope.interface import classProvides
 
-from antioch import conf, IPlugin
+from antioch import IPlugin
 
 def edit(p, item):
 	p.exchange.send_message(p.caller.get_id(), dict(

@@ -1,7 +1,0 @@
-{
-    "HEROKU_ENV" : {
-        "QUEUE_URL": "RABBITMQ_URL",
-        "DATABASE_URL": "DATABASE_URL",
-        "DB_URL_DEFAULT": "DATABASE_URL"
-    }
-}

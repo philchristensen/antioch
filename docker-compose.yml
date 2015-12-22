@@ -21,45 +21,45 @@ web:
     DB_PASSWD: daftIdByflyt
     MEMCACHE: memcached:11211
     REDIS_URL: redis://redis:6379
-worker:
-  build: .
-  links:
-   - postgres
-   - redis
-   - memcached
-  volumes:
-   - .:/opt/django
-  environment:
-    #DJANGO_SETTINGS_MODULE: antioch.settings.docker
-    CELERY_WORKER: "yes"
-    ROLE: worker
-    BROKER_URL: redis://redis:6379/0
-    RESULT_BACKEND: redis://redis:6379/0
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: antioch
-    DB_USER: antioch
-    DB_PASSWD: daftIdByflyt
-    MEMCACHE: memcached:11211
-beat:
-  build: .
-  links:
-   - postgres
-   - redis
-   - memcached
-  volumes:
-   - .:/opt/django
-  environment:
-    #DJANGO_SETTINGS_MODULE: antioch.settings.docker
-    ROLE: beat
-    BROKER_URL: redis://redis:6379/0
-    RESULT_BACKEND: redis://redis:6379/0
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: antioch
-    DB_USER: antioch
-    DB_PASSWD: daftIdByflyt
-    MEMCACHE: memcached:11211
+# worker:
+#   build: .
+#   links:
+#    - postgres
+#    - redis
+#    - memcached
+#   volumes:
+#    - .:/opt/django
+#   environment:
+#     #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+#     CELERY_WORKER: "yes"
+#     ROLE: worker
+#     BROKER_URL: redis://redis:6379/0
+#     RESULT_BACKEND: redis://redis:6379/0
+#     DB_HOST: postgres
+#     DB_PORT: 5432
+#     DB_NAME: antioch
+#     DB_USER: antioch
+#     DB_PASSWD: daftIdByflyt
+#     MEMCACHE: memcached:11211
+# beat:
+#   build: .
+#   links:
+#    - postgres
+#    - redis
+#    - memcached
+#   volumes:
+#    - .:/opt/django
+#   environment:
+#     #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+#     ROLE: beat
+#     BROKER_URL: redis://redis:6379/0
+#     RESULT_BACKEND: redis://redis:6379/0
+#     DB_HOST: postgres
+#     DB_PORT: 5432
+#     DB_NAME: antioch
+#     DB_USER: antioch
+#     DB_PASSWD: daftIdByflyt
+#     MEMCACHE: memcached:11211
 postgres:
   image: postgres
   environment:

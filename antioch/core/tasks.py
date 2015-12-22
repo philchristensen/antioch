@@ -10,14 +10,14 @@ import logging
 
 from celery import shared_task
 
-from antioch import conf
+from django.conf import settings
 from antioch.core import dbapi, code, exchange, errors, parser
 from antioch.util import sql, json
 
 log = logging.getLogger(__name__)
 
 log.debug("%s started" % __name__)
-pool = dbapi.connect(conf.get('db-url-default'), **dict(
+pool = dbapi.connect(settings.DB_URL_DEFAULT, **dict(
 	autocommit		= False,
 ))
 
