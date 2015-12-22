@@ -1,0 +1,9 @@
+web:
+  environment:
+    DJANGO_SETTINGS_MODULE: antioch.settings.development
+worker:
+  environment:
+    DJANGO_SETTINGS_MODULE: antioch.settings.development
+beat:
+  environment:
+    DJANGO_SETTINGS_MODULE: antioch.settings.development
