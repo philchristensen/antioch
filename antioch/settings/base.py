@@ -33,12 +33,7 @@ LOGIN_REDIRECT_URL = "/"
 SITE_ID = 1
 
 # antioch additions
-DB_URL_DEFAULT = "psycopg2://antioch:moavmic7@localhost/antioch"
-DB_URL_TEST = "psycopg2://antioch:moavmic7@localhost/antioch_test"
-PSQL_PATH = "psql"
 JOB_TIMEOUT = 5
-XSENDFILE = False
-RENDER_LESS = True
 
 # 3rd-party app config
 
