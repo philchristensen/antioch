@@ -29,3 +29,35 @@ Feature Set
 antioch is made available under the MIT/X Consortium license.
 
 The included LICENSE file describes this in detail.
+
+Running
+--------
+
+The Docker build is currently in development, but it's the only way I'm running in dev
+moving forward, so it should stablize quickly.
+
+You'll need a local installation of Docker Compose, perferably via Docker Toolbox.
+
+To install:
+
+    git clone ssh://git@gitlab.auto.aws.logicworks.net:44322/tools/insite-web.git
+    cd insite-web
+    docker-compose up
+
+After first install, and after model or static file changes, you'll need to run migrate
+and/or collectstatic:
+
+    docker-compose run web manage.py migrate
+    docker-compose run web manage.py collectstatic
+
+You'll want to create yourself a superuser, as in development this won't connect
+to ActiveDirectory:
+
+    docker-compose run web manage.py createsuperuser
+
+This build uses port 80/443 on your docker machine, but you can use whatever domain name
+to refer to it. I have a `docker` alias setup in my `/etc/hosts` file for this purpose.
+To find out the address of your docker machine, you can run:
+
+    docker-machine ip default
+
