@@ -40,8 +40,8 @@ You'll need a local installation of Docker Compose, perferably via Docker Toolbo
 
 To install:
 
-    git clone ssh://git@gitlab.auto.aws.logicworks.net:44322/tools/insite-web.git
-    cd insite-web
+    git clone ssh://git@github.com/philchristensen/antioch.git
+    cd antioch
     docker-compose up
 
 After first install, and after model or static file changes, you'll need to run migrate
@@ -50,10 +50,9 @@ and/or collectstatic:
     docker-compose run web manage.py migrate
     docker-compose run web manage.py collectstatic
 
-You'll want to create yourself a superuser, as in development this won't connect
-to ActiveDirectory:
+Finally, the first time you run, set up a basic database with some sample objects and users:
 
-    docker-compose run web manage.py createsuperuser
+    docker-compose run web manage.py mkspace
 
 This build uses port 80/443 on your docker machine, but you can use whatever domain name
 to refer to it. I have a `docker` alias setup in my `/etc/hosts` file for this purpose.
