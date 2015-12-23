@@ -186,10 +186,10 @@ class Player(models.Model):
 		return True
 	
 	avatar = models.ForeignKey(Object, null=True, on_delete=models.SET_NULL)
-	session_id = models.CharField(max_length=255, null=True)
+	session_id = models.CharField(max_length=255, null=True, blank=True)
 	wizard = models.BooleanField(default=False)
 	enabled = models.BooleanField(default=True)
-	crypt = models.CharField(max_length=255)
+	crypt = models.CharField(max_length=255, null=True, blank=True)
 	last_login = models.DateTimeField(null=True)
 	last_logout = models.DateTimeField(null=True)
 

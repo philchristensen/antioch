@@ -13,7 +13,6 @@ import logging, traceback, crypt
 from django.contrib.auth import backends
 from django.conf import settings
 
-from antioch import conf
 from antioch.core import models
 
 log = logging.getLogger(__name__)

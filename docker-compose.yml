@@ -10,7 +10,7 @@ web:
   volumes:
    - .:/opt/django
   environment:
-    #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+    DJANGO_SETTINGS_MODULE: antioch.settings.docker
     ROLE: web
     BROKER_URL: redis://redis:6379/0
     RESULT_BACKEND: redis://redis:6379/0

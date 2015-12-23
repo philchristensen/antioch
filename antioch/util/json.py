@@ -17,6 +17,7 @@ saved in the format::
 These will be converted transparently by the dumps/loads functions
 in this module.
 """
+from __future__ import absolute_import
 
 import json
 

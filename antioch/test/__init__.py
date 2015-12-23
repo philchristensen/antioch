@@ -12,7 +12,7 @@ import pkg_resources as pkg
 from antioch.core import dbapi, bootstrap
 from django.conf import settings
 
-psql_path = settings.PSQL_PATH
+# psql_path = settings.PSQL_PATH
 
 pool = {}
 
