@@ -12,7 +12,6 @@ import threading, random, sys, time, re, subprocess, logging
 
 from twisted.enterprise import adbapi
 
-from antioch import conf
 from antioch.util import logs
 
 pools = {}

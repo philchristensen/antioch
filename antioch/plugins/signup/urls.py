@@ -1,10 +1,10 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic.base import TemplateView
 
 from antioch.plugins.signup.views import ActivationView
 from antioch.plugins.signup.views import RegistrationView
 
-urlpatterns = patterns('registration.views',
+urlpatterns = [
 	url(r'^activate/complete/$',
 		TemplateView.as_view(template_name='registration/activation_complete.html'),
 		name='registration_activation_complete'),
@@ -24,4 +24,4 @@ urlpatterns = patterns('registration.views',
 	url(r'^register/closed/$',
 		TemplateView.as_view(template_name='registration/registration_closed.html'),
 		name='registration_disallowed'),
-)
+]

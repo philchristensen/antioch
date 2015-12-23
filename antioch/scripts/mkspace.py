@@ -10,8 +10,7 @@ import pkg_resources as pkg
 
 from twisted.python import usage
 
-from antioch import conf
-conf.init()
+from django.conf import settings
 
 from antioch.core import dbapi, bootstrap
 
@@ -35,7 +34,7 @@ class Options(usage.Options):
 
 	def parseArgs(self, db_url='default', dataset_name='default', *psql_args):
 		if(db_url == 'default'):
-			self['db-url'] = conf.get('db-url-default')
+			self['db-url'] = settings.DB_URL
 		else:
 			self['db-url'] = db_url
 		self['dataset-name'] = dataset_name

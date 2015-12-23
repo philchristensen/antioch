@@ -18,7 +18,7 @@ These will be converted transparently by the dumps/loads functions
 in this module.
 """
 
-import simplejson
+import json
 
 def loads(j, exchange=None):
 	"""
@@ -47,10 +47,10 @@ def loads(j, exchange=None):
 	
 	try:
 		if(exchange):
-			return simplejson.loads(j, object_hook=to_entity)
+			return json.loads(j, object_hook=to_entity)
 		else:
-			return simplejson.loads(j)
-	except simplejson.decoder.JSONDecodeError, e:
+			return json.loads(j)
+	except json.decoder.JSONDecodeError, e:
 		return j.strip('"').strip("'")
 	
 def dumps(obj):
@@ -68,4 +68,4 @@ def dumps(obj):
 		elif(isinstance(o, interface.Property)):
 			return {'p#%d' % o.get_id():o.name}
 	
-	return simplejson.dumps(obj, default=from_entity)
+	return json.dumps(obj, default=from_entity)

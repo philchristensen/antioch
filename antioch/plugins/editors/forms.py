@@ -7,7 +7,7 @@ import autocomplete_light
 from antioch.core import models
 from antioch.plugins.editors import tasks
 
-class AuthenticatedModelForm(forms.ModelForm):
+class AuthenticatedModelForm(autocomplete_light.ModelForm):
 	def __init__(self, user_id=None, *args, **kwargs):
 		super(AuthenticatedModelForm, self).__init__(*args, **kwargs)
 		self.user_id = user_id
@@ -16,13 +16,7 @@ class ObjectForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Object
 		exclude = ('observers',)
-	
-	owner = forms.ModelChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
-	location = forms.ModelChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'), required=False)
-	parents = forms.ModelMultipleChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.MultipleChoiceWidget('ObjectAutocomplete'), required=False)
+		autocomplete_fields = ('owner', 'location', 'parents')
 	
 	def clean_location(self):
 		value = self.cleaned_data['location']
@@ -54,10 +48,9 @@ class PropertyForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Property
 		exclude = ('origin',)
+		autocomplete_fields = ('owner',)
 	
 	value = forms.CharField(widget=widgets.HiddenInput)
-	owner = forms.ModelChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
 	
 	def clean_owner(self):
 		value = self.cleaned_data['owner']
@@ -70,7 +63,7 @@ class PropertyForm(AuthenticatedModelForm):
 		tasks.modifyproperty.delay(
 			user_id		= self.user_id,
 			object		= self.instance.origin.id,
-			property_id	= self.instance.id,
+			property_id = self.instance.id,
 			name		= self.cleaned_data['name'],
 			value		= self.cleaned_data['value'],
 			type		= self.cleaned_data['type'],
@@ -82,11 +75,10 @@ class VerbForm(AuthenticatedModelForm):
 	class Meta:
 		model = models.Verb
 		exclude = ('origin',)
+		autocomplete_fields = ('owner',)
 	
 	names = forms.CharField()
 	code = forms.CharField(widget=widgets.HiddenInput)
-	owner = forms.ModelChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
 	
 	def clean_owner(self):
 		value = self.cleaned_data['owner']
@@ -108,10 +100,8 @@ class VerbForm(AuthenticatedModelForm):
 		).get(timeout=5)
 		return self
 
-class AccessForm(forms.ModelForm):
+class AccessForm(autocomplete_light.ModelForm):
 	class Meta:
 		model = models.Access
-	
-	accessor = forms.ModelChoiceField(models.Object.objects.all(),
-		widget=autocomplete_light.ChoiceWidget('ObjectAutocomplete'))
-	
+		exclude = ()
+		autocomplete_fields = ('accessor',)

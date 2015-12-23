@@ -17,9 +17,9 @@ from django.contrib.auth.decorators import login_required
 from django.middleware import csrf
 from django.views.decorators.csrf import csrf_exempt
 
-import simplejson
+import json
 
-from antioch import plugins, assets, celery
+from antioch import plugins, celery
 from antioch.core import parser, tasks
 
 log = logging.getLogger(__name__)
@@ -77,12 +77,12 @@ def rest(request, command):
 	"""
 	Query the appserver and wait for a response.
 	"""
-	kwargs = simplejson.loads(request.read())
+	kwargs = json.loads(request.read())
 
 	task = getattr(tasks, command)
 	result = task.delay(request.user.avatar.id, **kwargs)
 	data = result.get(timeout=settings.JOB_TIMEOUT)
-	response = simplejson.dumps(data)
+	response = json.dumps(data)
 
 	return http.HttpResponse(response, content_type="application/json")
 

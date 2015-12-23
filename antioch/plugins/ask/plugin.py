@@ -29,7 +29,7 @@ def ask(p, question, callback, *args, **kwargs):
 class AskPlugin(object):
 	classProvides(IPlugin)
 	
-	script_url = u'/assets/js/ask-plugin.js'
+	script_url = u'/static/js/ask-plugin.js'
 	
 	def get_environment(self):
 		return dict(

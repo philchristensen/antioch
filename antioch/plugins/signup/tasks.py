@@ -10,7 +10,6 @@ import logging
 
 from celery import shared_task
 
-from antioch import conf
 from antioch.core import tasks, code
 
 log = logging.getLogger(__name__)

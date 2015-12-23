@@ -1,12 +1,12 @@
+import json
+
 from django import template, shortcuts, http
-from django.utils import simplejson
 from django.conf import settings
 from django.views.generic import UpdateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
 
-from antioch import assets
 from antioch.core import models
 from antioch.plugins.editors import tasks, forms
 
@@ -14,7 +14,7 @@ SUCCESS_JSON = '{"msg":"Successful update."}'
 EXCEPTION_JSON = '{"msg":"%s"}'
 
 def get_errors_json(form):
-	return simplejson.dumps(dict(
+	return json.dumps(dict(
 		errors = form.errors,
 		non_field_errors = form.non_field_errors
 	))

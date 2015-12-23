@@ -12,6 +12,8 @@ from zope.interface import classProvides
 
 from antioch import IPlugin
 
+from django.conf import settings
+
 def edit(p, item):
 	p.exchange.send_message(p.caller.get_id(), dict(
 		command		= 'edit',
@@ -41,7 +43,7 @@ def access(p, item):
 class EditorPlugin(object):
 	classProvides(IPlugin)
 	
-	script_url = u'%sjs/editor-plugin.js' % conf.get('static-url')
+	script_url = u'%sjs/editor-plugin.js' % settings.STATIC_URL
 	
 	def get_environment(self):
 		return dict(

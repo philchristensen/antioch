@@ -9,12 +9,10 @@ Provide testing for the codebase
 
 import pkg_resources as pkg
 
-from antioch import conf
-conf.init()
-
 from antioch.core import dbapi, bootstrap
+from django.conf import settings
 
-psql_path = conf.get('psql-path')
+psql_path = settings.PSQL_PATH
 
 pool = {}
 
@@ -27,7 +25,7 @@ def init_database(dbid, dataset='minimal', autocommit=False):
 	elif(dbid in pool):
 		return pool[dbid]
 	
-	db_url = conf.get('db-url-test')
+	db_url = settings.DB_URL_TEST
 	
 	bootstrap.initialize_database(psql_path, db_url)
 	

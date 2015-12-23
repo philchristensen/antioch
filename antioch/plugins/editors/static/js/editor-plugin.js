@@ -1,12 +1,12 @@
 // Loaded in the client window automatically
 (function($) {
   $('head').append($('<link>').attr({
-    href:   "/assets/less/editors.less",
+    href:   "/static/less/editors.less",
     type:   "text/css",
     media:  "screen",
     rel:    "stylesheet/less"
   }));
-  less.sheets.push($('link[href="/assets/less/editors.less"]')[0]);
+  less.sheets.push($('link[href="/static/less/editors.less"]')[0]);
   less.refresh();
   
   var editorsPanel = $('<div>').attr({

@@ -14,9 +14,11 @@ during a single verb transaction.
 """
 import crypt, string, random, time, logging, collections
 
-from antioch import conf, celery
+from antioch import celery
 from antioch.core import interface, errors
 from antioch.util import sql, json, hash_password
+
+from django.conf import settings
 
 group_definitions = dict(
 	owners		= lambda x,a,s: a.owns(s),
@@ -184,7 +186,7 @@ class ObjectExchange(object):
 					if not(user.is_connected_player()):
 						log.debug("ignoring message for unconnected player %s" % user)
 						continue
-					queue_id = '-'.join([conf.get('user-queue'), str(user.id)])
+					queue_id = '-'.join([settings.USER_QUEUE, str(user.id)])
 					log.debug("flushing message to #%s: %s" % (queue_id, msg))
 					exchange.publish(exchange.Message(json.dumps(msg), content_type="application/json"), routing_key=queue_id)
 
