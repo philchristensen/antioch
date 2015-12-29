@@ -8,20 +8,20 @@
 {% block content_class %}span10{% endblock %}
 
 {% block content %}
-	<form id="registration-form" method="POST" action="">
-		{% csrf_token %}
-		{{ form }}
-		<div class="controls form-actions">
-			<button type="submit" id="register-button" class="action-button btn btn-primary">Register</button>
-			<button type="button" class="btn">Cancel</button>
-		</div>
-	</form>
+    <form id="registration-form" method="POST" action="">
+        {% csrf_token %}
+        {{ form }}
+        <div class="controls form-actions">
+            <button type="submit" id="register-button" class="action-button btn btn-primary">Register</button>
+            <button type="button" class="btn">Cancel</button>
+        </div>
+    </form>
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
 $(document).ready(function(){
-	
+    
 });
 </script>
 {% endblock %}

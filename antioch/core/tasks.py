@@ -18,141 +18,141 @@ log = logging.getLogger(__name__)
 
 log.debug("%s started" % __name__)
 pool = dbapi.connect(settings.DB_URL_DEFAULT, **dict(
-	autocommit		= False
+    autocommit        = False
 ))
 
 def get_exchange(ctx=None):
-	"""
-	Get an ObjectExchange instance for the provided context.
-	"""
-	if(ctx):
-		return exchange.ObjectExchange(pool, queue=True, ctx=ctx)
-	else:
-		return exchange.ObjectExchange(pool)
+    """
+    Get an ObjectExchange instance for the provided context.
+    """
+    if(ctx):
+        return exchange.ObjectExchange(pool, queue=True, ctx=ctx)
+    else:
+        return exchange.ObjectExchange(pool)
 
 @shared_task
 def authenticate(username, password, ip_address):
-	"""
-	Return the user id for the username/password combo, if valid.
-	"""
-	with get_exchange() as x:
-		connect = x.get_verb(1, 'connect')
-		if(connect):
-			connect(ip_address)
+    """
+    Return the user id for the username/password combo, if valid.
+    """
+    with get_exchange() as x:
+        connect = x.get_verb(1, 'connect')
+        if(connect):
+            connect(ip_address)
 
-		authentication = x.get_verb(1, 'authenticate')
-		if(authentication):
-			u = authentication(username, password, ip_address)
-			if(u):
-				return {'user_id': u.get_id()}
-		try:
-			u = x.get_object(username)
-			if not(u):
-				raise errors.PermissionError("Invalid login credentials. (2)")
-		except errors.NoSuchObjectError, e:
-			raise errors.PermissionError("Invalid login credentials. (3)")
-		except errors.AmbiguousObjectError, e:
-			raise errors.PermissionError("Invalid login credentials. (4)")
+        authentication = x.get_verb(1, 'authenticate')
+        if(authentication):
+            u = authentication(username, password, ip_address)
+            if(u):
+                return {'user_id': u.get_id()}
+        try:
+            u = x.get_object(username)
+            if not(u):
+                raise errors.PermissionError("Invalid login credentials. (2)")
+        except errors.NoSuchObjectError, e:
+            raise errors.PermissionError("Invalid login credentials. (3)")
+        except errors.AmbiguousObjectError, e:
+            raise errors.PermissionError("Invalid login credentials. (4)")
 
-		multilogin_accounts = x.get_property(1, 'multilogin_accounts')
-		if(u.is_connected_player()):
-			if(not multilogin_accounts or u not in multilogin_accounts.value):
-				raise errors.PermissionError('User is already logged in.')
+        multilogin_accounts = x.get_property(1, 'multilogin_accounts')
+        if(u.is_connected_player()):
+            if(not multilogin_accounts or u not in multilogin_accounts.value):
+                raise errors.PermissionError('User is already logged in.')
 
-		if not(u.validate_password(password)):
-			raise errors.PermissionError("Invalid login credentials. (6)")
+        if not(u.validate_password(password)):
+            raise errors.PermissionError("Invalid login credentials. (6)")
 
-	return {'user_id': u.get_id()}
+    return {'user_id': u.get_id()}
 
 @shared_task
 def login(user_id, session_id, ip_address):
-	"""
-	Register a login for the provided user_id.
-	"""
-	with get_exchange(user_id) as x:
-		x.login_player(user_id, session_id)
+    """
+    Register a login for the provided user_id.
+    """
+    with get_exchange(user_id) as x:
+        x.login_player(user_id, session_id)
 
-		system = x.get_object(1)
-		if(system.has_verb("login")):
-			system.login()
-		log.info('user #%s logged in from %s' % (user_id, ip_address))
+        system = x.get_object(1)
+        if(system.has_verb("login")):
+            system.login()
+        log.info('user #%s logged in from %s' % (user_id, ip_address))
 
-	return {'response': True}
+    return {'response': True}
 
 @shared_task
 def logout(user_id):
-	"""
-	Register a logout for the provided user_id.
-	"""
-	# we want to make sure to logout the user even
-	# if the logout verb fails
-	with get_exchange(user_id) as x:
-		x.logout_player(user_id)
+    """
+    Register a logout for the provided user_id.
+    """
+    # we want to make sure to logout the user even
+    # if the logout verb fails
+    with get_exchange(user_id) as x:
+        x.logout_player(user_id)
 
-	with get_exchange(user_id) as x:
-		system = x.get_object(1)
-		if(system.has_verb("logout")):
-			system.logout()
-	 	log.info('user #%s logged out' % user_id)
+    with get_exchange(user_id) as x:
+        system = x.get_object(1)
+        if(system.has_verb("logout")):
+            system.logout()
+        log.info('user #%s logged out' % user_id)
 
-	return {'response': True}
+    return {'response': True}
 
 @shared_task
 def parse(user_id, sentence):
-	"""
-	Parse a command sentence for the provided user_id.
-	"""
-	with get_exchange(user_id) as x:
-		caller = x.get_object(user_id)
+    """
+    Parse a command sentence for the provided user_id.
+    """
+    with get_exchange(user_id) as x:
+        caller = x.get_object(user_id)
 
-		log.info('%s: %s' % (caller, sentence))
-		parser.parse(caller, sentence)
+        log.info('%s: %s' % (caller, sentence))
+        parser.parse(caller, sentence)
 
-	return {'response': True}
+    return {'response': True}
 
 @shared_task
 def registertask(user_id, delay, origin_id, verb_name, args, kwargs):
-	"""
-	Register a delayed task for the provided user_id.
-	"""
-	print 'registering task'
-	with get_exchange(user_id) as x:
-		try:
-			task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
-		except Exception, e:
-			print e
-			raise e
+    """
+    Register a delayed task for the provided user_id.
+    """
+    print 'registering task'
+    with get_exchange(user_id) as x:
+        try:
+            task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
+        except Exception, e:
+            print e
+            raise e
 
-	return {'task_id': task_id}
+    return {'task_id': task_id}
 
 @shared_task
 def runtask(user_id, task_id):
-	"""
-	Run a task for a particular user.
-	"""
-	with get_exchange(user_id) as x:
-		task = x.get_task(task_id)
-		if(not task or task['killed']):
-			return {'response': False}
+    """
+    Run a task for a particular user.
+    """
+    with get_exchange(user_id) as x:
+        task = x.get_task(task_id)
+        if(not task or task['killed']):
+            return {'response': False}
 
-		origin = x.get_object(task['origin_id'])
-		args = json.loads(task['args'])
-		kwargs = json.loads(task['kwargs'])
+        origin = x.get_object(task['origin_id'])
+        args = json.loads(task['args'])
+        kwargs = json.loads(task['kwargs'])
 
-		v = origin.get_verb(task['verb_name'])
-		v(*args, **kwargs)
+        v = origin.get_verb(task['verb_name'])
+        v(*args, **kwargs)
 
-	return {'response': True}
+    return {'response': True}
 
 @shared_task
 def iteratetasks():
-	"""
-	Run one waiting task, if possible.
-	"""
-	# note this is a 'superuser exchange'
-	# should be fine, since all iterate_task does
-	# is create another subprocess for the proper user
-	with get_exchange() as x:
-		task = x.iterate_task(self)
+    """
+    Run one waiting task, if possible.
+    """
+    # note this is a 'superuser exchange'
+    # should be fine, since all iterate_task does
+    # is create another subprocess for the proper user
+    with get_exchange() as x:
+        task = x.iterate_task(self)
 
-	return {'response':task}
+    return {'response':task}

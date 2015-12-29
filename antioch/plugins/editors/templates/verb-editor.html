@@ -58,37 +58,37 @@ $(document).ready(function(){
 <script type="text/javascript" src="{% static 'js/vendor/CodeMirror-0.91/js/codemirror.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-	$(document).antioch();
-	
-	var editor = new CodeMirror(CodeMirror.replace("code-field"), {
-		parserfile: ["parseantioch.js", "parsedummy.js"],
-		path: "{% static 'js/vendor/CodeMirror-0.91/js/' %}",
-		stylesheet: "{% static 'js/vendor/CodeMirror-0.91/css/antiochcolors.css' %}",
-		content: $('#id_code').val(),
-		textWrapping: false,
-		lineNumbers: true,
-		indentUnit: 4,
-		tabMode: "shift",
-		height: null,
-		width: null,
-		initCallback: function(){
-			editor.setParser('antiochParser');
-		}
-	});
+    $(document).antioch();
+    
+    var editor = new CodeMirror(CodeMirror.replace("code-field"), {
+        parserfile: ["parseantioch.js", "parsedummy.js"],
+        path: "{% static 'js/vendor/CodeMirror-0.91/js/' %}",
+        stylesheet: "{% static 'js/vendor/CodeMirror-0.91/css/antiochcolors.css' %}",
+        content: $('#id_code').val(),
+        textWrapping: false,
+        lineNumbers: true,
+        indentUnit: 4,
+        tabMode: "shift",
+        height: null,
+        width: null,
+        initCallback: function(){
+            editor.setParser('antiochParser');
+        }
+    });
 
-	$('#verb-form').submit(function(){
-		$('#id_code').val(editor.getCode());
-	});
-	
-	$('#access-button').click(function(){
-		$(document).antioch('handleMessage', {
-			command: 'edit',
-			details: {
-				id: {{ form.instance.pk }},
-				kind: 'access/verb',
-			}
-		});
-	});
+    $('#verb-form').submit(function(){
+        $('#id_code').val(editor.getCode());
+    });
+    
+    $('#access-button').click(function(){
+        $(document).antioch('handleMessage', {
+            command: 'edit',
+            details: {
+                id: {{ form.instance.pk }},
+                kind: 'access/verb',
+            }
+        });
+    });
 });
 </script>
 {% endblock %}

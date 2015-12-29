@@ -20,12 +20,12 @@
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Home</a></li>
-  			<li><a class="inventory-cmd">inventory</a></li>
-  			<li><a class="password-cmd">change password</a></li>
-  			{% if request.user.wizard %}
-  			<li><a href="/admin" target="_blank">administration</a></li>
-  			{% endif %}
-  			<li><a href="/logout">logout</a></li>
+              <li><a class="inventory-cmd">inventory</a></li>
+              <li><a class="password-cmd">change password</a></li>
+              {% if request.user.wizard %}
+              <li><a href="/admin" target="_blank">administration</a></li>
+              {% endif %}
+              <li><a href="/logout">logout</a></li>
       </ul>
     </div>
   </div>
@@ -33,13 +33,13 @@
 {% endblock %}
 
 {% block content %}
-	<div id="observations">
-	</div>
-	<div id="command-line">
-		<input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
-	</div>
-	<div id="actions">
-	</div>
+    <div id="observations">
+    </div>
+    <div id="command-line">
+        <input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
+    </div>
+    <div id="actions">
+    </div>
 {% endblock %}
 
 {% block footer %}
@@ -49,50 +49,50 @@
 <script type="text/javascript" src="{{ script_url }}"></script>
 {% endfor %}
 <script type="text/javascript">
-	$(document).ready(function(){
-		$('#connection').antioch({
-			listen: true,
-			callback: function(){
-				$('#connection').antioch('callRemote', 'parse', {sentence: 'look here'});
-			},
-			
-			actions_selector: "#actions",
-			
-			players_wrapper_node: '<div class="players-list"></div>',
-			players_list_node: '<ul></ul>',
-			player_list_item_node: '<li class="btn btn-small"></li>',
-			player_image_node: '<div class="player-image"></div>',
-			player_image_template: "<img src=\"$content\" >",
-			default_image_node: '<img src="{% static 'client/images/silhouette.png' %}" >',
-			player_name_node: '<div class="player-name"></div>',
-			player_mood_node: '<div class="player-mood"></div>',
-			people_here_node: '<strong>people here:</strong>',
-			
-			contents_wrapper_node: '<div class="contents-list"></div>',
-			contents_list_node: '<ul></ul>',
-			content_list_item_node: '<li class="btn btn-small"></li>',
-			contents_here_node: '<strong>obvious contents:</strong>',
-			clear_both_node: '<br style="clear: both;"/>',
-		});
-		
-		$('.inventory-cmd').click(function(){
-			$('#connection').antioch('callRemote', 'parse', {sentence: 'look me'});
-		});
-		
-		$('.description-cmd').click(function(){
-			$('#connection').antioch('callRemote', 'parse', {sentence: 'edit description on me'});
-		});
-		
-		$('.password-cmd').click(function(){
-			$('#connection').antioch('callRemote', 'parse', {sentence: 'passwd'});
-		});
-		
-		setInterval(function(){
-			$('.keep-relative').each(function(){
-				var dstr = $(this).find('.real-date').html();
-				$(this).find('.relative-date').html(relativeDate(new Date(dstr)));
-			});
-		}, 10);
-	});
+    $(document).ready(function(){
+        $('#connection').antioch({
+            listen: true,
+            callback: function(){
+                $('#connection').antioch('callRemote', 'parse', {sentence: 'look here'});
+            },
+            
+            actions_selector: "#actions",
+            
+            players_wrapper_node: '<div class="players-list"></div>',
+            players_list_node: '<ul></ul>',
+            player_list_item_node: '<li class="btn btn-small"></li>',
+            player_image_node: '<div class="player-image"></div>',
+            player_image_template: "<img src=\"$content\" >",
+            default_image_node: '<img src="{% static 'client/images/silhouette.png' %}" >',
+            player_name_node: '<div class="player-name"></div>',
+            player_mood_node: '<div class="player-mood"></div>',
+            people_here_node: '<strong>people here:</strong>',
+            
+            contents_wrapper_node: '<div class="contents-list"></div>',
+            contents_list_node: '<ul></ul>',
+            content_list_item_node: '<li class="btn btn-small"></li>',
+            contents_here_node: '<strong>obvious contents:</strong>',
+            clear_both_node: '<br style="clear: both;"/>',
+        });
+        
+        $('.inventory-cmd').click(function(){
+            $('#connection').antioch('callRemote', 'parse', {sentence: 'look me'});
+        });
+        
+        $('.description-cmd').click(function(){
+            $('#connection').antioch('callRemote', 'parse', {sentence: 'edit description on me'});
+        });
+        
+        $('.password-cmd').click(function(){
+            $('#connection').antioch('callRemote', 'parse', {sentence: 'passwd'});
+        });
+        
+        setInterval(function(){
+            $('.keep-relative').each(function(){
+                var dstr = $(this).find('.real-date').html();
+                $(this).find('.relative-date').html(relativeDate(new Date(dstr)));
+            });
+        }, 10);
+    });
 </script>
 {% endblock %}

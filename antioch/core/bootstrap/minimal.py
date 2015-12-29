@@ -14,7 +14,7 @@ from antioch.core import interface, bootstrap
 from antioch.util import sql
 
 for name in interface.default_permissions:
-	exchange.pool.runOperation(sql.build_insert('permission', name=name))
+    exchange.pool.runOperation(sql.build_insert('permission', name=name))
 
 exchange.load_permissions()
 
@@ -51,33 +51,33 @@ wizard.set_player(True, is_wizard=True, passwd='wizard')
 user.set_player(True, passwd='user')
 
 wizard.add_verb('@edit', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_edit.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_edit.py'),
 ))
 
 wizard.add_verb('@exec', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_exec.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
 wizard.add_verb('@eval', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_eval.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
 player_defaults.add_verb('@set', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('player_class_set.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
 
 player_defaults.add_verb('look', **dict(
-	ability		= True,
-	method		= True,
-	filename	= bootstrap.get_verb_path('player_class_look.py'),
+    ability        = True,
+    method        = True,
+    filename    = bootstrap.get_verb_path('player_class_look.py'),
 )).allow('everyone', 'execute')
 
 player_defaults.add_verb('@passwd', **dict(
-	ability		= True,
-	method		= True,
-	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
+    ability        = True,
+    method        = True,
+    filename    = bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')

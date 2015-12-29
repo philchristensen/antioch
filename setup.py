@@ -76,19 +76,19 @@ def autosetup():
         setup_requires = ["setuptools_git >= 0.4.2"] if with_git else [],
         # install_requires = requirements_txt
 
-		# metadata for upload to PyPI
-		author			= "Phil Christensen",
-		author_email	= "phil@bubblehouse.org",
-		description		= "a next-generation MUD/MOO-like virtual world engine",
-		license			= "MIT",
-		keywords		= "antioch moo lambdamoo mud game",
-		url				= "https://github.com/philchristensen/antioch",
-		# could also include long_description, download_url, classifiers, etc.
-		long_description = """antioch is a web application for building scalable, interactive virtual worlds.
-								 Begun as a MOO-like system for building virtual worlds, antioch aims to
-								 take the LambdaMOO approach to creating online worlds, and update it in hopes
-								 of attracting new players to an old idea.
-							""".replace('\t', '').replace('\n', ''),
+        # metadata for upload to PyPI
+        author            = "Phil Christensen",
+        author_email    = "phil@bubblehouse.org",
+        description        = "a next-generation MUD/MOO-like virtual world engine",
+        license            = "MIT",
+        keywords        = "antioch moo lambdamoo mud game",
+        url                = "https://github.com/philchristensen/antioch",
+        # could also include long_description, download_url, classifiers, etc.
+        long_description = """antioch is a web application for building scalable, interactive virtual worlds.
+                                 Begun as a MOO-like system for building virtual worlds, antioch aims to
+                                 take the LambdaMOO approach to creating online worlds, and update it in hopes
+                                 of attracting new players to an old idea.
+                            """.replace('\t', '').replace('\n', ''),
     )
 
 if(__name__ == '__main__'):

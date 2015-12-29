@@ -14,7 +14,7 @@ from antioch.core import interface, bootstrap
 from antioch.util import sql
 
 for name in interface.default_permissions:
-	exchange.pool.runOperation(sql.build_insert('permission', name=name))
+    exchange.pool.runOperation(sql.build_insert('permission', name=name))
 
 exchange.load_permissions()
 
@@ -77,8 +77,8 @@ laboratory = exchange.instantiate('object', name='The Laboratory', unique_name=T
 laboratory.set_owner(wizard)
 laboratory.add_parent(room_class)
 laboratory.add_property('description', **dict(
-	owner_id = wizard.get_id(),
-	value = """A cavernous laboratory filled with gadgetry of every kind,
+    owner_id = wizard.get_id(),
+    value = """A cavernous laboratory filled with gadgetry of every kind,
 this seems like a dumping ground for every piece of dusty forgotten
 equipment a mad scientist might require.
 """,
@@ -88,8 +88,8 @@ lobby = exchange.instantiate('object', name='The Lobby', unique_name=True)
 lobby.set_owner(wizard)
 lobby.add_parent(room_class)
 lobby.add_property('description', **dict(
-	owner_id = wizard.get_id(),
-	value = """A dusty old waiting area, every minute spent in this room
+    owner_id = wizard.get_id(),
+    value = """A dusty old waiting area, every minute spent in this room
 feels like an eternity.
 """,
 ))
@@ -99,114 +99,114 @@ wizard.set_location(laboratory)
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 
 wizard_class.add_verb('reload', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_reload.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_reload.py'),
 ))
 
 system.add_verb('authenticate', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('system_authenticate.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('system_authenticate.py'),
 ))
 
 system.add_verb('connect', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('system_connect.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('system_connect.py'),
 )).allow('everyone', 'execute')
 
 system.add_verb('login', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('system_login.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('system_login.py'),
 )).allow('everyone', 'execute')
 
 system.add_verb('logout', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('system_logout.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('system_logout.py'),
 )).allow('everyone', 'execute')
 
 wizard_class.add_verb('edit', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_edit.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_edit.py'),
 ))
 
 wizard_class.add_verb('exec', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_exec.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('eval', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_eval.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('adduser', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_adduser.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_adduser.py'),
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('passwd', **dict(
-	ability		= True,
-	method		= True,
-	filename	= bootstrap.get_verb_path('wizard_class_passwd.py'),
+    ability        = True,
+    method        = True,
+    filename    = bootstrap.get_verb_path('wizard_class_passwd.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('alias', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('author_class_alias.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('author_class_alias.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('dig', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('author_class_dig.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('author_class_dig.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('tunnel', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('author_class_tunnel.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('author_class_tunnel.py'),
 )).allow('everyone', 'execute')
 
 author_class.add_verb('describe', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('author_class_describe.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('author_class_describe.py'),
 )).allow('everyone', 'execute')
 
 guest_class.add_verb('passwd', **dict(
-	ability		= True,
-	code		= 'write(caller, "Guests cannot change their passwords.")',
+    ability        = True,
+    code        = 'write(caller, "Guests cannot change their passwords.")',
 )).allow('everyone', 'execute')
 
 player_class.add_verb('set', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('player_class_set.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('look', **dict(
-	ability		= True,
-	method		= True,
-	filename	= bootstrap.get_verb_path('player_class_look.py'),
+    ability        = True,
+    method        = True,
+    filename    = bootstrap.get_verb_path('player_class_look.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('go', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('player_class_go.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('player_class_go.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('say', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('player_class_say.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('player_class_say.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('hear', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('player_class_hear.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('player_class_hear.py'),
 )).allow('everyone', 'execute')
 
 player_class.add_verb('passwd', **dict(
-	ability		= True,
-	filename	= bootstrap.get_verb_path('player_class_passwd.py'),
+    ability        = True,
+    filename    = bootstrap.get_verb_path('player_class_passwd.py'),
 )).allow('everyone', 'execute')
 
 room_class.add_verb('hear', **dict(
-	method		= True,
-	filename	= bootstrap.get_verb_path('room_class_hear.py'),
+    method        = True,
+    filename    = bootstrap.get_verb_path('room_class_hear.py'),
 )).allow('everyone', 'execute')
 

@@ -5,6 +5,6 @@ obj.allow('wizards', 'anything')
 obj.allow('owners', 'anything')
 
 if(obj.get_type() == 'verb'):
-	obj.allow('everyone', 'execute')
+    obj.allow('everyone', 'execute')
 else:
-	obj.allow('everyone', 'read')
+    obj.allow('everyone', 'read')

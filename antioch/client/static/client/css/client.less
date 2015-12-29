@@ -12,104 +12,104 @@ body {
 }
 
 .rounded-corners(@radius: 10px, @tl: @radius, @tr: @radius, @br: @radius, @bl: @radius) {
-	-moz-border-radius: @tl @tr @br @bl;
-	-webkit-border-top-left-radius: @tl;
-	-webkit-border-top-right-radius: @tr;
-	-webkit-border-bottom-right-radius: @br;
-	-webkit-border-bottom-left-radius: @bl;
+    -moz-border-radius: @tl @tr @br @bl;
+    -webkit-border-top-left-radius: @tl;
+    -webkit-border-top-right-radius: @tr;
+    -webkit-border-bottom-right-radius: @br;
+    -webkit-border-bottom-left-radius: @bl;
 }
 
 .embossed(@depth:1px, @basecolor:@medium_grey){
-	background-color: @basecolor;
-	border-width: @depth;
-	border-top-color: lighten(@basecolor, 10%);
-	border-right-color: darken(@basecolor, 10%);
-	border-bottom-color: darken(@basecolor, 10%);
-	border-left-color: lighten(@basecolor, 10%);
+    background-color: @basecolor;
+    border-width: @depth;
+    border-top-color: lighten(@basecolor, 10%);
+    border-right-color: darken(@basecolor, 10%);
+    border-bottom-color: darken(@basecolor, 10%);
+    border-left-color: lighten(@basecolor, 10%);
 }
 
 .gradient(@from_color:none, @to_color: none, @flat_color: none) {
-	background: @flat_color;
-	background: -moz-linear-gradient(top, @from_color, @to_color);
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(@from_color), to(@to_color));
+    background: @flat_color;
+    background: -moz-linear-gradient(top, @from_color, @to_color);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(@from_color), to(@to_color));
 }
 
 .drop-shadow(@color:#b6b5b5, @x:3px, @y:4px, @blur:8px, @spread:0px) {
-	-moz-box-shadow: @x @y @blur @spread @color;
-	-webkit-box-shadow: @x @y @blur @color;
-	box-shadow: @x @y @blur @spread @color;
+    -moz-box-shadow: @x @y @blur @spread @color;
+    -webkit-box-shadow: @x @y @blur @color;
+    box-shadow: @x @y @blur @spread @color;
 }
 
 .inner-shadow(@color:#b6b5b5, @x:3px, @y:4px, @blur:8px, @spread:0px) {
-	-moz-box-shadow: inset @x @y @blur @spread @color;
-	-webkit-box-shadow: inset @x @y @blur @color;
-	box-shadow: inset @x @y @blur @spread @color;
+    -moz-box-shadow: inset @x @y @blur @spread @color;
+    -webkit-box-shadow: inset @x @y @blur @color;
+    box-shadow: inset @x @y @blur @spread @color;
 }
 
 .light-inner-shadow(@color:@lightest_grey, @x:3px, @y:4px, @blur:8px, @spread:0px) {
-	-moz-box-shadow: inset @x @y @blur @spread @color;
-	-webkit-box-shadow: inset @x @y @blur @color;
-	box-shadow: inset @x @y @blur @spread @color;
+    -moz-box-shadow: inset @x @y @blur @spread @color;
+    -webkit-box-shadow: inset @x @y @blur @color;
+    box-shadow: inset @x @y @blur @spread @color;
 }
 
 .gradient-button (@font_size:1em, @text_color:white, @from_color:none, @to_color:none, @flat_color:none, @radius:3px, @shadow_color:grey, @x:3px, @y:4px, @blur:2px, @spread:0px) {
-	font-size: @font_size;
-	color: @text_color;
-	padding: 11px 30px;
-	cursor: pointer;
-	border: none;
-	.rounded-corners(@radius,@radius,@radius,@radius,@radius);
-	.gradient(@from_color, @to_color, @flat_color);
-	.drop-shadow(@shadow_color, @x, @y, @blur, @spread);
-	display: block;
-	text-decoration: none;
-	text-align: center;
-	font-family: arial;
-	font-weight: bold;
+    font-size: @font_size;
+    color: @text_color;
+    padding: 11px 30px;
+    cursor: pointer;
+    border: none;
+    .rounded-corners(@radius,@radius,@radius,@radius,@radius);
+    .gradient(@from_color, @to_color, @flat_color);
+    .drop-shadow(@shadow_color, @x, @y, @blur, @spread);
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    font-family: arial;
+    font-weight: bold;
 }
 
 .opacity(@percentage:100) {
-	opacity: @percentage/100;
-	filter: alpha(opacity=@percentage);
+    opacity: @percentage/100;
+    filter: alpha(opacity=@percentage);
 }
 
 .opacity-background(@color:@red, @opacity:0.5) {
-	background-color: @opacity * @color + (1 - @opacity) * @white;
+    background-color: @opacity * @color + (1 - @opacity) * @white;
 }
 
 input#connection {
-	width: 100%;
-	margin: 0px 0px 0px 0px;
-	font: 1.5em Courier, Courier New;
-	font-weight: bold;
+    width: 100%;
+    margin: 0px 0px 0px 0px;
+    font: 1.5em Courier, Courier New;
+    font-weight: bold;
 }
 
 .contents-list,
 .players-list {
-	ul {
-		list-style: none;
-		margin-left: 5px;
-		
-		li {
-			display: inline;
-			margin-right: 10px;
-		}
-	}
+    ul {
+        list-style: none;
+        margin-left: 5px;
+        
+        li {
+            display: inline;
+            margin-right: 10px;
+        }
+    }
 }
 
 .players-list {
-	.player-name,
-	.player-image,
-	.player-mood {
-		display: inline;
-	}
+    .player-name,
+    .player-image,
+    .player-mood {
+        display: inline;
+    }
 
-	.player-image {
-		img {
-			width: 16px;
-			padding: 0 4px 4px 0;
-		}
-	}
+    .player-image {
+        img {
+            width: 16px;
+            padding: 0 4px 4px 0;
+        }
+    }
 }
 
 h6.date {
@@ -119,10 +119,10 @@ h6.date {
 }
 
 #observations {
-	.jumbotron {
-		padding: 10px;
+    .jumbotron {
+        padding: 10px;
     margin-bottom: 10px;
-	}
+    }
 }
 
 #actions {
@@ -148,27 +148,27 @@ h6.date {
     }
   }
 
-	.issued-command {
+    .issued-command {
     margin-bottom: 10px;
     
     .date-container {
       display: none;
     }
-	}
-	
-	.target-heard-public {
-		color: #7f91c8;
-	}
+    }
+    
+    .target-heard-public {
+        color: #7f91c8;
+    }
 
-	.target-heard-private {
-		color: #ab3e4c;
-	}
+    .target-heard-private {
+        color: #ab3e4c;
+    }
 
-	.source-said-public {
-		color: #477a67;
-	}
+    .source-said-public {
+        color: #477a67;
+    }
 
-	.source-said-private {
-		color: #ab3e4c;
-	}
+    .source-said-private {
+        color: #ab3e4c;
+    }
 }

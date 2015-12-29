@@ -50,33 +50,33 @@ $(document).ready(function(){
 <script type="text/javascript" src="{% static 'js/access-editor.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-	$(document).antioch();
-	
+    $(document).antioch();
+    
   var intervalId = setInterval(function(){
     if(!jQuery.ui){
       return;
     }
-  	$('.access-rules').sortable({
-  		handle:	".drag-thumb",
-  		items: 	".access-rule",  
-  	});
+      $('.access-rules').sortable({
+          handle:    ".drag-thumb",
+          items:     ".access-rule",  
+      });
     clearInterval(intervalId);
   }, 100)
-	$('#add-button').click(function(){
-		addRule({
-			access_id	: 0,
-			access		: "group",
-			accessor	: "",
-			rule		: "allow",
-			permission	: "anything",
-		});
-	});
+    $('#add-button').click(function(){
+        addRule({
+            access_id    : 0,
+            access        : "group",
+            accessor    : "",
+            rule        : "allow",
+            permission    : "anything",
+        });
+    });
 
-	{% for access in model.acl.all %}
+    {% for access in model.acl.all %}
   // addRule({access_id: {{ access.id }}, rule: "{{ access.rule }}", access: "{{ access.type }}", accessor: "{% if access.type == 'accessor' %}{{ access.accessor }}{% else %}{{ access.group }}{% endif %}", permission: "{{ access.permission }}", weight: {{ access.weight }}});
-	{% endfor %}
-	
-	$('#access-form').submit(saveAccess);
+    {% endfor %}
+    
+    $('#access-form').submit(saveAccess);
 });
 </script>
 {% endblock %}
