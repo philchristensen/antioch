@@ -10,7 +10,7 @@ General utilities.
 
 import logging, time, string, crypt, random
 
-salt_data = list(string.printable[:])
+salt_data = list(string.ascii_letters[:])
 
 def profile(f):
 	log = logging.getLogger('antioch.profiler')

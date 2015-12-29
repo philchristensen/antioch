@@ -175,9 +175,9 @@ class ObjectExchange(object):
 			with celery.app.default_connection() as conn:
 				from kombu import Exchange, Queue
 				unbound_exchange = Exchange('antioch',
-					type            = 'direct',
-					auto_delete     = False,
-					durable         = True,
+					type			= 'direct',
+					auto_delete		= False,
+					durable			= True,
 				)
 				channel = conn.channel()
 				exchange = unbound_exchange(channel)
@@ -349,7 +349,7 @@ class ObjectExchange(object):
 		perm.object_id = record.get('object_id', None)
 		perm.verb_id = record.get('verb_id', None)
 		perm.property_id = record.get('property_id', None)
-		    
+			
 		perm.rule = record.get('rule', 'allow')
 		perm.permission_id = record.get('permission_id', None)
 		perm.type = record.get('type', 'group')
@@ -391,9 +391,9 @@ class ObjectExchange(object):
 		if(obj_type == 'object'):
 			attribs = dict(
 				name		= obj._name,
-				unique_name	= ('f', 't')[obj._unique_name],
+				unique_name = ('f', 't')[obj._unique_name],
 				owner_id	= obj._owner_id,
-				location_id	= obj._location_id,
+				location_id = obj._location_id,
 			)
 		elif(obj_type == 'verb'):
 			attribs = dict(
@@ -555,7 +555,7 @@ class ObjectExchange(object):
 		"""
 		#NOTE: the heavier a parent weight is, the more influence its inheritance has.
 		# e.g., if considering inheritance by left-to-right, the leftmost ancestors will
-		#       have the heaviest weights.
+		#		have the heaviest weights.
 		parent_ids = ancestor_ids = self.pool.runQuery(sql.interp(
 			"""SELECT parent_id AS id
 				FROM object_relation
@@ -839,7 +839,7 @@ class ObjectExchange(object):
 		"""
 		result = self.pool.runQuery(sql.build_select('object', dict(
 			name		= sql.RAW(sql.interp('LOWER(%%s) = LOWER(%s)', key)),
-			unique_name	= True
+			unique_name = True
 		)))
 		return bool(result)
 	
@@ -884,10 +884,11 @@ class ObjectExchange(object):
 		"""
 		Edit the player attributes of an object.
 		"""
+		crypt = None
 		if(passwd is not None):
-			attribs['crypt'] = hash_password(passwd)
+			crypt = attribs['crypt'] = hash_password(passwd)
 		elif(player is False):
-			attribs['crypt'] = '!'
+			crypt = attribs['crypt'] = '!'
 		
 		if(player is not None):
 			attribs['enabled'] = player
@@ -1136,7 +1137,7 @@ class ObjectExchange(object):
 			'verb_id'		: subject.get_id() if isinstance(subject, interface.Verb) else None,
 			'property_id'	: subject.get_id() if isinstance(subject, interface.Property) else None,
 			'rule'			: rule,
-			'permission_id'	: permission_id,
+			'permission_id' : permission_id,
 			'type'			: 'accessor' if isinstance(accessor, (int, long)) else 'group',
 			'accessor_id'	: accessor if isinstance(accessor, (int, long)) else None,
 			'"group"'		: accessor if isinstance(accessor, str) else None,
@@ -1223,4 +1224,3 @@ class ObjectExchange(object):
 			return self.pool.runQuery(sql.build_select('task', user_id=user_id))
 		else:
 			return self.pool.runQuery(sql.build_select('task'))
-	
