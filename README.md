@@ -60,3 +60,4 @@ To find out the address of your docker machine, you can run:
 
     docker-machine ip default
 
+Connect to the docker machine via your browser, and login with username/passwd `wizard:wizard`.
