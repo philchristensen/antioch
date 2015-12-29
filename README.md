@@ -23,7 +23,7 @@ Feature Set
 
 * PostgreSQL-backed object store scales to million of objects and provides transactional security during verb execution
 
-* Flexible plugin system, highly scalable execution layer using Celery and RabbitMQ
+* Flexible plugin system, highly scalable execution layer using Celery and Redis
 
 
 antioch is made available under the MIT/X Consortium license.
@@ -32,9 +32,6 @@ The included LICENSE file describes this in detail.
 
 Running
 --------
-
-The Docker build is currently in development, but it's the only way I'm running in dev
-moving forward, so it should stablize quickly.
 
 You'll need a local installation of Docker Compose, perferably via Docker Toolbox.
 

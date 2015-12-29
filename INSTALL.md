@@ -7,17 +7,13 @@ phil@bubblehouse.org
 Requirements for Server
 -----------------------
 
-As long as you're using Python 2.6 or better, most recent versions of
-everything else should work, but to be specific:
-
-* [RabbitMQ          >=  2.7.1](http://www.rabbitmq.com)
-* [PostgreSQL        >=  9.1  ](http://www.postgresql.org)
-* [Python            >=  2.7  ](http://www.python.org)
-* [Django            >=  1.6.1](http://www.djangoproject.com)
-* [South             >=  0.8.4](http://south.aeracode.org)
-* [Celery            >=  3.1.7](http://www.celeryproject.com)
-* [Twisted           >= 13.2  ](http://www.twistedmatrix.com)
-* [RestrictedPython  >=  3.6.0](http://pypi.python.org/pypi/RestrictedPython)
+* [Redis             >=  3.0.6 ](http://www.redis.io)
+* [PostgreSQL        >=  9.3   ](http://www.postgresql.org)
+* [Python            >=  2.7   ](http://www.python.org)
+* [Django            >=  1.9   ](http://www.djangoproject.com)
+* [Celery            >=  3.1.19](http://www.celeryproject.com)
+* [Twisted           >= 15.5   ](http://www.twistedmatrix.com)
+* [RestrictedPython  >=  3.6.0 ](http://pypi.python.org/pypi/RestrictedPython)
 
 There are various other requirements
 
@@ -34,43 +30,34 @@ supported at this time.
 
 Running the Server
 -------------------
-Check out the latest version of the code, and cd into the installation directory:
+You'll need a local installation of Docker Compose, perferably via Docker Toolbox.
 
-    cd antioch/
+To install:
 
-Install the required dependencies:
+    git clone ssh://git@github.com/philchristensen/antioch.git
+    cd antioch
+    docker-compose up
 
-    pip install -r requirements.txt
+After first install, and after model or static file changes, you'll need to run migrate
+and/or collectstatic:
 
-Install the base system:
+    docker-compose run web manage.py migrate
+    docker-compose run web manage.py collectstatic
 
-    pip install --editbale .
+Finally, the first time you run, set up a basic database with some sample objects and users:
 
-Next you'll need to create the default database:
+    docker-compose run web manage.py mkspace
 
-    mkspace
+This build uses port 80/443 on your docker machine, but you can use whatever domain name
+to refer to it. I have a `docker` alias setup in my `/etc/hosts` file for this purpose.
+To find out the address of your docker machine, you can run:
 
-> By default, `mkspace` tries to connect to a PostgreSQL database running on
-> localhost:5432 as the `postgres` super-user.
-
-This should have created the `antioch` user and a corresponding database. It
-also ran the Django manage.py commands 'syncdb' and 'migrate'.
-
-Next you should be able to start up the web server with:
-
-    ./manage.py runserver
-
-While in another terminal, you should start up a Celery worker with:
-
-    celery -A antioch worker --loglevel=info
-
-> The default configuration looks for a PostgreSQL server on localhost:5432 and
-> a RabbitMQ server on localhost:5672.
+    docker-machine ip default
 
 Running the Client
 ------------------
 
-Connect to: <http://localhost:8000>
+Connect to: <https://docker>
 
 Login with username and password: `wizard/wizard`
 
