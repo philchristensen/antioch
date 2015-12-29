@@ -1,3 +1,9 @@
+2015-12-28    Phil Christensen <phil@bubblehouse.org>
+* Updated for Django 1.9 support and latest Celery
+* Switch to Redis backend from RabbitMQ
+* Implemented container/docker-compose support
+* Removed a variety of non-standard Django stuff
+
 2014-01-12    Phil Christensen <phil@bubblehouse.org>
 
 * Another big refactoring, regrettably removing ampoule and most of Twisted
