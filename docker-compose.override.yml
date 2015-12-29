@@ -2,13 +2,11 @@ web:
   command: supervisord --loglevel=debug
   environment:
     DJANGO_SETTINGS_MODULE: antioch.settings.development
-# worker:
-#   command: supervisord --loglevel=debug
-#   environment:
-#     #DJANGO_SETTINGS_MODULE: antioch.settings.development
-#     ENVIRONMENT: default
-# beat:
-#   command: supervisord --loglevel=debug
-#   environment:
-#     #DJANGO_SETTINGS_MODULE: antioch.settings.development
-#     ENVIRONMENT: default
+worker:
+  command: supervisord --loglevel=debug
+  environment:
+    DJANGO_SETTINGS_MODULE: antioch.settings.development
+beat:
+  command: supervisord --loglevel=debug
+  environment:
+    DJANGO_SETTINGS_MODULE: antioch.settings.development

@@ -47,6 +47,7 @@ BROKER_TRANSPORT_OPTIONS = {
     'fanout_prefix': True, 
     'fanout_patterns': True
 }
+USER_QUEUE = 'antioch-user'
 
 CELERYBEAT_SCHEDULE = {
     # 'sync-every-15-mins': {
