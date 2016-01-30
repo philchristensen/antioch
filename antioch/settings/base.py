@@ -62,6 +62,7 @@ CELERY_TIMEZONE = 'UTC'
 # Application definition
 
 INSTALLED_APPS = [
+    'autocomplete_light',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,7 +71,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.admindocs',
-    'autocomplete_light',
     'widget_tweaks',
     'registration',
     'antioch.common',
