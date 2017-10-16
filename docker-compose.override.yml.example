@@ -1,9 +1,29 @@
-web:
-  environment:
-    DJANGO_SETTINGS_MODULE: antioch.settings.development
-worker:
-  environment:
-    DJANGO_SETTINGS_MODULE: antioch.settings.development
-beat:
-  environment:
-    DJANGO_SETTINGS_MODULE: antioch.settings.development
+version: '2'
+services:
+  nginx:
+    # # nginx gets noisy
+    # logging:
+    #   driver: none
+    volumes:
+      - .:/opt/django
+  webapp:
+    # links:
+    #  - errbit
+    volumes:
+      - .:/opt/django
+    environment:
+      DJANGO_SETTINGS_MODULE: antioch.settings.development
+  worker:
+    # links:
+    #  - errbit
+    volumes:
+      - .:/opt/django
+    environment:
+      DJANGO_SETTINGS_MODULE: antioch.settings.development
+  beat:
+    # links:
+    #  - errbit
+    volumes:
+      - .:/opt/django
+    environment:
+      DJANGO_SETTINGS_MODULE: antioch.settings.development

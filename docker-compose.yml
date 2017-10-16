@@ -1,72 +1,88 @@
-web:
-  build: .
-  ports:
-   - "80:80"
-   - "443:443"
-  links:
-   - postgres
-   - redis
-   - memcached
-  volumes:
-   - .:/opt/django
-  environment:
-    DJANGO_SETTINGS_MODULE: antioch.settings.docker
-    ROLE: web
-    BROKER_URL: redis://redis:6379/0
-    RESULT_BACKEND: redis://redis:6379/0
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: antioch
-    DB_USER: antioch
-    DB_PASSWD: daftIdByflyt
-    MEMCACHE: memcached:11211
-    REDIS_URL: redis://redis:6379
-worker:
-  build: .
-  links:
-   - postgres
-   - redis
-   - memcached
-  volumes:
-   - .:/opt/django
-  environment:
-    #DJANGO_SETTINGS_MODULE: antioch.settings.docker
-    CELERY_WORKER: "yes"
-    ROLE: worker
-    BROKER_URL: redis://redis:6379/0
-    RESULT_BACKEND: redis://redis:6379/0
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: antioch
-    DB_USER: antioch
-    DB_PASSWD: daftIdByflyt
-    MEMCACHE: memcached:11211
-beat:
-  build: .
-  links:
-   - postgres
-   - redis
-   - memcached
-  volumes:
-   - .:/opt/django
-  environment:
-    #DJANGO_SETTINGS_MODULE: antioch.settings.docker
-    ROLE: beat
-    BROKER_URL: redis://redis:6379/0
-    RESULT_BACKEND: redis://redis:6379/0
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: antioch
-    DB_USER: antioch
-    DB_PASSWD: daftIdByflyt
-    MEMCACHE: memcached:11211
-postgres:
-  image: postgres
-  environment:
-    POSTGRES_PASSWORD: daftIdByflyt
-    POSTGRES_USER: antioch
-    POSTGRES_DB: antioch
-redis:
-  image: redis
-memcached:
-  image: memcached
+version: '2'
+services:
+  nginx:
+    image: nginx:1.11.8
+    volumes:
+      - ./conf/web/nginx-uwsgi.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/web/ssl-cert-snakeoil.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem:ro
+      - ./conf/web/ssl-cert-snakeoil.key:/etc/ssl/private/ssl-cert-snakeoil.key:ro
+    ports:
+     - "80:80"
+     - "443:443"
+    depends_on:
+     - webapp
+    links:
+     - webapp
+     # - redmon
+  webapp:
+    build: .
+    image: bubblehouse/antioch:latest
+    ports:
+     - "8443:8443"
+    links:
+     - postgres
+     - redis
+     - memcached
+    volumes:
+     - .:/opt/django
+    environment:
+      DJANGO_SETTINGS_MODULE: antioch.settings.docker
+      ROLE: webapp
+      BROKER_URL: redis://redis:6379/0
+      RESULT_BACKEND: redis://redis:6379/0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: antioch
+      DB_USER: antioch
+      DB_PASSWD: daftIdByflyt
+      MEMCACHE: memcached:11211
+      REDIS_URL: redis://redis:6379
+  worker:
+    image: bubblehouse/antioch:latest
+    links:
+     - postgres
+     - redis
+     - memcached
+    volumes:
+     - .:/opt/django
+    environment:
+      #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+      CELERY_WORKER: "yes"
+      ROLE: worker
+      BROKER_URL: redis://redis:6379/0
+      RESULT_BACKEND: redis://redis:6379/0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: antioch
+      DB_USER: antioch
+      DB_PASSWD: daftIdByflyt
+      MEMCACHE: memcached:11211
+  beat:
+    image: bubblehouse/antioch:latest
+    links:
+     - postgres
+     - redis
+     - memcached
+    volumes:
+     - .:/opt/django
+    environment:
+      #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+      ROLE: beat
+      BROKER_URL: redis://redis:6379/0
+      RESULT_BACKEND: redis://redis:6379/0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: antioch
+      DB_USER: antioch
+      DB_PASSWD: daftIdByflyt
+      MEMCACHE: memcached:11211
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: daftIdByflyt
+      POSTGRES_USER: antioch
+      POSTGRES_DB: antioch
+  redis:
+    image: redis
+  memcached:
+    image: memcached

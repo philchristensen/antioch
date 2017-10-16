@@ -42,7 +42,7 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 CELERY_ALWAYS_EAGER = True
 CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
 BROKER_TRANSPORT_OPTIONS = {
     'fanout_prefix': True, 
     'fanout_patterns': True
@@ -62,7 +62,8 @@ CELERY_TIMEZONE = 'UTC'
 # Application definition
 
 INSTALLED_APPS = [
-    'autocomplete_light',
+    # 'autocomplete_light',
+    # 'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,7 +72,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.admindocs',
+    'bootstrap3',
+    'storages',
     'widget_tweaks',
+    'django_extensions',
     'registration',
     'antioch.common',
     'antioch.core',

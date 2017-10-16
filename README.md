@@ -44,12 +44,12 @@ To install:
 After first install, and after model or static file changes, you'll need to run migrate
 and/or collectstatic:
 
-    docker-compose run web manage.py migrate
-    docker-compose run web manage.py collectstatic
+    docker-compose run webapp manage.py migrate
+    docker-compose run webapp manage.py collectstatic
 
 Finally, the first time you run, set up a basic database with some sample objects and users:
 
-    docker-compose run web manage.py mkspace
+    docker-compose run webapp manage.py mkspace
 
 This build uses port 80/443 on your docker machine, but you can use whatever domain name
 to refer to it. I have a `docker` alias setup in my `/etc/hosts` file for this purpose.
