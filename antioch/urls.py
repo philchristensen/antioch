@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'', include('antioch.client.urls')),
-    url(r'^autocomplete/', include('autocomplete_light.urls'))
+    # url(r'^autocomplete/', include('autocomplete_light.urls'))
 ]

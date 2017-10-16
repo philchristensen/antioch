@@ -2,10 +2,11 @@ import os
 
 from .base import *
 
-if os.environ.get('CELERY_WORKER'):
+CSRF_TRUSTED_ORIGINS = ['localhost']
+
+if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
-else:
-    DEBUG = True
+    ALLOWED_HOSTS += [u'testserver']
 
 STATIC_ROOT = "/opt/django/static"
 

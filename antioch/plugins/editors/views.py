@@ -98,8 +98,8 @@ def access_editor(request, type, pk):
             access        = acl,
         ).get(timeout=5)
     
-    return shortcuts.render_to_response('access-editor.html', dict(
+    return shortcuts.render(request, 'access-editor.html', dict(
         title           = "access editor",
         model           = m,
-    ), context_instance=template.RequestContext(request))
+    ))
 

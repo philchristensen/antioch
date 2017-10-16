@@ -2,12 +2,13 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import BaseModelFormSet
 
-import autocomplete_light
+# import autocomplete_light
 
 from antioch.core import models
 from antioch.plugins.editors import tasks
 
-class AuthenticatedModelForm(autocomplete_light.ModelForm):
+# class AuthenticatedModelForm(autocomplete_light.ModelForm):
+class AuthenticatedModelForm(forms.ModelForm):
     def __init__(self, user_id=None, *args, **kwargs):
         super(AuthenticatedModelForm, self).__init__(*args, **kwargs)
         self.user_id = user_id
@@ -100,7 +101,7 @@ class VerbForm(AuthenticatedModelForm):
         ).get(timeout=5)
         return self
 
-class AccessForm(autocomplete_light.ModelForm):
+class AccessForm(forms.ModelForm):
     class Meta:
         model = models.Access
         exclude = ()

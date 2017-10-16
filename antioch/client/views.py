@@ -29,10 +29,10 @@ def client(request):
     """
     Return the main client window.
     """
-    return shortcuts.render_to_response('client/client.html', dict(
+    return shortcuts.render(request, 'client/client.html', dict(
         title           = "antioch client",
         scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
-    ), context_instance=template.RequestContext(request))
+    ))
 
 @login_required
 def comet(request):
