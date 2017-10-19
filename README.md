@@ -3,7 +3,7 @@ antioch
 
 (c) Phil Christensen, <phil@bubblehouse.org>
 
-28 December 2015
+19 October 2017
 
 Introduction
 -------------
@@ -39,6 +39,8 @@ To install:
 
     git clone ssh://git@github.com/philchristensen/antioch.git
     cd antioch
+    cp docker-compose.override.yml.example docker-compose.override.yml
+    cp antioch/settings/development.py.example antioch/settings/development.py
     docker-compose up
 
 After first install, and after model or static file changes, you'll need to run migrate
