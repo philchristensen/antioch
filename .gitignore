@@ -3,3 +3,5 @@
 .DS_Store
 /static
 /reload
+/antioch/settings/development.py
+/docker-compose.override.yml
