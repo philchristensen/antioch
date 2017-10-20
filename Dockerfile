@@ -14,9 +14,6 @@ RUN easy_install pip
 RUN pip install -U pip
 RUN pip install certifi pyopenssl ndg-httpsclient pyasn1 uwsgi
 
-# Install Redis monitor app
-RUN gem install redmon --no-ri --no-rdoc && gem cleanup
-
 WORKDIR /opt/django
 
 # Install Python application dependencies

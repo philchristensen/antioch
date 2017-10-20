@@ -11,10 +11,6 @@ if [ "$1" = '' ]; then
         exec celery beat --app=antioch --schedule=/var/lib/celery/beat.db
     elif [ "$ROLE" = 'webapp' ]; then
         exec uwsgi --ini conf/web/uwsgi.ini
-    elif [ "$ROLE" = 'celeryflower' ]; then
-        exec celery flower --app=antioch.celery
-    elif [ "$ROLE" = 'redmon' ]; then
-        exec redmon --redis "$REDIS_URL"
     elif [ "$ROLE" = '' ]; then
         echo "Exiting, ROLE not set."
     else
