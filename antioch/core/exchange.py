@@ -47,6 +47,23 @@ def extract_id(literal):
     
     return None
 
+class ConnectionWrapper(object):
+    def __init__(self, connection):
+        self.connection = connection
+    
+    def runOperation(self, query, *args, **kwargs):
+        with self.connection.cursor() as cursor:
+            cursor.execute(query, args)
+        
+    def runQuery(self, query, *args, **kwargs):
+        with self.connection.cursor() as cursor:
+            cursor.execute(query, args)
+            columns = [col[0] for col in cursor.description]
+            return [
+                dict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+
 class ObjectExchange(object):
     """
     Database transaction layer.
@@ -58,16 +75,16 @@ class ObjectExchange(object):
     
     permission_list = None
     
-    def __init__(self, pool, queue=False, ctx=None):
+    def __init__(self, connection, queue=False, ctx=None):
         """
         Create a new object exchange.
         
-        The result is attached to the provided ConnectionPool and MessageQueue, 
+        The result is attached to the provided Connectionconnection and MessageQueue, 
         and if the object context (`ctx`) is passed along, ensures rights
         enforcement for all objects.
         """
         self.cache = collections.OrderedDict()
-        self.pool = pool
+        self.connection = ConnectionWrapper(connection)
         self.use_queue = queue
         self.queue = [] if queue else None
         
@@ -144,19 +161,19 @@ class ObjectExchange(object):
         """
         Start a database transaction.
         """
-        self.pool.runOperation('BEGIN')
+        self.connection.runOperation('BEGIN')
     
     def commit(self):
         """
         Complete a database transaction.
         """
-        self.pool.runOperation('COMMIT')
+        self.connection.runOperation('COMMIT')
     
     def rollback(self):
         """
         Roll-back a database transaction.
         """
-        self.pool.runOperation('ROLLBACK')
+        self.connection.runOperation('ROLLBACK')
     
     def send_message(self, user_id, msg):
         if not(self.use_queue):
@@ -202,7 +219,7 @@ class ObjectExchange(object):
         Pre-load the list of existing permissions.
         """
         if not(ObjectExchange.permission_list):
-            results = self.pool.runQuery(sql.build_select('permission'))
+            results = self.connection.runQuery(sql.build_select('permission'))
             ObjectExchange.permission_list = dict([(x['name'], x['id']) for x in results])
     
     def activate_default_grants(self):
@@ -212,7 +229,7 @@ class ObjectExchange(object):
         if(self.default_grants_active):
             return
         system = self.instantiate('object', default_permissions=False, id=1)
-        result = self.pool.runQuery(sql.interp(
+        result = self.connection.runQuery(sql.interp(
             """SELECT v.*
                  FROM verb_name vn
                 INNER JOIN verb v ON v.id = vn.verb_id
@@ -227,7 +244,7 @@ class ObjectExchange(object):
         """
         Clear out the code field for any verb with a filename attached.
         """
-        self.pool.runOperation("UPDATE verb SET code = '' WHERE COALESCE(filename, 'none') = filename")
+        self.connection.runOperation("UPDATE verb SET code = '' WHERE COALESCE(filename, 'none') = filename")
     
     def instantiate(self, obj_type, record=None, *additions, **fields):
         """
@@ -366,7 +383,7 @@ class ObjectExchange(object):
         if(obj_key in self.cache):
             return self.cache[obj_key]
         
-        items = self.pool.runQuery(sql.build_select(obj_type, id=obj_id))
+        items = self.connection.runQuery(sql.build_select(obj_type, id=obj_id))
         if not(items):
             raise errors.NoSuchObjectError("%s #%s" % (obj_type, obj_id))
         
@@ -423,10 +440,10 @@ class ObjectExchange(object):
             raise RuntimeError("Don't know how to save an object of type '%s'" % obj_type)
         
         if(obj_id):
-            self.pool.runOperation(sql.build_update(obj_type, attribs, dict(id=obj_id)))
+            self.connection.runOperation(sql.build_update(obj_type, attribs, dict(id=obj_id)))
         else:
             attribs['id'] = sql.RAW('DEFAULT')
-            result = self.pool.runQuery(sql.build_insert(obj_type, attribs) + ' RETURNING id')
+            result = self.connection.runQuery(sql.build_insert(obj_type, attribs) + ' RETURNING id')
             obj.set_id(result[0]['id'])
         
         object_key = '%s-%s' % (obj_type, obj.get_id())
@@ -460,7 +477,7 @@ class ObjectExchange(object):
                     end = len(key)
                 key = int(key[1:end])
             else:
-                items = self.pool.runQuery(sql.build_select('object', name=sql.RAW(sql.interp('LOWER(%%s) = LOWER(%s)', key))))
+                items = self.connection.runQuery(sql.build_select('object', name=sql.RAW(sql.interp('LOWER(%%s) = LOWER(%s)', key))))
                 if(len(items) == 0):
                     if(return_list):
                         return []
@@ -486,26 +503,26 @@ class ObjectExchange(object):
         """
         Return all aliases for the given object ID.
         """
-        result = self.pool.runQuery(sql.interp("SELECT alias FROM object_alias WHERE object_id = %s", object_id))
+        result = self.connection.runQuery(sql.interp("SELECT alias FROM object_alias WHERE object_id = %s", object_id))
         return [x['alias'] for x in result] 
     
     def add_alias(self, object_id, alias):
         """
         Add an aliases for the provided object.
         """
-        self.pool.runOperation(sql.build_insert('object_alias', object_id=object_id, alias=alias));
+        self.connection.runOperation(sql.build_insert('object_alias', object_id=object_id, alias=alias));
     
     def remove_alias(self, object_id, alias):
         """
         Remove an aliases for the provided object.
         """
-        self.pool.runOperation(sql.build_delete('object_alias', object_id=object_id, alias=alias));
+        self.connection.runOperation(sql.build_delete('object_alias', object_id=object_id, alias=alias));
     
     def get_observers(self, object_id):
         """
         Get a list of objects currently observing the provided object.
         """
-        result = self.instantiate('object', *self.pool.runQuery(sql.interp(
+        result = self.instantiate('object', *self.connection.runQuery(sql.interp(
             """SELECT o.*
                 FROM object o
                 INNER JOIN object_observer oo ON oo.observer_id = o.id
@@ -519,7 +536,7 @@ class ObjectExchange(object):
         """
         Get the object that the provided object is observing.
         """
-        result = self.instantiate('object', *self.pool.runQuery(sql.interp(
+        result = self.instantiate('object', *self.connection.runQuery(sql.interp(
             """SELECT o.*
                 FROM object o
                 INNER JOIN object_observer oo ON oo.object_id = o.id
@@ -533,19 +550,19 @@ class ObjectExchange(object):
         """
         Make all current observers stop paying attention to the provided object.
         """
-        self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id));
+        self.connection.runOperation(sql.build_delete('object_observer', object_id=object_id));
     
     def add_observer(self, object_id, observer_id):
         """
         Add an observer for the provided object.
         """
-        self.pool.runOperation(sql.build_insert('object_observer', object_id=object_id, observer_id=observer_id));
+        self.connection.runOperation(sql.build_insert('object_observer', object_id=object_id, observer_id=observer_id));
     
     def remove_observer(self, object_id, observer_id):
         """
         Remove an observer for the provided object.
         """
-        self.pool.runOperation(sql.build_delete('object_observer', object_id=object_id, observer_id=observer_id));
+        self.connection.runOperation(sql.build_delete('object_observer', object_id=object_id, observer_id=observer_id));
     
     def get_parents(self, object_id, recurse=False):
         """
@@ -556,14 +573,14 @@ class ObjectExchange(object):
         #NOTE: the heavier a parent weight is, the more influence its inheritance has.
         # e.g., if considering inheritance by left-to-right, the leftmost ancestors will
         #        have the heaviest weights.
-        parent_ids = ancestor_ids = self.pool.runQuery(sql.interp(
+        parent_ids = ancestor_ids = self.connection.runQuery(sql.interp(
             """SELECT parent_id AS id
                 FROM object_relation
                 WHERE child_id = %s
                 ORDER BY weight DESC
             """, object_id))
         while(recurse):
-            ancestor_ids = self.pool.runQuery(sql.interp(
+            ancestor_ids = self.connection.runQuery(sql.interp(
                 """SELECT parent_id AS id
                     FROM object_relation
                     WHERE child_id IN %s
@@ -582,7 +599,7 @@ class ObjectExchange(object):
         Does this child have the provided object as an ancestor?
         """
         parent_ids = [
-            x['id'] for x in self.pool.runQuery(sql.interp(
+            x['id'] for x in self.connection.runQuery(sql.interp(
                 """SELECT parent_id AS id
                     FROM object_relation
                     WHERE child_id = %s
@@ -594,7 +611,7 @@ class ObjectExchange(object):
             if(object_id in parent_ids):
                 return True
             parent_ids = [
-                x['id'] for x in self.pool.runQuery(sql.interp(
+                x['id'] for x in self.connection.runQuery(sql.interp(
                 """SELECT parent_id AS id
                     FROM object_relation
                     WHERE child_id IN %s
@@ -608,7 +625,7 @@ class ObjectExchange(object):
         """
         Remove the given parent from this child's list of immediate ancestors.
         """
-        self.pool.runOperation(sql.interp(
+        self.connection.runOperation(sql.interp(
             "DELETE FROM object_relation WHERE child_id = %s AND parent_id = %s",
             child_id, parent_id))
     
@@ -616,7 +633,7 @@ class ObjectExchange(object):
         """
         Add the given parent to this child's list of immediate ancestors.
         """
-        self.pool.runOperation(sql.interp(
+        self.connection.runOperation(sql.interp(
             "INSERT INTO object_relation (child_id, parent_id, weight) VALUES (%s, %s, 0)",
             child_id, parent_id))
     
@@ -632,7 +649,7 @@ class ObjectExchange(object):
         while(parents):
             object_id = parents.pop(0)
             if(item_type == 'verb'):
-                a = self.pool.runQuery(sql.interp(
+                a = self.connection.runQuery(sql.interp(
                     """SELECT v.id
                          FROM verb v
                             INNER JOIN verb_name vn ON v.id = vn.verb_id
@@ -640,7 +657,7 @@ class ObjectExchange(object):
                           AND v.origin_id = %s
                     """, name, object_id))
             elif(item_type == 'property'):
-                a = self.pool.runQuery(sql.interp(
+                a = self.connection.runQuery(sql.interp(
                     """SELECT p.id
                          FROM property p
                         WHERE p.name = %s
@@ -657,7 +674,7 @@ class ObjectExchange(object):
                     item = self.instantiate('property', a[0])
                     return item.is_readable()
             elif(recurse):
-                results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
+                results = self.connection.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
                 parents.extend([result['parent_id'] for result in results])
         
         return False
@@ -674,7 +691,7 @@ class ObjectExchange(object):
         while(parents):
             object_id = parents.pop(0)
             if(attribute_type == 'verb'):
-                a = self.pool.runQuery(sql.interp(
+                a = self.connection.runQuery(sql.interp(
                     """SELECT v.origin_id AS id
                          FROM verb v
                             INNER JOIN verb_name vn ON v.id = vn.verb_id
@@ -682,7 +699,7 @@ class ObjectExchange(object):
                           AND v.origin_id = %s
                     """, name, object_id))
             elif(attribute_type == 'property'):
-                a = self.pool.runQuery(sql.interp(
+                a = self.connection.runQuery(sql.interp(
                     """SELECT p.origin_id AS id
                          FROM property p
                         WHERE p.name = %s
@@ -692,7 +709,7 @@ class ObjectExchange(object):
             if(a):
                 break
             else:
-                results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
+                results = self.connection.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", object_id))
                 parents.extend([result['parent_id'] for result in results])
         
         if not(a):
@@ -708,7 +725,7 @@ class ObjectExchange(object):
         parents = [origin_id]
         while(parents):
             parent_id = parents.pop(0)
-            v = self.pool.runQuery(sql.interp(
+            v = self.connection.runQuery(sql.interp(
                 """SELECT v.*
                     FROM verb v
                         INNER JOIN verb_name vn ON vn.verb_id = v.id
@@ -718,7 +735,7 @@ class ObjectExchange(object):
             if(v or not recurse):
                 break
             else:
-                results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
+                results = self.connection.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
                 parents.extend([result['parent_id'] for result in results])
         
         if not(v):
@@ -740,13 +757,13 @@ class ObjectExchange(object):
         """
         v = self.get_verb(origin_id, name)
         if(v):
-            self.pool.runOperation(sql.build_delete('verb', id=v.get_id()))
+            self.connection.runOperation(sql.build_delete('verb', id=v.get_id()))
     
     def get_verb_list(self, origin_id):
         """
         Get a list of verb id and names dictionaries.
         """
-        verbs = self.pool.runQuery(sql.interp(
+        verbs = self.connection.runQuery(sql.interp(
             """SELECT v.id, array_agg(vn.name) AS names
                 FROM verb v
                     INNER JOIN verb_name vn ON v.id = vn.verb_id
@@ -759,7 +776,7 @@ class ObjectExchange(object):
         """
         Get a list of property id and name dictionaries.
         """
-        properties = self.pool.runQuery(sql.interp(
+        properties = self.connection.runQuery(sql.interp(
             """SELECT p.id, p.name
                 FROM property p
                 WHERE p.origin_id = %s
@@ -770,20 +787,20 @@ class ObjectExchange(object):
         """
         Get a list of names for the given verb.
         """
-        result = self.pool.runQuery(sql.interp("SELECT name FROM verb_name WHERE verb_id = %s", verb_id))
+        result = self.connection.runQuery(sql.interp("SELECT name FROM verb_name WHERE verb_id = %s", verb_id))
         return [x['name'] for x in result]
     
     def add_verb_name(self, verb_id, name):
         """
         Add another name for a given verb.
         """
-        self.pool.runOperation(sql.build_insert('verb_name', verb_id=verb_id, name=name))
+        self.connection.runOperation(sql.build_insert('verb_name', verb_id=verb_id, name=name))
     
     def remove_verb_name(self, verb_id, name):
         """
         Remove a name for a given verb.
         """
-        self.pool.runOperation(sql.build_delete('verb_name', verb_id=verb_id, name=name))
+        self.connection.runOperation(sql.build_delete('verb_name', verb_id=verb_id, name=name))
     
     def get_property(self, origin_id, name, recurse=True):
         """
@@ -793,7 +810,7 @@ class ObjectExchange(object):
         parents = [origin_id]
         while(parents):
             parent_id = parents.pop(0)
-            p = self.pool.runQuery(sql.interp(
+            p = self.connection.runQuery(sql.interp(
                 """SELECT p.*
                     FROM property p
                     WHERE p.name = %s
@@ -802,7 +819,7 @@ class ObjectExchange(object):
             if(p or not recurse):
                 break
             else:
-                results = self.pool.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
+                results = self.connection.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", parent_id))
                 parents.extend([result['parent_id'] for result in results])
         
         if not(p):
@@ -824,20 +841,20 @@ class ObjectExchange(object):
         """
         v = self.get_property(origin_id, name)
         if(v):
-            self.pool.runOperation(sql.build_delete('property', id=v.get_id()))
+            self.connection.runOperation(sql.build_delete('property', id=v.get_id()))
     
     def refs(self, key):
         """
         How many objects in the store share the name given?
         """
-        result = self.pool.runQuery(sql.interp("SELECT COUNT(*) AS count FROM object WHERE name = %s", key))
+        result = self.connection.runQuery(sql.interp("SELECT COUNT(*) AS count FROM object WHERE name = %s", key))
         return result[0]['count']
     
     def is_unique_name(self, key):
         """
         Has the given key been designated as a unique name?
         """
-        result = self.pool.runQuery(sql.build_select('object', dict(
+        result = self.connection.runQuery(sql.build_select('object', dict(
             name        = sql.RAW(sql.interp('LOWER(%%s) = LOWER(%s)', key)),
             unique_name = True
         )))
@@ -847,28 +864,28 @@ class ObjectExchange(object):
         """
         Destroy an object in the database.
         """
-        self.pool.runOperation(sql.build_delete(obj_type, id=object_id))
+        self.connection.runOperation(sql.build_delete(obj_type, id=object_id))
         self.cache.pop('%s-%s' % (obj_type, object_id), None)
     
     def is_player(self, object_id):
         """
         Is the given object the avatar for a player?
         """
-        result = self.pool.runQuery(sql.interp("SELECT id FROM player WHERE avatar_id = %s", object_id))
+        result = self.connection.runQuery(sql.interp("SELECT id FROM player WHERE avatar_id = %s", object_id))
         return bool(len(result))
     
     def is_wizard(self, avatar_id):
         """
         Does the given player have wizard rights?
         """
-        result = self.pool.runQuery(sql.interp("SELECT id FROM player WHERE wizard = 't' AND avatar_id = %s", avatar_id))
+        result = self.connection.runQuery(sql.interp("SELECT id FROM player WHERE wizard = 't' AND avatar_id = %s", avatar_id))
         return bool(len(result))
     
     def is_connected_player(self, avatar_id):
         """
         Is the given player currently logged on?
         """
-        result = self.pool.runQuery(sql.interp(
+        result = self.connection.runQuery(sql.interp(
             """SELECT 1 AS connected
                  FROM player
                 WHERE COALESCE(last_login, to_timestamp(0)) > COALESCE(last_logout, to_timestamp(0))
@@ -877,7 +894,7 @@ class ObjectExchange(object):
         return bool(result)
     
     def get_avatar_id(self, player_id):
-        result = self.pool.runQuery(sql.build_select('player', dict(id=player_id)))
+        result = self.connection.runQuery(sql.build_select('player', dict(id=player_id)))
         return result[0]['avatar_id']
     
     def set_player(self, object_id, player=None, wizard=None, passwd=None, test_salt=None, **attribs):
@@ -898,28 +915,28 @@ class ObjectExchange(object):
         if(self.is_player(object_id)):
             if not(attribs):
                 return
-            self.pool.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
+            self.connection.runOperation(sql.build_update('player', attribs, dict(avatar_id=object_id)))
         else:
-            self.pool.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
+            self.connection.runOperation(sql.build_insert('player', dict(avatar_id=object_id, **attribs)))
 
     
     def login_player(self, avatar_id, session_id):
         """
         Register a player as logged in.
         """
-        self.pool.runOperation(sql.build_update('player', dict(session_id=session_id, last_login=sql.RAW('now()')), dict(avatar_id=avatar_id)))
+        self.connection.runOperation(sql.build_update('player', dict(session_id=session_id, last_login=sql.RAW('now()')), dict(avatar_id=avatar_id)))
     
     def logout_player(self, avatar_id):
         """
         Register a player as logged out.
         """
-        self.pool.runOperation(sql.build_update('player', dict(last_logout=sql.RAW('now()')), dict(avatar_id=avatar_id)))
+        self.connection.runOperation(sql.build_update('player', dict(last_logout=sql.RAW('now()')), dict(avatar_id=avatar_id)))
     
     def get_last_client_ip(self, avatar_id):
         """
         Get the last IP used to login as this player.
         """
-        result = self.pool.runQuery(sql.build_select('session', user_id=avatar_id))
+        result = self.connection.runQuery(sql.build_select('session', user_id=avatar_id))
         return result[0]['last_client_ip'] if result else None
     
     def get_contents(self, container_id, recurse=False):
@@ -928,13 +945,13 @@ class ObjectExchange(object):
         
         Optionally supply recurse=True to fetch all contents.
         """
-        nested_location_ids = location_ids = self.pool.runQuery(sql.interp(
+        nested_location_ids = location_ids = self.connection.runQuery(sql.interp(
             """SELECT id
                 FROM object
                 WHERE location_id = %s
             """, container_id))
         while(recurse):
-            location_ids = self.pool.runQuery(sql.interp(
+            location_ids = self.connection.runQuery(sql.interp(
                 """SELECT id
                     FROM object
                     WHERE location_id IN %s
@@ -950,14 +967,14 @@ class ObjectExchange(object):
         """
         Find an object immediately inside the provided container.
         """
-        match_ids = self.pool.runQuery(sql.interp(
+        match_ids = self.connection.runQuery(sql.interp(
             """SELECT id
                 FROM object
                 WHERE LOWER(name) = LOWER(%s)
                   AND location_id = %s
             """, name, container_id))
         
-        match_ids.extend(self.pool.runQuery(sql.interp(
+        match_ids.extend(self.connection.runQuery(sql.interp(
             """SELECT o.id
                 FROM property p
                     INNER JOIN object o ON p.origin_id = o.id
@@ -966,7 +983,7 @@ class ObjectExchange(object):
                   AND o.location_id = %s
             """, '"%s"' % name, container_id)))
         
-        match_ids.extend(self.pool.runQuery(sql.interp(
+        match_ids.extend(self.connection.runQuery(sql.interp(
             """SELECT o.id
                 FROM object o
                     INNER JOIN object_alias oa ON oa.object_id = o.id
@@ -982,7 +999,7 @@ class ObjectExchange(object):
         
         Optionally supply recurse=True to check for any containment.
         """
-        location_ids = self.pool.runQuery(sql.interp(
+        location_ids = self.connection.runQuery(sql.interp(
             """SELECT id
                 FROM object
                 WHERE location_id = %s
@@ -995,7 +1012,7 @@ class ObjectExchange(object):
         while(recurse):
             container_ids = [x['id'] for x in location_ids]
             if(container_ids):
-                location_ids = self.pool.runQuery(sql.interp(
+                location_ids = self.connection.runQuery(sql.interp(
                     """SELECT id
                         FROM object
                         WHERE location_id IN %s
@@ -1013,7 +1030,7 @@ class ObjectExchange(object):
         """
         Return the access list for a particular entity.
         """
-        return self.pool.runQuery(sql.interp(
+        return self.connection.runQuery(sql.interp(
             """SELECT a.*, p.name AS permission_name
                 FROM access a
                     INNER JOIN permission p ON a.permission_id = p.id
@@ -1025,7 +1042,7 @@ class ObjectExchange(object):
         """
         Modify an access rule.
         """
-        record = {} if not access_id else self.pool.runQuery(sql.interp(
+        record = {} if not access_id else self.connection.runQuery(sql.interp(
             """SELECT a.*, p.name AS permission
                 FROM access a
                     INNER JOIN permission p ON a.permission_id = p.id
@@ -1037,7 +1054,7 @@ class ObjectExchange(object):
             record = {}
         
         if(deleted):
-            self.pool.runOperation(sql.build_delete('access', id=access_id))
+            self.connection.runOperation(sql.build_delete('access', id=access_id))
             return
         
         record['rule'] = rule
@@ -1065,9 +1082,9 @@ class ObjectExchange(object):
             record['property_id'] = subject.get_id()
         
         if(access_id):
-            self.pool.runOperation(sql.build_update('access', record, dict(id=access_id)))
+            self.connection.runOperation(sql.build_update('access', record, dict(id=access_id)))
         else:
-            self.pool.runOperation(sql.build_insert('access', **record))
+            self.connection.runOperation(sql.build_insert('access', **record))
     
     def is_allowed(self, accessor, permission, subject):
         """
@@ -1089,7 +1106,7 @@ class ObjectExchange(object):
             __order_by        = 'weight DESC',
         ))
         
-        access = self.pool.runQuery(access_query)
+        access = self.connection.runQuery(access_query)
         
         result = False
         for rule in access:
@@ -1126,13 +1143,13 @@ class ObjectExchange(object):
         if(permission in self.permission_list):
             permission_id = self.permission_list[permission]
         elif(create):
-            permission_id = self.pool.runQuery(sql.build_insert('permission', dict(
+            permission_id = self.connection.runQuery(sql.build_insert('permission', dict(
                 name    = permission
             )) + ' RETURNING id')[0]['id']
         else:
             raise ValueError("No such permission %r" % permission)
         
-        self.pool.runOperation(sql.build_insert('access', {
+        self.connection.runOperation(sql.build_insert('access', {
             'object_id'        : subject.get_id() if isinstance(subject, interface.Object) else None,
             'verb_id'        : subject.get_id() if isinstance(subject, interface.Verb) else None,
             'property_id'    : subject.get_id() if isinstance(subject, interface.Property) else None,
@@ -1148,7 +1165,7 @@ class ObjectExchange(object):
         """
         Match the given password for the provided avatar.
         """
-        saved_crypt = self.pool.runQuery(sql.interp(
+        saved_crypt = self.connection.runQuery(sql.interp(
             """SELECT crypt
                 FROM player
                 WHERE avatar_id = %s
@@ -1168,7 +1185,7 @@ class ObjectExchange(object):
         Returns None if an exception occurs
         Returns True if it processes a task
         """
-        next_task = self.pool.runQuery(
+        next_task = self.connection.runQuery(
             """SELECT t.*
                 FROM task t
                 WHERE t.created + (t.delay * interval '1 second') < NOW()
@@ -1189,17 +1206,17 @@ class ObjectExchange(object):
             import traceback
             trace = traceback.format_exc()
             err = '%s: %s' % (e.__class__.__name__, str(e))
-            self.pool.runOperation(sql.build_update('task', dict(killed=True, error=err, trace=trace), dict(id=next_task[0]['id'])))
+            self.connection.runOperation(sql.build_update('task', dict(killed=True, error=err, trace=trace), dict(id=next_task[0]['id'])))
             return None
         else:
-            self.pool.runOperation(sql.build_delete('task', dict(id=next_task[0]['id'])))
+            self.connection.runOperation(sql.build_delete('task', dict(id=next_task[0]['id'])))
             return True
     
     def register_task(self, user_id, delay, origin_id, verb_name, args, kwargs):
         """
         Register a delayed verb call.
         """
-        task_id = self.pool.runQuery(sql.build_insert('task', dict(
+        task_id = self.connection.runQuery(sql.build_insert('task', dict(
             user_id        = user_id,
             delay        = delay,
             origin_id    = origin_id,
@@ -1213,7 +1230,7 @@ class ObjectExchange(object):
         """
         Fetch the record for the provided task id.
         """
-        result = self.pool.runQuery(sql.build_select('task', id=task_id))
+        result = self.connection.runQuery(sql.build_select('task', id=task_id))
         return result[0] if result else None
     
     def get_tasks(self, user_id=None):
@@ -1221,6 +1238,6 @@ class ObjectExchange(object):
         Get a list of waiting tasks.
         """
         if(user_id):
-            return self.pool.runQuery(sql.build_select('task', user_id=user_id))
+            return self.connection.runQuery(sql.build_select('task', user_id=user_id))
         else:
-            return self.pool.runQuery(sql.build_select('task'))
+            return self.connection.runQuery(sql.build_select('task'))

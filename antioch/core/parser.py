@@ -17,7 +17,7 @@ There are a long list of prepositions supported, some of which are interchangeab
 
 import sys, time, re, string, types, logging
 
-from antioch.core import exchange, interface, errors, dbapi
+from antioch.core import exchange, interface, errors
 from antioch.core.errors import *
 
 log = logging.getLogger(__name__)
@@ -76,19 +76,14 @@ def parse(caller, sentence, debug=False):
     """
     For a given user, execute a command.
     """
-    db = caller.get_exchange().pool
-
     t = dict(time=time.time())
     def _profile(name):
         if(debug):
-            query_seconds = dbapi.get_total_query_time()
-            log.debug("%s took %4f seconds, %4f query seconds" % (
-                name, time.time() - t['time'], query_seconds
+            log.debug("%s took %4f seconds" % (
+                name, time.time() - t['time']
             ))
-            db.reset_total_query_time()
             t['time'] = time.time()
     
-    db.reset_total_query_time()
     l = Lexer(sentence)
     _profile('lexer')
     

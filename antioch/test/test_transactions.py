@@ -7,7 +7,7 @@ from twisted.trial import unittest
 from twisted.internet import defer, error
 
 from antioch import test, conf
-from antioch.core import dbapi, errors, exchange, parser, transact, interface, code
+from antioch.core import errors, exchange, parser, transact, interface, code
 
 class TransactionTestCase(unittest.TestCase):
     def setUp(self):

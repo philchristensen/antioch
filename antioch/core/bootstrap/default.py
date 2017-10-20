@@ -14,7 +14,7 @@ from antioch.core import interface, bootstrap
 from antioch.util import sql
 
 for name in interface.default_permissions:
-    exchange.pool.runOperation(sql.build_insert('permission', name=name))
+    exchange.connection.runOperation(sql.build_insert('permission', name=name))
 
 exchange.load_permissions()
 

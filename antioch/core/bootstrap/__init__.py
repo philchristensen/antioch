@@ -15,21 +15,18 @@ import pkg_resources as pkg
 import traceback, subprocess
 
 from antioch import plugins
-from antioch.core import dbapi, exchange, parser
+from antioch.core import exchange, parser
 
-def load_python(pool, python_path):
+def load_python(connection, python_path):
     """
     Execute a provided Python bootstrap file against the provided database.
-
-    @param pool: the current database connection
-    @type pool: L{antioch.dbapi.SynchronousConnectionPool}
     """
-    with exchange.ObjectExchange(pool) as x:
+    with exchange.ObjectExchange(connection) as x:
         execfile(python_path, globals(), dict(exchange=x))
 
-def initialize_plugins(pool):
+def initialize_plugins(connection):
     for plugin in plugins.iterate():
-        with exchange.ObjectExchange(pool) as x:
+        with exchange.ObjectExchange(connection) as x:
             if not(callable(getattr(plugin, 'initialize', None))): 
                 continue
             plugin.initialize(x)

@@ -2,8 +2,9 @@ import pkg_resources as pkg
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from django.db import connection
 
-from antioch.core import dbapi, bootstrap
+from antioch.core import bootstrap
 
 builtin_templates = ['minimal', 'default']
 
@@ -20,7 +21,6 @@ class Command(BaseCommand):
             bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', '%s.py' % template)
         else:
             bootstrap_path = template
-        pool = dbapi.connect(settings.DB_URL)
-        bootstrap.load_python(pool, bootstrap_path)
-        bootstrap.initialize_plugins(pool)
+        bootstrap.load_python(connection, bootstrap_path)
+        bootstrap.initialize_plugins(connection)
         

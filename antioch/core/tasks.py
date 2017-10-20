@@ -11,24 +11,23 @@ import logging
 from celery import shared_task
 
 from django.conf import settings
-from antioch.core import dbapi, code, exchange, errors, parser
+from django.db import connection
+
+from antioch.core import code, exchange, errors, parser
 from antioch.util import sql, json
 
 log = logging.getLogger(__name__)
 
 log.debug("%s started" % __name__)
-pool = dbapi.connect(settings.DB_URL_DEFAULT, **dict(
-    autocommit        = False
-))
 
 def get_exchange(ctx=None):
     """
     Get an ObjectExchange instance for the provided context.
     """
     if(ctx):
-        return exchange.ObjectExchange(pool, queue=True, ctx=ctx)
+        return exchange.ObjectExchange(connection, queue=True, ctx=ctx)
     else:
-        return exchange.ObjectExchange(pool)
+        return exchange.ObjectExchange(connection)
 
 @shared_task
 def authenticate(username, password, ip_address):
