@@ -78,11 +78,17 @@ services:
       MEMCACHE: memcached:11211
   postgres:
     image: postgres
+    ports:
+     - "5432:5432"
     environment:
       POSTGRES_PASSWORD: daftIdByflyt
       POSTGRES_USER: antioch
       POSTGRES_DB: antioch
   redis:
     image: redis
+    ports:
+     - "6379:6379"
   memcached:
     image: memcached
+    ports:
+     - "11211:11211"
