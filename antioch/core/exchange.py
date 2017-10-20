@@ -19,6 +19,7 @@ from antioch.core import interface, errors
 from antioch.util import sql, json, hash_password
 
 from django.conf import settings
+from django.db import transaction
 
 group_definitions = dict(
     owners        = lambda x,a,s: a.owns(s),
@@ -53,6 +54,7 @@ class ConnectionWrapper(object):
     
     def runOperation(self, query, *args, **kwargs):
         with self.connection.cursor() as cursor:
+            print query, args
             cursor.execute(query, args)
         
     def runQuery(self, query, *args, **kwargs):
@@ -161,19 +163,24 @@ class ObjectExchange(object):
         """
         Start a database transaction.
         """
-        self.connection.runOperation('BEGIN')
+        transaction.set_autocommit(False)
+        # self.connection.runOperation('BEGIN')
     
     def commit(self):
         """
         Complete a database transaction.
         """
-        self.connection.runOperation('COMMIT')
+        # self.connection.runOperation('COMMIT')
+        transaction.commit()
+        transaction.set_autocommit(True)
     
     def rollback(self):
         """
         Roll-back a database transaction.
         """
-        self.connection.runOperation('ROLLBACK')
+        # self.connection.runOperation('ROLLBACK')
+        transaction.rollback()
+        transaction.set_autocommit(True)
     
     def send_message(self, user_id, msg):
         if not(self.use_queue):
