@@ -95,6 +95,7 @@ class EntityTestCase(TestCase):
         
         details = o.get_details()
         self.assertEqual(details, dict(
+            __str__     = '#1024 (test object)',
             id            = 1024,
             kind        = 'object',
             location    = 'None',
@@ -125,13 +126,14 @@ class EntityTestCase(TestCase):
         
         details = v.get_details()
         self.assertEqual(details, dict(
-            id            = 0,
+            __str__     = 'Verb test {#0 on #1024 ()}',
+            id          = 0,
             kind        = 'verb',
             code        = '',
-            exec_type    = 'verb',
-            names        = ['test'],
-            owner        = 'None',
-            origin        = '#1024 ()',
+            exec_type   = 'verb',
+            names       = ['test'],
+            owner       = 'None',
+            origin       = '#1024 ()',
         ))
         
     def test_save(self):
@@ -315,7 +317,7 @@ class ObjectTestCase(TestCase):
     def test_set_player(self):
         e = test.Anything(
             get_context        = lambda: None,
-            set_player    = lambda *a, **kw: self.assertEqual(a, (1024, True, True, 'passwd'))
+            set_player    = lambda *a, **kw: self.assertEqual(a, (1024,))
         )
         o = interface.Object(e)
         o.set_id(1024)

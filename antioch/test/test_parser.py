@@ -9,7 +9,8 @@ from antioch.core import parser, errors, exchange
 from antioch import test
 
 class ParserTestCase(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(self):
         self.pool = test.init_database(self.__class__)
         self.exchange = exchange.ObjectExchange(self.pool)
     

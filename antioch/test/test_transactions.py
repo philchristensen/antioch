@@ -4,20 +4,16 @@
 # See LICENSE for details
 
 from django.test import TestCase
-from twisted.internet import defer, error
 
 from antioch import test
-from antioch.core import errors, exchange, parser, transact, interface, code
+from antioch.core import errors, exchange, parser, interface, code
 
 from django.db import connection
 
 class TransactionTestCase(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(self):
         test.init_database(self.__class__)
-    
-    @defer.inlineCallbacks
-    def tearDown(self):
-        yield transact.shutdown()    
     
     def test_basic_rollback(self):
         try:
@@ -28,15 +24,6 @@ class TransactionTestCase(TestCase):
             pass
         
         self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
-    
-    def test_timeout(self):
-        if(transact.job_timeout is None):
-            raise unittest.SkipTest("Code timeout disabled.")
-
-        user_id = 2 # Wizard ID
-        d = transact.Parse.run(user_id=user_id, sentence='@exec while(True): pass')
-        self.assertFailure(d, error.ProcessTerminated)
-        return d
     
     def test_parser_rollback(self):
         created = False

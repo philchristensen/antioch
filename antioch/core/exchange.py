@@ -165,7 +165,7 @@ class ObjectExchange(object):
         """
         Start a database transaction.
         """
-        transaction.set_autocommit(False)
+        self.sid = transaction.savepoint()
         # self.connection.runOperation('BEGIN')
     
     def commit(self):
@@ -173,16 +173,14 @@ class ObjectExchange(object):
         Complete a database transaction.
         """
         # self.connection.runOperation('COMMIT')
-        transaction.commit()
-        transaction.set_autocommit(True)
+        transaction.savepoint_commit(self.sid)
     
     def rollback(self):
         """
         Roll-back a database transaction.
         """
         # self.connection.runOperation('ROLLBACK')
-        transaction.rollback()
-        transaction.set_autocommit(True)
+        transaction.savepoint_rollback(self.sid)
     
     def send_message(self, user_id, msg):
         if not(self.use_queue):

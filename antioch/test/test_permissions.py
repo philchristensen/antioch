@@ -13,7 +13,8 @@ from antioch.core import errors, exchange
 # sys.setrecursionlimit(100)
 
 class PermissionsTestCase(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(self):
         self.pool = test.init_database(self.__class__)
         self.exchange = exchange.ObjectExchange(self.pool)
         

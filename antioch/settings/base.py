@@ -123,10 +123,10 @@ WSGI_APPLICATION = 'antioch.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "insite",
+        "NAME": "antioch",
         "HOST": "localhost",
-        "USER": "insite",
-        "PASSWORD": "insite"
+        "USER": "antioch",
+        "PASSWORD": "antioch"
     }
 }
 

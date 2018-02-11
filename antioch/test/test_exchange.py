@@ -31,8 +31,9 @@ def printQuery(func):
     return f
 
 class ObjectExchangeTestCase(TestCase):
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(self):
+        test.init_database(self.__class__)
     
     def tearDown(self):
         pass
@@ -91,12 +92,12 @@ class ObjectExchangeTestCase(TestCase):
             if(query.startswith('SELECT')):
                 return results.pop()
             else:
-                expected_insert = """INSERT INTO object 
+                expected_insert = rmws("""INSERT INTO object 
                                         (id, location_id, name, owner_id, unique_name) 
                                     VALUES 
                                         (DEFAULT, NULL, 'wizard', NULL, 't') 
                                     RETURNING id
-                                """.replace('\t', '').replace('\n', '')
+                                """)
                 self.assertEqual(query, expected_insert)
                 return [dict(id=1)]
         
@@ -225,13 +226,13 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_save_object(self):
         expected_results = [False, [dict(id=1024)]]
-        expected_query = """UPDATE object 
+        expected_query = rmws("""UPDATE object 
                             SET location_id = NULL, 
                                 name = 'test object', 
                                 owner_id = NULL, 
                                 unique_name = 'f' 
                             WHERE id = 1024
-                            """.replace('\n', '').replace('\t', '')
+                            """)
         pool = test.Anything(
             runQuery        = lambda q: expected_results.pop(),
             runOperation    = lambda q: self.assertEqual(q, expected_query)
@@ -248,7 +249,7 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_save_verb(self):
         expected_results = [False, [dict(id=1024)]]
-        expected_query = """UPDATE verb 
+        expected_query = rmws("""UPDATE verb 
                             SET ability = 't', 
                                 code = '', 
                                 filename = NULL, 
@@ -256,7 +257,7 @@ class ObjectExchangeTestCase(TestCase):
                                 origin_id = 0, 
                                 owner_id = NULL 
                             WHERE id = 1024
-                            """.replace('\n', '').replace('\t', '')
+                            """)
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
             runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
@@ -274,14 +275,14 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_save_property(self):
         expected_results = [False, [dict(id=1024)]]
-        expected_query = """UPDATE property 
+        expected_query = rmws("""UPDATE property 
                             SET name = 'myprop', 
                                 origin_id = 0, 
                                 owner_id = NULL, 
                                 type = 'string', 
                                 value = NULL 
                             WHERE id = 1024
-                            """.replace('\n', '').replace('\t', '')
+                            """)
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
             runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
