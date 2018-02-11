@@ -3,12 +3,12 @@
 #
 # See LICENSE for details
 
-from twisted.trial import unittest
+from django.test import TestCase
 
 from antioch import test
 from antioch.core import interface, errors
 
-class EntityTestCase(unittest.TestCase):
+class EntityTestCase(TestCase):
     def setUp(self):
         pass
     
@@ -149,7 +149,7 @@ class EntityTestCase(unittest.TestCase):
         o = interface.Object(e)
         self.failUnlessRaises(errors.TestError, o.destroy)
 
-class ObjectTestCase(unittest.TestCase):
+class ObjectTestCase(TestCase):
     def setUp(self):
         pass
     
@@ -473,7 +473,7 @@ class ObjectTestCase(unittest.TestCase):
         self.assertEqual(person.is_allowed('move', item), True)
     
 
-class VerbTestCase(unittest.TestCase):
+class VerbTestCase(TestCase):
     def setUp(self):
         pass
     
@@ -632,7 +632,7 @@ class VerbTestCase(unittest.TestCase):
         self.assertEqual(v.performable_by(o), True)
         
 
-class PropertyTestCase(unittest.TestCase):
+class PropertyTestCase(TestCase):
     def setUp(self):
         pass
     

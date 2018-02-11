@@ -3,11 +3,11 @@
 #
 # See LICENSE for details
 
-from twisted.trial import unittest
+from django.test import TestCase
 
 from antioch.util import sql
 
-class SQLTestCase(unittest.TestCase):
+class SQLTestCase(TestCase):
     def setUp(self):
         pass
     

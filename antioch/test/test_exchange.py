@@ -4,7 +4,7 @@
 # See LICENSE for details
 
 import re
-import unittest
+from django.test import TestCase
 
 from antioch import test
 from antioch.core import exchange, interface, errors
@@ -30,7 +30,7 @@ def printQuery(func):
         return func(q, *a, **kw)
     return f
 
-class ObjectExchangeTestCase(unittest.TestCase):
+class ObjectExchangeTestCase(TestCase):
     def setUp(self):
         pass
     

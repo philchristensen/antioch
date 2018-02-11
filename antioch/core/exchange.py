@@ -916,10 +916,8 @@ class ObjectExchange(object):
         elif(player is False):
             crypt = attribs['crypt'] = '!'
         
-        if(player is not None):
-            attribs['enabled'] = player
-        if(wizard is not None):
-            attribs['wizard'] = wizard
+        attribs['enabled'] = player is True
+        attribs['wizard'] = wizard is True
         
         if(self.is_player(object_id)):
             if not(attribs):

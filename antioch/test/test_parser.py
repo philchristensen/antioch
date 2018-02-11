@@ -3,12 +3,12 @@
 #
 # See LICENSE for details
 
-from twisted.trial import unittest
+from django.test import TestCase
 
 from antioch.core import parser, errors, exchange
 from antioch import test
 
-class ParserTestCase(unittest.TestCase):
+class ParserTestCase(TestCase):
     def setUp(self):
         self.pool = test.init_database(self.__class__)
         self.exchange = exchange.ObjectExchange(self.pool)

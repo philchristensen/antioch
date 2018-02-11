@@ -3,15 +3,15 @@
 #
 # See LICENSE for details
 
-from twisted.trial import unittest
+from django.test import TestCase
 from twisted.internet import defer, error
 
-from antioch import test, conf
+from antioch import test
 from antioch.core import errors, exchange, parser, transact, interface, code
 
 from django.db import connection
 
-class TransactionTestCase(unittest.TestCase):
+class TransactionTestCase(TestCase):
     def setUp(self):
         test.init_database(self.__class__)
     

@@ -5,14 +5,14 @@
 
 import sys, os, os.path, time
 
-from twisted.trial import unittest
+from django.test import TestCase
 
 from antioch import test
 from antioch.core import errors, exchange
 
 # sys.setrecursionlimit(100)
 
-class PermissionsTestCase(unittest.TestCase):
+class PermissionsTestCase(TestCase):
     def setUp(self):
         self.pool = test.init_database(self.__class__)
         self.exchange = exchange.ObjectExchange(self.pool)
