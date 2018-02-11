@@ -11,34 +11,15 @@ import pkg_resources as pkg
 
 from antioch.core import bootstrap
 from django.conf import settings
-
-# psql_path = settings.PSQL_PATH
-
-pool = {}
+from django.db import connection
 
 def init_database(dbid, dataset='minimal', autocommit=False):
-    global pool
-    if(dbid not in pool and len(pool) == 1):
-        key, p = pool.items()[0]
-        p.close()
-        del pool[key]
-    elif(dbid in pool):
-        return pool[dbid]
-    
-    db_url = settings.DB_URL_TEST
-    
-    bootstrap.initialize_database(psql_path, db_url)
-    
-    schema_path = pkg.resource_filename('antioch.core.bootstrap', 'schema.sql')
-    bootstrap.load_schema(psql_path, db_url, schema_path)
-    
-    pool[dbid] = dbapi.connect(db_url, **dict(
-        autocommit        = autocommit,
-    ))
     bootstrap_path = pkg.resource_filename('antioch.core.bootstrap', '%s.py' % dataset)
-    bootstrap.load_python(pool[dbid], bootstrap_path)
+    
+    bootstrap.load_python(connection, bootstrap_path)
+    bootstrap.initialize_plugins(connection)
 
-    return pool[dbid]
+    return connection
 
 def raise_e(e):
     raise e

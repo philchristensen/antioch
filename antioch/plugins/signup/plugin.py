@@ -17,7 +17,7 @@ from zope.interface import classProvides
 from twisted.protocols import amp
 
 from antioch import IPlugin
-from antioch.util import json
+from antioch.util import ason
 from antioch.core import parser, code
 
 log = logging.getLogger(__name__)

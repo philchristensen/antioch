@@ -14,7 +14,7 @@ from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
 
 from antioch.core import errors
-from antioch.util import json
+from antioch.util import ason
 
 allowed_modules = (
     'hashlib',

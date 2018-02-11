@@ -16,7 +16,7 @@ import crypt, string, random, time, logging, collections
 
 from antioch import celery
 from antioch.core import interface, errors
-from antioch.util import sql, json, hash_password
+from antioch.util import sql, ason, hash_password
 
 from django.conf import settings
 from django.db import transaction
@@ -77,7 +77,7 @@ class ObjectExchange(object):
     
     permission_list = None
     
-    def __init__(self, connection, queue=False, ctx=None):
+    def __init__(self, connection=None, wrapper=None, queue=False, ctx=None):
         """
         Create a new object exchange.
         
@@ -86,7 +86,9 @@ class ObjectExchange(object):
         enforcement for all objects.
         """
         self.cache = collections.OrderedDict()
-        self.connection = ConnectionWrapper(connection)
+        self.connection = wrapper or ConnectionWrapper(connection)
+        if(self.connection is None):
+            raise RuntimeError("No connection provided.")
         self.use_queue = queue
         self.queue = [] if queue else None
         
@@ -212,7 +214,7 @@ class ObjectExchange(object):
                         continue
                     queue_id = '-'.join([settings.USER_QUEUE, str(user.id)])
                     log.debug("flushing message to #%s: %s" % (queue_id, msg))
-                    exchange.publish(exchange.Message(json.dumps(msg), content_type="application/json"), routing_key=queue_id)
+                    exchange.publish(exchange.Message(ason.dumps(msg), content_type="application/json"), routing_key=queue_id)
 
     
     def get_context(self):
@@ -351,7 +353,7 @@ class ObjectExchange(object):
         p._owner_id = record.get('owner_id', None)
         
         val = record.get('value', '')
-        p._value = json.loads(val, exchange=self) if val else val
+        p._value = ason.loads(val, exchange=self) if val else val
         
         return p
     
@@ -438,7 +440,7 @@ class ObjectExchange(object):
             
             attribs = dict(
                 name        = obj._name,
-                value        = json.dumps(obj._value) if check(obj._value) else obj._value,
+                value        = ason.dumps(obj._value) if check(obj._value) else obj._value,
                 owner_id    = obj._owner_id,
                 origin_id    = obj._origin_id,
                 type        = obj._type,
@@ -910,7 +912,7 @@ class ObjectExchange(object):
         """
         crypt = None
         if(passwd is not None):
-            crypt = attribs['crypt'] = hash_password(passwd)
+            crypt = attribs['crypt'] = hash_password(passwd, salt=test_salt)
         elif(player is False):
             crypt = attribs['crypt'] = '!'
         

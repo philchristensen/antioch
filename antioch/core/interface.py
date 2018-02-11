@@ -9,7 +9,7 @@ Represent objects in-universe
 """
 
 from antioch.core import errors, code
-from antioch.util import json
+from antioch.util import ason
 
 # These are the default list of permissions, auto-created
 # first thing during universe boostrapping

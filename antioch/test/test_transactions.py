@@ -9,9 +9,11 @@ from twisted.internet import defer, error
 from antioch import test, conf
 from antioch.core import errors, exchange, parser, transact, interface, code
 
+from django.db import connection
+
 class TransactionTestCase(unittest.TestCase):
     def setUp(self):
-        self.pool = test.init_database(self.__class__)
+        test.init_database(self.__class__)
     
     @defer.inlineCallbacks
     def tearDown(self):
@@ -19,7 +21,7 @@ class TransactionTestCase(unittest.TestCase):
     
     def test_basic_rollback(self):
         try:
-            with exchange.ObjectExchange(self.pool) as x:
+            with exchange.ObjectExchange(connection) as x:
                 x.instantiate('object', name="Test Object")
                 raise RuntimeError()
         except:
@@ -40,7 +42,7 @@ class TransactionTestCase(unittest.TestCase):
         created = False
         user_id = 2 # Wizard ID
         try:
-            with exchange.ObjectExchange(self.pool) as x:
+            with exchange.ObjectExchange(connection) as x:
                 caller = x.get_object(user_id)
                 parser.parse(caller, '@exec create_object("Test Object")')
                 if(x.get_object('Test Object')):
@@ -54,11 +56,11 @@ class TransactionTestCase(unittest.TestCase):
     
     def test_protected_attribute_access(self):
         user_id = 2 # Wizard ID
-        with exchange.ObjectExchange(self.pool) as x:
+        with exchange.ObjectExchange(connection) as x:
             wizard = x.get_object(user_id)
-            self.failUnlessEqual(wizard._location_id, wizard.get_location().get_id())
+            self.assertEqual(wizard._location_id, wizard.get_location().get_id())
         
-        with exchange.ObjectExchange(self.pool, ctx=user_id) as x:
+        with exchange.ObjectExchange(connection, ctx=user_id) as x:
             wizard = x.get_object(user_id)
             eval_verb = x.get_verb(user_id, '@eval')
             

@@ -51,7 +51,7 @@ def loads(j, exchange=None):
             return json.loads(j, object_hook=to_entity)
         else:
             return json.loads(j)
-    except json.decoder.JSONDecodeError, e:
+    except:
         return j.strip('"').strip("'")
     
 def dumps(obj):

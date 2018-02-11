@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db import connection
 
 from antioch.core import code, exchange, errors, parser
-from antioch.util import sql, json
+from antioch.util import sql, ason
 
 log = logging.getLogger(__name__)
 

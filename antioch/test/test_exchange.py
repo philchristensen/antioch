@@ -4,9 +4,7 @@
 # See LICENSE for details
 
 import re
-
-from twisted.trial import unittest
-from twisted.internet import defer
+import unittest
 
 from antioch import test
 from antioch.core import exchange, interface, errors
@@ -40,11 +38,11 @@ class ObjectExchangeTestCase(unittest.TestCase):
         pass
     
     def test_extract_id(self):
-        self.failUnlessEqual(2, exchange.extract_id('#2 (Object)'))
-        self.failUnlessEqual(2, exchange.extract_id(2))
-        self.failUnlessEqual(2, exchange.extract_id('#2'))
-        self.failUnlessEqual(None, exchange.extract_id('2'))
-        self.failUnlessEqual(None, exchange.extract_id('Object'))
+        self.assertEqual(2, exchange.extract_id('#2 (Object)'))
+        self.assertEqual(2, exchange.extract_id(2))
+        self.assertEqual(2, exchange.extract_id('#2'))
+        self.assertEqual(None, exchange.extract_id('2'))
+        self.assertEqual(None, exchange.extract_id('Object'))
     
     def test_activate_default_grants(self):
         queries = [
@@ -64,21 +62,21 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery = runQuery,
             runOperation = runOperation,
         )
         
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.activate_default_grants()
         
-        self.failUnlessEqual(ex.default_grants_active, True)
+        self.assertEqual(ex.default_grants_active, True)
         self.failUnless('verb-2048' in ex.cache, "default permissions verb was not cached")
     
     def test_instantiate(self):
@@ -99,24 +97,24 @@ class ObjectExchangeTestCase(unittest.TestCase):
                                         (DEFAULT, NULL, 'wizard', NULL, 't') 
                                     RETURNING id
                                 """.replace('\t', '').replace('\n', '')
-                self.failUnlessEqual(query, expected_insert)
+                self.assertEqual(query, expected_insert)
                 return [dict(id=1)]
         
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         obj = ex.instantiate('object', name="wizard", unique_name=True, default_permissions=False)
-        self.failUnlessEqual(obj.get_name(real=True), 'wizard')
+        self.assertEqual(obj.get_name(real=True), 'wizard')
         
         obj2 = ex.instantiate('object', id=obj.get_id(), default_permissions=False)
         self.failUnless(obj == obj2)
     
     def test_mkobject(self):
         pool = test.Anything()
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = ex._mkobject(dict(
             name        = 'Test Object',
@@ -125,9 +123,9 @@ class ObjectExchangeTestCase(unittest.TestCase):
             location_id    = 2048,
         ))
         
-        self.failUnlessEqual(o.get_name(real=True), 'Test Object')
-        self.failUnlessEqual(o._owner_id, 1024)
-        self.failUnlessEqual(o._location_id, 2048)
+        self.assertEqual(o.get_name(real=True), 'Test Object')
+        self.assertEqual(o._owner_id, 1024)
+        self.assertEqual(o._location_id, 2048)
     
     def test_mkverb(self):
         def runQuery(query, *a, **kw):
@@ -139,7 +137,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = ex._mkobject(dict(
             name        = 'Test Object',
@@ -158,11 +156,11 @@ class ObjectExchangeTestCase(unittest.TestCase):
             method        = False,
         ))
         
-        self.failUnlessEqual(v.get_code(), 'caller.write("Hello, World!")')
-        self.failUnlessEqual(v._origin_id, 1024)
-        self.failUnlessEqual(v._owner_id, 2048)
-        self.failUnlessEqual(v.is_ability(), True)
-        self.failUnlessEqual(v.is_method(), False)
+        self.assertEqual(v.get_code(), 'caller.write("Hello, World!")')
+        self.assertEqual(v._origin_id, 1024)
+        self.assertEqual(v._owner_id, 2048)
+        self.assertEqual(v.is_ability(), True)
+        self.assertEqual(v.is_method(), False)
     
     def test_mkproperty(self):
         def runQuery(query, *a, **kw):
@@ -171,7 +169,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = ex._mkobject(dict(
             name        = 'Test Object',
@@ -190,12 +188,11 @@ class ObjectExchangeTestCase(unittest.TestCase):
             type        = 'string',
         ))
         
-        self.failUnlessEqual(p.get_name(), 'my property')
-        self.failUnlessEqual(p._origin_id, 1024)
-        self.failUnlessEqual(p._owner_id, 2048)
-        self.failUnlessEqual(p._type, 'string')
+        self.assertEqual(p.get_name(), 'my property')
+        self.assertEqual(p._origin_id, 1024)
+        self.assertEqual(p._owner_id, 2048)
+        self.assertEqual(p._type, 'string')
     
-    @defer.inlineCallbacks
     def test_dequeue(self):
         ids = list(range(1, 6))
         
@@ -209,27 +206,22 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, queries.pop())
-        
-        self.queue_flushed = False
-        def flush():
-            self.queue_flushed = True
+            self.assertEqual(q, queries.pop())
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        queue = test.Anything(flush=flush)
-        ctx = test.Anything()
-        ex = exchange.ObjectExchange(pool, queue, ctx)
+        queue = test.Anything()
+        ctx = test.Anything(id=1)
+        ex = exchange.ObjectExchange(wrapper=pool, queue=queue, ctx=ctx)
         for index in range(1, 6):
             o = interface.Object(ex)
             o.set_id(index)
             ex.cache['object-%s' % index] = o
         
-        yield ex.flush()
+        ex.flush()
         
-        self.failUnlessEqual(self.queue_flushed, True)
-        self.failUnlessEqual(ex.cache, {})
+        self.assertEqual(ex.cache, {})
     
     def test_save_object(self):
         expected_results = [False, [dict(id=1024)]]
@@ -242,14 +234,14 @@ class ObjectExchangeTestCase(unittest.TestCase):
                             """.replace('\n', '').replace('\t', '')
         pool = test.Anything(
             runQuery        = lambda q: expected_results.pop(),
-            runOperation    = lambda q: self.failUnlessEqual(q, expected_query)
+            runOperation    = lambda q: self.assertEqual(q, expected_query)
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         ex.save(o)
         
-        self.failUnlessEqual(o.get_id(), 1024)
+        self.assertEqual(o.get_id(), 1024)
         
         o.set_name('test object', real=True)
         ex.save(o)
@@ -267,15 +259,15 @@ class ObjectExchangeTestCase(unittest.TestCase):
                             """.replace('\n', '').replace('\t', '')
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
-            runOperation    = lambda q, *a, **kw: self.failUnlessEqual(q, expected_query)
+            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         v = interface.Verb(o)
         ex.save(v)
         
-        self.failUnlessEqual(v.get_id(), 1024)
+        self.assertEqual(v.get_id(), 1024)
         
         v.set_ability(True)
         ex.save(v)
@@ -292,20 +284,20 @@ class ObjectExchangeTestCase(unittest.TestCase):
                             """.replace('\n', '').replace('\t', '')
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
-            runOperation    = lambda q, *a, **kw: self.failUnlessEqual(q, expected_query)
+            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         p = interface.Property(o)
         ex.save(p)
         
-        self.failUnlessEqual(p.get_id(), 1024)
+        self.assertEqual(p.get_id(), 1024)
         
         p.set_name('myprop')
         ex.save(p)
         
-        self.failUnlessEqual(p.get_name(), 'myprop')
+        self.assertEqual(p.get_name(), 'myprop')
     
     def test_get_object_by_name(self):
         results = [[dict(id=1024)], [dict(id=1024)], False]
@@ -315,13 +307,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = 't'",
         ]
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(q, queries.pop())
+            self.assertEqual(q, queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_name('test object', real=True)
@@ -339,13 +331,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(q, queries.pop())
+            self.assertEqual(q, queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_name('test object', real=True)
@@ -361,7 +353,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
         results = [[dict(id=1024)], [dict(id=1024)]]
         
         pool = test.Anything()
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(1024)
@@ -372,7 +364,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
     
     def test_get_object_bad_key(self):
         pool = test.Anything()
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         self.failUnlessRaises(ValueError, ex.get_object, None)
     
     def test_get_object_unknown_key(self):
@@ -382,24 +374,24 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEquals(q, queries.pop())
+            self.assertEqual(q, queries.pop())
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, "#2048")
         self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, 2048)
     
     def test_get_object_ambiguous_key(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEquals(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('ambiguous object name')")
+            self.assertEqual(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('ambiguous object name')")
             return [dict(id=1024), dict(id=2048)]
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         self.failUnlessRaises(errors.AmbiguousObjectError, ex.get_object, "ambiguous object name")
     
     def test_get_parents(self):
@@ -411,13 +403,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [1024, 2048, 4096]
         for obj_id in expected_ids:
@@ -442,25 +434,25 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
-        self.failUnlessEqual(ex.has_parent(1024, 2048), True)
-        self.failUnlessEqual(ex.has_parent(1024, 4096), False)
+        ex = exchange.ObjectExchange(wrapper=pool)
+        self.assertEqual(ex.has_parent(1024, 2048), True)
+        self.assertEqual(ex.has_parent(1024, 4096), False)
     
     def test_has_verb(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
 
         results = [
             [dict(id=1)],
@@ -472,7 +464,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
             "SELECT parent_id FROM object_relation WHERE child_id = 1024",
             "SELECT v.id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 1024",
         ]
-        self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=True), True)
+        self.assertEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=True), True)
         
         results = [
             [],
@@ -481,7 +473,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
             '',
             "SELECT v.id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 1024",
         ]
-        self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=True), False)
+        self.assertEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=True), False)
 
         results = [
             [dict(id=2048)],
@@ -497,7 +489,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
             "SELECT parent_id FROM object_relation WHERE child_id = 1024",
             "SELECT v.id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 1024",
         ]
-        self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=False), True)
+        self.assertEqual(ex.has(1024, 'verb', 'look', recurse=True, unrestricted=False), True)
         
         results = [
             [],
@@ -505,7 +497,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
         queries = [
             "SELECT v.id FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE vn.name = 'look' AND v.origin_id = 1024",
         ]
-        self.failUnlessEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=False), False)
+        self.assertEqual(ex.has(1024, 'verb', 'look', recurse=False, unrestricted=False), False)
     
     def test_get_all_parents(self):
         results = [
@@ -525,13 +517,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [256, 512, 2048, 4096]
         for obj_id in expected_ids:
@@ -546,23 +538,23 @@ class ObjectExchangeTestCase(unittest.TestCase):
     
     def test_remove_parent(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, 'DELETE FROM object_relation WHERE child_id = 1024 AND parent_id = 2048')
+            self.assertEqual(q, 'DELETE FROM object_relation WHERE child_id = 1024 AND parent_id = 2048')
         
         pool = test.Anything(
             runOperation        = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.remove_parent(1024, 2048)
     
     def test_add_parent(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, 'INSERT INTO object_relation (child_id, parent_id) VALUES (1024, 2048)')
+            self.assertEqual(q, 'INSERT INTO object_relation (child_id, parent_id, weight) VALUES (1024, 2048, 0)')
         
         pool = test.Anything(
             runOperation        = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.add_parent(1024, 2048)
     
@@ -578,13 +570,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(1024)
@@ -595,8 +587,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ex.cache['verb-2048'] = v
         
         v2 = ex.get_verb(1024, 'look', recurse=False)
-        self.failUnlessEqual(v2.get_id(), 2048)
-        self.failUnlessEqual(v, v2)
+        self.assertEqual(v2.get_id(), 2048)
+        self.assertEqual(v, v2)
     
     def test_get_verb_list(self):
         results = [
@@ -608,47 +600,47 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.get_verb_list(1024)
     
     def test_get_verb_names(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(q, 'SELECT name FROM verb_name WHERE verb_id = 1024')
+            self.assertEqual(q, 'SELECT name FROM verb_name WHERE verb_id = 1024')
             return [dict(name='look')]
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.get_verb_names(1024)
     
     def test_add_verb_name(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, "INSERT INTO verb_name (name, verb_id) VALUES ('look', 1024)")
+            self.assertEqual(q, "INSERT INTO verb_name (name, verb_id) VALUES ('look', 1024)")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.add_verb_name(1024, 'look')
     
     def test_remove_verb_name(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, "DELETE FROM verb_name WHERE name = 'look' AND verb_id = 1024")
+            self.assertEqual(q, "DELETE FROM verb_name WHERE name = 'look' AND verb_id = 1024")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.remove_verb_name(1024, 'look')
     
@@ -668,13 +660,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(512)
@@ -689,11 +681,11 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ex.cache['verb-2048'] = v
         
         v2 = ex.get_verb(1024, 'look', recurse=False)
-        self.failUnlessEqual(v2, None)
+        self.assertEqual(v2, None)
         
         v2 = ex.get_verb(1024, 'look', recurse=True)
-        self.failUnlessEqual(v2.get_id(), 2048)
-        self.failUnlessEqual(v, v2)
+        self.assertEqual(v2.get_id(), 2048)
+        self.assertEqual(v, v2)
     
     def test_get_ancestor_with(self):
         results = [
@@ -715,16 +707,16 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = ex.get_ancestor_with(1024, 'verb', 'look')
-        self.failUnlessEqual(o.name, 'test object')
+        self.assertEqual(o.name, 'test object')
     
     def test_get_property(self):
         results = [
@@ -735,9 +727,9 @@ class ObjectExchangeTestCase(unittest.TestCase):
         pool = test.Anything(
             runQuery        = lambda *a, **kw: results.pop(),
             runOperation    = lambda q, *a, **kw:
-                self.failUnlessEqual(q, "UPDATE property SET name = 'description', origin_id = 1024, owner_id = NULL, type = 'string', value = NULL WHERE id = 2048")
+                self.assertEqual(q, "UPDATE property SET name = 'description', origin_id = 1024, owner_id = NULL, type = 'string', value = NULL WHERE id = 2048")
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(1024)
@@ -749,8 +741,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ex.cache['property-2048'] = p
         
         p2 = ex.get_property(1024, 'description', recurse=False)
-        self.failUnlessEqual(p2.get_id(), 2048)
-        self.failUnlessEqual(p, p2)
+        self.assertEqual(p2.get_id(), 2048)
+        self.assertEqual(p, p2)
     
     def test_get_ancestor_property(self):
         results = [
@@ -763,7 +755,7 @@ class ObjectExchangeTestCase(unittest.TestCase):
         pool = test.Anything(
             runQuery    =    lambda *a, **kw: results.pop(),
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(512)
@@ -778,11 +770,11 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ex.cache['property-2048'] = p
         
         p2 = ex.get_property(1024, 'description', recurse=False)
-        self.failUnlessEqual(p2, None)
+        self.assertEqual(p2, None)
         
         p2 = ex.get_property(1024, 'description', recurse=True)
-        self.failUnlessEqual(p2.get_id(), 2048)
-        self.failUnlessEqual(p, p2)
+        self.assertEqual(p2.get_id(), 2048)
+        self.assertEqual(p, p2)
     
     def test_get_property_list(self):
         results = [
@@ -794,13 +786,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.get_property_list(1024)
     
@@ -809,49 +801,49 @@ class ObjectExchangeTestCase(unittest.TestCase):
         results = [10, 1, 0]
         def runQuery(q, *a, **kw):
             count = results.pop()
-            self.failUnlessEqual(q, "SELECT COUNT(*) AS count FROM object WHERE name = '%s'" % names.pop())
+            self.assertEqual(q, "SELECT COUNT(*) AS count FROM object WHERE name = '%s'" % names.pop())
             return [dict(count=count)]
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.refs('yet another name'), 0)
-        self.failUnlessEqual(ex.refs('some other name'), 1)
-        self.failUnlessEqual(ex.refs('some name'), 10)
+        self.assertEqual(ex.refs('yet another name'), 0)
+        self.assertEqual(ex.refs('some other name'), 1)
+        self.assertEqual(ex.refs('some name'), 10)
     
     def test_is_unique_name(self):
         names = ['some name', 'some other name', 'yet another name']
         results = [False, True, False]
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('%s') AND unique_name = 't'" % names.pop())
+            self.assertEqual(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('%s') AND unique_name = 't'" % names.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.is_unique_name('yet another name'), False)
-        self.failUnlessEqual(ex.is_unique_name('some other name'), True)
-        self.failUnlessEqual(ex.is_unique_name('some name'), False)
+        self.assertEqual(ex.is_unique_name('yet another name'), False)
+        self.assertEqual(ex.is_unique_name('some other name'), True)
+        self.assertEqual(ex.is_unique_name('some name'), False)
     
     def test_remove(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(q, "DELETE FROM object WHERE id = 1024")
+            self.assertEqual(q, "DELETE FROM object WHERE id = 1024")
         
         pool = test.Anything(
             runOperation    =    runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.cache['object-1024'] = interface.Object(ex)
         ex.cache['object-1024'].set_id(1024)
         
         ex.remove('object', 1024)
         
-        self.failUnlessEqual(ex.cache.get('object-1024'), None)
+        self.assertEqual(ex.cache.get('object-1024'), None)
     
     def test_get_access(self):
         results = [
@@ -867,13 +859,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.get_access(1024, 'object')
         ex.get_access(1024, 'verb')
@@ -906,17 +898,17 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.set_id(1024)
@@ -951,13 +943,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         accessor = interface.Object(ex)
         accessor.set_id(1024)
@@ -968,8 +960,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ex.cache['object-1024'] = accessor
         ex.cache['object-2048'] = subject
         
-        self.failUnlessEqual(ex.is_allowed(accessor, 'read', subject), True)
-        self.failUnlessEqual(ex.is_allowed(accessor, 'write', subject), False)
+        self.assertEqual(ex.is_allowed(accessor, 'read', subject), True)
+        self.assertEqual(ex.is_allowed(accessor, 'write', subject), False)
     
     def test_allow(self):
         results = [
@@ -985,17 +977,17 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.allow('owners', 'anything')
@@ -1012,17 +1004,17 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
         o.deny('owners', 'anything')
@@ -1039,16 +1031,16 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.is_wizard(2048), True)
-        self.failUnlessEqual(ex.is_wizard(1024), False)
+        self.assertEqual(ex.is_wizard(2048), True)
+        self.assertEqual(ex.is_wizard(1024), False)
     
     def test_is_connected_player(self):
         results = [
@@ -1062,16 +1054,16 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.is_connected_player(2048), True)
-        self.failUnlessEqual(ex.is_connected_player(1024), False)
+        self.assertEqual(ex.is_connected_player(2048), True)
+        self.assertEqual(ex.is_connected_player(1024), False)
     
     def test_set_player(self):
         results = [
@@ -1082,25 +1074,26 @@ class ObjectExchangeTestCase(unittest.TestCase):
         
         queries = [
             'DELETE FROM player WHERE avatar_id = 1',
-            # 'SELECT id FROM player WHERE avatar_id = 1',
-            "INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veYk4kGvM83ec', 't')",
+            "UPDATE player SET crypt = '!', enabled = 'f' WHERE avatar_id = 1",
+            #'SELECT id FROM player WHERE avatar_id = 1',
+            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veYk4kGvM83ec', 't', 't')",
             'SELECT id FROM player WHERE avatar_id = 1',
-            "INSERT INTO player (avatar_id, crypt, wizard) VALUES (1, 'veFIEE6ItqLts', 'f')",
+            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veFIEE6ItqLts', 't', 'f')",
             'SELECT id FROM player WHERE avatar_id = 1',
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.set_player(1, True, False, 'password', test_salt='ve')
         ex.set_player(1, True, True, 'wizard password', test_salt='ve')
@@ -1119,16 +1112,16 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.validate_password(1024, 'password'), True)
-        self.failUnlessEqual(ex.validate_password(1024, 'badpassword'), False)
+        self.assertEqual(ex.validate_password(1024, 'password'), True)
+        self.assertEqual(ex.validate_password(1024, 'badpassword'), False)
     
     def test_register_task(self):
         queries = [
@@ -1136,15 +1129,15 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return [dict(id=-1)]
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         task_id = ex.register_task(2, 10, '#1 (System Object)', 'test', '[1,2,3]', "{'a':1,'b':2}")
-        self.failUnlessEqual(task_id, -1)
+        self.assertEqual(task_id, -1)
     
     def test_get_tasks(self):
         queries = [
@@ -1153,102 +1146,102 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
         
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.get_tasks()
         ex.get_tasks(2)
     
     def test_get_task(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), 'SELECT * FROM task WHERE id = -1')
+            self.assertEqual(rmws(q), 'SELECT * FROM task WHERE id = -1')
             return [{'id':-1}]
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         task = ex.get_task(-1)
-        self.failUnlessEqual(task, {'id':-1})
+        self.assertEqual(task, {'id':-1})
     
     def test_get_aliases(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), 'SELECT alias FROM object_alias WHERE object_id = -1')
+            self.assertEqual(rmws(q), 'SELECT alias FROM object_alias WHERE object_id = -1')
             return [{'alias':'alias'}]
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         aliases = ex.get_aliases(-1)
-        self.failUnlessEqual(aliases, ['alias'])
+        self.assertEqual(aliases, ['alias'])
     
     def test_add_alias(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), "INSERT INTO object_alias (alias, object_id) VALUES ('alias', -1)")
+            self.assertEqual(rmws(q), "INSERT INTO object_alias (alias, object_id) VALUES ('alias', -1)")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.add_alias(-1, 'alias')
     
     def test_remove_alias(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), "DELETE FROM object_alias WHERE alias = 'alias' AND object_id = -1")
+            self.assertEqual(rmws(q), "DELETE FROM object_alias WHERE alias = 'alias' AND object_id = -1")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.remove_alias(-1, 'alias')
     
     def test_get_observers(self):
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), 'SELECT o.* FROM object o INNER JOIN object_observer oo ON oo.observer_id = o.id WHERE oo.object_id = -1')
+            self.assertEqual(rmws(q), 'SELECT o.* FROM object o INNER JOIN object_observer oo ON oo.observer_id = o.id WHERE oo.object_id = -1')
             return [{'id':-1}]
         
         pool = test.Anything(
             runQuery    = runQuery,
         )
         o = interface.Object('test')
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.cache['object--1'] = o
         observers = ex.get_observers(-1)
-        self.failUnlessEqual(observers, [o])
+        self.assertEqual(observers, [o])
     
     def test_add_observer(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), "INSERT INTO object_observer (object_id, observer_id) VALUES (-1, -2)")
+            self.assertEqual(rmws(q), "INSERT INTO object_observer (object_id, observer_id) VALUES (-1, -2)")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.add_observer(-1, -2)
     
     def test_remove_observer(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1 AND observer_id = -2")
+            self.assertEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1 AND observer_id = -2")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.remove_observer(-1, -2)
     
     def test_clear_observers(self):
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1")
+            self.assertEqual(rmws(q), "DELETE FROM object_observer WHERE object_id = -1")
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         ex.clear_observers(-1)
     
     def test_login_player(self):
@@ -1260,12 +1253,12 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.login_player(1024, 'sid')
     
@@ -1278,12 +1271,12 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runOperation(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
         
         pool = test.Anything(
             runOperation    = runOperation,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         ex.logout_player(1024)
     
@@ -1291,16 +1284,16 @@ class ObjectExchangeTestCase(unittest.TestCase):
     def test_is_player(self):
         results = [[dict(id=1024)], []]
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(q, "SELECT id FROM player WHERE avatar_id = 1024")
+            self.assertEqual(q, "SELECT id FROM player WHERE avatar_id = 1024")
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failUnlessEqual(ex.is_player(1024), False)
-        self.failUnlessEqual(ex.is_player(1024), True)
+        self.assertEqual(ex.is_player(1024), False)
+        self.assertEqual(ex.is_player(1024), True)
     
     def test_find(self):
         results = [
@@ -1328,18 +1321,18 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery    =    runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         self.failIf(ex.find(1024, 'box'))
         
         results = ex.find(1024, 'box')
-        self.failUnlessEqual(len([x for x in results if x.get_id()]), 3)
+        self.assertEqual(len([x for x in results if x.get_id()]), 3)
     
     def test_get_contents(self):
         results = [
@@ -1354,13 +1347,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [2048, 4096]
         for obj_id in expected_ids:
@@ -1391,13 +1384,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [256, 512, 2048, 4096]
         for obj_id in expected_ids:
@@ -1422,13 +1415,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [2048, 4096]
         for obj_id in expected_ids:
@@ -1436,8 +1429,8 @@ class ObjectExchangeTestCase(unittest.TestCase):
             o.set_id(obj_id)
             ex.cache['object-%s' % obj_id] = o
         
-        self.failUnlessEqual(ex.contains(1024, 2048), True)
-        self.failUnlessEqual(ex.contains(1024, 4096), True)
+        self.assertEqual(ex.contains(1024, 2048), True)
+        self.assertEqual(ex.contains(1024, 4096), True)
     
     def test_contains_recursive(self):
         results = [
@@ -1459,13 +1452,13 @@ class ObjectExchangeTestCase(unittest.TestCase):
         ]
         
         def runQuery(q, *a, **kw):
-            self.failUnlessEqual(rmws(q), queries.pop())
+            self.assertEqual(rmws(q), queries.pop())
             return results.pop()
         
         pool = test.Anything(
             runQuery        = runQuery,
         )
-        ex = exchange.ObjectExchange(pool)
+        ex = exchange.ObjectExchange(wrapper=pool)
         
         expected_ids = [256, 512, 2048, 4096]
         for obj_id in expected_ids:
@@ -1473,10 +1466,10 @@ class ObjectExchangeTestCase(unittest.TestCase):
             o.set_id(obj_id)
             ex.cache['object-%s' % obj_id] = o
         
-        self.failUnlessEqual(ex.contains(1024, 256, recurse=True), True)
-        self.failUnlessEqual(ex.contains(1024, 512, recurse=True), True)
-        self.failUnlessEqual(ex.contains(1024, 2048, recurse=True), True)
-        self.failUnlessEqual(ex.contains(1024, 4096, recurse=True), True)
+        self.assertEqual(ex.contains(1024, 256, recurse=True), True)
+        self.assertEqual(ex.contains(1024, 512, recurse=True), True)
+        self.assertEqual(ex.contains(1024, 2048, recurse=True), True)
+        self.assertEqual(ex.contains(1024, 4096, recurse=True), True)
     
     
     

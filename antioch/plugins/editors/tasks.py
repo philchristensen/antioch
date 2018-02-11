@@ -10,7 +10,7 @@ import logging
 
 from celery import shared_task
 
-from antioch.util import json
+from antioch.util import ason
 from antioch.core import parser, tasks
 
 log = logging.getLogger(__name__)
