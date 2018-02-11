@@ -7,22 +7,16 @@ services:
     volumes:
       - .:/opt/django
   webapp:
-    # links:
-    #  - errbit
     volumes:
       - .:/opt/django
     environment:
       DJANGO_SETTINGS_MODULE: antioch.settings.development
   worker:
-    # links:
-    #  - errbit
     volumes:
       - .:/opt/django
     environment:
       DJANGO_SETTINGS_MODULE: antioch.settings.development
   beat:
-    # links:
-    #  - errbit
     volumes:
       - .:/opt/django
     environment:
