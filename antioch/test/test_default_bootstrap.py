@@ -37,7 +37,7 @@ class DefaultBootstrapTestCase(TestCase):
     def test_player_eval(self):
         caller = self.exchange.get_object('wizard')
         
-        l = parser.Lexer('@eval "test"')
+        l = parser.Lexer('eval "test"')
         p = parser.TransactionParser(l, caller, self.exchange)
         
         v = p.get_verb()
@@ -58,7 +58,7 @@ class DefaultBootstrapTestCase(TestCase):
     def test_player_write(self):
         caller = self.exchange.get_object('wizard')
         
-        l = parser.Lexer('@exec write(caller, "test")')
+        l = parser.Lexer('exec write(caller, "test")')
         p = parser.TransactionParser(l, caller, self.exchange)
         
         v = p.get_verb()
@@ -97,7 +97,7 @@ class DefaultBootstrapTestCase(TestCase):
     def test_wizard_edit(self):
         caller = self.exchange.get_object('wizard')
         
-        l = parser.Lexer('@edit me')
+        l = parser.Lexer('edit me')
         p = parser.TransactionParser(l, caller, self.exchange)
         
         v = p.get_verb()
@@ -113,7 +113,7 @@ class DefaultBootstrapTestCase(TestCase):
     def test_wizard_edit_system(self):
         caller = self.exchange.get_object('wizard')
         
-        l = parser.Lexer('@edit #1')
+        l = parser.Lexer('edit #1')
         p = parser.TransactionParser(l, caller, self.exchange)
         
         v = p.get_verb()

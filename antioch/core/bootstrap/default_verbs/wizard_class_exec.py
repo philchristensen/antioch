@@ -1,3 +1,3 @@
 #!antioch
 
-execute(command[6:].strip())
+execute(command[5:].strip())
