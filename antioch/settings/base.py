@@ -268,11 +268,11 @@ LOGGING = {
             'handlers':['null'],
             'propagate': False,
         },
-        # django orm queries
-        'django.db': {
-            'handlers':['null'],
-            'propagate': False,
-        },
+        # # django orm queries
+        # 'django.db': {
+        #     'handlers':['null'],
+        #     'propagate': False,
+        # },
         'py.warnings': {
             'handlers': ['console'],
         }

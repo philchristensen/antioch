@@ -1,0 +1,1058 @@
+[
+{
+    "model": "core.object",
+    "pk": 1,
+    "fields": {
+        "name": "System Object",
+        "unique_name": false,
+        "owner": 2,
+        "location": null
+    }
+},
+{
+    "model": "core.object",
+    "pk": 2,
+    "fields": {
+        "name": "Wizard",
+        "unique_name": true,
+        "owner": 2,
+        "location": 4
+    }
+},
+{
+    "model": "core.object",
+    "pk": 3,
+    "fields": {
+        "name": "player defaults",
+        "unique_name": false,
+        "owner": 2,
+        "location": null
+    }
+},
+{
+    "model": "core.object",
+    "pk": 4,
+    "fields": {
+        "name": "The First Room",
+        "unique_name": true,
+        "owner": 2,
+        "location": null
+    }
+},
+{
+    "model": "core.object",
+    "pk": 5,
+    "fields": {
+        "name": "User",
+        "unique_name": true,
+        "owner": 5,
+        "location": 4
+    }
+},
+{
+    "model": "core.relationship",
+    "pk": 1,
+    "fields": {
+        "child": 2,
+        "parent": 3,
+        "weight": 0
+    }
+},
+{
+    "model": "core.relationship",
+    "pk": 2,
+    "fields": {
+        "child": 5,
+        "parent": 3,
+        "weight": 0
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 1,
+    "fields": {
+        "code": "#!antioch\n\nobj = args[0]\nobj.allow('wizards', 'anything')\nobj.allow('owners', 'anything')\n\nif(obj.get_type() == 'verb'):\n    obj.allow('everyone', 'execute')\nelse:\n    obj.allow('everyone', 'read')",
+        "filename": null,
+        "owner": 2,
+        "origin": 1,
+        "ability": false,
+        "method": true
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 2,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_edit.py",
+        "owner": 2,
+        "origin": 2,
+        "ability": true,
+        "method": false
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 3,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_exec.py",
+        "owner": 2,
+        "origin": 2,
+        "ability": true,
+        "method": false
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 4,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_eval.py",
+        "owner": 2,
+        "origin": 2,
+        "ability": true,
+        "method": false
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 5,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_set.py",
+        "owner": 2,
+        "origin": 3,
+        "ability": true,
+        "method": false
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 6,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_look.py",
+        "owner": 2,
+        "origin": 3,
+        "ability": true,
+        "method": true
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 7,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_passwd.py",
+        "owner": 2,
+        "origin": 3,
+        "ability": true,
+        "method": true
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 8,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/plugins/signup/verbs/system_add_player.py",
+        "owner": 2,
+        "origin": 1,
+        "ability": false,
+        "method": true
+    }
+},
+{
+    "model": "core.verb",
+    "pk": 9,
+    "fields": {
+        "code": "",
+        "filename": "/opt/django/antioch/plugins/signup/verbs/system_enable_player.py",
+        "owner": 2,
+        "origin": 1,
+        "ability": false,
+        "method": true
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 1,
+    "fields": {
+        "verb": 1,
+        "name": "set_default_permissions"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 2,
+    "fields": {
+        "verb": 2,
+        "name": "edit"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 3,
+    "fields": {
+        "verb": 3,
+        "name": "exec"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 4,
+    "fields": {
+        "verb": 4,
+        "name": "eval"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 5,
+    "fields": {
+        "verb": 5,
+        "name": "set"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 6,
+    "fields": {
+        "verb": 6,
+        "name": "look"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 7,
+    "fields": {
+        "verb": 7,
+        "name": "passwd"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 8,
+    "fields": {
+        "verb": 8,
+        "name": "add_player"
+    }
+},
+{
+    "model": "core.verbname",
+    "pk": 9,
+    "fields": {
+        "verb": 9,
+        "name": "enable_player"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 1,
+    "fields": {
+        "name": "anything"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 2,
+    "fields": {
+        "name": "read"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 3,
+    "fields": {
+        "name": "write"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 4,
+    "fields": {
+        "name": "entrust"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 5,
+    "fields": {
+        "name": "grant"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 6,
+    "fields": {
+        "name": "execute"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 7,
+    "fields": {
+        "name": "move"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 8,
+    "fields": {
+        "name": "transmute"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 9,
+    "fields": {
+        "name": "derive"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 10,
+    "fields": {
+        "name": "develop"
+    }
+},
+{
+    "model": "core.permission",
+    "pk": 11,
+    "fields": {
+        "name": "administer"
+    }
+},
+{
+    "model": "core.access",
+    "pk": 1,
+    "fields": {
+        "object": null,
+        "verb": 1,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 2,
+    "fields": {
+        "object": null,
+        "verb": 1,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 3,
+    "fields": {
+        "object": null,
+        "verb": 1,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 4,
+    "fields": {
+        "object": 1,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 5,
+    "fields": {
+        "object": 1,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 6,
+    "fields": {
+        "object": 1,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 2,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 7,
+    "fields": {
+        "object": 2,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 8,
+    "fields": {
+        "object": 2,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 9,
+    "fields": {
+        "object": 2,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 2,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 10,
+    "fields": {
+        "object": 3,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 11,
+    "fields": {
+        "object": 3,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 12,
+    "fields": {
+        "object": 3,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 2,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 13,
+    "fields": {
+        "object": 4,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 14,
+    "fields": {
+        "object": 4,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 15,
+    "fields": {
+        "object": 4,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 2,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 16,
+    "fields": {
+        "object": 5,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 17,
+    "fields": {
+        "object": 5,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 18,
+    "fields": {
+        "object": 5,
+        "verb": null,
+        "property": null,
+        "rule": "allow",
+        "permission": 2,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 19,
+    "fields": {
+        "object": null,
+        "verb": 2,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 20,
+    "fields": {
+        "object": null,
+        "verb": 2,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 21,
+    "fields": {
+        "object": null,
+        "verb": 2,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 22,
+    "fields": {
+        "object": null,
+        "verb": 3,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 23,
+    "fields": {
+        "object": null,
+        "verb": 3,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 24,
+    "fields": {
+        "object": null,
+        "verb": 3,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 25,
+    "fields": {
+        "object": null,
+        "verb": 3,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 26,
+    "fields": {
+        "object": null,
+        "verb": 4,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 27,
+    "fields": {
+        "object": null,
+        "verb": 4,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 28,
+    "fields": {
+        "object": null,
+        "verb": 4,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 29,
+    "fields": {
+        "object": null,
+        "verb": 4,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 30,
+    "fields": {
+        "object": null,
+        "verb": 5,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 31,
+    "fields": {
+        "object": null,
+        "verb": 5,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 32,
+    "fields": {
+        "object": null,
+        "verb": 5,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 33,
+    "fields": {
+        "object": null,
+        "verb": 5,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 34,
+    "fields": {
+        "object": null,
+        "verb": 6,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 35,
+    "fields": {
+        "object": null,
+        "verb": 6,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 36,
+    "fields": {
+        "object": null,
+        "verb": 6,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 37,
+    "fields": {
+        "object": null,
+        "verb": 6,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 38,
+    "fields": {
+        "object": null,
+        "verb": 7,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 39,
+    "fields": {
+        "object": null,
+        "verb": 7,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 40,
+    "fields": {
+        "object": null,
+        "verb": 7,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 41,
+    "fields": {
+        "object": null,
+        "verb": 7,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 42,
+    "fields": {
+        "object": null,
+        "verb": 8,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 43,
+    "fields": {
+        "object": null,
+        "verb": 8,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 44,
+    "fields": {
+        "object": null,
+        "verb": 8,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 45,
+    "fields": {
+        "object": null,
+        "verb": 9,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "wizards",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 46,
+    "fields": {
+        "object": null,
+        "verb": 9,
+        "property": null,
+        "rule": "allow",
+        "permission": 1,
+        "type": "group",
+        "accessor": null,
+        "group": "owners",
+        "weight": 0
+    }
+},
+{
+    "model": "core.access",
+    "pk": 47,
+    "fields": {
+        "object": null,
+        "verb": 9,
+        "property": null,
+        "rule": "allow",
+        "permission": 6,
+        "type": "group",
+        "accessor": null,
+        "group": "everyone",
+        "weight": 0
+    }
+},
+{
+    "model": "core.player",
+    "pk": 1,
+    "fields": {
+        "avatar": 2,
+        "session_id": null,
+        "wizard": true,
+        "enabled": true,
+        "crypt": "qwra7M0gSOemQ",
+        "last_login": null,
+        "last_logout": null
+    }
+},
+{
+    "model": "core.player",
+    "pk": 2,
+    "fields": {
+        "avatar": 5,
+        "session_id": null,
+        "wizard": false,
+        "enabled": true,
+        "crypt": "pHkBlqCHsHrxA",
+        "last_login": null,
+        "last_logout": null
+    }
+}
+]
