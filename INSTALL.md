@@ -12,7 +12,6 @@ Requirements for Server
 * [Python            >=  2.7   ](http://www.python.org)
 * [Django            >=  1.9   ](http://www.djangoproject.com)
 * [Celery            >=  3.1.19](http://www.celeryproject.com)
-* [Twisted           >= 15.5   ](http://www.twistedmatrix.com)
 * [RestrictedPython  >=  3.6.0 ](http://pypi.python.org/pypi/RestrictedPython)
 
 There are various other requirements

@@ -16,11 +16,6 @@ from .celery import app as celery_app
 
 from zope import interface
 
-from twisted.python import versions
-
-version = versions.Version('antioch', 2, 0, 0, 1)
-__version__ = version.short()
-
 class IPlugin(interface.Interface):
     name = interface.Attribute('Name of this module.')
     script_url = interface.Attribute('Plugin script URL.')

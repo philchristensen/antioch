@@ -250,18 +250,6 @@ LOGGING = {
         #     'propagate': False,
         #     'level':'INFO',
         # },
-        # twisted-related main process messages, stdout
-        'antioch.twisted': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'INFO',
-        },
-        # twisted-related process child messages
-        'antioch.child': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'INFO',
-        },
         'django': {
             'handlers': ['console'],
         },

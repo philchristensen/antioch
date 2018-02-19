@@ -14,8 +14,6 @@ import pkg_resources as pkg
 
 from zope.interface import classProvides
 
-from twisted.protocols import amp
-
 from antioch import IPlugin
 from antioch.util import ason
 from antioch.core import parser, code

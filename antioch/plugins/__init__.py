@@ -10,10 +10,6 @@ Plugins add additional client or server functionality
 
 import os, sys
 
-from zope import interface
-
-from twisted import plugin
-
 from django.conf import settings
 from django.conf.urls import include, url
 from importlib import import_module
@@ -54,13 +50,6 @@ def get_app_submodule(app_name, submodule):
         # attempting to import it, otherwise we want it to bubble up.
         if module_has_submodule(app, submodule):
             raise
-
-def discover_commands(plugin):
-    from antioch.core import transact
-    t = plugin.__dict__.items()
-    return dict(
-        [(k.lower(),v) for k,v in t if isinstance(v, type) and issubclass(v, transact.WorldTransaction)]
-    )
 
 def instantiate(plugin_mod):
     from antioch import IPlugin
