@@ -3,7 +3,7 @@
 #
 # See LICENSE for details
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.db import connection
 
 from antioch import test
@@ -11,9 +11,7 @@ from antioch.core import errors, exchange, parser, interface, code
 
 from django.db import connection
 
-class TransactionsTestCase(TransactionTestCase):
-    reset_sequences = True
-
+class TransactionsTestCase(TestCase):
     @classmethod
     def setUpTestData(self):
         test.init_database(self.__class__)
@@ -26,6 +24,7 @@ class TransactionsTestCase(TransactionTestCase):
         except:
             pass
         
+        print x.get_object('Test Object')
         self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
     
     def test_parser_rollback(self):
@@ -34,10 +33,10 @@ class TransactionsTestCase(TransactionTestCase):
         try:
             with exchange.ObjectExchange(connection) as x:
                 caller = x.get_object(user_id)
-                parser.parse(caller, '@exec create_object("Test Object")')
+                parser.parse(caller, 'exec create_object("Test Object")')
                 if(x.get_object('Test Object')):
                     created = True
-                parser.parse(caller, '@exec nosuchobject()')
+                parser.parse(caller, 'exec nosuchobject()')
         except:
             pass
         
@@ -52,7 +51,7 @@ class TransactionsTestCase(TransactionTestCase):
         
         with exchange.ObjectExchange(connection, ctx=user_id) as x:
             wizard = x.get_object(user_id)
-            eval_verb = x.get_verb(user_id, '@eval')
+            eval_verb = x.get_verb(user_id, 'eval')
             
             # since this will raise AttributeError, the model will attempt to find a verb by that name
             self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller._owner_id')

@@ -3,24 +3,19 @@
 #
 # See LICENSE for details
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.db import connection
 
 from antioch.core import parser, errors, exchange
 from antioch import test
 
-class ParserTestCase(TransactionTestCase):
-    reset_sequences = True
-
+class ParserTestCase(TestCase):
     @classmethod
     def setUpTestData(self):
         test.init_database(self.__class__)
     
     def setUp(self):
         self.exchange = exchange.ObjectExchange(connection)
-    
-    def tearDown(self):
-        return self.exchange.flush()
     
     def test_parse_verb(self):
         wizard = self.exchange.get_object('wizard')

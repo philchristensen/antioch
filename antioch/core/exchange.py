@@ -144,7 +144,7 @@ class ObjectExchange(object):
                 if(rollback_after_fatal_errors):
                     self.rollback()
                 else:
-                    self.commit()
+                     self.commit()
                 import traceback, StringIO
                 io = StringIO.StringIO()
                 traceback.print_exception(etype, e, trace, None, io)

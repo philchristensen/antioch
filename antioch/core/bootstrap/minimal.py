@@ -50,22 +50,22 @@ user.set_location(room)
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 user.set_player(True, passwd='user')
 
-wizard.add_verb('@edit', **dict(
+wizard.add_verb('edit', **dict(
     ability        = True,
     filename    = bootstrap.get_verb_path('wizard_class_edit.py'),
 ))
 
-wizard.add_verb('@exec', **dict(
+wizard.add_verb('exec', **dict(
     ability        = True,
     filename    = bootstrap.get_verb_path('wizard_class_exec.py'),
 )).allow('wizards', 'execute')
 
-wizard.add_verb('@eval', **dict(
+wizard.add_verb('eval', **dict(
     ability        = True,
     filename    = bootstrap.get_verb_path('wizard_class_eval.py'),
 )).allow('wizards', 'execute')
 
-player_defaults.add_verb('@set', **dict(
+player_defaults.add_verb('set', **dict(
     ability        = True,
     filename    = bootstrap.get_verb_path('player_class_set.py'),
 )).allow('everyone', 'execute')
@@ -76,7 +76,7 @@ player_defaults.add_verb('look', **dict(
     filename    = bootstrap.get_verb_path('player_class_look.py'),
 )).allow('everyone', 'execute')
 
-player_defaults.add_verb('@passwd', **dict(
+player_defaults.add_verb('passwd', **dict(
     ability        = True,
     method        = True,
     filename    = bootstrap.get_verb_path('player_class_passwd.py'),

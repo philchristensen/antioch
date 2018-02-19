@@ -5,7 +5,7 @@
 
 import sys, os, os.path, time
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.db import connection
 
 from antioch import test
@@ -13,9 +13,7 @@ from antioch.core import errors, exchange
 
 # sys.setrecursionlimit(100)
 
-class PermissionsTestCase(TransactionTestCase):
-    reset_sequences = True
-
+class PermissionsTestCase(TestCase):
     @classmethod
     def setUpTestData(self):
         test.init_database(self.__class__)

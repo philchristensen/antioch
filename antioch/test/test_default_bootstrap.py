@@ -3,15 +3,13 @@
 #
 # See LICENSE for details
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.db import connection
 
 from antioch import test
 from antioch.core import parser, exchange
 
-class DefaultBootstrapTestCase(TransactionTestCase):
-    reset_sequences = True
-
+class DefaultBootstrapTestCase(TestCase):
     @classmethod
     def setUpTestData(self):
         test.init_database(self.__class__, dataset='default')
