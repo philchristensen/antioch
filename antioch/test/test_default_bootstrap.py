@@ -3,16 +3,21 @@
 #
 # See LICENSE for details
 
-from django.test import TestCase
+from django.test import TransactionTestCase
+from django.db import connection
 
 from antioch import test
 from antioch.core import parser, exchange
 
-class DefaultBootstrapTestCase(TestCase):
+class DefaultBootstrapTestCase(TransactionTestCase):
+    reset_sequences = True
+
     @classmethod
     def setUpTestData(self):
-        self.pool = test.init_database(self.__class__, dataset='default')
-        self.exchange = exchange.ObjectExchange(self.pool)
+        test.init_database(self.__class__, dataset='default')
+
+    def setUp(self):
+        self.exchange = exchange.ObjectExchange(connection)
         self.exchange.queue = test.Anything(
             flush    = lambda: None,
         )

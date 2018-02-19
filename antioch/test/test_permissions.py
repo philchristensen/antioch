@@ -5,18 +5,23 @@
 
 import sys, os, os.path, time
 
-from django.test import TestCase
+from django.test import TransactionTestCase
+from django.db import connection
 
 from antioch import test
 from antioch.core import errors, exchange
 
 # sys.setrecursionlimit(100)
 
-class PermissionsTestCase(TestCase):
+class PermissionsTestCase(TransactionTestCase):
+    reset_sequences = True
+
     @classmethod
     def setUpTestData(self):
-        self.pool = test.init_database(self.__class__)
-        self.exchange = exchange.ObjectExchange(self.pool)
+        test.init_database(self.__class__)
+    
+    def setUp(self):
+        self.exchange = exchange.ObjectExchange(connection)
         
         self.wizard = self.exchange.get_object('wizard')
         self.user = self.exchange.get_object('user')
