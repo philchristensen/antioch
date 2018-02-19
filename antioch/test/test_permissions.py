@@ -14,9 +14,7 @@ from antioch.core import errors, exchange
 # sys.setrecursionlimit(100)
 
 class PermissionsTestCase(TestCase):
-    @classmethod
-    def setUpTestData(self):
-        test.init_database(self.__class__)
+    fixtures = ['core-minimal.json']
     
     def setUp(self):
         self.exchange = exchange.ObjectExchange(connection)

@@ -10,18 +10,13 @@ from antioch import test
 from antioch.core import parser, exchange
 
 class DefaultBootstrapTestCase(TestCase):
-    @classmethod
-    def setUpTestData(self):
-        test.init_database(self.__class__, dataset='default')
-
+    fixtures = ['core-default.json']
+    
     def setUp(self):
         self.exchange = exchange.ObjectExchange(connection)
         self.exchange.queue = test.Anything(
             flush    = lambda: None,
         )
-    
-    def tearDown(self):
-        return self.exchange.flush()
     
     def test_player_look(self):
         caller = self.exchange.get_object('wizard')

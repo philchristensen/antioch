@@ -12,9 +12,7 @@ from antioch.core import errors, exchange, parser, interface, code
 from django.db import connection
 
 class TransactionsTestCase(TestCase):
-    @classmethod
-    def setUpTestData(self):
-        test.init_database(self.__class__)
+    fixtures = ['core-minimal.json']
     
     def test_basic_rollback(self):
         try:

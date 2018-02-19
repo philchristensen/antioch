@@ -31,12 +31,7 @@ def printQuery(func):
     return f
 
 class ObjectExchangeTestCase(TestCase):
-    @classmethod
-    def setUpTestData(self):
-        test.init_database(self.__class__)
-    
-    def tearDown(self):
-        pass
+    fixtures = ['core-minimal.json']
     
     def test_extract_id(self):
         self.assertEqual(2, exchange.extract_id('#2 (Object)'))
