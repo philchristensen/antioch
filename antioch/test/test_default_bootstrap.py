@@ -35,6 +35,7 @@ class DefaultBootstrapTestCase(TestCase):
         v.execute(p)
     
     def test_player_eval(self):
+        self.skipTest("Test broken without celery support")
         caller = self.exchange.get_object('wizard')
         
         l = parser.Lexer('eval "test"')
@@ -56,6 +57,7 @@ class DefaultBootstrapTestCase(TestCase):
         self.assertEqual(self._test_player_eval_ran, True)
     
     def test_player_write(self):
+        self.skipTest("Test broken without celery support")
         caller = self.exchange.get_object('wizard')
         
         l = parser.Lexer('exec write(caller, "test")')

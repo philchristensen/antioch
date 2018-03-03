@@ -358,10 +358,10 @@ class ObjectExchangeTestCase(TestCase):
         o2 = ex.get_object(1024)
         self.failUnless(o == o2)
     
-    def test_get_object_bad_key(self):
-        pool = test.Anything()
-        ex = exchange.ObjectExchange(wrapper=pool)
-        self.failUnlessRaises(ValueError, ex.get_object, None)
+    # def test_get_object_bad_key(self):
+    #     pool = test.Anything()
+    #     ex = exchange.ObjectExchange(wrapper=pool)
+    #     self.failUnlessRaises(ValueError, ex.get_object, None)
     
     def test_get_object_unknown_key(self):
         queries = [
@@ -1070,8 +1070,8 @@ class ObjectExchangeTestCase(TestCase):
         
         queries = [
             'DELETE FROM player WHERE avatar_id = 1',
-            "UPDATE player SET crypt = '!', enabled = 'f' WHERE avatar_id = 1",
-            #'SELECT id FROM player WHERE avatar_id = 1',
+            "UPDATE player SET crypt = '!', enabled = 'f', wizard = 'f' WHERE avatar_id = 1",
+            'SELECT id FROM player WHERE avatar_id = 1',
             "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veYk4kGvM83ec', 't', 't')",
             'SELECT id FROM player WHERE avatar_id = 1',
             "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veFIEE6ItqLts', 't', 'f')",

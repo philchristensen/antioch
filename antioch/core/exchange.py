@@ -54,11 +54,11 @@ class ConnectionWrapper(object):
     
     def runOperation(self, query, *args, **kwargs):
         with self.connection.cursor() as cursor:
-            cursor.execute(query, args)
+            cursor.execute(query, *args)
         
     def runQuery(self, query, *args, **kwargs):
         with self.connection.cursor() as cursor:
-            cursor.execute(query, args)
+            cursor.execute(query, *args)
             columns = [col[0] for col in cursor.description]
             return [
                 dict(zip(columns, row))

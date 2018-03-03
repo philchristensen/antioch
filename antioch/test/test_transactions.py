@@ -22,7 +22,6 @@ class TransactionsTestCase(TestCase):
         except:
             pass
         
-        print x.get_object('Test Object')
         self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
     
     def test_parser_rollback(self):
