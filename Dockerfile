@@ -25,5 +25,9 @@ ADD bin/entrypoint.sh /entrypoint.sh
 
 RUN mkdir /var/lib/celery
 
+# Some helpers for temporary Travis conflicts
+RUN mkdir -p /home/travis/build/philchristensen
+RUN ln -s /opt/django /home/travis/build/philchristensen/antioch
+
 # Custom entrypoint for improved ad-hoc command support
 ENTRYPOINT ["/entrypoint.sh"]
