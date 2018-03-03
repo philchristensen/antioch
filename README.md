@@ -1,6 +1,8 @@
 antioch 
 =======
 
+[![build-status](https://travis-ci.org/django-salesforce/django-salesforce.svg?branch=master)](https://travis-ci.org/django-salesforce/django-salesforce)
+
 (c) Phil Christensen, <phil@bubblehouse.org>
 
 19 October 2017
