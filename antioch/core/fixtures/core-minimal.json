@@ -84,7 +84,7 @@
     "pk": 2,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_edit.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_edit.py",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -96,7 +96,7 @@
     "pk": 3,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_exec.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_exec.py",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -108,7 +108,7 @@
     "pk": 4,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/wizard_class_eval.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_eval.py",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -120,7 +120,7 @@
     "pk": 5,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_set.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_set.py",
         "owner": 2,
         "origin": 3,
         "ability": true,
@@ -132,7 +132,7 @@
     "pk": 6,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_look.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_look.py",
         "owner": 2,
         "origin": 3,
         "ability": true,
@@ -144,7 +144,7 @@
     "pk": 7,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/core/bootstrap/default_verbs/player_class_passwd.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_passwd.py",
         "owner": 2,
         "origin": 3,
         "ability": true,
@@ -156,7 +156,7 @@
     "pk": 8,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/plugins/signup/verbs/system_add_player.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_add_player.py",
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -168,7 +168,7 @@
     "pk": 9,
     "fields": {
         "code": "",
-        "filename": "/opt/django/antioch/plugins/signup/verbs/system_enable_player.py",
+        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_enable_player.py",
         "owner": 2,
         "origin": 1,
         "ability": false,
