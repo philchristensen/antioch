@@ -8,4 +8,4 @@ services:
 install:
   - pip install -r requirements.txt
 script:
-  - DJANGO_SETTINGS_MODULE=antioch.settings.test python manage.py test
+  - DJANGO_SETTINGS_MODULE=antioch.settings.travis python manage.py test
