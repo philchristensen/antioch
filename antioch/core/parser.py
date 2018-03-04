@@ -146,7 +146,7 @@ class Lexer(object):
             return True
         
         #nonoverlap() will leave only true non-quoted prepositions
-        prep_matches = filter(nonoverlap, prep_matches)
+        prep_matches = list(filter(nonoverlap, prep_matches))
         
         #determine if there is anything after the verb
         if(len(self.words) > 1):
@@ -229,7 +229,7 @@ class TransactionParser(object):
         self.verb = None
         
         if(self.lexer):
-            for key, value in self.lexer.get_details().items():
+            for key, value in list(self.lexer.get_details().items()):
                 self.__dict__[key] = value
         
             for prep in self.prepositions:
@@ -468,7 +468,7 @@ class TransactionParser(object):
         object **string** found, raise a NoSuchObjectError; if the preposition
         was not found, raise a NoSuchPrepositionError.
         """
-        if not(self.prepositions.has_key(prep)):
+        if not(prep in self.prepositions):
             raise NoSuchPrepositionError(prep)
         if(isinstance(self.prepositions[prep][0], list)):
             matches = []
@@ -490,7 +490,7 @@ class TransactionParser(object):
         object **specifier** found, return the empty string; if the preposition
         was not found, raise a NoSuchPrepositionError.
         """
-        if not(self.prepositions.has_key(prep)):
+        if not(prep in self.prepositions):
             raise NoSuchPrepositionError(prep)
         if(isinstance(self.prepositions[prep][0], list)):
             matches = []

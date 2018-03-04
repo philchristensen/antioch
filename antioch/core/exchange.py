@@ -35,7 +35,7 @@ def extract_id(literal):
     """
     Given an object literal, return the object ID.
     """
-    if(isinstance(literal, basestring) and literal.startswith('#')):
+    if(isinstance(literal, str) and literal.startswith('#')):
         end = literal.find("(")
         if(end == -1):
             end = literal.find( " ")
@@ -43,7 +43,7 @@ def extract_id(literal):
             end = len(literal)
         return int(literal[1:end])
     
-    if(isinstance(literal, (int, long))):
+    if(isinstance(literal, int)):
         return literal
     
     return None
@@ -61,7 +61,7 @@ class ConnectionWrapper(object):
             cursor.execute(query, *args)
             columns = [col[0] for col in cursor.description]
             return [
-                dict(zip(columns, row))
+                dict(list(zip(columns, row)))
                 for row in cursor.fetchall()
             ]
 
@@ -98,7 +98,7 @@ class ObjectExchange(object):
             raise RuntimeError("Exchanges can't use queues without a context.")
         
         self.ctx = ctx
-        if(isinstance(ctx, (int, long))):
+        if(isinstance(ctx, int)):
             self.ctx_id = ctx
             self.ctx = self.get_object(ctx)
         elif(ctx):
@@ -144,8 +144,8 @@ class ObjectExchange(object):
                     self.rollback()
                 else:
                      self.commit()
-                import traceback, StringIO
-                io = StringIO.StringIO()
+                import traceback, io
+                io = io.StringIO()
                 traceback.print_exception(etype, e, trace, None, io)
                 log.error('Sending fatal exception to user: %s' % str(e))
                 if(self.queue is not None):
@@ -290,7 +290,7 @@ class ObjectExchange(object):
                             self.activate_default_grants()
                             system = self.get_object(1)
                             set_default_permissions = system.set_default_permissions
-                        except (errors.NoSuchObjectError, errors.NoSuchVerbError), e:
+                        except (errors.NoSuchObjectError, errors.NoSuchVerbError) as e:
                             set_default_permissions = lambda *a: None
                         
                         set_default_permissions(obj)
@@ -463,7 +463,7 @@ class ObjectExchange(object):
         If return_list is True, ambiguous object keys will return a list
         of matching objects.
         """
-        if(isinstance(key, basestring)):
+        if(isinstance(key, str)):
             key = key.strip()
         try:
             key = int(key)
@@ -474,7 +474,7 @@ class ObjectExchange(object):
             return None
         
         items = None
-        if(isinstance(key, basestring)):
+        if(isinstance(key, str)):
             if(key.startswith('#')):
                 end = key.find("(")
                 if(end == -1):
@@ -1141,7 +1141,7 @@ class ObjectExchange(object):
         """
         Add an access rule.
         """
-        if(isinstance(accessor, basestring) and accessor not in group_definitions):
+        if(isinstance(accessor, str) and accessor not in group_definitions):
             raise ValueError("Unknown group: %s" % accessor)
         
         if(permission in self.permission_list):
@@ -1159,8 +1159,8 @@ class ObjectExchange(object):
             'property_id'    : subject.get_id() if isinstance(subject, interface.Property) else None,
             'rule'            : rule,
             'permission_id' : permission_id,
-            'type'            : 'accessor' if isinstance(accessor, (int, long)) else 'group',
-            'accessor_id'    : accessor if isinstance(accessor, (int, long)) else None,
+            'type'            : 'accessor' if isinstance(accessor, int) else 'group',
+            'accessor_id'    : accessor if isinstance(accessor, int) else None,
             '"group"'        : accessor if isinstance(accessor, str) else None,
             'weight'        : 0,
         }))
@@ -1206,7 +1206,7 @@ class ObjectExchange(object):
                 user_id        = next_task[0]['user_id'],
                 task_id        = next_task[0]['id'],
             )
-        except Exception, e:
+        except Exception as e:
             import traceback
             trace = traceback.format_exc()
             err = '%s: %s' % (e.__class__.__name__, str(e))

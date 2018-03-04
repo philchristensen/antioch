@@ -8,7 +8,7 @@
 Create a fresh database
 """
 
-from __future__ import with_statement
+
 
 import pkg_resources as pkg
 
@@ -22,7 +22,7 @@ def load_python(connection, python_path):
     Execute a provided Python bootstrap file against the provided database.
     """
     with exchange.ObjectExchange(connection) as x:
-        execfile(python_path, globals(), dict(exchange=x))
+        exec(compile(open(python_path).read(), python_path, 'exec'), globals(), dict(exchange=x))
 
 def initialize_plugins(connection):
     for plugin in plugins.iterate():

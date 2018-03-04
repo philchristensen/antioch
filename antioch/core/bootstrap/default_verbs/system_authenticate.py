@@ -40,7 +40,7 @@ for name in guest_names:
         guest_object.set_owner(guest_object)
         break
 else:
-    print "[guests] rejected, too many guests"
+    print("[guests] rejected, too many guests")
     raise PermissionError("Sorry, there are too many guests already.")
 
 system['guestbook'].value = guestbook

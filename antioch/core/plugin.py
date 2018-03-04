@@ -14,8 +14,8 @@ from antioch import IPlugin
 class CorePlugin(object):
     classProvides(IPlugin)
     
-    name = u'core'
-    script_url = u''
+    name = 'core'
+    script_url = ''
     
     def get_environment(self):
         """

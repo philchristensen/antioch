@@ -43,7 +43,7 @@ def access(p, item):
 class EditorPlugin(object):
     classProvides(IPlugin)
     
-    script_url = u'%sjs/editor-plugin.js' % settings.STATIC_URL
+    script_url = '%sjs/editor-plugin.js' % settings.STATIC_URL
     
     def get_environment(self):
         return dict(

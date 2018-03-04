@@ -22,7 +22,7 @@ class TransactionsTestCase(TestCase):
         except:
             pass
         
-        self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
+        self.assertRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
     
     def test_parser_rollback(self):
         created = False
@@ -37,8 +37,8 @@ class TransactionsTestCase(TestCase):
         except:
             pass
         
-        self.failUnless(created, "'Test Object' not created.")
-        self.failUnlessRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
+        self.assertTrue(created, "'Test Object' not created.")
+        self.assertRaises(errors.NoSuchObjectError, x.get_object, "Test Object")
     
     def test_protected_attribute_access(self):
         user_id = 2 # Wizard ID
@@ -51,12 +51,12 @@ class TransactionsTestCase(TestCase):
             eval_verb = x.get_verb(user_id, 'eval')
             
             # since this will raise AttributeError, the model will attempt to find a verb by that name
-            self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller._owner_id')
-            self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller._origin_id')
-            self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller.__dict__')
-            self.failUnlessRaises(SyntaxError, code.r_eval, wizard, 'caller.__slots__')
+            self.assertRaises(SyntaxError, code.r_eval, wizard, 'caller._owner_id')
+            self.assertRaises(SyntaxError, code.r_eval, wizard, 'caller._origin_id')
+            self.assertRaises(SyntaxError, code.r_eval, wizard, 'caller.__dict__')
+            self.assertRaises(SyntaxError, code.r_eval, wizard, 'caller.__slots__')
             
-            self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_owner_id")')
-            self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_origin_id")')
-            self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__dict__")')
-            self.failUnlessRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__slots__")')
+            self.assertRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_owner_id")')
+            self.assertRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "_origin_id")')
+            self.assertRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__dict__")')
+            self.assertRaises(errors.NoSuchVerbError, code.r_eval, wizard, 'getattr(caller, "__slots__")')

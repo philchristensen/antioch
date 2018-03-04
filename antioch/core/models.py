@@ -18,7 +18,7 @@ class Object(models.Model):
     observers = models.ManyToManyField('self', related_name='observing', symmetrical=False, through='Observation')
     
     def __unicode__(self):
-        return u"#%s (%s)" % (self.id, self.name)
+        return "#%s (%s)" % (self.id, self.name)
 
 class Relationship(models.Model):
     class Meta:
@@ -55,7 +55,7 @@ class Verb(models.Model):
     method = models.BooleanField()
     
     def __unicode__(self):
-        return u"%s {#%s on %s}" % (
+        return "%s {#%s on %s}" % (
             self.annotated(), self.id, self.origin
         )
     
@@ -63,7 +63,7 @@ class Verb(models.Model):
         ability_decoration = ['', '@'][self.ability]
         method_decoration = ['', '()'][self.method]
         verb_name = self.name()
-        return u''.join([ability_decoration, verb_name, method_decoration])
+        return ''.join([ability_decoration, verb_name, method_decoration])
     
     def name(self):
         return self.names.all()[0].name
@@ -76,7 +76,7 @@ class VerbName(models.Model):
     name = models.CharField(max_length=255)
     
     def __unicode__(self):
-        return u"%s {#%s on %s}" % (
+        return "%s {#%s on %s}" % (
             self.name, self.verb.id, self.verb.origin
         )
 
@@ -93,7 +93,7 @@ class Property(models.Model):
     origin = models.ForeignKey(Object, related_name='properties', on_delete=models.CASCADE)
     
     def __unicode__(self):
-        return u'%s {#%s on %s}' % (self.name, self.id, self.origin)
+        return '%s {#%s on %s}' % (self.name, self.id, self.origin)
 
 class Permission(models.Model):
     class Meta:
@@ -151,7 +151,7 @@ class Access(models.Model):
                 entity        = self.entity(),
                 weight        = self.weight,
             )
-        except Exception, e:
+        except Exception as e:
             import traceback
             traceback.print_exc();
             return str(e)

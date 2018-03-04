@@ -6,7 +6,7 @@ CSRF_TRUSTED_ORIGINS = ['localhost']
 
 if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
-    ALLOWED_HOSTS += [u'testserver']
+    ALLOWED_HOSTS += ['testserver']
 
 STATIC_ROOT = "/opt/django/static"
 

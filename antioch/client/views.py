@@ -64,7 +64,7 @@ def comet(request):
         try:
             msg = sq.get(block=True, timeout=10)
             messages = [msg.body]
-        except sq.Empty, e:
+        except sq.Empty as e:
             messages = []
         sq.close()
     

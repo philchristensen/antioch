@@ -73,7 +73,7 @@ class ObjectExchangeTestCase(TestCase):
         ex.activate_default_grants()
         
         self.assertEqual(ex.default_grants_active, True)
-        self.failUnless('verb-2048' in ex.cache, "default permissions verb was not cached")
+        self.assertTrue('verb-2048' in ex.cache, "default permissions verb was not cached")
     
     def test_instantiate(self):
         results = [
@@ -106,7 +106,7 @@ class ObjectExchangeTestCase(TestCase):
         self.assertEqual(obj.get_name(real=True), 'wizard')
         
         obj2 = ex.instantiate('object', id=obj.get_id(), default_permissions=False)
-        self.failUnless(obj == obj2)
+        self.assertTrue(obj == obj2)
     
     def test_mkobject(self):
         pool = test.Anything()
@@ -128,7 +128,7 @@ class ObjectExchangeTestCase(TestCase):
             if(query.lower().startswith('select')):
                 return [dict(name='Origin', id=1024)]
             else:
-                print query
+                print(query)
         
         pool = test.Anything(
             runQuery    = runQuery,
@@ -316,7 +316,7 @@ class ObjectExchangeTestCase(TestCase):
         ex.cache['object-1024'] = o
         
         o2 = ex.get_object('test object')
-        self.failUnless(o == o2)
+        self.assertTrue(o == o2)
     
     def test_get_object_by_id_str(self):
         results = [[dict(id=1024)], [dict(id=1024)], [dict(id=1024)], False]
@@ -340,10 +340,10 @@ class ObjectExchangeTestCase(TestCase):
         ex.cache['object-1024'] = o
         
         o2 = ex.get_object('#1024 (test object)')
-        self.failUnless(o == o2)
+        self.assertTrue(o == o2)
         
         o3 = ex.get_object('#1024')
-        self.failUnless(o2 == o3)
+        self.assertTrue(o2 == o3)
     
     def test_get_object_by_id(self):
         results = [[dict(id=1024)], [dict(id=1024)]]
@@ -356,7 +356,7 @@ class ObjectExchangeTestCase(TestCase):
         ex.cache['object-1024'] = o
         
         o2 = ex.get_object(1024)
-        self.failUnless(o == o2)
+        self.assertTrue(o == o2)
     
     # def test_get_object_bad_key(self):
     #     pool = test.Anything()
@@ -376,8 +376,8 @@ class ObjectExchangeTestCase(TestCase):
             runQuery        = runQuery,
         )
         ex = exchange.ObjectExchange(wrapper=pool)
-        self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, "#2048")
-        self.failUnlessRaises(errors.NoSuchObjectError, ex.get_object, 2048)
+        self.assertRaises(errors.NoSuchObjectError, ex.get_object, "#2048")
+        self.assertRaises(errors.NoSuchObjectError, ex.get_object, 2048)
     
     def test_get_object_ambiguous_key(self):
         def runQuery(q, *a, **kw):
@@ -388,7 +388,7 @@ class ObjectExchangeTestCase(TestCase):
             runQuery        = runQuery,
         )
         ex = exchange.ObjectExchange(wrapper=pool)
-        self.failUnlessRaises(errors.AmbiguousObjectError, ex.get_object, "ambiguous object name")
+        self.assertRaises(errors.AmbiguousObjectError, ex.get_object, "ambiguous object name")
     
     def test_get_parents(self):
         results = [
@@ -417,7 +417,7 @@ class ObjectExchangeTestCase(TestCase):
         parents = ex.get_parents(1024)
         for parent in parents:
             expected_ids.remove(parent.get_id())
-        self.failIf(expected_ids, "Didn't get back all the expected parent objects.")
+        self.assertFalse(expected_ids, "Didn't get back all the expected parent objects.")
     
     def test_has_parent(self):
         results = [
@@ -530,7 +530,7 @@ class ObjectExchangeTestCase(TestCase):
         parents = ex.get_parents(1024, recurse=True)
         for parent in parents:
             expected_ids.remove(parent.get_id())
-        self.failIf(expected_ids, "Didn't get back all the expected parent objects.")
+        self.assertFalse(expected_ids, "Didn't get back all the expected parent objects.")
     
     def test_remove_parent(self):
         def runOperation(q, *a, **kw):
@@ -1325,7 +1325,7 @@ class ObjectExchangeTestCase(TestCase):
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
-        self.failIf(ex.find(1024, 'box'))
+        self.assertFalse(ex.find(1024, 'box'))
         
         results = ex.find(1024, 'box')
         self.assertEqual(len([x for x in results if x.get_id()]), 3)
@@ -1360,7 +1360,7 @@ class ObjectExchangeTestCase(TestCase):
         contents = ex.get_contents(1024)
         for content in contents:
             expected_ids.remove(content.get_id())
-        self.failIf(expected_ids, "Didn't get back all the expected content objects.")
+        self.assertFalse(expected_ids, "Didn't get back all the expected content objects.")
     
     def test_get_all_contents(self):
         results = [
@@ -1397,7 +1397,7 @@ class ObjectExchangeTestCase(TestCase):
         contents = ex.get_contents(1024, recurse=True)
         for content in contents:
             expected_ids.remove(content.get_id())
-        self.failIf(expected_ids, "Didn't get back all the expected content objects.")
+        self.assertFalse(expected_ids, "Didn't get back all the expected content objects.")
     
     def test_contains(self):
         results = [

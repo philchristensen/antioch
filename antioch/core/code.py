@@ -104,7 +104,7 @@ def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
     code = compile_restricted(src, filename, 'eval')
     try:
         value =  eval(code, env)
-    except errors.UsageError, e:
+    except errors.UsageError as e:
         if(caller):
             _writer(str(e), is_error=True)
         else:
@@ -127,8 +127,8 @@ def r_exec(caller, src, environment={}, filename='<string>', runtype="exec"):
     
     code = compile_restricted(massage_verb_code(src), filename, 'exec')
     try:
-        exec code in env
-    except errors.UsageError, e:
+        exec(code, env)
+    except errors.UsageError as e:
         if(caller):
             _writer(str(e), is_error=True)
         else:
@@ -197,14 +197,14 @@ def get_restricted_environment(writer, p=None):
     
     from antioch import plugins
     for plugin in plugins.iterate():
-        for name, func in plugin.get_environment().items():
+        for name, func in list(plugin.get_environment().items()):
             if(hasattr(func, 'im_func')):
-                func.im_func.func_name = name
+                func.__func__.__name__ = name
             else:
-                func.func_name = name
+                func.__name__ = name
             api(func) if callable(func) else None
     
-    for name, func in api.locals.items():
+    for name, func in list(api.locals.items()):
         env[name] = func(p)
     
     for name in dir(errors):
@@ -230,7 +230,7 @@ def api(func):
         return __api
     
     api.locals = getattr(api, 'locals', {})
-    api.locals[func.func_name] = _api
+    api.locals[func.__name__] = _api
     
     return _api
 

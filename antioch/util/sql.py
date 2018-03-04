@@ -130,7 +130,7 @@ def build_set(data=None, **kwargs):
         data = {}
     data.update(kwargs)
     
-    keys = data.keys()
+    keys = list(data.keys())
     keys.sort()
     values = [data[key] for key in keys]
     set_clause = 'SET %s' % (', '.join(['%s = %%s'] * len(data)) % tuple(keys))
@@ -262,7 +262,7 @@ def build_where(data=None, use_where=True, **kwargs):
     query = ''
     criteria = []
     values = []
-    keys = data.keys()
+    keys = list(data.keys())
     keys.sort()
     for key in keys:
         if(key.startswith('_')):
@@ -329,7 +329,7 @@ def quoted_string_literal(s, d):
     # any kind of string.
     try:
         return "'%s'" % (s.replace("'", "''"),)
-    except TypeError, e:
+    except TypeError as e:
         raise NotImplementedError("Cannot quote %r objects: %r" % (type(s), s))
 
 def mysql_string_literal(s, d):
@@ -412,13 +412,13 @@ string_literal = quoted_string_literal
 
 conversions = {
     int: lambda s,d: str(s),
-    long: lambda s,d: str(s),
+    int: lambda s,d: str(s),
     float: lambda o,d: '%.15g' % o,
-    types.NoneType: lambda s,d: 'NULL',
+    type(None): lambda s,d: 'NULL',
     list: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
     tuple: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
     str: lambda o,d: string_literal(o, d), # default
-    unicode: lambda s,d: string_literal(s.encode(), d),
+    str: lambda s,d: string_literal(s.encode(), d),
     bool: lambda s,d: string_literal(('f', 't')[s], d),
     datetime.date: lambda d,c: string_literal(strftime(d, "%Y-%m-%d"), c),
     datetime.datetime: lambda d,c: string_literal(strftime(d, "%Y-%m-%d %H:%M:%S"), c),

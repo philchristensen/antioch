@@ -12,7 +12,7 @@ exits = caller.location['exits'].value
 direction = get_dobj_str()
 
 if(direction not in exits):
-    print "You can't go that way."
+    print("You can't go that way.")
     return
 
 caller.set_location(exits[direction])

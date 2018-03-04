@@ -4,7 +4,7 @@
 #
 # See LICENSE for details
 
-from __future__ import absolute_import
+
 
 import logging
 
@@ -48,9 +48,9 @@ def authenticate(username, password, ip_address):
             u = x.get_object(username)
             if not(u):
                 raise errors.PermissionError("Invalid login credentials. (2)")
-        except errors.NoSuchObjectError, e:
+        except errors.NoSuchObjectError as e:
             raise errors.PermissionError("Invalid login credentials. (3)")
-        except errors.AmbiguousObjectError, e:
+        except errors.AmbiguousObjectError as e:
             raise errors.PermissionError("Invalid login credentials. (4)")
 
         multilogin_accounts = x.get_property(1, 'multilogin_accounts')
@@ -114,12 +114,11 @@ def registertask(user_id, delay, origin_id, verb_name, args, kwargs):
     """
     Register a delayed task for the provided user_id.
     """
-    print 'registering task'
     with get_exchange(user_id) as x:
         try:
             task_id = x.register_task(user_id, delay, origin_id, verb_name, args, kwargs)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             raise e
 
     return {'task_id': task_id}

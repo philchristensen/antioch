@@ -14,5 +14,5 @@ else:
     description = subject.add_property('description')
 
 description.value = get_pobj_str('as')
-print 'Description set for %s' % subject
+print('Description set for %s' % subject)
 subject.notify_observers()
