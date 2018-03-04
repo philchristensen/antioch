@@ -15,8 +15,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'', include('antioch.plugins.urls')),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'', include('antioch.client.urls')),
     # url(r'^autocomplete/', include('autocomplete_light.urls'))
 ]

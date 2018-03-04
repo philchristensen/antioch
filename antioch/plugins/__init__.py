@@ -35,7 +35,7 @@ def urlconfs():
         app_label = app.split('.')[-1]
         p = get_app_submodule(app, submodule='plugin')
         if(p and get_app_submodule(app, submodule='urls')):
-            urlconf = url(r'', include('%s.urls' % app, app_name=app_label, namespace=app_label))
+            urlconf = url(r'', include('%s.urls' % app))
             result.append(urlconf)
     return result
 

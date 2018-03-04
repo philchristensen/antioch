@@ -328,9 +328,9 @@ def quoted_string_literal(s, d):
     # okay, so, according to the SQL standard, this should be all you need to do to escape
     # any kind of string.
     try:
-        return "'%s'" % (s.replace("'", "''"),)
+        return b"'%s'" % (s.replace("'", "''"),)
     except TypeError as e:
-        raise NotImplementedError("Cannot quote %r objects: %r" % (type(s), s))
+        raise NotImplementedError("Cannot quote %r objects: %r: %s" % (type(s), s, e))
 
 def mysql_string_literal(s, d):
     from MySQLdb import converters

@@ -4,6 +4,8 @@ from django.views.generic.base import TemplateView
 from antioch.plugins.signup.views import ActivationView
 from antioch.plugins.signup.views import RegistrationView
 
+app_name='signup'
+
 urlpatterns = [
     url(r'^activate/complete/$',
         TemplateView.as_view(template_name='registration/activation_complete.html'),
