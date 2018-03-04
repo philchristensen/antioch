@@ -412,13 +412,10 @@ string_literal = quoted_string_literal
 
 conversions = {
     int: lambda s,d: str(s),
-    int: lambda s,d: str(s),
     float: lambda o,d: '%.15g' % o,
     type(None): lambda s,d: 'NULL',
     list: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
     tuple: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
-    str: lambda o,d: string_literal(o, d), # default
-    str: lambda s,d: string_literal(s.encode(), d),
     bool: lambda s,d: string_literal(('f', 't')[s], d),
     datetime.date: lambda d,c: string_literal(strftime(d, "%Y-%m-%d"), c),
     datetime.datetime: lambda d,c: string_literal(strftime(d, "%Y-%m-%d %H:%M:%S"), c),
@@ -426,3 +423,11 @@ conversions = {
     RAW: lambda o,d: o.value,
     decimal.Decimal: lambda s,d: str(s),
 }
+
+if sys.version_info >= (3,0):
+    conversions[str] = lambda s,d: string_literal(s, d)
+    conversions[bytes] = lambda s,d: string_literal(s.encode(), d)
+else:
+    conversions[long] = lambda s,d: str(s)
+    conversions[str] = lambda s,d: string_literal(s.encode(), d)
+    conversions[unicode] = lambda s,d: string_literal(s, d)
