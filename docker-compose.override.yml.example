@@ -5,19 +5,19 @@ services:
     # logging:
     #   driver: none
     volumes:
-      - .:/opt/django
+      - .:/usr/src/app
   webapp:
     volumes:
-      - .:/opt/django
+      - .:/usr/src/app
     environment:
       DJANGO_SETTINGS_MODULE: antioch.settings.development
   worker:
     volumes:
-      - .:/opt/django
+      - .:/usr/src/app
     environment:
       DJANGO_SETTINGS_MODULE: antioch.settings.development
   beat:
     volumes:
-      - .:/opt/django
+      - .:/usr/src/app
     environment:
       DJANGO_SETTINGS_MODULE: antioch.settings.development

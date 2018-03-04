@@ -10,7 +10,7 @@ WORKDIR /usr/src/app
 
 # Install Python application dependencies
 ADD requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r /usr/src/app/requirements.txt
+RUN pip3.6 install -r /usr/src/app/requirements.txt
 
 ADD . /usr/src/app
 ADD bin/entrypoint.sh /entrypoint.sh
