@@ -8,7 +8,7 @@
 SQL building facilities.
 """
 
-import types, time, datetime, array, decimal
+import sys, types, time, datetime, array, decimal
 
 def strftime(dt, fmt):
     """
