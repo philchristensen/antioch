@@ -14,3 +14,4 @@ service_identity>=14.0.0
 django-bootstrap3>=5.0.3
 zope.interface>=4.4.3
 pylint>=1.8.2
+uwsgi>=2.0.17

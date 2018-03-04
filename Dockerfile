@@ -1,33 +1,25 @@
-FROM ubuntu:16.04
+FROM python:3
 MAINTAINER Phil Christensen <phil@bubblehouse.org>
 LABEL Name="antioch"
 LABEL Version="0.9"
 
 # Install base dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y awscli \
-    libffi-dev wget ruby ruby-dev build-essential git python python-dev \
-    python-setuptools libpq-dev libldap2-dev libsasl2-dev libxslt-dev \
-    sqlite3 ssl-cert nano libpcre3 libpcre3-dev
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y sqlite3 ssl-cert
 
-# Install Python essentials
-RUN easy_install pip
-RUN pip install -U pip
-RUN pip install certifi pyopenssl ndg-httpsclient pyasn1 uwsgi
-
-WORKDIR /opt/django
+WORKDIR /usr/src/app
 
 # Install Python application dependencies
-ADD requirements.txt /opt/django/requirements.txt
-RUN pip install -r /opt/django/requirements.txt
+ADD requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r /usr/src/app/requirements.txt
 
-ADD . /opt/django
+ADD . /usr/src/app
 ADD bin/entrypoint.sh /entrypoint.sh
 
 RUN mkdir /var/lib/celery
 
 # Some helpers for temporary Travis conflicts
 RUN mkdir -p /home/travis/build/philchristensen
-RUN ln -s /opt/django /home/travis/build/philchristensen/antioch
+RUN ln -s /usr/src/app /home/travis/build/philchristensen/antioch
 
 # Custom entrypoint for improved ad-hoc command support
 ENTRYPOINT ["/entrypoint.sh"]
