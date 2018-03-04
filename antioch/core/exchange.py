@@ -14,7 +14,7 @@ during a single verb transaction.
 """
 import crypt, string, random, time, logging, collections
 
-from antioch import celery
+from antioch import celery_config
 from antioch.core import interface, errors
 from antioch.util import sql, ason, hash_password
 
@@ -195,7 +195,7 @@ class ObjectExchange(object):
         self.cache.clear()
         self.cache._order = []
         if(self.queue):
-            with celery.app.default_connection() as conn:
+            with celery_config.app.default_connection() as conn:
                 from kombu import Exchange, Queue
                 unbound_exchange = Exchange('antioch',
                     type            = 'direct',

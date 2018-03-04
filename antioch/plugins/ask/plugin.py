@@ -7,7 +7,7 @@
 """
 Client-side prompt support.
 """
-from zope.interface import classProvides
+from zope.interface import provider
 
 from antioch import IPlugin
 
@@ -26,9 +26,8 @@ def ask(p, question, callback, *args, **kwargs):
         )
     ))
 
+@provider(IPlugin)
 class AskPlugin(object):
-    classProvides(IPlugin)
-    
     script_url = '/static/js/ask-plugin.js'
     
     def get_environment(self):

@@ -7,13 +7,12 @@
 """
 Core functionality.
 """
-from zope.interface import classProvides
+from zope.interface import provider
 
 from antioch import IPlugin
 
+@provider(IPlugin)
 class CorePlugin(object):
-    classProvides(IPlugin)
-    
     name = 'core'
     script_url = ''
     

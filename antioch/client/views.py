@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 
-from antioch import plugins, celery
+from antioch import plugins, celery_config
 from antioch.core import parser, tasks
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def comet(request):
     queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
     log.debug("checking for messages for %s" % queue_id)
 
-    with celery.app.default_connection() as conn:
+    with celery_config.app.default_connection() as conn:
         from kombu import simple, Exchange, Queue
         exchange = Exchange('antioch',
             type            = 'direct',
