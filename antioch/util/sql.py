@@ -328,7 +328,7 @@ def quoted_string_literal(s, d):
     # okay, so, according to the SQL standard, this should be all you need to do to escape
     # any kind of string.
     try:
-        return b"'%s'" % (s.replace("'", "''"),)
+        return "'%s'" % s.replace("'", "''")
     except TypeError as e:
         raise NotImplementedError("Cannot quote %r objects: %r: %s" % (type(s), s, e))
 
