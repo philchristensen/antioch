@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # antioch
-# Copyright (c) 1999-2017 Phil Christensen
+# Copyright (c) 1999-2018 Phil Christensen
 #
 #
 # See LICENSE for details
