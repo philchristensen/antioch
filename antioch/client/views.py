@@ -63,7 +63,7 @@ def comet(request):
         sq = simple.SimpleBuffer(channel, queue, no_ack=True)
         try:
             msg = sq.get(block=True, timeout=10)
-            messages = [msg.body]
+            messages = [msg.body.decode()]
         except sq.Empty as e:
             messages = []
         sq.close()
