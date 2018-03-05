@@ -12,7 +12,7 @@ import time, sys, os.path, logging
 
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
-
+from RestrictedPython.Guards import guarded_unpack_sequence
 from antioch.core import errors
 from antioch.util import ason
 
@@ -185,14 +185,15 @@ def get_restricted_environment(writer, p=None):
         safe_builtins[name] = __builtins__[name]
     
     env = dict(
-        _apply_            = lambda f,*a,**kw: f(*a, **kw),
-        _print_            = lambda: _print_(),
-        _write_            = _write_,
-        _getattr_        = get_protected_attribute,
-        _getitem_        = lambda obj, key: obj[key],
-        _getiter_        = lambda obj: iter(obj),
+        _apply_           = lambda f,*a,**kw: f(*a, **kw),
+        _print_           = lambda: _print_(),
+        _write_           = _write_,
+        _getattr_         = get_protected_attribute,
+        _getitem_         = lambda obj, key: obj[key],
+        _getiter_         = lambda obj: iter(obj),
+        _unpack_sequence_ = guarded_unpack_sequence,
         __import__        = restricted_import,
-        __builtins__    = safe_builtins,
+        __builtins__      = safe_builtins,
     )
     
     from antioch import plugins
