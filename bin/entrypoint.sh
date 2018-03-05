@@ -2,22 +2,22 @@
 
 export PATH="/bin:/usr/bin:/usr/sbin:/usr/local/bin"
 
-cd /opt/django
+cd /usr/src/app
 
 if [ "$1" = '' ]; then
     if [ "$ROLE" = 'worker' ]; then
-        exec celery worker --app=antioch --concurrency=8 --loglevel=INFO
+        exec celery worker --uid nobody --app=antioch --concurrency=8 --loglevel=INFO
     elif [ "$ROLE" = 'beat' ]; then
-        exec celery beat --app=antioch --schedule=/var/lib/celery/beat.db
+        exec celery beat --uid nobody --app=antioch --schedule=/var/lib/celery/beat.db
     elif [ "$ROLE" = 'webapp' ]; then
-        exec uwsgi --ini conf/web/uwsgi.ini
+        exec uwsgi --uid www-data --ini conf/web/uwsgi.ini
     elif [ "$ROLE" = '' ]; then
         echo "Exiting, ROLE not set."
     else
         echo "Exiting, unknown ROLE: $ROLE"
     fi
 elif [ "$1" = 'manage.py' ]; then
-    exec python "$@"
+    exec python3.6 "$@"
 elif [ "$1" = 'lint' ]; then
     pylint antioch
     ret=$?

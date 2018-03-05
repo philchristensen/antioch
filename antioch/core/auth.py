@@ -48,7 +48,7 @@ class AntiochObjectBackend(backends.ModelBackend):
         except models.Player.DoesNotExist:
             log.error("Player auth failed.")
             return None
-        except Exception, e:
+        except Exception as e:
             log.error("Error in authenticate(): %s" % traceback.format_exc())
 
     def get_user(self, user_id):

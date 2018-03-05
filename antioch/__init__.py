@@ -8,11 +8,11 @@
 A highly-customizable, scalable game server for creating virtual worlds.
 """
 
-from __future__ import absolute_import
+
 
 # This will make sure the app is always imported when
 # Django starts so that shared_task will use this app.
-from .celery import app as celery_app
+from .celery_config import app as celery_app
 
 from zope import interface
 

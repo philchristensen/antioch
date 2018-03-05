@@ -22,7 +22,7 @@ class EntityTestCase(TestCase):
         
         self.assertEqual(o.get_id(), 1024)
         self.assertEqual(o.id, 1024)
-        self.failUnlessRaises(RuntimeError, o.set_id, 2048)
+        self.assertRaises(RuntimeError, o.set_id, 2048)
         
     def test_owner(self):
         e = test.Anything(
@@ -141,7 +141,7 @@ class EntityTestCase(TestCase):
             save = lambda x: test.raise_e(errors.TestError())
         )
         o = interface.Object(e)
-        self.failUnlessRaises(errors.TestError, o.save)
+        self.assertRaises(errors.TestError, o.save)
     
     def test_destroy(self):
         e = test.Anything(
@@ -149,7 +149,7 @@ class EntityTestCase(TestCase):
             get_context = lambda: None,
         )
         o = interface.Object(e)
-        self.failUnlessRaises(errors.TestError, o.destroy)
+        self.assertRaises(errors.TestError, o.destroy)
 
 class ObjectTestCase(TestCase):
     def setUp(self):
@@ -344,7 +344,7 @@ class ObjectTestCase(TestCase):
         o = interface.Object(e)
         p = interface.Property(o)
         
-        self.failUnlessRaises(ValueError, o.set_name, 'phil', real=True)
+        self.assertRaises(ValueError, o.set_name, 'phil', real=True)
         o.set_name('phil', real=True)
         
         #import pdb; pdb.set_trace()
@@ -378,7 +378,7 @@ class ObjectTestCase(TestCase):
         )
         subject = interface.Object(e)
         
-        self.failUnlessRaises(errors.RecursiveError, subject.set_location, room_mock)
+        self.assertRaises(errors.RecursiveError, subject.set_location, room_mock)
         
         subject.set_location(room_mock)
         self.assertEqual(subject.get_location(), room)
@@ -444,7 +444,7 @@ class ObjectTestCase(TestCase):
         )
         
         child.add_parent(parent_mock)
-        self.failUnlessRaises(errors.RecursiveError, parent.add_parent, child)
+        self.assertRaises(errors.RecursiveError, parent.add_parent, child)
         self.assertEqual(child.get_parents(), [parent])
     
     def test_remove_parent(self):
@@ -471,7 +471,7 @@ class ObjectTestCase(TestCase):
         person = interface.Object(e)
         item = interface.Object(e)
         
-        self.failUnlessRaises(errors.PermissionError, person.check, 'move', item)
+        self.assertRaises(errors.PermissionError, person.check, 'move', item)
         self.assertEqual(person.is_allowed('move', item), True)
     
 
@@ -489,7 +489,7 @@ class VerbTestCase(TestCase):
         v.set_id(1024)
         
         self.assertEqual(v.get_id(), 1024)
-        self.failUnlessRaises(RuntimeError, v.set_id, 2048)
+        self.assertRaises(RuntimeError, v.set_id, 2048)
     
     def test_origin(self):
         e = test.Anything(
@@ -594,7 +594,7 @@ class VerbTestCase(TestCase):
         o = interface.Object(e)
         v = interface.Verb(o)
         
-        self.failUnlessRaises(errors.PermissionError, v.check, 'move', o)
+        self.assertRaises(errors.PermissionError, v.check, 'move', o)
     
     def test_is_executable(self):
         results = [True, False, True]
@@ -648,7 +648,7 @@ class PropertyTestCase(TestCase):
         p.set_id(1024)
         
         self.assertEqual(p.get_id(), 1024)
-        self.failUnlessRaises(RuntimeError, p.set_id, 2048)
+        self.assertRaises(RuntimeError, p.set_id, 2048)
     
     def test_origin(self):
         e = test.Anything(
@@ -701,4 +701,4 @@ class PropertyTestCase(TestCase):
         p = interface.Property(o)
         
         self.assertEqual(p.is_readable(), True)
-        self.failUnlessRaises(errors.PermissionError, p.get_value)
+        self.assertRaises(errors.PermissionError, p.get_value)

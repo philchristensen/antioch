@@ -8,7 +8,7 @@
 Graphical object editor support.
 """
 
-from zope.interface import classProvides
+from zope.interface import provider
 
 from antioch import IPlugin
 
@@ -40,10 +40,9 @@ def access(p, item):
         details            = details,
     ))
 
+@provider(IPlugin)
 class EditorPlugin(object):
-    classProvides(IPlugin)
-    
-    script_url = u'%sjs/editor-plugin.js' % settings.STATIC_URL
+    script_url = '%sjs/editor-plugin.js' % settings.STATIC_URL
     
     def get_environment(self):
         return dict(

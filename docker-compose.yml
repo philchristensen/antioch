@@ -43,8 +43,6 @@ services:
      - postgres
      - redis
      - memcached
-    volumes:
-     - .:/opt/django
     environment:
       #DJANGO_SETTINGS_MODULE: antioch.settings.docker
       CELERY_WORKER: "yes"
@@ -63,8 +61,6 @@ services:
      - postgres
      - redis
      - memcached
-    volumes:
-     - .:/opt/django
     environment:
       #DJANGO_SETTINGS_MODULE: antioch.settings.docker
       ROLE: beat

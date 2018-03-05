@@ -17,7 +17,7 @@ saved in the format::
 These will be converted transparently by the dumps/loads functions
 in this module.
 """
-from __future__ import absolute_import
+
 
 import json
 
@@ -33,7 +33,7 @@ def loads(j, exchange=None):
     def to_entity(d):
         if(len(d) != 1):
             return d
-        key = d.keys()[0]
+        key = list(d.keys())[0]
         if(key[1] == '#'):
             try:
                 if(key[0] == 'o'):

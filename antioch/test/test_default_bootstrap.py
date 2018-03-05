@@ -48,7 +48,7 @@ class DefaultBootstrapTestCase(TestCase):
         
         def push(user_id, msg):
             self._test_player_eval_ran = True
-            self.assertEqual(user_id, 2L)
+            self.assertEqual(user_id, 2)
             self.assertEqual(msg['text'], 'test')
         
         self.exchange.queue.push = push
@@ -70,7 +70,7 @@ class DefaultBootstrapTestCase(TestCase):
         
         def push(user_id, msg):
             self._test_player_write_ran = True
-            self.assertEqual(user_id, 2L)
+            self.assertEqual(user_id, 2)
             self.assertEqual(msg['text'], 'test')
         
         self.exchange.queue.push = push
@@ -106,7 +106,7 @@ class DefaultBootstrapTestCase(TestCase):
         self.assertEqual(p.this, caller)
         
         def push(user_id, msg):
-            self.assertEqual(user_id, 2L)
+            self.assertEqual(user_id, 2)
             self.assertEqual(msg['details']['name'], 'Wizard')
         
         self.exchange.queue.push = push
@@ -122,7 +122,7 @@ class DefaultBootstrapTestCase(TestCase):
         self.assertEqual(p.this, caller)
         
         def push(user_id, msg):
-            self.assertEqual(user_id, 2L)
+            self.assertEqual(user_id, 2)
             self.assertEqual(msg['details']['id'], 1)
             self.assertEqual(msg['details']['name'], 'System Object')
         

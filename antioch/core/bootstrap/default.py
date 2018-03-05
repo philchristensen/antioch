@@ -8,7 +8,7 @@
 Default database bootstrap.
 """
 
-from __future__ import with_statement
+
 
 from antioch.core import interface, bootstrap
 from antioch.util import sql

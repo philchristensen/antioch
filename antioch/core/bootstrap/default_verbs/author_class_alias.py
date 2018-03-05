@@ -18,12 +18,12 @@ sub, alias = result
 if(sub == 'add'):
     obj = get_pobj('to')
     obj.add_alias(alias)
-    print "Alias %r added to %s" % (alias, obj)
+    print("Alias %r added to %s" % (alias, obj))
 elif(sub == 'remove'):
     obj = get_pobj('from')
     obj.remove_alias(alias)
-    print "Alias %r removed from %s" % (alias, obj)
+    print("Alias %r removed from %s" % (alias, obj))
 elif(sub == 'list'):
     obj = here.find(alias)
     aliases = obj.get_aliases()
-    print "%s has the following aliases: %r" % (obj, aliases)
+    print("%s has the following aliases: %r" % (obj, aliases))

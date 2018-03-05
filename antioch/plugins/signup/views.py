@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 def get_activation_key(username):
     salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-    if isinstance(username, unicode):
+    if isinstance(username, str):
         username = username.encode('utf-8')
     return hashlib.sha1(salt+username).hexdigest()
 

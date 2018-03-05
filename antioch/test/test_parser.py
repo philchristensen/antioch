@@ -106,11 +106,11 @@ class ParserTestCase(TestCase):
         box.set_location(wizard)
         
         p = parser.TransactionParser(parser.Lexer("@eval my box"), wizard, self.exchange)
-        self.failUnless(p.has_dobj())
+        self.assertTrue(p.has_dobj())
         
         user = self.exchange.get_object('user')
         box.set_location(user)
         
         p = parser.TransactionParser(parser.Lexer("@eval user's box"), wizard, self.exchange)
-        self.failUnless(p.has_dobj())
+        self.assertTrue(p.has_dobj())
 

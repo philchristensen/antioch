@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 
-from antioch import plugins, celery
+from antioch import plugins, celery_config
 from antioch.core import parser, tasks
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def comet(request):
     queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
     log.debug("checking for messages for %s" % queue_id)
 
-    with celery.app.default_connection() as conn:
+    with celery_config.app.default_connection() as conn:
         from kombu import simple, Exchange, Queue
         exchange = Exchange('antioch',
             type            = 'direct',
@@ -63,8 +63,8 @@ def comet(request):
         sq = simple.SimpleBuffer(channel, queue, no_ack=True)
         try:
             msg = sq.get(block=True, timeout=10)
-            messages = [msg.body]
-        except sq.Empty, e:
+            messages = [msg.body.decode()]
+        except sq.Empty as e:
             messages = []
         sq.close()
     

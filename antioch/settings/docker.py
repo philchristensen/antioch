@@ -6,9 +6,9 @@ CSRF_TRUSTED_ORIGINS = ['localhost']
 
 if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
-    ALLOWED_HOSTS += [u'testserver']
+    ALLOWED_HOSTS += ['testserver']
 
-STATIC_ROOT = "/opt/django/static"
+STATIC_ROOT = "/usr/src/app/static"
 
 BROKER_URL = os.environ['BROKER_URL']
 CELERY_RESULT_BACKEND = os.environ['RESULT_BACKEND']

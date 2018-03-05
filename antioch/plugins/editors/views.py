@@ -29,7 +29,7 @@ class AjaxFormMixin(object):
         try:
             form.save()
             return http.HttpResponse(SUCCESS_JSON, content_type="application/json")
-        except Exception, e:
+        except Exception as e:
             return http.HttpResponse(EXCEPTION_JSON % e, content_type="application/json", status=500)
     
     def form_invalid(self, form):
@@ -75,7 +75,7 @@ def access_editor(request, type, pk):
     m = Model.objects.get(pk=pk)
     
     if(request.method == 'POST'):
-        print request.POST
+        print(request.POST)
         acl = []
         for key in request.POST:
             if not key.startswith('accessid-'):

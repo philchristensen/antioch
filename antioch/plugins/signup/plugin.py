@@ -12,7 +12,7 @@ import logging
 
 import pkg_resources as pkg
 
-from zope.interface import classProvides
+from zope.interface import provider
 
 from antioch import IPlugin
 from antioch.util import ason
@@ -20,9 +20,8 @@ from antioch.core import parser, code
 
 log = logging.getLogger(__name__)
 
+@provider(IPlugin)
 class SignupPlugin(object):
-    classProvides(IPlugin)
-    
     script_url = None
     
     def initialize(self, exchange):

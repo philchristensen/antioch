@@ -10,7 +10,7 @@ if(runtype == 'method'):
             write(caller, "The password is incorrect. Please enter your *current* password for " + str(user))
     else:
         user.set_player(passwd=args[2])
-        print "Changed password for " + str(user)
+        print("Changed password for " + str(user))
     return
 
 if(has_dobj_str()):

@@ -282,7 +282,7 @@ class Object(Entity):
         ctx = self._ex.get_context()
         owner_id = ctx.get_id() if ctx else self._owner_id
 
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             access = add_verb_kwargs.get(key, False)
             if access is None and ctx:
                 raise ValueError("Restricted keyword %r" % key)
@@ -324,7 +324,7 @@ class Object(Entity):
         """
         try:
             return self[name]
-        except errors.NoSuchPropertyError, e:
+        except errors.NoSuchPropertyError as e:
             return PropertyStub(default)
     
     def get_ancestor_with(self, type, name):
@@ -337,7 +337,7 @@ class Object(Entity):
         """
         Item access loads properties.
         """
-        if(isinstance(name, (int, long))):
+        if(isinstance(name, int)):
             raise IndexError(name)
         # used for properties
         p = self.get_property(name)
@@ -373,7 +373,7 @@ class Object(Entity):
         ctx = self._ex.get_context()
         owner_id = ctx.get_id() if ctx else self._owner_id
         
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             access = add_property_kwargs.get(key, False)
             if access is None and ctx:
                 raise ValueError("Restricted keyword %r" % key)
@@ -864,7 +864,7 @@ class Verb(Entity):
         """
         try:
             self.check('execute', self)
-        except errors.PermissionError, e:
+        except errors.PermissionError as e:
             return False
         return True
     
@@ -923,7 +923,7 @@ class Property(Entity):
         Get the essential details about this property.
         """
         value = self._value
-        value = json.dumps(self._value) if not isinstance(self._value, basestring) else self._value
+        value = json.dumps(self._value) if not isinstance(self._value, str) else self._value
         return dict(
             id            = self.get_id(),
             kind        = self.get_type(),
@@ -941,7 +941,7 @@ class Property(Entity):
         """
         try:
             self.check('read', self)
-        except errors.PermissionError, e:
+        except errors.PermissionError as e:
             return False
         return True
     
