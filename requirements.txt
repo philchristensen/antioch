@@ -1,4 +1,4 @@
-Django>=1.11.10
+Django>=2.1
 django-registration<3.0
 celery>=4.1.0
 redis>=2.10.5

@@ -2,8 +2,8 @@ antioch
 =======
 
 [![build-status](https://travis-ci.org/philchristensen/antioch.svg?branch=master)](https://travis-ci.org/philchristensen/antioch)
-[![python-versions](https://img.shields.io/badge/Python-2.7%2C%203.6-brightgreen.svg)](https://www.python.org)
-[![django-versions](https://img.shields.io/badge/Django-1.11%2C%202.0.2-blue.svg)](https://www.djangoproject.com)
+[![python-versions](https://img.shields.io/badge/Python-3.6-brightgreen.svg)](https://www.python.org)
+[![django-versions](https://img.shields.io/badge/Django-2.1-blue.svg)](https://www.djangoproject.com)
 
 (c) Phil Christensen, <phil@bubblehouse.org>
 
