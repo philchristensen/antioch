@@ -8,14 +8,13 @@
 Django URL routes.
 """
 
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'', include('antioch.plugins.urls')),
-    url(r'^admin/', admin.site.urls),
-    url(r'', include('antioch.client.urls')),
-    # url(r'^autocomplete/', include('autocomplete_light.urls'))
+    path(r'', include('antioch.plugins.urls')),
+    path(r'admin/', admin.site.urls),
+    path(r'', include('antioch.client.urls')),
 ]

@@ -25,7 +25,7 @@ class AntiochObjectBackend(backends.ModelBackend):
     supports_anonymous_user = True
     supports_inactive_user = False
 
-    def authenticate(self, username=None, password=None, request=None):
+    def authenticate(self, request, username=None, password=None):
         """
         Attempt to authenticate the provided request with the given credentials.
         """

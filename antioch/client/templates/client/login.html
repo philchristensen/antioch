@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form class="form-signin" role="form" method="post" action="{% url 'login' %}">
+<form class="form-signin" role="form" method="post" action="{% url 'client:login' %}">
     {% csrf_token %}
   <h2 class="form-signin-heading">Please sign in to antioch</h2>
     {% if form.errors %}

@@ -12,7 +12,7 @@ from .views import rest, comet, logout, client
 app_name = "client"
 urlpatterns = [
     path(r'login/', LoginView.as_view(template_name='client/login.html'), name="login"),
-    path(r'rest/(.*)', rest, name='rest'),
+    path(r'rest/<slug:command>', rest, name='rest'),
     path(r'comet/', comet, name='comet'),
     path(r'logout/', logout, name='logout'),
     path(r'', client, name='client'),
