@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.6
 MAINTAINER Phil Christensen <phil@bubblehouse.org>
 LABEL Name="antioch"
 LABEL Version="0.9"
