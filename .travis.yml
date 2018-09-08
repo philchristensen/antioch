@@ -1,10 +1,11 @@
 language: python
 python:
-  - "3.6"
+  - "3.7"
 cache: pip
 services:
   - postgresql
 install:
-  - pip install -r requirements.txt
+  - pip install -q pipenv
+  - pipenv install --system --dev
 script:
   - DJANGO_SETTINGS_MODULE=antioch.settings.travis python manage.py test

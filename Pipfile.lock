@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a0291a3c141048af53670632c7da378a9758ca9597de6ba6dfa72a88e0fcbf9b"
+            "sha256": "774bbfa10d430eea4339db3fd9948a773c9fb33af61c615732ccc5d708fbff32"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,12 +44,9 @@
             "version": "==3.5.0.4"
         },
         "celery": {
-            "hashes": [
-                "sha256:77dab4677e24dc654d42dfbdfed65fa760455b6bb563a0877ecc35f4cfcfc678",
-                "sha256:ad7a7411772b80a4d6c64f2f7f723200e39fb66cf614a7fdfab76d345acc7b13"
-            ],
-            "index": "pypi",
-            "version": "==4.2.1"
+            "editable": true,
+            "git": "https://github.com/celery/celery",
+            "ref": "563f23fcdc4d0d8ee4df54bba1694d308b377021"
         },
         "cffi": {
             "hashes": [
@@ -269,11 +266,12 @@
         },
         "restrictedpython": {
             "hashes": [
-                "sha256:0edb2579b4174282bee3997abc6316d122c7ca6dcd02f4423352213cde571434"
+                "sha256:7bc89dbc482309bae0c32f0e86067926586d70a624fbdde42f7e2ef16ad9f06f",
+                "sha256:d204b6c5686fbb51fb34335cd87b52a2c689146baea0fc98dedb4c358d0eaa13"
             ],
             "index": "pypi",
-            "markers": "python_version != '3.1.*' and python_version != '3.3.*' and python_version != '3.2.*' and python_version >= '2.7' and python_version != '3.0.*'",
-            "version": "==3.6.0"
+            "markers": "python_version >= '2.7' and python_version != '3.2.*' and python_version != '3.0.*' and python_version != '3.3.*' and python_version != '3.1.*'",
+            "version": "==4.0b5"
         },
         "service-identity": {
             "hashes": [

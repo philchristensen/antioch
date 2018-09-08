@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.7
 MAINTAINER Phil Christensen <phil@bubblehouse.org>
 LABEL Name="antioch"
 LABEL Version="0.9"
@@ -9,12 +9,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y sqlite3 
 WORKDIR /usr/src/app
 
 # Install Python application dependencies
-ADD requirements.txt /usr/src/app/requirements.txt
-RUN pip3.6 install -r /usr/src/app/requirements.txt
+RUN pip install -q pipenv
+ADD Pipfile.lock /usr/src/app/Pipfile.lock
 
-ADD . /usr/src/app
+RUN pipenv install --system --dev --deploy --ignore-pipfile
 ADD bin/entrypoint.sh /entrypoint.sh
 
+ADD . /usr/src/app
 RUN mkdir /var/lib/celery
 
 # Some helpers for temporary Travis conflicts

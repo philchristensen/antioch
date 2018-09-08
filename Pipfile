@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 django-registration = "<3.0"
-celery = "*"
+celery = {editable = true, ref = "563f23fc", git = "https://github.com/celery/celery"}
 redis = "*"
 python-memcached = "*"
 kombu = "*"
@@ -16,7 +16,7 @@ django-widget-tweaks = "*"
 "django-bootstrap3" = "*"
 "zope.interface" = "*"
 Django = ">=2.1"
-RestrictedPython = "*"
+RestrictedPython = ">=4.0b5"
 service_identity = "*"
 uWSGI = "*"
 
