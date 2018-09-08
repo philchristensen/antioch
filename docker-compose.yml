@@ -44,7 +44,7 @@ services:
      - redis
      - memcached
     environment:
-      #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+      DJANGO_SETTINGS_MODULE: antioch.settings.docker
       CELERY_WORKER: "yes"
       ROLE: worker
       BROKER_URL: redis://redis:6379/0
@@ -62,7 +62,7 @@ services:
      - redis
      - memcached
     environment:
-      #DJANGO_SETTINGS_MODULE: antioch.settings.docker
+      DJANGO_SETTINGS_MODULE: antioch.settings.docker
       ROLE: beat
       BROKER_URL: redis://redis:6379/0
       RESULT_BACKEND: redis://redis:6379/0
