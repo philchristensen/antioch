@@ -1,4 +1,3 @@
 VERSION
 *.pyc
-antioch/settings/development.py
 .git

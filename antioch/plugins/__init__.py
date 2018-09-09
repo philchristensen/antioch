@@ -23,7 +23,7 @@ def iterate():
     """
     for app in settings.INSTALLED_APPS:
         plugin_mod = get_app_submodule(app, submodule='plugin')
-        if(plugin_mod):
+        if(plugin_mod and plugin_mod.__name__.startswith('antioch')):
             yield instantiate(plugin_mod)
 
 def urlconfs():
@@ -62,6 +62,6 @@ def instantiate(plugin_mod):
             if(IPlugin.providedBy(p)):
                 plugin_cache[plugin_mod] = p()
     if(plugin_mod not in plugin_cache):
-        raise RuntimeError("Could not instantiate an antioch plugin from %r" % plugin)
+        raise RuntimeError("Could not instantiate an antioch plugin from %r" % plugin_mod)
     return plugin_cache[plugin_mod]
 

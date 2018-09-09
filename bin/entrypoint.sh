@@ -17,9 +17,9 @@ if [ "$1" = '' ]; then
         echo "Exiting, unknown ROLE: $ROLE"
     fi
 elif [ "$1" = 'manage.py' ]; then
-    exec python3.6 "$@"
+    exec python "$@"
 elif [ "$1" = 'lint' ]; then
-    pylint antioch
+    exec pylint antioch
     ret=$?
     if [[ "$ret" -eq "0" || "$ret" -eq "4" || "$ret" -eq "8" || "$ret" -eq "16" ]]; then
         exit 0
