@@ -10,6 +10,10 @@ if [ "$1" = '' ]; then
     elif [ "$ROLE" = 'beat' ]; then
         exec celery beat --uid nobody --app=antioch --schedule=/var/lib/celery/beat.db
     elif [ "$ROLE" = 'webapp' ]; then
+        cp /etc/ssl/certs/ssl-cert-snakeoil.pem /usr/src/app/.
+        chown www-data:www-data /usr/src/app/ssl-cert-snakeoil.pem
+        cp /etc/ssl/private/ssl-cert-snakeoil.key /usr/src/app/.
+        chown www-data:www-data /usr/src/app/ssl-cert-snakeoil.key
         exec uwsgi --uid www-data --ini conf/web/uwsgi.ini
     elif [ "$ROLE" = '' ]; then
         echo "Exiting, ROLE not set."
