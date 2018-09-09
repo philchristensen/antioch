@@ -9,3 +9,6 @@ install:
   - pipenv install --system --dev
 script:
   - DJANGO_SETTINGS_MODULE=antioch.settings.travis python manage.py test
+# needed for python 3.7 support
+dist: xenial
+sudo: true
