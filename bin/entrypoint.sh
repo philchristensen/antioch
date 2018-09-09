@@ -17,7 +17,7 @@ if [ "$1" = '' ]; then
         echo "Exiting, unknown ROLE: $ROLE"
     fi
 elif [ "$1" = 'manage.py' ]; then
-    exec python "$@"
+    exec python3.7 "$@"
 elif [ "$1" = 'lint' ]; then
     exec pylint antioch
     ret=$?
