@@ -6,7 +6,7 @@ services:
   - postgresql
 install:
   - pip install -q pipenv
-  - pipenv install --system --dev
+  - pipenv install --system --dev --deploy --ignore-pipfile
 script:
   - DJANGO_SETTINGS_MODULE=antioch.settings.travis python manage.py test
 # needed for python 3.7 support
