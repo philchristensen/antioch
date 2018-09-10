@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 export PATH="/bin:/usr/bin:/usr/sbin:/usr/local/bin"
 
@@ -8,7 +8,7 @@ if [ "$1" = '' ]; then
     if [ "$ROLE" = 'worker' ]; then
         exec celery worker --uid nobody --app=antioch --concurrency=8 --loglevel=INFO
     elif [ "$ROLE" = 'beat' ]; then
-        exec celery beat --uid nobody --app=antioch --schedule=/var/lib/celery/beat.db
+        exec celery beat --uid nobody --app=antioch --schedule=/var/lib/celery/beat.db --pidfile=/var/lib/celery/beat.pid
     elif [ "$ROLE" = 'webapp' ]; then
         cp /etc/ssl/certs/ssl-cert-snakeoil.pem /usr/src/app/.
         chown www-data:www-data /usr/src/app/ssl-cert-snakeoil.pem

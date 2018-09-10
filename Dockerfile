@@ -20,6 +20,7 @@ ADD . /usr/src/app
 ADD bin/entrypoint.sh /entrypoint.sh
 
 RUN mkdir /var/lib/celery
+RUN chown nobody /var/lib/celery
 
 # Some helpers for temporary Travis conflicts
 RUN mkdir -p /home/travis/build/philchristensen
