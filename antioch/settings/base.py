@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -42,16 +43,16 @@ JOB_TIMEOUT = 5
 REGISTRATION_OPEN = False
 ACCOUNT_ACTIVATION_DAYS = 7
 
-CELERY_ALWAYS_EAGER = True
-CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_RESULT_EXPIRES = 18000  # 5 hours.
 CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
-BROKER_TRANSPORT_OPTIONS = {
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     'fanout_prefix': True, 
     'fanout_patterns': True
 }
 USER_QUEUE = 'antioch-user'
 
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     # 'sync-every-15-mins': {
     #     'task': 'antioch.core.tasks.sync',
     #     'schedule': timedelta(minutes=15),
@@ -179,104 +180,71 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-
+CELERY_WORKER_LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
+CELERY_WORKER_TASK_LOG_FORMAT = "%(asctime)s: %(levelname)s %(name)s %(message)s"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
-        'require_debug_False': {
+        'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
         },
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
+    'formatters': {
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '{server_time} {levelname} {name} {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
+            'level': 'DEBUG',
+            #'filters': ['require_debug_true'],
+            'formatter': 'django.server',
             'class': 'logging.StreamHandler',
+            'stream': sys.stdout
         },
-        'null': {
-            'class': 'logging.NullHandler',
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+            'stream': sys.stdout
         },
         'mail_admins': {
             'level': 'ERROR',
-            'filters': ['require_debug_False'],
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
     'loggers': {
         'antioch': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'DEBUG',
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
         },
-        'antioch.core': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'INFO',
-        },
-        'antioch.plugins': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'DEBUG',
-        },
-        # uncaught django exceptions
-        'django.request': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'INFO',
-        },
-        # client view messages
         'antioch.client.views': {
-            'handlers':['console'],
-            'propagate': False,
-            'level':'INFO',
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True
         },
-        # # appserver messages
-        # 'antioch.core.appserver': {
-        #     'handlers':['console'],
-        #     'propagate': False,
-        #     'level':'INFO',
-        # },
-        # # transaction interface messages
-        # 'antioch.core.transact': {
-        #     'handlers':['console'],
-        #     'propagate': False,
-        #     'level':'INFO',
-        # },
-        # # object exchange interface messages
-        # 'antioch.core.exchange': {
-        #     'handlers':['console'],
-        #     'propagate': False,
-        #     'level':'INFO',
-        # },
+        'celery': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': True
         },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'django.security': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        # optional embedded django server access log
-        'django.request.access': {
-            'handlers':['null'],
-            'propagate': False,
-        },
-        # # django orm queries
-        # 'django.db': {
-        #     'handlers':['null'],
-        #     'propagate': False,
-        # },
-        'py.warnings': {
-            'handlers': ['console'],
+        'django.server': {
+            'handlers': ['django.server'],
+            'level': 'INFO',
+            'propagate': False
         }
     }
 }

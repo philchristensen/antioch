@@ -9,6 +9,7 @@
 import logging
 
 from celery import shared_task
+from celery.utils.log import get_task_logger
 
 from django.conf import settings
 from django.db import connection
@@ -16,9 +17,7 @@ from django.db import connection
 from antioch.core import code, exchange, errors, parser
 from antioch.util import sql, ason
 
-log = logging.getLogger(__name__)
-
-log.debug("%s started" % __name__)
+log = get_task_logger(__name__)
 
 def get_exchange(ctx=None):
     """
@@ -34,6 +33,7 @@ def authenticate(username, password, ip_address):
     """
     Return the user id for the username/password combo, if valid.
     """
+    log = authenticate.get_logger()
     with get_exchange() as x:
         connect = x.get_verb(1, 'connect')
         if(connect):

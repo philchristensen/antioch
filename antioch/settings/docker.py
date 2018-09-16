@@ -10,9 +10,8 @@ if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
 
 STATIC_ROOT = "/usr/src/app/static"
 
-BROKER_URL = os.environ['BROKER_URL']
+CELERY_BROKER_URL = os.environ['BROKER_URL']
 CELERY_RESULT_BACKEND = os.environ['RESULT_BACKEND']
-CELERY_ALWAYS_EAGER = False
 
 DATABASES['default'].update({
     "HOST": os.environ['DB_HOST'],
