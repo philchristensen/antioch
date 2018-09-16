@@ -91,4 +91,4 @@ def logout(request):
     Logout of antioch.
     """
     auth.logout(request)
-    return shortcuts.redirect('client')
+    return shortcuts.redirect('client:client')
