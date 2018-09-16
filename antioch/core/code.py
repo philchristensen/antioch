@@ -8,7 +8,10 @@
 Provide the verb execution environment
 """
 
-import time, sys, os.path, logging
+import time
+import sys
+import os.path
+import logging
 
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
@@ -37,35 +40,38 @@ def is_frame_access_allowed():
     f = sys._getframe(1)
     c1 = f.f_back.f_code
     c2 = f.f_back.f_back.f_code
+    
+    calling_filename = os.path.abspath(c2.co_filename)
     try:
         from antioch.core import interface
         model_source_path = os.path.abspath(interface.__file__)
         if(model_source_path.endswith('pyc')):
             model_source_path = model_source_path[:-1]
-        if(c2.co_filename == model_source_path):
-            #print '%r =(1)= %r' % (c2.co_filename, model_source_path)
+        if(calling_filename == model_source_path):
+            # pylog.debug('%r =(1)= %r' % (c2.co_filename, model_source_path))
             return True
         
         from antioch.core import exchange
         exchange_source_path = os.path.abspath(exchange.__file__)
         if(exchange_source_path.endswith('pyc')):
             exchange_source_path = exchange_source_path[:-1]
-        if(c2.co_filename == exchange_source_path):
-            #print '%r =(2)= %r' % (c2.co_filename, exchange_source_path)
+        if(calling_filename == exchange_source_path):
+            # pylog.debug('%r =(2)= %r' % (c2.co_filename, exchange_source_path))
             return True
         
         from antioch import test
         test_source_path = os.path.abspath(os.path.dirname(test.__file__))
-        if(c2.co_filename.startswith(test_source_path)):
-            #print '%r 1startswith %r' % (c2.co_filename, test_source_path)
+        if(calling_filename.startswith(test_source_path)):
+            # pylog.debug('%r 1startswith %r' % (c2.co_filename, test_source_path))
             return True
         
         from antioch.core import bootstrap
         bootstrap_source_path = os.path.abspath(os.path.dirname(bootstrap.__file__))
-        if(c2.co_filename.startswith(bootstrap_source_path)):
-            #print '%r 2startswith %r' % (c2.co_filename, bootstrap_source_path)
+        if(calling_filename.startswith(bootstrap_source_path)):
+            # pylog.debug('%r 2startswith %r' % (c2.co_filename, bootstrap_source_path))
             return True
         
+        pylog.warning('secured access %r != %r' % (c2.co_filename,model_source_path))
         return False
     finally:
         del c2
