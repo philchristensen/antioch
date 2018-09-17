@@ -90,5 +90,6 @@ def logout(request):
     """
     Logout of antioch.
     """
+    tasks.logout.delay(request.user.avatar.id)
     auth.logout(request)
     return shortcuts.redirect('client:client')
