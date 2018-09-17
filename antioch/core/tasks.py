@@ -33,7 +33,6 @@ def authenticate(username, password, ip_address):
     """
     Return the user id for the username/password combo, if valid.
     """
-    log = authenticate.get_logger()
     with get_exchange() as x:
         connect = x.get_verb(1, 'connect')
         if(connect):

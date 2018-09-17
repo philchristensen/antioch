@@ -228,13 +228,20 @@ LOGGING = {
         },
         'antioch.client.views': {
             'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True
+            'level': 'INFO'
         },
         'celery': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True
+        },
+        'celery.app.trace': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        },
+        'celery.bootsteps': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
         },
         'django': {
             'handlers': ['console', 'mail_admins'],
@@ -243,8 +250,7 @@ LOGGING = {
         },
         'django.server': {
             'handlers': ['django.server'],
-            'level': 'INFO',
-            'propagate': False
+            'level': 'INFO'
         }
     }
 }
