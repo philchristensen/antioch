@@ -21,7 +21,7 @@ class PropertyInline(admin.TabularInline):
     readonly_fields = ('name', 'value', 'owner')
 
 class ObjectAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'unique_name', 'owner', 'location')
+    list_display = ('__str__', 'unique_name', 'owner', 'location')
     inlines = [
         VerbInline,
         PropertyInline,
