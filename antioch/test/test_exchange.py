@@ -44,7 +44,7 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             '',
             "INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
-            "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('0', '', '', DEFAULT, '0', 1, NULL) RETURNING id",
+            "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('0', '', '', DEFAULT, '0', 1, NULL)",
             'SELECT * FROM verb WHERE id = 2048',
             "SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
             'SELECT * FROM object WHERE id = 1',
@@ -90,8 +90,7 @@ class ObjectExchangeTestCase(TestCase):
                 expected_insert = rmws("""INSERT INTO object 
                                         (id, location_id, name, owner_id, unique_name) 
                                     VALUES 
-                                        (DEFAULT, NULL, 'wizard', NULL, '1') 
-                                    RETURNING id
+                                        (DEFAULT, NULL, 'wizard', NULL, '1')
                                 """)
                 self.assertEqual(query, expected_insert)
                 return [dict(id=1)]
@@ -299,7 +298,7 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], False]
         queries = [
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object')",
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0') RETURNING id",
+            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         def runQuery(q, *a, **kw):
@@ -322,7 +321,7 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], [dict(id=1024)], False]
         
         queries = [
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0') RETURNING id",
+            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         
@@ -1055,6 +1054,7 @@ class ObjectExchangeTestCase(TestCase):
         
         pool = test.Anything(
             runQuery    =    runQuery,
+            isType      =    lambda x: x == "postgresql"
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -1121,7 +1121,7 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_register_task(self):
         queries = [
-            "INSERT INTO task (args, delay, kwargs, origin_id, user_id, verb_name) VALUES ('[1,2,3]', 10, '{''a'':1,''b'':2}', '#1 (System Object)', 2, 'test') RETURNING id"
+            "INSERT INTO task (args, delay, kwargs, origin_id, user_id, verb_name) VALUES ('[1,2,3]', 10, '{''a'':1,''b'':2}', '#1 (System Object)', 2, 'test')"
         ]
         
         def runQuery(q, *a, **kw):

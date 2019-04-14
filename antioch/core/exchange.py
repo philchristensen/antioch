@@ -55,6 +55,16 @@ class ConnectionWrapper(object):
     def isType(self, type):
         return self.connection.vendor == type
     
+    def getLastInsertId(self, obj_type):
+        if(self.isType('postgresql')):
+            result = self.runQuery("SELECT currval(pg_get_serial_sequence('%s','id'));" % obj_type)
+            return result[0]['currval']
+        elif(self.isType('mysql')):
+            result = self.runQuery("SELECT LAST_INSERT_ID();")
+            return result[0]['LAST_INSERT_ID()']
+        else:
+            raise UnsupportedError("Unsupported database type.")
+    
     def runOperation(self, query, *args, **kwargs):
         with self.connection.cursor() as cursor:
             cursor.execute(query, *args)
@@ -453,14 +463,7 @@ class ObjectExchange(object):
         else:
             attribs['id'] = sql.RAW('DEFAULT')
             self.connection.runOperation(sql.build_insert(obj_type, attribs))
-            if(self.connection.isType('postgresql')):
-                result = self.connection.runQuery("SELECT currval(pg_get_serial_sequence('%s','id'));" % obj_type)
-                obj.set_id(result[0]['currval'])
-            elif(self.connection.isType('mysql')):
-                result = self.connection.runQuery("SELECT LAST_INSERT_ID();")
-                obj.set_id(result[0]['LAST_INSERT_ID()'])
-            else:
-                raise UnsupportedError("Unsupported database type.")
+            obj.set_id(self.connection.getLastInsertId(obj_type))
         
         object_key = '%s-%s' % (obj_type, obj.get_id())
         if(object_key not in self.cache):
@@ -894,7 +897,7 @@ class ObjectExchange(object):
         """
         Does the given player have wizard rights?
         """
-        result = self.connection.runQuery(sql.interp("SELECT id FROM player WHERE wizard = 't' AND avatar_id = %s", avatar_id))
+        result = self.connection.runQuery(sql.interp("SELECT id FROM player WHERE wizard = '1' AND avatar_id = %s", avatar_id))
         return bool(len(result))
     
     def is_connected_player(self, avatar_id):
@@ -1162,9 +1165,10 @@ class ObjectExchange(object):
         if(permission in self.permission_list):
             permission_id = self.permission_list[permission]
         elif(create):
-            permission_id = self.connection.runQuery(sql.build_insert('permission', dict(
+            self.connection.runOperation(sql.build_insert('permission', dict(
                 name    = permission
-            )) + ' RETURNING id')[0]['id']
+            )))
+            permission_id = self.connection.getLastInsertId('permission')
         else:
             raise ValueError("No such permission %r" % permission)
         
