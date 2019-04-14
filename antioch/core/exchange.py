@@ -901,12 +901,17 @@ class ObjectExchange(object):
         """
         Is the given player currently logged on?
         """
+        if(self.connection.isType('postgresql')):
+            timestamp_function = "to_timestamp"
+        else:
+            timestamp_function = "sec_to_time"
+        
         result = self.connection.runQuery(sql.interp(
             """SELECT 1 AS connected
                  FROM player
-                WHERE COALESCE(last_login, to_timestamp(0)) > COALESCE(last_logout, to_timestamp(0))
-                  AND avatar_id = %s
-            """, avatar_id))
+                WHERE COALESCE(last_login, %s(0)) > COALESCE(last_logout, %s(0))
+                  AND avatar_id = %%s
+            """ % (timestamp_function, timestamp_function), avatar_id))
         return bool(result)
     
     def get_avatar_id(self, player_id):
