@@ -904,7 +904,7 @@ class ObjectExchange(object):
         if(self.connection.isType('postgresql')):
             timestamp_function = "to_timestamp"
         else:
-            timestamp_function = "sec_to_time"
+            timestamp_function = "from_unixtime"
         
         result = self.connection.runQuery(sql.interp(
             """SELECT 1 AS connected
