@@ -52,6 +52,9 @@ class ConnectionWrapper(object):
     def __init__(self, connection):
         self.connection = connection
     
+    def isType(self, type):
+        return self.connection.vendor == type
+    
     def runOperation(self, query, *args, **kwargs):
         with self.connection.cursor() as cursor:
             cursor.execute(query, *args)
@@ -414,7 +417,7 @@ class ObjectExchange(object):
         if(obj_type == 'object'):
             attribs = dict(
                 name        = obj._name,
-                unique_name = ('f', 't')[obj._unique_name],
+                unique_name = int(obj._unique_name),
                 owner_id    = obj._owner_id,
                 location_id = obj._location_id,
             )
@@ -424,8 +427,8 @@ class ObjectExchange(object):
                 filename    = obj._filename,
                 owner_id    = obj._owner_id,
                 origin_id    = obj._origin_id,
-                ability        = ('f', 't')[obj._ability],
-                method        = ('f', 't')[obj._method],
+                ability        = int(obj._ability),
+                method        = int(obj._method),
             )
         elif(obj_type == 'property'):
             def check(v):
@@ -449,8 +452,15 @@ class ObjectExchange(object):
             self.connection.runOperation(sql.build_update(obj_type, attribs, dict(id=obj_id)))
         else:
             attribs['id'] = sql.RAW('DEFAULT')
-            result = self.connection.runQuery(sql.build_insert(obj_type, attribs) + ' RETURNING id')
-            obj.set_id(result[0]['id'])
+            self.connection.runOperation(sql.build_insert(obj_type, attribs))
+            if(self.connection.isType('postgresql')):
+                result = self.connection.runQuery("SELECT currval(pg_get_serial_sequence('%s','id'));" % obj_type)
+                obj.set_id(result[0]['currval'])
+            elif(self.connection.isType('mysql')):
+                result = self.connection.runQuery("SELECT LAST_INSERT_ID();")
+                obj.set_id(result[0]['LAST_INSERT_ID()'])
+            else:
+                raise UnsupportedError("Unsupported database type.")
         
         object_key = '%s-%s' % (obj_type, obj.get_id())
         if(object_key not in self.cache):
@@ -1193,7 +1203,7 @@ class ObjectExchange(object):
             """SELECT t.*
                 FROM task t
                 WHERE t.created + (t.delay * interval '1 second') < NOW()
-                  AND t.killed = 'f'
+                  AND t.killed = 0
                 ORDER BY t.created ASC
                 LIMIT 1
             """)

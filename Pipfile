@@ -5,20 +5,21 @@ name = "pypi"
 
 [packages]
 django-registration = "<3.0"
-celery = {editable = true, ref = "563f23fc", git = "https://github.com/celery/celery.git"}
+celery = {editable = true,ref = "563f23fc",git = "https://github.com/celery/celery.git"}
 redis = "*"
 python-memcached = "*"
 kombu = "*"
 django-storages = "*"
 django-extensions = "*"
-"psycopg2-binary" = "*"
 django-widget-tweaks = "*"
 "django-bootstrap3" = "*"
 "zope.interface" = "*"
-Django = ">=2.1"
-RestrictedPython = ">=4.0b5"
+Django = "*"
+RestrictedPython = "*"
 service_identity = "*"
 uWSGI = "*"
+"psycopg2-binary" = "*"
+mysqlclient = "*"
 
 [dev-packages]
 pylint = "*"
@@ -27,3 +28,6 @@ setuptools_git = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
