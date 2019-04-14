@@ -44,7 +44,7 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             '',
             "INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
-            "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('f', '', '', DEFAULT, 'f', 1, NULL) RETURNING id",
+            "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('0', '', '', DEFAULT, '0', 1, NULL) RETURNING id",
             'SELECT * FROM verb WHERE id = 2048',
             "SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
             'SELECT * FROM object WHERE id = 1',
@@ -90,7 +90,7 @@ class ObjectExchangeTestCase(TestCase):
                 expected_insert = rmws("""INSERT INTO object 
                                         (id, location_id, name, owner_id, unique_name) 
                                     VALUES 
-                                        (DEFAULT, NULL, 'wizard', NULL, 't') 
+                                        (DEFAULT, NULL, 'wizard', NULL, '1') 
                                     RETURNING id
                                 """)
                 self.assertEqual(query, expected_insert)
@@ -193,12 +193,12 @@ class ObjectExchangeTestCase(TestCase):
         ids = list(range(1, 6))
         
         queries = [
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 6",
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 5",
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 4",
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 3",
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 2",
-            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = 'f' WHERE id = 1",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 6",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 5",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 4",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 3",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 2",
+            "UPDATE object SET location_id = NULL, name = '', owner_id = NULL, unique_name = '0' WHERE id = 1",
         ]
         
         def runOperation(q, *a, **kw):
@@ -225,7 +225,7 @@ class ObjectExchangeTestCase(TestCase):
                             SET location_id = NULL, 
                                 name = 'test object', 
                                 owner_id = NULL, 
-                                unique_name = 'f' 
+                                unique_name = '0' 
                             WHERE id = 1024
                             """)
         pool = test.Anything(
@@ -245,10 +245,10 @@ class ObjectExchangeTestCase(TestCase):
     def test_save_verb(self):
         expected_results = [False, [dict(id=1024)]]
         expected_query = rmws("""UPDATE verb 
-                            SET ability = 't', 
+                            SET ability = '1', 
                                 code = '', 
                                 filename = NULL, 
-                                method = 'f', 
+                                method = '0', 
                                 origin_id = 0, 
                                 owner_id = NULL 
                             WHERE id = 1024
@@ -299,8 +299,8 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], False]
         queries = [
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object')",
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, 'f') RETURNING id",
-            "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = 't'",
+            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0') RETURNING id",
+            "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         def runQuery(q, *a, **kw):
             self.assertEqual(q, queries.pop())
@@ -322,8 +322,8 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], [dict(id=1024)], False]
         
         queries = [
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, 'f') RETURNING id",
-            "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = 't'",
+            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0') RETURNING id",
+            "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         
         def runQuery(q, *a, **kw):
@@ -813,7 +813,7 @@ class ObjectExchangeTestCase(TestCase):
         names = ['some name', 'some other name', 'yet another name']
         results = [False, True, False]
         def runQuery(q, *a, **kw):
-            self.assertEqual(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('%s') AND unique_name = 't'" % names.pop())
+            self.assertEqual(q, "SELECT * FROM object WHERE LOWER(name) = LOWER('%s') AND unique_name = '1'" % names.pop())
             return results.pop()
         
         pool = test.Anything(
@@ -1022,8 +1022,8 @@ class ObjectExchangeTestCase(TestCase):
         ]
         
         queries = [
-            "SELECT id FROM player WHERE wizard = 't' AND avatar_id = 1024",
-            "SELECT id FROM player WHERE wizard = 't' AND avatar_id = 2048",
+            "SELECT id FROM player WHERE wizard = '1' AND avatar_id = 1024",
+            "SELECT id FROM player WHERE wizard = '1' AND avatar_id = 2048",
         ]
         
         def runQuery(q, *a, **kw):
@@ -1070,11 +1070,11 @@ class ObjectExchangeTestCase(TestCase):
         
         queries = [
             'DELETE FROM player WHERE avatar_id = 1',
-            "UPDATE player SET crypt = '!', enabled = 'f', wizard = 'f' WHERE avatar_id = 1",
+            "UPDATE player SET crypt = '!', enabled = '0', wizard = '0' WHERE avatar_id = 1",
             'SELECT id FROM player WHERE avatar_id = 1',
-            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veYk4kGvM83ec', 't', 't')",
+            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veYk4kGvM83ec', '1', '1')",
             'SELECT id FROM player WHERE avatar_id = 1',
-            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veFIEE6ItqLts', 't', 'f')",
+            "INSERT INTO player (avatar_id, crypt, enabled, wizard) VALUES (1, 'veFIEE6ItqLts', '1', '0')",
             'SELECT id FROM player WHERE avatar_id = 1',
         ]
         
