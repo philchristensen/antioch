@@ -417,7 +417,7 @@ class ObjectExchange(object):
         if(obj_type == 'object'):
             attribs = dict(
                 name        = obj._name,
-                unique_name = int(obj._unique_name),
+                unique_name = str(int(obj._unique_name)),
                 owner_id    = obj._owner_id,
                 location_id = obj._location_id,
             )
@@ -427,8 +427,8 @@ class ObjectExchange(object):
                 filename    = obj._filename,
                 owner_id    = obj._owner_id,
                 origin_id    = obj._origin_id,
-                ability        = int(obj._ability),
-                method        = int(obj._method),
+                ability        = str(int(obj._ability)),
+                method        = str(int(obj._method)),
             )
         elif(obj_type == 'property'):
             def check(v):
@@ -923,8 +923,8 @@ class ObjectExchange(object):
         elif(player is False):
             crypt = attribs['crypt'] = '!'
         
-        attribs['enabled'] = player is True
-        attribs['wizard'] = wizard is True
+        attribs['enabled'] = str(int(player is True))
+        attribs['wizard'] = str(int(wizard is True))
         
         if(self.is_player(object_id)):
             if not(attribs):
