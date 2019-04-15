@@ -416,7 +416,7 @@ conversions = {
     type(None): lambda s,d: 'NULL',
     list: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
     tuple: lambda s,d: '(%s)' % ','.join([escape_item(x, conversions) for x in s]),
-    bool: lambda s,d: string_literal(('f', 't')[s], d),
+    bool: lambda s,d: string_literal(('0', '1')[s], d),
     datetime.date: lambda d,c: string_literal(strftime(d, "%Y-%m-%d"), c),
     datetime.datetime: lambda d,c: string_literal(strftime(d, "%Y-%m-%d %H:%M:%S"), c),
     datetime.timedelta: lambda v,c: string_literal('%d %d:%d:%d' % (v.days, int(v.seconds / 3600) % 24, int(v.seconds / 60) % 60, int(v.seconds) % 60)),
