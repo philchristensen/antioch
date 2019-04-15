@@ -782,14 +782,21 @@ class ObjectExchange(object):
         """
         Get a list of verb id and names dictionaries.
         """
-        verbs = self.connection.runQuery(sql.interp(
-            """SELECT v.id, array_agg(vn.name) AS names
-                FROM verb v
-                    INNER JOIN verb_name vn ON v.id = vn.verb_id
-                WHERE v.origin_id = %s
-                GROUP BY v.id
-            """, origin_id))
-        return [dict(id=v['id'], names=','.join(v['names'])) for v in verbs]
+        query = """SELECT v.id, %s(vn.name) AS names
+            FROM verb v
+                INNER JOIN verb_name vn ON v.id = vn.verb_id
+            WHERE v.origin_id = %%s
+            GROUP BY v.id
+        """
+        if(self.connection.isType('postgresql')):
+            agg_function = "array_agg"
+            verbs = self.connection.runQuery(sql.interp(query % agg_function, origin_id))
+            return [dict(id=v['id'], names=','.join(v['names'])) for v in verbs]
+        else:
+            agg_function = "group_concat"
+            verbs = self.connection.runQuery(sql.interp(query % agg_function, origin_id))
+            return [dict(id=v['id'], names=v['names']) for v in verbs]
+            
     
     def get_property_list(self, origin_id):
         """
