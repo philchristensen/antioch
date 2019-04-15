@@ -1246,15 +1246,15 @@ class ObjectExchange(object):
         """
         Register a delayed verb call.
         """
-        task_id = self.connection.runQuery(sql.build_insert('task', dict(
+        self.connection.runOperation(sql.build_insert('task', dict(
             user_id        = user_id,
             delay        = delay,
             origin_id    = origin_id,
             verb_name    = verb_name,
             args        = args,
             kwargs        = kwargs,
-        )) + ' RETURNING id')[0]['id']
-        return task_id
+        )))
+        return self.connection.getLastInsertId('task')
     
     def get_task(self, task_id):
         """
