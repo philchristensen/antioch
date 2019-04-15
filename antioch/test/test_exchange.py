@@ -44,7 +44,9 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             '',
             "INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
+            "SELECT currval(pg_get_serial_sequence('verb_name','id'));",
             "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('0', '', '', DEFAULT, '0', 1, NULL)",
+            "SELECT currval(pg_get_serial_sequence('verb','id'));",
             'SELECT * FROM verb WHERE id = 2048',
             "SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
             'SELECT * FROM object WHERE id = 1',
@@ -299,6 +301,7 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object')",
             "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
+            "SELECT currval(pg_get_serial_sequence('object','id'));",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         def runQuery(q, *a, **kw):
@@ -322,6 +325,7 @@ class ObjectExchangeTestCase(TestCase):
         
         queries = [
             "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
+            "SELECT currval(pg_get_serial_sequence('object','id'));",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         
@@ -883,13 +887,13 @@ class ObjectExchangeTestCase(TestCase):
             'DELETE FROM access WHERE id = 2048',
             'SELECT a.*, p.name AS permission FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE a.id = 2048',
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'deny', 'accessor', 0)",
-            # "SELECT p.* FROM permission p WHERE p.name = 'write'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'allow', 'accessor', 0)",
-            # "SELECT p.* FROM permission p WHERE p.name = 'write'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'deny', 'group', 0)",
-            # "SELECT p.* FROM permission p WHERE p.name = 'read'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'allow', 'group', 0)",
-            # "SELECT p.* FROM permission p WHERE p.name = 'read'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
         ]
         
         def runQuery(q, *a, **kw):
@@ -966,9 +970,9 @@ class ObjectExchangeTestCase(TestCase):
 
         queries = [
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES (NULL, 0, 0, 3, NULL, 'allow', 'accessor', NULL, 0)",
-            # "SELECT * FROM permission WHERE name = 'write'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'allow', 'group', NULL, 0)",
-            # "SELECT * FROM permission WHERE name = 'anything'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
         ]
         
         def runQuery(q, *a, **kw):
@@ -995,7 +999,7 @@ class ObjectExchangeTestCase(TestCase):
 
         queries = [
             "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'deny', 'group', NULL, 0)",
-            # "SELECT * FROM permission WHERE name = 'anything'",
+            "SELECT currval(pg_get_serial_sequence('access','id'));",
         ]
         
         def runQuery(q, *a, **kw):
