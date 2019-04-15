@@ -166,7 +166,7 @@ def get_restricted_environment(writer, p=None):
     Given the provided parser object, construct an environment dictionary.
     """
     class _print_(object):
-        def write(self, s):
+        def _call_print(self, s):
             writer(s)
     
     class _write_(object):
@@ -192,7 +192,7 @@ def get_restricted_environment(writer, p=None):
     
     env = dict(
         _apply_           = lambda f,*a,**kw: f(*a, **kw),
-        _print_           = lambda: _print_(),
+        _print_           = lambda x: _print_(),
         _write_           = _write_,
         _getattr_         = get_protected_attribute,
         _getitem_         = lambda obj, key: obj[key],
