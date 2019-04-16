@@ -67,6 +67,7 @@ class ObjectExchangeTestCase(TestCase):
         pool = test.Anything(
             runQuery = runQuery,
             runOperation = runOperation,
+            getLastInsertId = lambda x: 1
         )
         
         ex = exchange.ObjectExchange(wrapper=pool)
@@ -98,6 +99,8 @@ class ObjectExchangeTestCase(TestCase):
         
         pool = test.Anything(
             runQuery        = runQuery,
+            runOperation    = runQuery,
+            getLastInsertId = lambda x: 1
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -220,16 +223,22 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_save_object(self):
         expected_results = [False, [dict(id=1024)]]
-        expected_query = rmws("""UPDATE object 
-                            SET location_id = NULL, 
-                                name = 'test object', 
-                                owner_id = NULL, 
-                                unique_name = '0' 
-                            WHERE id = 1024
-                            """)
+        expected_queries = [
+            rmws("""UPDATE object 
+                    SET location_id = NULL, 
+                        name = 'test object', 
+                        owner_id = NULL, 
+                        unique_name = '0' 
+                    WHERE id = 1024
+                    """),
+            rmws("""INSERT INTO object (id, location_id, name, owner_id, unique_name)
+                    VALUES (DEFAULT, NULL, '', NULL, '0')
+                    """),
+        ]
         pool = test.Anything(
             runQuery        = lambda q: expected_results.pop(),
-            runOperation    = lambda q: self.assertEqual(q, expected_query)
+            runOperation    = lambda q: self.assertEqual(q, expected_queries.pop()),
+            getLastInsertId = lambda x: 1024
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -306,7 +315,9 @@ class ObjectExchangeTestCase(TestCase):
             return results.pop()
         
         pool = test.Anything(
-            runQuery        = runQuery,
+            runOperation        = runQuery,
+            runQuery            = runQuery,
+            getLastInsertId = lambda x: 1
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -330,7 +341,9 @@ class ObjectExchangeTestCase(TestCase):
             return results.pop()
         
         pool = test.Anything(
+            runOperation    = runQuery,
             runQuery        = runQuery,
+            getLastInsertId = lambda x: 1
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -600,6 +613,7 @@ class ObjectExchangeTestCase(TestCase):
         
         pool = test.Anything(
             runQuery    =    runQuery,
+            isType      =    lambda x: x == 'postgresql'
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -1129,7 +1143,9 @@ class ObjectExchangeTestCase(TestCase):
             return [dict(id=-1)]
         
         pool = test.Anything(
-            runQuery    = runQuery,
+            runQuery        = runQuery,
+            runOperation    = runQuery,
+            getLastInsertId = lambda x: -1
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         task_id = ex.register_task(2, 10, '#1 (System Object)', 'test', '[1,2,3]', "{'a':1,'b':2}")
