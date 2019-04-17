@@ -9,4 +9,7 @@ install:
   - pip install -q pipenv
   - pipenv install --system --dev --deploy --ignore-pipfile
 script:
-  - python manage.py test
+  - DJANGO_SETTINGS_MODULE=antioch.settings.unittests python manage.py test
+cache:
+  directories:
+    - $HOME/.cache/pip/
