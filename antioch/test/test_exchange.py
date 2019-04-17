@@ -222,8 +222,17 @@ class ObjectExchangeTestCase(TestCase):
         self.assertEqual(ex.cache, {})
     
     def test_save_object(self):
-        expected_results = [False, [dict(id=1024)]]
+        expected_results = [[]]
         expected_queries = [
+            # the resut of the .save() call.
+            rmws("""UPDATE object 
+                    SET location_id = NULL, 
+                        name = 'test object', 
+                        owner_id = NULL, 
+                        unique_name = '0' 
+                    WHERE id = 1024
+                    """),
+            # this is a forced save after editing the "real" name
             rmws("""UPDATE object 
                     SET location_id = NULL, 
                         name = 'test object', 
@@ -247,27 +256,45 @@ class ObjectExchangeTestCase(TestCase):
         
         self.assertEqual(o.get_id(), 1024)
         
+        # the second save is redundant, but included for clarity
         o.set_name('test object', real=True)
         ex.save(o)
     
     def test_save_verb(self):
-        expected_results = [False, [dict(id=1024)]]
-        expected_query = rmws("""UPDATE verb 
-                            SET ability = '1', 
-                                code = '', 
-                                filename = NULL, 
-                                method = '0', 
-                                origin_id = 0, 
-                                owner_id = NULL 
-                            WHERE id = 1024
-                            """)
+        expected_results = [[]]
+        expected_queries = [
+            "",
+            rmws("""UPDATE verb 
+                    SET ability = '1', 
+                        code = '', 
+                        filename = NULL, 
+                        method = '0', 
+                        origin_id = 2048, 
+                        owner_id = NULL 
+                    WHERE id = 1024
+                    """),
+            rmws("""UPDATE verb 
+                    SET ability = '1', 
+                        code = '', 
+                        filename = NULL, 
+                        method = '0', 
+                        origin_id = 2048, 
+                        owner_id = NULL 
+                    WHERE id = 1024
+                    """),
+            rmws("""INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id)
+                    VALUES ('0', '', NULL, DEFAULT, '0', 2048, NULL)
+                    """)
+        ]
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
-            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
+            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_queries.pop()),
+            getLastInsertId = lambda x: 1024
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
+        o.set_id(2048)
         v = interface.Verb(o)
         ex.save(v)
         
@@ -277,22 +304,37 @@ class ObjectExchangeTestCase(TestCase):
         ex.save(v)
     
     def test_save_property(self):
-        expected_results = [False, [dict(id=1024)]]
-        expected_query = rmws("""UPDATE property 
-                            SET name = 'myprop', 
-                                origin_id = 0, 
-                                owner_id = NULL, 
-                                type = 'string', 
-                                value = NULL 
-                            WHERE id = 1024
-                            """)
+        expected_results = [[]]
+        expected_queries = [
+            rmws("""UPDATE property 
+                    SET name = 'myprop', 
+                        origin_id = 2048, 
+                        owner_id = NULL, 
+                        type = 'string', 
+                        value = NULL 
+                    WHERE id = 1024
+                    """),
+            rmws("""UPDATE property 
+                    SET name = 'myprop', 
+                        origin_id = 2048, 
+                        owner_id = NULL, 
+                        type = 'string', 
+                        value = NULL 
+                    WHERE id = 1024
+                    """),
+            rmws("""INSERT INTO property (id, name, origin_id, owner_id, type, value)
+                    VALUES (DEFAULT, '', 2048, NULL, 'string', NULL)
+                    """)
+        ]
         pool = test.Anything(
             runQuery        = lambda q, *a, **kw: expected_results.pop(),
-            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_query)
+            runOperation    = lambda q, *a, **kw: self.assertEqual(q, expected_queries.pop()),
+            getLastInsertId = lambda x: 1024
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
         o = interface.Object(ex)
+        o.set_id(2048)
         p = interface.Property(o)
         ex.save(p)
         
