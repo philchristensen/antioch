@@ -464,7 +464,6 @@ class ObjectExchange(object):
         if(obj_id):
             self.connection.runOperation(sql.build_update(obj_type, attribs, dict(id=obj_id)))
         else:
-            attribs['id'] = sql.RAW('DEFAULT')
             self.connection.runOperation(sql.build_insert(obj_type, attribs))
             obj.set_id(self.connection.getLastInsertId(obj_type))
         

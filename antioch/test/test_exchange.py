@@ -44,7 +44,7 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             '',
             "INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
-            "INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id) VALUES ('0', '', '', DEFAULT, '0', 1, NULL)",
+            "INSERT INTO verb (ability, code, filename, method, origin_id, owner_id) VALUES ('0', '', '', '0', 1, NULL)",
             'SELECT * FROM verb WHERE id = 2048',
             "SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
             'SELECT * FROM object WHERE id = 1',
@@ -89,9 +89,9 @@ class ObjectExchangeTestCase(TestCase):
                 return results.pop()
             else:
                 expected_insert = rmws("""INSERT INTO object 
-                                        (id, location_id, name, owner_id, unique_name) 
+                                        (location_id, name, owner_id, unique_name) 
                                     VALUES 
-                                        (DEFAULT, NULL, 'wizard', NULL, '1')
+                                        (NULL, 'wizard', NULL, '1')
                                 """)
                 self.assertEqual(query, expected_insert)
                 return [dict(id=1)]
@@ -240,8 +240,8 @@ class ObjectExchangeTestCase(TestCase):
                         unique_name = '0' 
                     WHERE id = 1024
                     """),
-            rmws("""INSERT INTO object (id, location_id, name, owner_id, unique_name)
-                    VALUES (DEFAULT, NULL, '', NULL, '0')
+            rmws("""INSERT INTO object (location_id, name, owner_id, unique_name)
+                    VALUES (NULL, '', NULL, '0')
                     """),
         ]
         pool = test.Anything(
@@ -282,8 +282,8 @@ class ObjectExchangeTestCase(TestCase):
                         owner_id = NULL 
                     WHERE id = 1024
                     """),
-            rmws("""INSERT INTO verb (ability, code, filename, id, method, origin_id, owner_id)
-                    VALUES ('0', '', NULL, DEFAULT, '0', 2048, NULL)
+            rmws("""INSERT INTO verb (ability, code, filename, method, origin_id, owner_id)
+                    VALUES ('0', '', NULL, '0', 2048, NULL)
                     """)
         ]
         pool = test.Anything(
@@ -322,8 +322,8 @@ class ObjectExchangeTestCase(TestCase):
                         value = NULL 
                     WHERE id = 1024
                     """),
-            rmws("""INSERT INTO property (id, name, origin_id, owner_id, type, value)
-                    VALUES (DEFAULT, '', 2048, NULL, 'string', NULL)
+            rmws("""INSERT INTO property (name, origin_id, owner_id, type, value)
+                    VALUES ('', 2048, NULL, 'string', NULL)
                     """)
         ]
         pool = test.Anything(
@@ -349,7 +349,7 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], False]
         queries = [
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object')",
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
+            "INSERT INTO object (location_id, name, owner_id, unique_name) VALUES (NULL, 'test object', NULL, '0')",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         def runQuery(q, *a, **kw):
@@ -374,7 +374,7 @@ class ObjectExchangeTestCase(TestCase):
         results = [[dict(id=1024)], [dict(id=1024)], [dict(id=1024)], False]
         
         queries = [
-            "INSERT INTO object (id, location_id, name, owner_id, unique_name) VALUES (DEFAULT, NULL, 'test object', NULL, '0')",
+            "INSERT INTO object (location_id, name, owner_id, unique_name) VALUES (NULL, 'test object', NULL, '0')",
             "SELECT * FROM object WHERE LOWER(name) = LOWER('test object') AND unique_name = '1'",
         ]
         
