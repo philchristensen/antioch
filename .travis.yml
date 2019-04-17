@@ -7,7 +7,7 @@ python:
 cache: false
 install:
   - pip install -q pipenv
-  - pipenv install --system --dev --deploy --ignore-pipfile --bare
+  - pipenv --bare install --system --dev --deploy --ignore-pipfile
 script:
   - DJANGO_SETTINGS_MODULE=antioch.settings.unittests python manage.py test --keepdb
 cache:
