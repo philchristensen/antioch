@@ -129,10 +129,7 @@ DATABASES = {
         "NAME": "antioch",
         "HOST": "localhost",
         "USER": "antioch",
-        "PASSWORD": "antioch",
-        "TEST": {
-          "ENGINE": "django.db.backends.sqlite3"
-        }
+        "PASSWORD": "antioch"
     }
 }
 
