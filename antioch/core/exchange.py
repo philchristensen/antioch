@@ -59,6 +59,9 @@ class ConnectionWrapper(object):
         if(self.isType('postgresql')):
             result = self.runQuery("SELECT currval(pg_get_serial_sequence('%s','id'));" % obj_type)
             return result[0]['currval']
+        elif(self.isType('sqlite')):
+            result = self.runQuery("SELECT last_insert_rowid();")
+            return result[0]['last_insert_rowid()']
         elif(self.isType('mysql')):
             result = self.runQuery("SELECT LAST_INSERT_ID();")
             return result[0]['LAST_INSERT_ID()']
@@ -912,14 +915,18 @@ class ObjectExchange(object):
         Is the given player currently logged on?
         """
         if(self.connection.isType('postgresql')):
-            timestamp_function = "to_timestamp"
+            timestamp_function = "to_timestamp(0)"
+        elif(self.connection.isType('sqlite')):
+            timestamp_function = "date(0,'unixepoch')"
+        elif(self.isType('mysql')):
+            timestamp_function = "from_unixtime(0)"
         else:
-            timestamp_function = "from_unixtime"
+            raise UnsupportedError("Unsupported database type.")
         
         result = self.connection.runQuery(sql.interp(
             """SELECT 1 AS connected
                  FROM player
-                WHERE COALESCE(last_login, %s(0)) > COALESCE(last_logout, %s(0))
+                WHERE COALESCE(last_login, %s) > COALESCE(last_logout, %s)
                   AND avatar_id = %%s
             """ % (timestamp_function, timestamp_function), avatar_id))
         return bool(result)
