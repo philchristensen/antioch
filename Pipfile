@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 django-registration = "<3.0"
-celery = {editable = true,ref = "563f23fc",git = "https://github.com/celery/celery.git"}
+celery = "*"
 redis = "*"
 python-memcached = "*"
 kombu = "*"
