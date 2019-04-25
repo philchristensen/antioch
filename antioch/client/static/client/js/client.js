@@ -220,6 +220,8 @@ if(!window.console){
       
       if(escape){
         text = $('<div>').text(text).html();
+        text = text.replace(/^\s\s\s\s/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        text = text.replace(/\n/g, '<br>');
       }
       
       if(error){
