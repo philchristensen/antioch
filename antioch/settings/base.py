@@ -39,6 +39,9 @@ SITE_ID = 1
 JOB_TIMEOUT = 5
 
 # 3rd-party app config
+BOOTSTRAP4 = {
+    "include_jquery": True
+}
 
 REGISTRATION_OPEN = False
 ACCOUNT_ACTIVATION_DAYS = 7
@@ -75,7 +78,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.admindocs',
-    'bootstrap3',
+    'bootstrap4',
     'storages',
     'widget_tweaks',
     'django_extensions',
