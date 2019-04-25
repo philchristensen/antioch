@@ -214,24 +214,12 @@ if(!window.console){
             /*
              * Called by the server to output a line to the action pane.
              */
-            var actions = $('#actions');
-            
             if(typeof(escape) == 'undefined'){
                 escape = true;
             }
             
             if(escape){
-                while(text.indexOf('<') != -1)
-                    text = text.replace('<', '&lt;');
-                
-                while(text.indexOf('>') != -1)
-                    text = text.replace(">", '&gt;')
-                
-                while(text.indexOf("\n") != -1)
-                    text = text.replace("\n", '<br/>')
-                
-                while(text.indexOf('  ') != -1)
-                    text = text.replace('  ', '&nbsp;&nbsp;')
+                text = $('<div>').text(text).html();
             }
             
             if(error){
