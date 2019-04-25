@@ -38,7 +38,7 @@ if(obj):
             ) for item in obj.get_contents() if item.get('visible', True).value
         ],
     )
-    if(obj.is_connected_player()):
+    if(obj.is_connected_player() and caller != target):
         write(obj, "%s looks at you" % target.get_name())
 else:
     observations = dict(

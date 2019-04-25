@@ -202,8 +202,8 @@ if(!window.console){
        * Send a command to the server.
        */
       methods.callRemote('parse', {sentence: text});
-      var actions = $(settings.actions_selector);
-      methods.logAction(settings.issued_command_template.replace('$content', text))
+      // var actions = $(settings.actions_selector);
+      // methods.logAction(settings.issued_command_template.replace('$content', text))
     },
     
     look: function(item){
@@ -235,8 +235,10 @@ if(!window.console){
       /*
        * Called by the server to change the main client display.
        */
+      $('.window-title').html(observations['name'])
+      
       var t = $(settings.observation_template);
-      t.append($('<h3 class="name">').html(observations['name']));
+      // t.append($('<h3 class="name">').html(observations['name']));
       t.append($('<p class="lead description">').html(observations['description']));
       
       var player_content = $(settings.players_wrapper_node);
