@@ -162,7 +162,7 @@ if(!window.console){
         
         logAction: function(content){
             var d = new Date();
-            var real_date = $('<div class="real-date hidden">').html(d.toString());
+            var real_date = $('<div class="real-date d-none">').html(d.toString());
             var relative_date = $('<div class="relative-date">');
             var date = $('<h6 class="date keep-relative">').append(real_date).append(relative_date);
             content = $(content);
