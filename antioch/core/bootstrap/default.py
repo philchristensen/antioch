@@ -154,6 +154,11 @@ author_class.add_verb('alias', **dict(
     filename    = bootstrap.get_verb_path('author_class_alias.py'),
 )).allow('everyone', 'execute')
 
+author_class.add_verb('make', **dict(
+    ability        = True,
+    filename    = bootstrap.get_verb_path('author_class_make.py'),
+)).allow('everyone', 'execute')
+
 author_class.add_verb('dig', **dict(
     ability        = True,
     filename    = bootstrap.get_verb_path('author_class_dig.py'),
