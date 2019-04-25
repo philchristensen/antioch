@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "08258b630499790db035d75eed1f62ab5dd8ff66db9cbaab03788b5e84dfb027"
+            "sha256": "e70c535b1c861a46fb4b65d64aaa42442c01462e9d2ad97a9258c704c8952835"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -293,13 +293,12 @@
             ],
             "version": "==5.0.0a1"
         },
-        "zope.interface": {
+        "zope-interface": {
             "hashes": [
                 "sha256:086707e0f413ff8800d9c4bc26e174f7ee4c9c8b0302fbad68d083071822316c",
                 "sha256:1157b1ec2a1f5bf45668421e3955c60c610e31913cc695b407a574efdbae1f7b",
                 "sha256:11ebddf765bff3bbe8dbce10c86884d87f90ed66ee410a7e6c392086e2c63d02",
                 "sha256:14b242d53f6f35c2d07aa2c0e13ccb710392bcd203e1b82a1828d216f6f6b11f",
-                "sha256:1b3d0dcabc7c90b470e59e38a9acaa361be43b3a6ea644c0063951964717f0e5",
                 "sha256:20a12ab46a7e72b89ce0671e7d7a6c3c1ca2c2766ac98112f78c5bddaa6e4375",
                 "sha256:298f82c0ab1b182bd1f34f347ea97dde0fffb9ecf850ecf7f8904b8442a07487",
                 "sha256:2f6175722da6f23dbfc76c26c241b67b020e1e83ec7fe93c9e5d3dd18667ada2",

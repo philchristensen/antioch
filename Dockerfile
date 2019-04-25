@@ -6,14 +6,13 @@ LABEL Version="0.9"
 # Install base dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y sqlite3 ssl-cert git
 
-ENV PIP_SRC=/usr/src
-WORKDIR /usr/src/app
-
 ADD Pipfile /usr/src/app/Pipfile
 ADD Pipfile.lock /usr/src/app/Pipfile.lock
 
 # Install Python application dependencies
-RUN pip install -q pipenv
+ENV PIP_SRC=/usr/src
+WORKDIR /usr/src/app
+RUN pip install -q -U pipenv pip
 RUN pipenv install --system --dev --deploy --ignore-pipfile
 
 ADD . /usr/src/app
