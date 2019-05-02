@@ -53,7 +53,7 @@
     tabList.append($("<li>").append(newTab));
     tabContent.append(newTabContent);
     
-    newTab.tab('show');
+    $(document).tab('show');
   });
 })(jQuery);
 

@@ -1,4 +1,4 @@
-{% extends 'common/base.html' %}
+{% extends 'core/base.html' %}
 
 {% load bootstrap4 staticfiles %}
 
@@ -53,7 +53,7 @@
 
 {% block bootstrap4_extra_script %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static 'common/js/libs/relative-date.js' %}"></script>
+  <script type="text/javascript" src="{% static 'client/js/libs/relative-date.js' %}"></script>
   <script type="text/javascript" src="{% static 'client/js/client.js' %}"></script>
   {% for script_url in scripts %}
   <script type="text/javascript" src="{{ script_url }}"></script>

@@ -84,7 +84,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_nose',
     'registration',
-    'antioch.common',
     'antioch.core',
     'antioch.client',
     'antioch.plugins.ask',
