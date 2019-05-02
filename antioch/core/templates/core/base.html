@@ -1,4 +1,4 @@
-{% extends 'common/bootstrap.html' %}
+{% extends 'core/bootstrap.html' %}
 
 {% load bootstrap4 static %}
 
@@ -25,5 +25,5 @@
 {% block bootstrap4_extra_script %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
     {# {% include 'autocomplete_light/static.html' %} #}
-    <script src="{% static 'common/js/global.js' %}"></script>
+    <script src="{% static 'client/js/global.js' %}"></script>
 {% endblock %}
