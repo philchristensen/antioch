@@ -20,6 +20,7 @@ restrictedpython = "*"
 service_identity = "*"
 uwsgi = "*"
 zope-interface = "*"
+djangorestframework = "*"
 
 [dev-packages]
 pylint = "*"

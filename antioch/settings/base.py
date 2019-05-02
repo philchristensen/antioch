@@ -43,6 +43,12 @@ BOOTSTRAP4 = {
     "include_jquery": True
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    )
+}
+
 REGISTRATION_OPEN = False
 ACCOUNT_ACTIVATION_DAYS = 7
 
@@ -84,6 +90,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_nose',
     'registration',
+    'rest_framework',
     'antioch.core',
     'antioch.client',
     'antioch.plugins.ask',

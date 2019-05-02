@@ -17,4 +17,5 @@ urlpatterns = [
     path(r'', include('antioch.plugins.urls')),
     path(r'admin/', admin.site.urls),
     path(r'', include('antioch.client.urls')),
+    path(r'', include('antioch.core.urls')),
 ]

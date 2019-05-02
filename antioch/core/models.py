@@ -185,6 +185,10 @@ class Player(models.Model):
     def has_perm(self, perm):
         return True
     
+    @property
+    def email(self):
+        return self.avatar.name + '@antioch.net'
+    
     avatar = models.ForeignKey(Object, null=True, on_delete=models.SET_NULL)
     session_id = models.CharField(max_length=255, null=True, blank=True)
     wizard = models.BooleanField(default=False)
