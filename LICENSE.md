@@ -1,4 +1,4 @@
-Copyright (c) 1999-2018 Phil Christensen (phil@bubblehouse.org)
+Copyright (c) 1999-2019 Phil Christensen (phil@bubblehouse.org)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
