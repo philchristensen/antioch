@@ -215,3 +215,8 @@ room_class.add_verb('hear', **dict(
     filename    = bootstrap.get_verb_path('room_class_hear.py'),
 )).allow('everyone', 'execute')
 
+author = exchange.instantiate('object', name='Author', unique_name=True)
+author.set_owner(author)
+author.set_location(laboratory)
+author.set_player(True, passwd='author')
+author.add_parent(author_class)

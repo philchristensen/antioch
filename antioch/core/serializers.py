@@ -1,53 +1,57 @@
 from rest_framework import serializers
+from django.db import connection
 
-from . import models
+from . import models, exchange
 
-class ObjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Object
-        fields = ('name', 'unique_name', 'owner', 'location', 'parents', 'observers')
+class PermissionValidationMixin(object):
+    def get_exchange(self):
+        return exchange.ObjectExchange(connection, ctx=self.context['request'].user.avatar.pk)
+    
+    def check(self, field, permission, value):
+        import pdb; pdb.set_trace()
+        ex = self.get_exchange()
+        user = ex.get_object(self.context['request'].user.avatar.id)
+        obj = ex.get_object(value.id)
+        if not ex.is_allowed(user, permission, obj):
+            raise serializers.ValidationError(f"You do not have permission to change the {field}.")
+        return value
 
 class RelationshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Relationship
-        fields = ('child', 'parent', 'weight')
+        fields = ('id', 'child', 'parent', 'weight')
 
-class ObservationSerializer(serializers.ModelSerializer):
+class ObjectSerializer(serializers.ModelSerializer, PermissionValidationMixin):
+    parents = RelationshipSerializer(many=True)
+    
     class Meta:
-        model = models.Observation
-        fields = ('object', 'observer')
+        model = models.Object
+        fields = ('id', 'name', 'unique_name', 'owner', 'location', 'parents')
+        read_only_fields = ('observers',)
+    
+    def validate_owner(self, value):
+        return self.check('owner', 'entrust', value)
+    
+    def validate_location(self, value):
+        return self.check('location', 'move', value)
 
-class AliasSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Alias
-        fields = ('object', 'alias',)
-
-class VerbSerializer(serializers.ModelSerializer):
+class VerbSerializer(serializers.ModelSerializer, PermissionValidationMixin):
     class Meta:
         model = models.Verb
-        fields = ('code', 'filename', 'owner', 'origin', 'ability', 'method')
+        fields = ('id', 'code', 'filename', 'owner', 'origin', 'ability', 'method')
+    
+    def validate_owner(self, value):
+        return self.check('owner', 'entrust', value)
 
-class VerbNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.VerbName
-        fields = ('verb', 'name')
-
-class PropertySerializer(serializers.ModelSerializer):
+class PropertySerializer(serializers.ModelSerializer, PermissionValidationMixin):
     class Meta:
         model = models.Property
-        fields = ('name', 'value', 'type', 'owner', 'origin')
+        fields = ('id', 'name', 'value', 'type', 'owner', 'origin')
+    
+    def validate_owner(self, value):
+        return self.check('owner', 'entrust', value)
 
 class AccessSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Access
-        fields = ('object', 'verb', 'property', 'rule', 'permission', 'type', 'accessor', 'group', 'weight')
-
-class PlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Player
-        fields = ('avatar', 'session_id', 'wizard', 'enabled', 'crypt', 'last_login', 'last_logout')
-
-class TaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Task
-        fields = ('user', 'origin', 'verb_name', 'args', 'kwargs', 'created', 'delay', 'killed', 'error', 'trace')
+        fields = ('id', 'object', 'verb', 'property', 'rule', 'permission', 'type', 'accessor', 'group', 'weight')

@@ -16,33 +16,12 @@ class RelationshipViewSet(viewsets.ModelViewSet):
     queryset = models.Relationship.objects.all()
     serializer_class = serializers.RelationshipSerializer
 
-class ObservationViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows observations to be viewed or edited.
-    """
-    queryset = models.Observation.objects.all()
-    serializer_class = serializers.ObservationSerializer
-
-class AliasViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows aliass to be viewed or edited.
-    """
-    queryset = models.Alias.objects.all()
-    serializer_class = serializers.AliasSerializer
-
 class VerbViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows verbs to be viewed or edited.
     """
     queryset = models.Verb.objects.all()
     serializer_class = serializers.VerbSerializer
-
-class VerbNameViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows verbnames to be viewed or edited.
-    """
-    queryset = models.VerbName.objects.all()
-    serializer_class = serializers.VerbNameSerializer
 
 class PropertyViewSet(viewsets.ModelViewSet):
     """
@@ -53,22 +32,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
 class AccessViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows accesss to be viewed or edited.
+    API endpoint that allows access rules to be viewed or edited.
     """
     queryset = models.Access.objects.all()
     serializer_class = serializers.AccessSerializer
-
-class PlayerViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows players to be viewed or edited.
-    """
-    queryset = models.Player.objects.all()
-    serializer_class = serializers.PlayerSerializer
-
-class TaskViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows tasks to be viewed or edited.
-    """
-    queryset = models.Task.objects.all()
-    serializer_class = serializers.TaskSerializer
-

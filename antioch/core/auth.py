@@ -12,19 +12,35 @@ import logging, traceback, crypt
 
 from django.contrib.auth import backends
 from django.conf import settings
+from django.db import connection
 
-from antioch.core import models
+from rest_framework import permissions
+
+from . import models, exchange
 
 log = logging.getLogger(__name__)
+
+ACTION_MAPS = {
+    'object': {
+        'retrieve': 'read',
+        'destroy': 'write',
+        'update': 'write',
+        'partial_update': 'write'
+    },
+}
+
+class AntiochPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        ex = exchange.ObjectExchange(connection, ctx=request.user.avatar.pk)
+        user = ex.get_object(request.user.avatar.pk)
+        obj = getattr(ex, f'get_{view.basename}')(obj.pk)
+        action = 'read' if view.action == 'retrieve' else 'write'
+        return ex.is_allowed(user, action, obj)
 
 class AntiochObjectBackend(backends.ModelBackend):
     """
     Authenticate against the antioch object database.
     """
-    supports_object_permissions = False
-    supports_anonymous_user = True
-    supports_inactive_user = False
-
     def authenticate(self, request, username=None, password=None):
         """
         Attempt to authenticate the provided request with the given credentials.

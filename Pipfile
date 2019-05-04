@@ -21,6 +21,7 @@ service_identity = "*"
 uwsgi = "*"
 zope-interface = "*"
 djangorestframework = "*"
+django-nose = "*"
 
 [dev-packages]
 pylint = "*"
