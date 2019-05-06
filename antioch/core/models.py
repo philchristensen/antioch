@@ -23,6 +23,7 @@ class Object(models.Model):
 class Relationship(models.Model):
     class Meta:
         db_table = 'object_relation'
+        unique_together = [['child', 'parent']]
     
     child = models.ForeignKey(Object, related_name='parent', on_delete=models.CASCADE)
     parent = models.ForeignKey(Object, related_name='child', on_delete=models.CASCADE)

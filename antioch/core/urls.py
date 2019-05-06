@@ -5,8 +5,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'objects', views.ObjectViewSet)
-router.register(r'relationships', views.RelationshipViewSet)
+router.register(r'objects', views.ObjectViewSet, basename='object')
 router.register(r'verbs', views.VerbViewSet)
 router.register(r'properties', views.PropertyViewSet)
 router.register(r'acls', views.AccessViewSet)
