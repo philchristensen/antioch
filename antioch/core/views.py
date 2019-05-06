@@ -29,8 +29,7 @@ class ObjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post', 'put', 'patch', 'get'])
     def parents(self, request, pk=None):
         """
-        Returns a list of all the group names that the given
-        user belongs to.
+        An API endpoint for editing object parents.
         """
         if(request.method != 'GET'):
             new_parents = [get_object_or_404(models.Object, id=i) for i in request.data]
@@ -65,7 +64,7 @@ class VerbViewSet(viewsets.ModelViewSet):
 
 class PropertyViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows propertys to be viewed or edited.
+    API endpoint that allows properties to be viewed or edited.
     """
     queryset = models.Property.objects.all()
     serializer_class = serializers.PropertySerializer
