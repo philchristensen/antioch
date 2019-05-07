@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.shortcuts import get_object_or_404
@@ -159,7 +160,7 @@ class ExecutionViewSet(viewsets.ViewSet):
             sq = simple.SimpleBuffer(channel, queue, no_ack=True)
             try:
                 msg = sq.get(block=True, timeout=10)
-                messages = [msg.body.decode()]
+                messages = [json.loads(msg.body.decode())]
             except sq.Empty as e:
                 messages = []
             sq.close()

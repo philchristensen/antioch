@@ -235,7 +235,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
-        'antioch.client.views': {
+        'antioch.core.views': {
             'handlers': ['console'],
             'level': 'INFO'
         },
@@ -246,7 +246,7 @@ LOGGING = {
         },
         'celery.app.trace': {
             'handlers': ['console'],
-            'level': 'DEBUG'
+            'level': 'INFO'
         },
         'celery.bootsteps': {
             'handlers': ['console'],

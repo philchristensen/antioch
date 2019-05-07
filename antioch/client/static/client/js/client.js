@@ -30,8 +30,8 @@ if(!window.console){
       // Create some defaults, extending them with any options that were provided
       settings = $.extend({
         listen: false,
-        comet_url: "/comet/",
-        rest_url: "/rest/",
+        comet_url: "/api/exec/messages/",
+        rest_url: "/api/exec/",
         
         callback: function(){
           // methods.write('Connected...');
@@ -66,9 +66,10 @@ if(!window.console){
       
       return this.each(function(){
         function listen(handler){
-          $.ajax(settings.comet_url, {
-            dataType: 'json',
-            contentType: 'application/json',
+          $.ajax({
+            method: 'GET',
+            url: settings.comet_url,
+            contentType: "application/json",
             cache: false,
             error:    function(jqXHR, textStatus, errorThrown){
               if(textStatus == 'timeout'){
@@ -84,13 +85,7 @@ if(!window.console){
               }
             },
             success: function(data, textStatus, jqXHR){
-              if(data.length == 1 && data[0] == "SHUTDOWN"){
-                settings.error_handler('Server Shutting Down');
-                return;
-              }
-              
               handler(data);
-              
               setTimeout(function(){
                 listen(handler);
               }, 1);
@@ -176,11 +171,14 @@ if(!window.console){
     },
     
     callRemote: function(command, options, callback){
-      $.ajax(settings.rest_url + command, {
-        type: 'POST',
-        dataType: 'json',
-        processData: false,
+      $.ajax({
+        method: 'POST',
+        url: settings.rest_url + command + '/command/',
+        contentType: "application/json",
         data: JSON.stringify(options),
+        headers: {
+          'X-CSRFToken': Cookies.get('csrftoken')
+        },
         error:    function(jqXHR, textStatus, errorThrown){
           if(errorThrown){
             settings.error_handler('Error in callRemote: ' + errorThrown);
