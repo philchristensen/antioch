@@ -26,10 +26,13 @@ ACTION_MAPS = {
         'destroy': 'write',
         'update': 'write',
         'partial_update': 'write'
-    },
+    }
 }
 
 class AntiochPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+    
     def has_object_permission(self, request, view, obj):
         ex = exchange.ObjectExchange(connection, ctx=request.user.avatar.pk)
         user = ex.get_object(request.user.avatar.pk)

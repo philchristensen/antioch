@@ -6,9 +6,10 @@ from django.conf import settings
 
 from rest_framework import viewsets, response, exceptions
 from rest_framework.decorators import action
+from rest_framework.reverse import reverse
 
 from antioch import celery_config
-from . import models, serializers, exchange
+from . import models, serializers, exchange, tasks
 
 log = logging.getLogger(__name__)
 
@@ -26,43 +27,6 @@ class MultiEntityMixin(object):
             return klass.objects.filter(pk=self.request.parser_context['kwargs']['pk'])
         else:
             return self.queryset
-
-class MessageViewSet(viewsets.ViewSet):
-    def list(self, request):
-        """
-        Check for messages for this user.
-        """
-        queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
-        log.debug("checking for messages for %s" % queue_id)
-
-        with celery_config.app.default_connection() as conn:
-            from kombu import simple, Exchange, Queue
-            exchange = Exchange('antioch',
-                type            = 'direct',
-                auto_delete     = False,
-                durable         = True,
-            )
-            channel = conn.channel()
-            unbound_queue = Queue(queue_id,
-                exchange        = exchange,
-                routing_key     = queue_id,
-                auto_delete     = False,
-                durable         = False,
-                exclusive       = False,
-            )
-            queue = unbound_queue(channel)
-            queue.declare()
-
-            sq = simple.SimpleBuffer(channel, queue, no_ack=True)
-            try:
-                msg = sq.get(block=True, timeout=10)
-                messages = [msg.body.decode()]
-            except sq.Empty as e:
-                messages = []
-            sq.close()
-    
-        log.debug('returning to client: %s' % messages)
-        return response.Response(messages)
 
 class ObjectViewSet(viewsets.ModelViewSet, MultiEntityMixin):
     """
@@ -139,3 +103,60 @@ class AccessViewSet(viewsets.ModelViewSet):
     """
     queryset = models.Access.objects.all()
     serializer_class = serializers.AccessSerializer
+
+class ExecutionViewSet(viewsets.ViewSet):
+    """
+    API endpoint for client interactions.
+    """
+    def list(self, request):
+        return response.Response(dict(
+            messages = request.build_absolute_uri(reverse('exec-messages')),
+            commands = request.build_absolute_uri(reverse('exec-commands'))
+        ))
+    
+    @action(detail=False, methods=['post'])
+    def commands(self, request):
+        """
+        Send a command to the server.
+        """
+        task = getattr(tasks, command)
+        result = task.delay(request.user.avatar.id, **request.data)
+        data = result.get(timeout=settings.JOB_TIMEOUT)
+        return response.Response(data)
+    
+    @action(detail=False, methods=['get'])
+    def messages(self, request):
+        """
+        Check for messages for this user.
+        """
+        queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
+        log.debug("checking for messages for %s" % queue_id)
+
+        with celery_config.app.default_connection() as conn:
+            from kombu import simple, Exchange, Queue
+            exchange = Exchange('antioch',
+                type            = 'direct',
+                auto_delete     = False,
+                durable         = True,
+            )
+            channel = conn.channel()
+            unbound_queue = Queue(queue_id,
+                exchange        = exchange,
+                routing_key     = queue_id,
+                auto_delete     = False,
+                durable         = False,
+                exclusive       = False,
+            )
+            queue = unbound_queue(channel)
+            queue.declare()
+
+            sq = simple.SimpleBuffer(channel, queue, no_ack=True)
+            try:
+                msg = sq.get(block=True, timeout=10)
+                messages = [msg.body.decode()]
+            except sq.Empty as e:
+                messages = []
+            sq.close()
+    
+        log.debug('returning to client: %s' % messages)
+        return response.Response(messages)
