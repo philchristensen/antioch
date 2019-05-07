@@ -4,7 +4,7 @@
 
 {% block bootstrap4_extra_head %}
   <link rel="stylesheet/less" type="text/css" href="{% static 'client/css/client.less' %}" />
-  <link rel="stylesheet/css" type="text/css" href="{% static 'client/css/flippant.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/flippant.css' %}" />
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -54,7 +54,7 @@
 
 {% block bootstrap4_extra_script %}
   {{ block.super }}
-  <script src="{% static 'client/js/flippant.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'client/js/flippant.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'client/js/relative-date.js' %}"></script>
   <script type="text/javascript" src="{% static 'client/js/client.js' %}"></script>
   {% for script_url in scripts %}

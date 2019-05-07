@@ -1,6 +1,7 @@
 {% extends 'client/trivial.html' %}
 {% load widget_tweaks %}
 {% load staticfiles %}
+{% load bootstrap4 %}
 
 {% block header %}
 {# {% include 'client/autocomplete_light/static.html' %} #}
@@ -15,66 +16,68 @@ $(document).ready(function(){
 
 {% block content %}
 
-<div class="object editor row">
-  <form id="object-form" method="POST" action="{{ request.path }}">
-      {% csrf_token %}
+<div class="container-fluid">
+  <div class="object editor row">
+    <div class="col-xs-12 col-md-6">
+      <form id="object-form" method="POST" action="{{ request.path }}">
+        {% csrf_token %}
         {{ form.errors }}
-        <div class="col-xs-6">
-            <div class="form-group row">
-        <div class="col-xs-8">
-                <label class="control-label" id="name-label" for="id_name">name:</label>
-                {{ form.name|add_class:"form-control"  }}
+        <div class="form-group row">
+          <div class="col-xs-8 col-md-8">
+            {% bootstrap_field form.name %}
+          </div>
+          <div class="col">
+            <label class="control-label" id="access-label" for="access-button">&nbsp;</label><br>
+            <button type="button" class="btn block" id="access-button">access...</button>
+          </div>
         </div>
-        <div class="col-xs-4">
-                <label class="control-label" id="access-label" for="access-button">&nbsp;</label><br>
-          <button type="button" class="btn block" id="access-button">access...</button>
-              </div>
-            </div>
-            <div class="form-group">
-            <label class="control-label" id="parent-label" for="id_parents_text">parents:</label>
-            {{ form.parents|add_class:"form-control"  }}
-            </div>
-            <div class="form-group">
-            <label class="control-label" id="location-label" for="id_location_text">location:</label>
-            {{ form.location|add_class:"form-control"  }}
-            </div>
-            <div class="form-group">
-            <label class="control-label" id="owner-label" for="id_owner_text">owner:</label>
-            {{ form.owner|add_class:"form-control"  }}
-            </div>
+        <div class="form-group">
+          {% bootstrap_field form.parents %}
         </div>
-    
-        <div class="attributes col-xs-6 row">
-            <div class="verbs col-xs-6">
-                <label id="verbs-label" for="verbs-select">verbs:</label>
-                <select id="verbs-select" size="2" class="form-control">
-                    {% for verb in form.instance.verbs.all %}
-                    <option value="{{ verb.id }}">{{ verb.annotated }}</option>
-                    {% endfor %}
-                </select>
-        <div class="btn-group">
-                  <button type="button" class="btn btn-default" id="add-verb"><span class="glyphicon glyphicon-plus"></span></button>
-                  <button type="button" class="btn btn-default" id="remove-verb"><span class="glyphicon glyphicon-minus"></span></button>
+        <div class="form-group">
+          {% bootstrap_field form.location %}
         </div>
-            </div>
-            <div class="properties col-xs-6">
-                <label id="properties-label" for="properties-select">properties:</label>
-                <select id="properties-select" size="2" class="form-control">
-                    {% for property in form.instance.properties.all %}
-                    <option value="{{ property.id }}">{{ property.name }}</option>
-                    {% endfor %}
-                </select>
-        <div class="btn-group">
-                  <button type="button" class="btn btn-default" id="add-prop"><span class="glyphicon glyphicon-plus"></span></button>
-                  <button type="button" class="btn btn-default" id="remove-prop"><span class="glyphicon glyphicon-minus"></span></button>
-              </div>
-            </div>
+        <div class="form-group">
+          {% bootstrap_field form.owner %}
         </div>
-    
-    <div class="fixed-footer">
-      <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+      <div class="attributes col-xs-12 col-md-6">
+        <div class="row">
+          <div class="verbs col-sm">
+            <label id="verbs-label" for="verbs-select">verbs:</label>
+            <select id="verbs-select" size="2" class="form-control">
+            {% for verb in form.instance.verbs.all %}
+              <option value="{{ verb.id }}">{{ verb.annotated }}</option>
+            {% endfor %}
+            </select>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" id="add-verb"><span class="glyphicon glyphicon-plus"></span></button>
+              <button type="button" class="btn btn-default" id="remove-verb"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+          </div>
+          <div class="properties col-sm">
+            <label id="properties-label" for="properties-select">properties:</label>
+            <select id="properties-select" size="2" class="form-control">
+            {% for property in form.instance.properties.all %}
+              <option value="{{ property.id }}">{{ property.name }}</option>
+            {% endfor %}
+            </select>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" id="add-prop"><span class="glyphicon glyphicon-plus"></span></button>
+              <button type="button" class="btn btn-default" id="remove-prop"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fixed-footer">
+        {% buttons %}
+        <button type="submit" class="btn btn-primary">
+          Save changes
+        </button>
+        {% endbuttons %}
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 
 {% endblock %}
