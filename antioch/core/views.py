@@ -1,10 +1,16 @@
+import logging
+
 from django.shortcuts import get_object_or_404
 from django.db import connection
+from django.conf import settings
 
 from rest_framework import viewsets, response, exceptions
 from rest_framework.decorators import action
 
+from antioch import celery_config
 from . import models, serializers, exchange
+
+log = logging.getLogger(__name__)
 
 class MultiEntityMixin(object):
     def get_queryset_for_model(self, klass):
@@ -18,10 +24,45 @@ class MultiEntityMixin(object):
             return queryset
         elif('pk' in self.request.parser_context['kwargs']):
             return klass.objects.filter(pk=self.request.parser_context['kwargs']['pk'])
-        elif(self.basename == 'object'):
-            return klass.objects.filter(location=self.request.user.avatar.location)
         else:
             return self.queryset
+
+class MessageViewSet(viewsets.ViewSet):
+    def list(self, request):
+        """
+        Check for messages for this user.
+        """
+        queue_id = '-'.join([settings.USER_QUEUE, str(request.user.avatar.id)])
+        log.debug("checking for messages for %s" % queue_id)
+
+        with celery_config.app.default_connection() as conn:
+            from kombu import simple, Exchange, Queue
+            exchange = Exchange('antioch',
+                type            = 'direct',
+                auto_delete     = False,
+                durable         = True,
+            )
+            channel = conn.channel()
+            unbound_queue = Queue(queue_id,
+                exchange        = exchange,
+                routing_key     = queue_id,
+                auto_delete     = False,
+                durable         = False,
+                exclusive       = False,
+            )
+            queue = unbound_queue(channel)
+            queue.declare()
+
+            sq = simple.SimpleBuffer(channel, queue, no_ack=True)
+            try:
+                msg = sq.get(block=True, timeout=10)
+                messages = [msg.body.decode()]
+            except sq.Empty as e:
+                messages = []
+            sq.close()
+    
+        log.debug('returning to client: %s' % messages)
+        return response.Response(messages)
 
 class ObjectViewSet(viewsets.ModelViewSet, MultiEntityMixin):
     """
@@ -33,6 +74,16 @@ class ObjectViewSet(viewsets.ModelViewSet, MultiEntityMixin):
     def get_queryset(self):
         return self.get_queryset_for_model(models.Object)
 
+    @action(detail=False, methods=['get'])
+    def myself(self, request, pk=None):
+        """
+        A read-only shortcut to get details about the current user.
+        """
+        serializer = self.get_serializer(request.user.avatar)
+        return response.Response(dict(
+            avatar = serializer.data
+        ))
+    
     @action(detail=True, methods=['post', 'put', 'patch', 'get'])
     def parents(self, request, pk=None):
         """
