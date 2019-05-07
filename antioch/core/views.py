@@ -111,15 +111,21 @@ class ExecutionViewSet(viewsets.ViewSet):
     def list(self, request):
         return response.Response(dict(
             messages = request.build_absolute_uri(reverse('exec-messages')),
-            commands = request.build_absolute_uri(reverse('exec-commands'))
+            authenticate = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='authenticate'))),
+            parse = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='parse'))),
+            login = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='login'))),
+            logout = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='logout'))),
+            registertask = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='registertask'))),
+            runtask = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='runtask'))),
+            iteratetasks = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='iteratetasks'))),
         ))
     
-    @action(detail=False, methods=['post'])
-    def commands(self, request):
+    @action(detail=True, methods=['post'])
+    def command(self, request, pk=None):
         """
         Send a command to the server.
         """
-        task = getattr(tasks, command)
+        task = getattr(tasks, pk)
         result = task.delay(request.user.avatar.id, **request.data)
         data = result.get(timeout=settings.JOB_TIMEOUT)
         return response.Response(data)
