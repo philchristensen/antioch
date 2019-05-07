@@ -6,26 +6,33 @@ from rest_framework.decorators import action
 
 from . import models, serializers, exchange
 
-class ObjectViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows objects to be viewed or edited.
-    """
-    serializer_class = serializers.ObjectSerializer
-
-    def get_queryset(self):
+class MultiEntityMixin(object):
+    def get_queryset_for_model(self, klass):
         if(self.request.GET):
             ex = exchange.ObjectExchange(connection, ctx=self.request.user.avatar.pk)
-            queryset = models.Object.objects.filter(id__in=self.request.GET.getlist('id'))
+            queryset = klass.objects.filter(id__in=self.request.GET.getlist('id'))
             for obj in queryset:
                 user = ex.get_object(self.request.user.avatar.pk)
-                obj = ex.get_object(obj.pk)
+                obj = ex.load(self.basename, obj.pk)
                 ex.is_allowed(user, 'read', obj)
             return queryset
         elif('pk' in self.request.parser_context['kwargs']):
-            return models.Object.objects.filter(pk=self.request.parser_context['kwargs']['pk'])
+            return klass.objects.filter(pk=self.request.parser_context['kwargs']['pk'])
+        elif(self.basename == 'object'):
+            return klass.objects.filter(location=self.request.user.avatar.location)
         else:
-            return models.Object.objects.filter(location=self.request.user.avatar.location)
-    
+            return self.queryset
+
+class ObjectViewSet(viewsets.ModelViewSet, MultiEntityMixin):
+    """
+    API endpoint that allows objects to be viewed or edited.
+    """
+    queryset = models.Object.objects.none()
+    serializer_class = serializers.ObjectSerializer
+
+    def get_queryset(self):
+        return self.get_queryset_for_model(models.Object)
+
     @action(detail=True, methods=['post', 'put', 'patch', 'get'])
     def parents(self, request, pk=None):
         """
@@ -55,19 +62,25 @@ class ObjectViewSet(viewsets.ModelViewSet):
         
         return response.Response([p.id for p in parents])
 
-class VerbViewSet(viewsets.ModelViewSet):
+class VerbViewSet(viewsets.ModelViewSet, MultiEntityMixin):
     """
     API endpoint that allows verbs to be viewed or edited.
     """
-    queryset = models.Verb.objects.all()
+    queryset = models.Verb.objects.none()
     serializer_class = serializers.VerbSerializer
+    
+    def get_queryset(self):
+        return self.get_queryset_for_model(models.Verb)
 
-class PropertyViewSet(viewsets.ModelViewSet):
+class PropertyViewSet(viewsets.ModelViewSet, MultiEntityMixin):
     """
     API endpoint that allows properties to be viewed or edited.
     """
-    queryset = models.Property.objects.all()
+    queryset = models.Property.objects.none()
     serializer_class = serializers.PropertySerializer
+    
+    def get_queryset(self):
+        return self.get_queryset_for_model(models.Property)
 
 class AccessViewSet(viewsets.ModelViewSet):
     """

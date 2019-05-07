@@ -33,7 +33,7 @@ class AntiochPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         ex = exchange.ObjectExchange(connection, ctx=request.user.avatar.pk)
         user = ex.get_object(request.user.avatar.pk)
-        obj = getattr(ex, f'get_{view.basename}')(obj.pk)
+        obj = ex.load(view.basename, obj.pk)
         action = 'read' if view.action == 'retrieve' else 'write'
         return ex.is_allowed(user, action, obj)
 
