@@ -13,5 +13,8 @@ router.register(r'acls', views.AccessViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/object/autocomplete/', views.ObjectAutocompleteView.as_view(), name="object-autocomplete"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+
+

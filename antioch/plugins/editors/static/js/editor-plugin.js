@@ -10,12 +10,17 @@
   less.refresh();
   
   $(document).antioch('addMessageListener', 'edit', function(msg){
-    $.get('/editor/' + msg.details.kind + '/' + msg.details.id, function(response, status, xhr) {
+    var scratch = $('<div>');
+    scratch.load('/editor/' + msg.details.kind + '/' + msg.details.id, function(response, status, xhr) {
       if(status == "error"){
         var msg = "Couldn't load editor: "+ xhr.status + " " + xhr.statusText;
         $('#connection').antioch('write', msg, true);
       }
       else {
+        scratch.find('script').each(function(index, item){
+          $.getScript(item.src);
+        });
+        
         var front = document.getElementById('observations');
         var back = flippant.flip(front, response);
       }

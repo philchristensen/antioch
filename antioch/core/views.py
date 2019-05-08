@@ -9,6 +9,8 @@ from rest_framework import viewsets, response, exceptions
 from rest_framework.decorators import action
 from rest_framework.reverse import reverse
 
+from dal import autocomplete
+
 from antioch import celery_config
 from . import models, serializers, exchange, tasks
 
@@ -167,3 +169,15 @@ class ExecutionViewSet(viewsets.ViewSet):
     
         log.debug('returning to client: %s' % messages)
         return response.Response(messages)
+
+class ObjectAutocompleteView(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return models.Object.objects.none()
+
+        qs = models.Object.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__contains=self.q)
+
+        return qs

@@ -2,12 +2,11 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import BaseModelFormSet
 
-# import autocomplete_light
+from dal import autocomplete
 
 from antioch.core import models
 from antioch.plugins.editors import tasks
 
-# class AuthenticatedModelForm(autocomplete_light.ModelForm):
 class AuthenticatedModelForm(forms.ModelForm):
     def __init__(self, user_id=None, *args, **kwargs):
         super(AuthenticatedModelForm, self).__init__(*args, **kwargs)
@@ -18,6 +17,11 @@ class ObjectForm(AuthenticatedModelForm):
         model = models.Object
         exclude = ('observers',)
         autocomplete_fields = ('owner', 'location', 'parents')
+        widgets = {
+            'owner': autocomplete.ModelSelect2(url='object-autocomplete'),
+            'location': autocomplete.ModelSelect2(url='object-autocomplete'),
+            'parents': autocomplete.ModelSelect2Multiple(url='object-autocomplete')
+        }
     
     def clean_location(self):
         value = self.cleaned_data['location']

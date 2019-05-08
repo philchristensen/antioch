@@ -10,7 +10,8 @@ class Object(models.Model):
     class Meta:
         db_table = 'object'
     
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255,
+            help_text="The intrinsic name of this object.")
     unique_name = models.BooleanField()
     owner = models.ForeignKey('self', related_name='+', null=True, on_delete=models.SET_NULL)
     location = models.ForeignKey('self', related_name='contents', null=True, on_delete=models.SET_NULL)
