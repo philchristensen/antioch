@@ -12,6 +12,8 @@ from zope.interface import provider
 
 from antioch import IPlugin
 
+from . import forms
+
 from django.conf import settings
 
 def edit(p, item):
@@ -43,6 +45,10 @@ def access(p, item):
 @provider(IPlugin)
 class EditorPlugin(object):
     script_url = '%sjs/editor-plugin.js' % settings.STATIC_URL
+    
+    def get_media(self):
+        f = forms.ObjectForm()
+        return f.media
     
     def get_environment(self):
         return dict(

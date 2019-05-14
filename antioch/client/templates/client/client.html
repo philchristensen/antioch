@@ -4,7 +4,9 @@
 
 {% block bootstrap4_extra_head %}
   <link rel="stylesheet/less" type="text/css" href="{% static 'client/css/client.less' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'client/css/flippant.css' %}" />
+  {% for m in media %}
+  {{ m.css }}
+  {% endfor %}
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -43,7 +45,11 @@
 {% endblock %}
 
 {% block content %}
-  <div id="observations">
+  <div class="card card-flip h-100">
+    <div id="observations" class="card-front clearfix">
+    </div>
+    <div class="card-back clearfix">
+    </div>
   </div>
   <div id="command-line">
     <input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
@@ -54,9 +60,11 @@
 
 {% block bootstrap4_extra_script %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static 'client/js/flippant.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'client/js/relative-date.js' %}"></script>
   <script type="text/javascript" src="{% static 'client/js/client.js' %}"></script>
+  {% for m in media %}
+  {{ m.js }}
+  {% endfor %}
   {% for script_url in scripts %}
   <script type="text/javascript" src="{{ script_url }}"></script>
   {% endfor %}
@@ -100,9 +108,9 @@
       });
     
       setInterval(function(){
-        $('.keep-relative').each(function(){
+        jQuery('.keep-relative').each(function(){
           var dstr = $(this).find('.real-date').html();
-          $(this).find('.relative-date').html(relativeDate(new Date(dstr)));
+          jQuery(this).find('.relative-date').html(relativeDate(new Date(dstr)));
         });
       }, 10);
     });

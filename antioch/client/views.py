@@ -26,6 +26,7 @@ def client(request):
     return shortcuts.render(request, 'client/client.html', dict(
         title           = "antioch client",
         scripts         = [p.script_url for p in plugins.iterate() if p and p.script_url],
+        media           = [p.get_media() for p in plugins.iterate() if p and hasattr(p, 'get_media')],
     ))
 
 def logout(request):
