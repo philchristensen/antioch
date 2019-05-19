@@ -99,6 +99,12 @@ Resources:
                 Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${Name}/${Environment}"
       Path: /
       RoleName: !Join ["-", [!Ref "Name", !Ref "Environment", "task-role"]]
+  webappSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: antioch webapp security group
+      GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "webapp-sg"]]
+      VpcId: !GetAtt "vpc.Outputs.VPCID"
   redisSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -109,6 +115,11 @@ Resources:
           FromPort: 6379
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "workerSecurityGroup"
+          ToPort: 6379
+        - Description: webapp on API Gateway
+          FromPort: 6379
+          IpProtocol: tcp
+          SourceSecurityGroupId: !Ref "webappSecurityGroup"
           ToPort: 6379
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   redisTask:
@@ -269,6 +280,11 @@ Resources:
           FromPort: 5432
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "workerSecurityGroup"
+          ToPort: 5432
+        - Description: webapp on API Gateway
+          FromPort: 5432
+          IpProtocol: tcp
+          SourceSecurityGroupId: !Ref "webappSecurityGroup"
           ToPort: 5432
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   databaseSubnetGroup:
