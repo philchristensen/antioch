@@ -148,6 +148,8 @@ Resources:
               awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "worker"]]
               awslogs-stream-prefix: worker
           Environment:
+            - Name: ROLE
+              Value: worker
             - Name: DJANGO_SETTINGS_MODULE
               Value: !Join [".", ["antioch.settings", !Ref "Environment"]]
             - Name: DB_HOST
@@ -191,6 +193,8 @@ Resources:
               awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "beat"]]
               awslogs-stream-prefix: beat
           Environment:
+            - Name: ROLE
+              Value: beat
             - Name: DJANGO_SETTINGS_MODULE
               Value: !Join [".", ["antioch.settings", !Ref "Environment"]]
             - Name: DB_HOST
