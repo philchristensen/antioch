@@ -66,6 +66,7 @@ Resources:
         }
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
       Path: /
       RoleName: !Join ["-", [!Ref "Name", !Ref "Environment", "exec-role"]]
   redisSecurityGroup:
