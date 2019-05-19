@@ -2,6 +2,8 @@ import os
 
 from .base import *
 
+INSTALLED_APPS += ['zappa_django_utils']
+
 CSRF_TRUSTED_ORIGINS = ['localhost']
 
 if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):

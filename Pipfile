@@ -23,6 +23,8 @@ zope-interface = "*"
 djangorestframework = "*"
 django-nose = "*"
 django-autocomplete-light = "*"
+zappa = "*"
+zappa-django-utils = "*"
 
 [dev-packages]
 pylint = "*"
