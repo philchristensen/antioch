@@ -1,6 +1,15 @@
 import os
 
+import boto3
+
 from .base import *
+
+ssm = boto3.client('ssm')
+response = ssm.get_parameters_by_path(
+    Path='/antioch/prod',
+    WithDecryption=True
+)
+SSM_PARAMS = {x['Name'].split('/')[-1]:x['Value'] for x in response['Parameters']}
 
 INSTALLED_APPS += ['zappa_django_utils']
 
@@ -12,21 +21,21 @@ if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
 
 STATIC_ROOT = "/usr/src/app/static"
 
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_BROKER_URL = 'redis://antioch-prod-redis.antioch.local:6379/0'
+CELERY_RESULT_BACKEND = 'redis://antioch-prod-redis.antioch.local:6379/0'
 
 DATABASES['default'].update({
     "HOST": os.environ['DB_HOST'],
     "PORT": os.environ['DB_PORT'],
     "NAME": "antioch",
     "USER": "antioch",
-    "PASSWORD": os.environ['DB_PASSWD'],
+    "PASSWORD": SSM_PARAMS['db-password'],
     'OPTIONS': {
         'sslmode': 'require',
     }
 })
 
 CACHES['default'].update({
-    "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-    "LOCATION": os.environ['MEMCACHE']
+    "BACKEND": "redis_cache.RedisCache",
+    "LOCATION": "rediss://antioch-prod-redis.antioch.local:6379/0"
 })

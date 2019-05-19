@@ -10,8 +10,7 @@ Parameters:
     Default: prod
     Description: Name of this environment
   DBMasterPassword:
-    Type: String
-    NoEcho: true
+    Type: AWS::SSM::Parameter::Value<String>
     Description: Master password for the DB instance.
 Resources:
   vpc:

@@ -25,6 +25,8 @@ django-nose = "*"
 django-autocomplete-light = "*"
 zappa = "*"
 zappa-django-utils = "*"
+django-redis-cache = "*"
+redis-py = "*"
 
 [dev-packages]
 pylint = "*"
