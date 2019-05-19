@@ -105,6 +105,28 @@ Resources:
       GroupDescription: antioch webapp security group
       GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "webapp-sg"]]
       VpcId: !GetAtt "vpc.Outputs.VPCID"
+  staticBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+  staticAssetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: static-web-assets
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub  'arn:aws:s3:::${staticBucket}/*'
+      Bucket: !Ref staticBucket
+    
   redisSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

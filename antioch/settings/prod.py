@@ -14,7 +14,7 @@ SSM_PARAMS = {x['Name'].split('/')[-1]:x['Value'] for x in response['Parameters'
 INSTALLED_APPS += ['zappa_django_utils']
 
 CSRF_TRUSTED_ORIGINS = ['antioch.bubblehouse.org']
-ALLOWED_HOSTS = ['antioch.bubblehouse.org', '*.execute-api.us-east-2.amazonaws.com']
+ALLOWED_HOSTS = ['antioch.bubblehouse.org', '.execute-api.us-east-2.amazonaws.com']
 
 if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
@@ -40,3 +40,9 @@ CACHES['default'].update({
     "BACKEND": "redis_cache.RedisCache",
     "LOCATION": "redis://prod-redis.antioch.local:6379/0"
 })
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_STORAGE_BUCKET_NAME = "antioch-prod-staticbucket-kyam05xfedr4"
+AWS_DEFAULT_ACL = "public-read"
+AWS_QUERYSTRING_AUTH = False
