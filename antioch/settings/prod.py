@@ -21,8 +21,8 @@ if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
 
 STATIC_ROOT = "/usr/src/app/static"
 
-CELERY_BROKER_URL = 'redis://antioch-prod-redis.antioch.local:6379/0'
-CELERY_RESULT_BACKEND = 'redis://antioch-prod-redis.antioch.local:6379/0'
+CELERY_BROKER_URL = 'redis://prod-redis.antioch.local:6379/0'
+CELERY_RESULT_BACKEND = 'redis://prod-redis.antioch.local:6379/0'
 
 DATABASES['default'].update({
     "HOST": os.environ['DB_HOST'],
@@ -37,5 +37,5 @@ DATABASES['default'].update({
 
 CACHES['default'].update({
     "BACKEND": "redis_cache.RedisCache",
-    "LOCATION": "rediss://antioch-prod-redis.antioch.local:6379/0"
+    "LOCATION": "rediss://prod-redis.antioch.local:6379/0"
 })

@@ -102,7 +102,7 @@ Resources:
   redisDiscovery:
     Type: AWS::ServiceDiscovery::Service
     Properties:
-      Name: !Join ["-", [!Ref "Name", !Ref "Environment", "redis"]]
+      Name: !Join ["-", [!Ref "Environment", "redis"]]
       Description: Service discovery for antioch Redis
       DnsConfig:
         DnsRecords:
