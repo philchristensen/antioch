@@ -66,7 +66,7 @@
   {{ m.js }}
   {% endfor %}
   {% for script_url in scripts %}
-  <script type="text/javascript" src="{{ script_url }}"></script>
+  <script type="text/javascript" src="{% static script_url %}"></script>
   {% endfor %}
   <script type="text/javascript">
     $(document).ready(function(){

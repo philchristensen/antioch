@@ -20,7 +20,7 @@ if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
     ALLOWED_HOSTS += ['testserver']
 
-STATIC_ROOT = "/usr/src/app/static"
+STATIC_ROOT = "/tmp/antioch-static"
 
 CELERY_BROKER_URL = 'redis://prod-redis.antioch.local:6379/0'
 CELERY_RESULT_BACKEND = 'redis://prod-redis.antioch.local:6379/0'

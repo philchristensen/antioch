@@ -44,7 +44,7 @@ def access(p, item):
 
 @provider(IPlugin)
 class EditorPlugin(object):
-    script_url = '%sjs/editor-plugin.js' % settings.STATIC_URL
+    script_url = 'js/editor-plugin.js'
     
     def get_media(self):
         f = forms.ObjectForm()

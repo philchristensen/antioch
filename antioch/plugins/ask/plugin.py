@@ -28,7 +28,7 @@ def ask(p, question, callback, *args, **kwargs):
 
 @provider(IPlugin)
 class AskPlugin(object):
-    script_url = '/static/js/ask-plugin.js'
+    script_url = 'js/ask-plugin.js'
     
     def get_environment(self):
         return dict(
