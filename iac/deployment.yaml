@@ -126,7 +126,6 @@ Resources:
             Action: 's3:GetObject'
             Resource: !Sub  'arn:aws:s3:::${staticBucket}/*'
       Bucket: !Ref staticBucket
-    
   redisSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

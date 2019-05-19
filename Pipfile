@@ -6,11 +6,15 @@ name = "pypi"
 [packages]
 celery = "*"
 django = "*"
+django-autocomplete-light = "*"
 django-bootstrap4 = "*"
 django-extensions = "*"
+django-nose = "*"
+django-redis-cache = "*"
 django-registration = "<3.0"
 django-storages = "*"
 django-widget-tweaks = "*"
+djangorestframework = "*"
 kombu = "*"
 mysqlclient = "*"
 psycopg2-binary = "*"
@@ -19,22 +23,18 @@ redis = "*"
 restrictedpython = "*"
 service_identity = "*"
 uwsgi = "*"
-zope-interface = "*"
-djangorestframework = "*"
-django-nose = "*"
-django-autocomplete-light = "*"
 zappa = "*"
 zappa-django-utils = "*"
-django-redis-cache = "*"
-redis-py = "*"
+zope-interface = "*"
 
 [dev-packages]
-pylint = "*"
+awscli = "*"
 django-nose = "*"
+pylint = "*"
 setuptools_git = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
 [pipenv]
 allow_prereleases = true

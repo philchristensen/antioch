@@ -1,0 +1,32 @@
+{
+    "prod": {
+        "aws_region": "us-east-2",
+        "django_settings": "antioch.settings.prod",
+        "profile_name": null,
+        "project_name": "antioch-web",
+        "runtime": "python3.6",
+        "s3_bucket": "antioch-prod-zappa-zyq0ea8rj",
+        "timeout_seconds": 600,
+        "keep_warm": false,
+        "domain": "antioch.bubblehouse.org",
+        "route53_enabled": false,
+        "certificate_arn": "arn:aws:acm:us-east-1:604611015354:certificate/b310b905-d804-42a7-9949-d602f30761d1",
+        "vpc_config": {
+            "SubnetIds": [
+              "subnet-0154317e895d36177",
+              "subnet-04b205d7d6cda4c53",
+              "subnet-0ef8a498055d62db8"
+            ],
+            "SecurityGroupIds": [ "sg-01fc37a3a8da373f3" ]
+        },
+        "extra_permissions": [{
+            "Effect": "Allow",
+            "Action": ["ssm:GetParametersByPath"],
+            "Resource": "arn:aws:ssm:us-east-2:604611015354:parameter/antioch/prod"
+        }],
+        "environment_variables": {
+          "DB_HOST": "ad1uwfi5rpgpv94.csixt3jsvqja.us-east-2.rds.amazonaws.com",
+          "DB_PORT": "5432"
+        }
+    }
+}

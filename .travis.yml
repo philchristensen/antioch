@@ -1,15 +1,15 @@
 language: python
-# needed for python 3.7 support
-dist: xenial
-sudo: true
 python:
-  - "3.7"
-cache: false
+  - "3.6"
 install:
   - pip install -q pipenv
   - PIPENV_VERBOSITY=-1 pipenv --bare install --system --dev --deploy --ignore-pipfile
 script:
   - DJANGO_SETTINGS_MODULE=antioch.settings.unittests python manage.py test --keepdb
+before_deploy:
+  - zappa manage prod "collectstatic --noinput"
+deploy:
+  - zappa update prod
 cache:
   directories:
     - $HOME/.cache/pip
