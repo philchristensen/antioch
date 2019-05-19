@@ -13,7 +13,8 @@ SSM_PARAMS = {x['Name'].split('/')[-1]:x['Value'] for x in response['Parameters'
 
 INSTALLED_APPS += ['zappa_django_utils']
 
-CSRF_TRUSTED_ORIGINS = ['localhost']
+CSRF_TRUSTED_ORIGINS = ['antioch.bubblehouse.org']
+ALLOWED_HOSTS = ['antioch.bubblehouse.org', '*.execute-api.us-east-2.amazonaws.com']
 
 if os.environ.get('ROLE') in ('celeryflower', 'worker', 'beat'):
     DEBUG = False
