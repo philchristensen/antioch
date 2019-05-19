@@ -9,6 +9,10 @@ Parameters:
     Type: String
     Default: prod
     Description: Name of this environment
+  ImageTag:
+    Type: String
+    Default: latest
+    Description: The image tag to use for this deployment.
   DBMasterPassword:
     Type: String
     NoEcho: true
@@ -142,7 +146,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: worker
-          Image: philchristensen/antioch:latest
+          Image: !Join [":", ["philchristensen/antioch", !Ref "ImageTag"]]
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -187,7 +191,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: beat
-          Image: philchristensen/antioch:latest
+          Image: !Join [":", ["philchristensen/antioch", !Ref "ImageTag"]]
           LogConfiguration:
             LogDriver: awslogs
             Options:
