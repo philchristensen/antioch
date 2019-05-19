@@ -73,6 +73,32 @@ Resources:
         - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
       Path: /
       RoleName: !Join ["-", [!Ref "Name", !Ref "Environment", "exec-role"]]
+  taskRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument: |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      Policies:
+        - PolicyName: ssm-param-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "ssm:GetParametersByPath"
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${Name}/${Environment}"
+      Path: /
+      RoleName: !Join ["-", [!Ref "Name", !Ref "Environment", "task-role"]]
   redisSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -168,6 +194,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities: ["FARGATE"]
       ExecutionRoleArn: !Ref "containerExecutionRole"
+      TaskRoleArn: !Ref "taskRole"
   workerService:
     Type: AWS::ECS::Service
     Properties:
@@ -213,6 +240,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities: ["FARGATE"]
       ExecutionRoleArn: !Ref "containerExecutionRole"
+      TaskRoleArn: !Ref "taskRole"
   beatService:
     Type: AWS::ECS::Service
     Properties:
