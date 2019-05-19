@@ -37,5 +37,5 @@ DATABASES['default'].update({
 
 CACHES['default'].update({
     "BACKEND": "redis_cache.RedisCache",
-    "LOCATION": "rediss://prod-redis.antioch.local:6379/0"
+    "LOCATION": "redis://prod-redis.antioch.local:6379/0"
 })
