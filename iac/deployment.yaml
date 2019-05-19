@@ -10,7 +10,8 @@ Parameters:
     Default: prod
     Description: Name of this environment
   DBMasterPassword:
-    Type: AWS::SSM::Parameter::Value<String>
+    Type: String
+    NoEcho: true
     Description: Master password for the DB instance.
 Resources:
   vpc:
@@ -107,6 +108,8 @@ Resources:
         DnsRecords:
           - Type: A
             TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
       NamespaceId: !Ref namespace
   redisService:
     Type: AWS::ECS::Service
