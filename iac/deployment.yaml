@@ -1,28 +1,28 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: antioch deployment infrastructure
-Parameters: 
-  Name: 
+Parameters:
+  Name:
     Type: String
     Default: antioch
     Description: Name of this application
-  Environment: 
+  Environment:
     Type: String
     Default: prod
     Description: Name of this environment
-  DBMasterPassword: 
+  DBMasterPassword:
     Type: String
     NoEcho: true
     Description: Master password for the DB instance.
 Resources:
   vpc:
     Type: AWS::CloudFormation::Stack
-    Properties: 
+    Properties:
       TemplateURL: https://aws-quickstart.s3.amazonaws.com/quickstart-aws-vpc/templates/aws-vpc.template
       Parameters:
         AvailabilityZones: !Join [",", [
-          !Select [ 0, !GetAZs "us-east-2" ],
-          !Select [ 1, !GetAZs "us-east-2" ],
-          !Select [ 2, !GetAZs "us-east-2" ]
+          !Select [ 0, !GetAZs "" ],
+          !Select [ 1, !GetAZs "" ],
+          !Select [ 2, !GetAZs "" ]
         ]]
         NumberOfAZs: 3
         VPCCIDR: 10.42.0.0/21
@@ -40,21 +40,41 @@ Resources:
         PrivateSubnetATag3: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-private-3"]]
   namespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-    Properties: 
+    Properties:
       Name: antioch.local
       Description: Internal namespace for antioch service discovery.
       Vpc: !GetAtt "vpc.Outputs.VPCID"
   cluster:
     Type: AWS::ECS::Cluster
-    Properties: 
+    Properties:
       ClusterName: !Join ["-", [!Ref "Name", !Ref "Environment"]]
+  containerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument: |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Path: /
+      RoleName: !Join ["-", [!Ref "Name", !Ref "Environment", "exec-role"]]
   redisSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    Properties: 
+    Properties:
       GroupDescription: antioch Redis security group
       GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "redis-sg"]]
-      SecurityGroupIngress: 
-        - Description: "worker and beat"
+      SecurityGroupIngress:
+        - Description: worker and beat
           FromPort: 6379
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "workerSecurityGroup"
@@ -62,54 +82,71 @@ Resources:
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   redisTask:
     Type: AWS::ECS::TaskDefinition
-    Properties: 
-      ContainerDefinitions: 
+    Properties:
+      ContainerDefinitions:
         - Name: redis
           Image: redis
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-create-group: true
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "redis"]]
+              awslogs-stream-prefix: redis
       Cpu: "256"
       Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: ["FARGATE"]
+      ExecutionRoleArn: !Ref "containerExecutionRole"
   redisDiscovery:
     Type: AWS::ServiceDiscovery::Service
     Properties:
       Name: !Join ["-", [!Ref "Name", !Ref "Environment", "redis"]]
       Description: Service discovery for antioch Redis
-      DnsConfig: 
+      DnsConfig:
         DnsRecords:
           - Type: A
             TTL: 300
       NamespaceId: !Ref namespace
   redisService:
     Type: AWS::ECS::Service
-    Properties: 
-      Cluster: !Ref cluster
-      DeploymentConfiguration: 
+    Properties:
+      Cluster: !Ref "cluster"
+      DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: 1
       LaunchType: FARGATE
-      NetworkConfiguration: 
+      NetworkConfiguration:
         AwsvpcConfiguration:
-          SecurityGroups: 
+          SecurityGroups:
             - !Ref "redisSecurityGroup"
           Subnets:
             - !GetAtt "vpc.Outputs.PrivateSubnet1AID"
             - !GetAtt "vpc.Outputs.PrivateSubnet2AID"
             - !GetAtt "vpc.Outputs.PrivateSubnet3AID"
-      ServiceRegistries: 
-        - RegistryArn: !Ref redisDiscovery
+      ServiceRegistries:
+        - RegistryArn: !GetAtt redisDiscovery.Arn
       TaskDefinition: !Ref redisTask
   workerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    Properties: 
+    Properties:
       GroupDescription: antioch worker security group
       GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "worker-sg"]]
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   workerTask:
     Type: AWS::ECS::TaskDefinition
-    Properties: 
-      ContainerDefinitions: 
+    Properties:
+      ContainerDefinitions:
         - Name: worker
           Image: philchristensen/antioch:latest
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-create-group: true
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "worker"]]
+              awslogs-stream-prefix: worker
           Environment:
             - Name: DJANGO_SETTINGS_MODULE
               Value: !Join [".", ["antioch.settings", !Ref "Environment"]]
@@ -119,18 +156,21 @@ Resources:
               Value: !GetAtt database.Endpoint.Port
       Cpu: "256"
       Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: ["FARGATE"]
+      ExecutionRoleArn: !Ref "containerExecutionRole"
   workerService:
     Type: AWS::ECS::Service
-    Properties: 
-      Cluster: !Ref cluster
-      DeploymentConfiguration: 
+    Properties:
+      Cluster: !Ref "cluster"
+      DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: 1
       LaunchType: FARGATE
-      NetworkConfiguration: 
+      NetworkConfiguration:
         AwsvpcConfiguration:
-          SecurityGroups: 
+          SecurityGroups:
             - !Ref "workerSecurityGroup"
           Subnets:
             - !GetAtt "vpc.Outputs.PrivateSubnet1AID"
@@ -139,10 +179,17 @@ Resources:
       TaskDefinition: !Ref workerTask
   beatTask:
     Type: AWS::ECS::TaskDefinition
-    Properties: 
-      ContainerDefinitions: 
+    Properties:
+      ContainerDefinitions:
         - Name: beat
           Image: philchristensen/antioch:latest
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-create-group: true
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "beat"]]
+              awslogs-stream-prefix: beat
           Environment:
             - Name: DJANGO_SETTINGS_MODULE
               Value: !Join [".", ["antioch.settings", !Ref "Environment"]]
@@ -152,18 +199,21 @@ Resources:
               Value: !GetAtt database.Endpoint.Port
       Cpu: "256"
       Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: ["FARGATE"]
+      ExecutionRoleArn: !Ref "containerExecutionRole"
   beatService:
     Type: AWS::ECS::Service
-    Properties: 
-      Cluster: !Ref cluster
-      DeploymentConfiguration: 
+    Properties:
+      Cluster: !Ref "cluster"
+      DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: 1
       LaunchType: FARGATE
-      NetworkConfiguration: 
+      NetworkConfiguration:
         AwsvpcConfiguration:
-          SecurityGroups: 
+          SecurityGroups:
             - !Ref "workerSecurityGroup"
           Subnets:
             - !GetAtt "vpc.Outputs.PrivateSubnet1AID"
@@ -172,11 +222,11 @@ Resources:
       TaskDefinition: !Ref beatTask
   databaseSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    Properties: 
+    Properties:
       GroupDescription: antioch database security group
       GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "db-sg"]]
-      SecurityGroupIngress: 
-        - Description: "worker and beat"
+      SecurityGroupIngress:
+        - Description: worker and beat
           FromPort: 5432
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "workerSecurityGroup"
@@ -184,10 +234,10 @@ Resources:
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   databaseSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
-    Properties: 
+    Properties:
       DBSubnetGroupDescription: antioch database subnet group
       DBSubnetGroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "dbsubnetgroup"]]
-      SubnetIds: 
+      SubnetIds:
         - !GetAtt "vpc.Outputs.PrivateSubnet1AID"
         - !GetAtt "vpc.Outputs.PrivateSubnet2AID"
         - !GetAtt "vpc.Outputs.PrivateSubnet3AID"
