@@ -7,7 +7,7 @@
         "runtime": "python3.6",
         "s3_bucket": "antioch-prod-zappa-zyq0ea8rj",
         "timeout_seconds": 600,
-        "keep_warm": false,
+        "keep_warm": true,
         "domain": "antioch.bubblehouse.org",
         "route53_enabled": false,
         "certificate_arn": "arn:aws:acm:us-east-1:604611015354:certificate/b310b905-d804-42a7-9949-d602f30761d1",
