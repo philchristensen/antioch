@@ -27,6 +27,9 @@
         "environment_variables": {
           "DB_HOST": "ad1uwfi5rpgpv94.csixt3jsvqja.us-east-2.rds.amazonaws.com",
           "DB_PORT": "5432"
+        },
+        "tags": {
+          "BillingGroup": "antioch-prod"
         }
     }
 }
