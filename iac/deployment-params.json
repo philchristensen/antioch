@@ -1,0 +1,32 @@
+{
+  "StackName": "antioch-prod",
+  "TemplateBody": "file://iac/deployment.yaml",
+  "Parameters": [{
+    "ParameterKey": "Name",
+    "UsePreviousValue": true
+  }, {
+    "ParameterKey": "Environment",
+    "UsePreviousValue": true
+  }, {
+    "ParameterKey": "ImageTag",
+    "ParameterValue": ""
+  }, {
+    "ParameterKey": "CostAllocationTagKey",
+    "UsePreviousValue": true
+  }, {
+    "ParameterKey": "CostAllocationTagValue",
+    "UsePreviousValue": true
+  }, {
+    "ParameterKey": "DBMasterPassword",
+    "UsePreviousValue": true
+  }],
+  "Capabilities": [
+    "CAPABILITY_IAM",
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_AUTO_EXPAND"
+  ],
+  "Tags": [{
+    "Key": "",
+    "Value": ""
+  }]
+}
