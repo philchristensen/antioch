@@ -2,7 +2,8 @@ language: python
 python:
   - "3.6"
 install:
-  - apt-get install -y jq
+  - sudo apt-get update
+  - sudo apt-get install -y jq
   - pip install -q pipenv
   - PIPENV_VERBOSITY=-1 pipenv --bare install --system --dev --deploy --ignore-pipfile
 script:
@@ -12,7 +13,7 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t philchristensen/antioch:$(git rev-parse --short HEAD) .
   - docker push philchristensen/antioch:$(git rev-parse --short HEAD)
-  - jq '.Parameters[2].ParameterValue = "test"' iac/deployment-params.json > iac/deployment-params.json
+  - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/deployment-params.json
   - aws cloudformation update-stack --cli-input-json file://iac/deployment-params.json
 before_deploy:
   - zappa manage prod "collectstatic --noinput"
