@@ -220,7 +220,7 @@ Resources:
               awslogs-create-group: true
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "worker"]]
-              awslogs-stream-prefix: worker
+              awslogs-stream-prefix: !Ref "ImageTag"
           Environment:
             - Name: ROLE
               Value: worker
@@ -266,7 +266,7 @@ Resources:
               awslogs-create-group: true
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Join ["/", ["/aws/ecs", !Ref "cluster", "beat"]]
-              awslogs-stream-prefix: beat
+              awslogs-stream-prefix: !Ref "ImageTag"
           Environment:
             - Name: ROLE
               Value: beat
