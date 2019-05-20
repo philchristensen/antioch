@@ -8,6 +8,7 @@ script:
   - aws cloudformation validate-template --template-body file://iac/deployment.yaml
   - DJANGO_SETTINGS_MODULE=antioch.settings.unittests python manage.py test --keepdb
 after_success:
+  - docker login -u $DOCKER_USERNAME -p "$DOCKER_PASSWORD"
   - docker build -t philchristensen/antioch:$(git rev-parse --short HEAD) .
   - docker push philchristensen/antioch:$(git rev-parse --short HEAD)
   - aws cloudformation update-stack --stack-name antioch-prod --template-body file://iac/deployment.yaml --parameters ParameterKey=ImageTag,ParameterValue=$(git rev-parse --short HEAD) --capabilities CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
