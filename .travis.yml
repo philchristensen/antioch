@@ -13,8 +13,8 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t philchristensen/antioch:$(git rev-parse --short HEAD) .
   - docker push philchristensen/antioch:$(git rev-parse --short HEAD)
-  - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/deployment-params.json
-  - aws cloudformation update-stack --cli-input-json file://iac/deployment-params.json
+  - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/params.json
+  - aws cloudformation update-stack --cli-input-json file://iac/params.json --template-body file://iac/deployment.yaml
 before_deploy:
   - zappa manage prod "collectstatic --noinput"
 deploy:

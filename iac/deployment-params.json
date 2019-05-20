@@ -12,10 +12,10 @@
     "ParameterValue": ""
   }, {
     "ParameterKey": "CostAllocationTagKey",
-    "UsePreviousValue": true
+    "ParameterValue": "BillingGroup"
   }, {
     "ParameterKey": "CostAllocationTagValue",
-    "UsePreviousValue": true
+    "ParameterValue": "antioch-prod"
   }, {
     "ParameterKey": "DBMasterPassword",
     "UsePreviousValue": true
