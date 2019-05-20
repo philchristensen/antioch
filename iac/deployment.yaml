@@ -12,7 +12,15 @@ Parameters:
   ImageTag:
     Type: String
     Default: latest
-    Description: The image tag to use for this deployment.
+    Description: The Docker image tag to use for this deployment.
+  CostAllocationTagKey:
+    Type: String
+    Default: BillingGroup
+    Description: The AWS tag key to add to all billable resources.
+  CostAllocationTagValue:
+    Type: String
+    Default: antioch-prod
+    Description: The AWS tag value to add to all billable resources.
   DBMasterPassword:
     Type: String
     NoEcho: true
@@ -33,15 +41,13 @@ Resources:
         PublicSubnet1CIDR: 10.42.0.0/24
         PublicSubnet2CIDR: 10.42.1.0/24
         PublicSubnet3CIDR: 10.42.2.0/24
-        PublicSubnetTag1: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-public-1"]]
-        PublicSubnetTag2: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-public-2"]]
-        PublicSubnetTag3: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-public-3"]]
+        PublicSubnetTag1: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-public"]]
+        PublicSubnetTag2: !Join ["=", [!Ref "CostAllocationTagKey", !Ref "CostAllocationTagValue"]]
         PrivateSubnet1ACIDR: 10.42.3.0/24
         PrivateSubnet2ACIDR: 10.42.4.0/24
         PrivateSubnet3ACIDR: 10.42.5.0/24
-        PrivateSubnetATag1: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-private-1"]]
-        PrivateSubnetATag2: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-private-2"]]
-        PrivateSubnetATag3: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-private-3"]]
+        PrivateSubnetATag1: !Join ["", ["Name=", !Ref "Name", "-", !Ref "Environment", "-private"]]
+        PrivateSubnetATag2: !Join ["=", [!Ref "CostAllocationTagKey", !Ref "CostAllocationTagValue"]]
   namespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
@@ -107,12 +113,15 @@ Resources:
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   staticBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-    DeletionPolicy: Retain
+      Tags:
+        - Key: !Ref "CostAllocationTagKey"
+          Value: !Ref "CostAllocationTagValue"
   staticAssetsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -337,3 +346,6 @@ Resources:
       StorageType: gp2
       VPCSecurityGroups:
         - !Ref "databaseSecurityGroup"
+      Tags:
+        - Key: !Ref "CostAllocationTagKey"
+          Value: !Ref "CostAllocationTagValue"
