@@ -13,23 +13,27 @@
         "certificate_arn": "arn:aws:acm:us-east-1:604611015354:certificate/b310b905-d804-42a7-9949-d602f30761d1",
         "vpc_config": {
             "SubnetIds": [
-              "subnet-0154317e895d36177",
-              "subnet-04b205d7d6cda4c53",
-              "subnet-0ef8a498055d62db8"
+                "subnet-012bec9a6504ef7f9",
+                "subnet-0711df17058967225",
+                "subnet-02190eab5d271a5d9"
             ],
-            "SecurityGroupIds": [ "sg-01fc37a3a8da373f3" ]
+            "SecurityGroupIds": [
+                "sg-01131cc1f79799c91"
+            ]
         },
-        "extra_permissions": [{
-            "Effect": "Allow",
-            "Action": ["ssm:GetParametersByPath"],
-            "Resource": "arn:aws:ssm:us-east-2:604611015354:parameter/antioch/prod"
-        }],
+        "extra_permissions": [
+            {
+                "Effect": "Allow",
+                "Action": "ssm:GetParametersByPath",
+                "Resource": "arn:aws:ssm:us-east-2:604611015354:parameter/antioch/prod"
+            }
+        ],
         "environment_variables": {
-          "DB_HOST": "ad1uwfi5rpgpv94.csixt3jsvqja.us-east-2.rds.amazonaws.com",
-          "DB_PORT": "5432"
+            "DB_HOST": "ad1to8c1hvxcf3m.csixt3jsvqja.us-east-2.rds.amazonaws.com",
+            "DB_PORT": "5432"
         },
         "tags": {
-          "BillingGroup": "antioch-prod"
+            "BillingGroup": "antioch-prod"
         }
     }
 }
