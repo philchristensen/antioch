@@ -29,13 +29,14 @@ Resources:
   vpc:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://aws-quickstart.s3.amazonaws.com/quickstart-aws-vpc/templates/aws-vpc.template
+      TemplateURL: https://s3.us-east-2.amazonaws.com/antioch-prod-cfn/aws-vpc.template
       Parameters:
         AvailabilityZones: !Join [",", [
           !Select [ 0, !GetAZs "" ],
           !Select [ 1, !GetAZs "" ],
           !Select [ 2, !GetAZs "" ]
         ]]
+        CreateHighAvailabilityNATs: false
         NumberOfAZs: 3
         VPCCIDR: 10.42.0.0/21
         PublicSubnet1CIDR: 10.42.0.0/24
@@ -349,3 +350,30 @@ Resources:
       Tags:
         - Key: !Ref "CostAllocationTagKey"
           Value: !Ref "CostAllocationTagValue"
+Outputs:
+  DatabaseHost:
+    Description: The hostname of the created database
+    Value: !GetAtt database.Endpoint.Address
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "database-host" ] ]
+  DatabasePort:
+    Description: The port of the created database
+    Value: !GetAtt database.Endpoint.Port
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "databse-port" ] ]
+  PrivateSubnet1AID:
+    Value: !GetAtt vpc.Outputs.PrivateSubnet1AID
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "subnet-private-1" ] ]
+  PrivateSubnet2AID:
+    Value: !GetAtt vpc.Outputs.PrivateSubnet2AID
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "subnet-private-2" ] ]
+  PrivateSubnet3AID:
+    Value: !GetAtt vpc.Outputs.PrivateSubnet3AID
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "subnet-private-3" ] ]
+  WebappSecurityGroup:
+    Value: !Ref webappSecurityGroup
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "webapp-sg" ] ]
