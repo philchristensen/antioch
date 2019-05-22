@@ -16,6 +16,7 @@ after_success:
   - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/params.json
   - aws cloudformation update-stack --cli-input-json file://iac/params.json --template-body file://iac/deployment.yaml
 before_deploy:
+  - zappa manage prod "migrate --noinput"
   - zappa manage prod "collectstatic --noinput"
 deploy:
   provider: script
