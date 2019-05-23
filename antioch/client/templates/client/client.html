@@ -45,16 +45,14 @@
 {% endblock %}
 
 {% block content %}
-  <div class="card card-flip h-100">
-    <div id="observations" class="card-front clearfix">
+  <div class="container-fluid">
+    <div id="observations">
     </div>
-    <div class="card-back clearfix">
+    <div id="command-line">
+      <input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
     </div>
-  </div>
-  <div id="command-line">
-    <input type="text" id="connection" class="client-prompt" placeholder="What do you want to do?" />
-  </div>
-  <div id="actions">
+    <div id="actions">
+    </div>
   </div>
 {% endblock %}
 

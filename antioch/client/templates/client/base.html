@@ -10,13 +10,11 @@
 {% block bootstrap4_content %}
     {% block navbar %}
     {% endblock %}
-    <div class="container-fluid">
-        <h1 class="window-title">{% block title %}(no title){% endblock %}</h1>
+    <h1 class="window-title">{% block title %}(no title){% endblock %}</h1>
 
-        {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
+    {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
-        {% block content %}(no content){% endblock %}
-    </div>
+    {% block content %}(no content){% endblock %}
 {% endblock %}
 
 {% block bootstrap4_after_content %}
