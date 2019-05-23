@@ -37,10 +37,6 @@ if(!window.console){
           // methods.write('Connected...');
         },
         
-        error_handler: function(err){
-          methods.write(err, true, true);
-        },
-        
         observation_template: "<div class=\"jumbotron\"></span>",
         issued_command_template: "<div class=\"alert alert-warning issued-command\"><div class=\"date-container\"></div>$content</div>",
         error_template: "<div class=\"alert alert-danger received-error\"><div class=\"date-container\"></div>$content</div>",
@@ -65,6 +61,7 @@ if(!window.console){
       }, options);
       
       return this.each(function(){
+        var delay;
         function listen(handler){
           $.ajax({
             method: 'GET',
@@ -76,19 +73,27 @@ if(!window.console){
                 listen(handler);
               }
               else if(textStatus != 'abort'){
+                if(delay < 1000){
+                  delay = 1000;
+                }
+                delay = delay * 2;
                 if(errorThrown){
-                  settings.error_handler('Error in listen: ' + errorThrown);
+                  console.log('Error in listen: ' + errorThrown);
                 }
                 else{
-                  settings.error_handler('Error in listen: Server Gone');
+                  console.log('Error in listen: Server Gone');
                 }
+                setTimeout(function(){
+                  listen(handler);
+                }, delay);
               }
             },
             success: function(data, textStatus, jqXHR){
               handler(data);
+              delay = 100;
               setTimeout(function(){
                 listen(handler);
-              }, 1);
+              }, delay);
             }
           });
         }
