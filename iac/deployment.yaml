@@ -377,3 +377,15 @@ Outputs:
     Value: !Ref webappSecurityGroup
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName", "webapp-sg" ] ]
+  BeatServiceName:
+    Value: !GetAtt beatService.Name
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "beat-service" ] ]
+  RedisServiceName:
+    Value: !GetAtt redisService.Name
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "redis-service" ] ]
+  WorkerServiceName:
+    Value: !GetAtt workerService.Name
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "worker-service" ] ]
