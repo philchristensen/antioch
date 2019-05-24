@@ -30,7 +30,8 @@
         ],
         "environment_variables": {
             "DB_HOST": "ad1to8c1hvxcf3m.csixt3jsvqja.us-east-2.rds.amazonaws.com",
-            "DB_PORT": "5432"
+            "DB_PORT": "5432",
+            "STATIC_BUCKET": "antioch-prod-staticbucket-dqwqj9eqa81e"
         },
         "tags": {
             "BillingGroup": "antioch-prod"
