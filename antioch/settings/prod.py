@@ -42,7 +42,7 @@ CACHES['default'].update({
 })
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "antioch.storage.S3Boto3ManifestStorage"
 AWS_STORAGE_BUCKET_NAME = "antioch-prod-staticbucket-kyam05xfedr4"
 AWS_DEFAULT_ACL = "public-read"
 AWS_QUERYSTRING_AUTH = False
