@@ -23,6 +23,7 @@ cfg['prod']['vpc_config']['SubnetIds'] = [
 ]
 cfg['prod']['environment_variables']['DB_HOST'] = details['DatabaseHost']
 cfg['prod']['environment_variables']['DB_PORT'] = details['DatabasePort']
+cfg['prod']['environment_variables']['STATIC_BUCKET'] = details['StaticBucketName']
 
 with(open('zappa_settings.json', 'w')) as f:
     f.write(json.dumps(cfg, indent=4))

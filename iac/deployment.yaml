@@ -231,6 +231,8 @@ Resources:
               Value: !GetAtt database.Endpoint.Address
             - Name: DB_PORT
               Value: !GetAtt database.Endpoint.Port
+            - Name: STATIC_BUCKET
+              Value: !Ref staticBucket
       Cpu: "256"
       Memory: "512"
       NetworkMode: awsvpc
@@ -277,6 +279,8 @@ Resources:
               Value: !GetAtt database.Endpoint.Address
             - Name: DB_PORT
               Value: !GetAtt database.Endpoint.Port
+            - Name: STATIC_BUCKET
+              Value: !Ref staticBucket
       Cpu: "256"
       Memory: "512"
       NetworkMode: awsvpc
@@ -389,3 +393,7 @@ Outputs:
     Value: !GetAtt workerService.Name
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName", "worker-service" ] ]
+  StaticBucketName:
+    Value: !Ref staticBucket
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", "static-bucket" ] ]
