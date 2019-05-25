@@ -642,7 +642,7 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_get_verb_list(self):
         results = [
-            [dict(id=1, names='one'), dict(id=2, names='two'), dict(id=3, names='three')]
+            [dict(id=1, names='one', ability=False, method=False), dict(id=2, names='two', ability=False, method=False), dict(id=3, names='three', ability=False, method=False)]
         ]
         
         queries = [
@@ -829,7 +829,7 @@ class ObjectExchangeTestCase(TestCase):
     
     def test_get_property_list(self):
         results = [
-            [dict(id=1, name='one'), dict(id=2, name='two'), dict(id=3, name='three')]
+            [dict(id=1, name='one', type='text'), dict(id=2, name='two', type='text'), dict(id=3, name='three', type='text')]
         ]
         
         queries = [
