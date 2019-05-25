@@ -32,6 +32,7 @@ awscli = "*"
 django-nose = "*"
 pylint = "*"
 setuptools_git = "*"
+awslogs = "*"
 
 [requires]
 python_version = "3.6"
