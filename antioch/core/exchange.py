@@ -21,6 +21,10 @@ from antioch.util import sql, ason, hash_password
 from django.conf import settings
 from django.db import transaction
 
+from pygments import highlight
+from pygments.lexers.python import Python3TracebackLexer
+from pygments.formatters import HtmlFormatter
+
 group_definitions = dict(
     owners        = lambda x,a,s: a.owns(s),
     wizards        = lambda x,a,s: x.is_wizard(a.get_id()),
@@ -151,7 +155,8 @@ class ObjectExchange(object):
                 if(self.queue is not None):
                     self.send_message(self.ctx.get_id(), dict(
                         command        = 'write',
-                        text        = '<pre>%s</pre>' % err,
+                        text        = highlight(err, Python3TracebackLexer(), HtmlFormatter()),
+
                         is_error    = True,
                         escape_html = False
                     ))
@@ -168,7 +173,7 @@ class ObjectExchange(object):
                 if(self.queue is not None):
                     self.send_message(self.ctx.get_id(), dict(
                         command        = 'write',
-                        text        = '<pre>%s</pre>' % io.getvalue(),
+                        text        = highlight(io.getvalue(), Python3TracebackLexer(), HtmlFormatter()),
                         is_error    = True,
                         escape_html = False
                     ))

@@ -26,6 +26,7 @@ uwsgi = "*"
 zappa = "*"
 zappa-django-utils = "*"
 zope-interface = "*"
+pygments = "*"
 
 [dev-packages]
 awscli = "*"
