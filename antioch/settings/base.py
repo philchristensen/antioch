@@ -239,9 +239,13 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO'
         },
+        'antioch.core.exchange': {
+            'handlers': ['console'],
+            'level': 'INFO'
+        },
         'celery': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         },
         'celery.app.trace': {
@@ -250,7 +254,7 @@ LOGGING = {
         },
         'celery.bootsteps': {
             'handlers': ['console'],
-            'level': 'DEBUG'
+            'level': 'INFO'
         },
         'django': {
             'handlers': ['console', 'mail_admins'],
