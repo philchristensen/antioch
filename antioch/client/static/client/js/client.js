@@ -223,8 +223,8 @@ if(!window.console){
       
       if(escape){
         text = $('<div>').text(text).html();
-        text = text.replace(/^\s\s\s\s/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
-        text = text.replace(/\n/g, '<br>');
+        // text = text.replace(/^\s\s\s\s/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        // text = text.replace(/\n/g, '<br>');
       }
       
       if(error){
@@ -323,7 +323,6 @@ if(!window.console){
     },
     
     handleMessage: function(msg){
-    console.log(msg)
       handlers = messageListeners[msg['command']];
       if(handlers){
         for(index in handlers){

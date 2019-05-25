@@ -327,6 +327,12 @@ class Object(Entity):
         except errors.NoSuchPropertyError as e:
             return PropertyStub(default)
     
+    def get_ancestors(self):
+        """
+        Get all ancestors of this object.
+        """
+        return self._ex.get_ancestors(self._id)
+    
     def get_ancestor_with(self, type, name):
         """
         Get the ancestor of this object that defines some attribute.

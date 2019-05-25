@@ -161,6 +161,11 @@ def set_protected_attribute(obj, name, value, s=setattr):
         raise AttributeError(name)
     return s(obj, name, value)
 
+def inplace_var_modification(operator, a, b):
+    if(operator == '+='):
+        return a+b
+    raise NotImplementedError("In-place modification with %s not supported." % operator)
+
 def get_restricted_environment(writer, p=None):
     """
     Given the provided parser object, construct an environment dictionary.
@@ -197,6 +202,7 @@ def get_restricted_environment(writer, p=None):
         _getattr_         = get_protected_attribute,
         _getitem_         = lambda obj, key: obj[key],
         _getiter_         = lambda obj: iter(obj),
+        _inplacevar_      = inplace_var_modification,
         _unpack_sequence_ = guarded_unpack_sequence,
         __import__        = restricted_import,
         __builtins__      = safe_builtins,

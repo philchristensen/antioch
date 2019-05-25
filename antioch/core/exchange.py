@@ -151,8 +151,9 @@ class ObjectExchange(object):
                 if(self.queue is not None):
                     self.send_message(self.ctx.get_id(), dict(
                         command        = 'write',
-                        text        = err,
+                        text        = '<pre>%s</pre>' % err,
                         is_error    = True,
+                        escape_html = False
                     ))
                     return True
             elif(etype is not None):
@@ -167,8 +168,9 @@ class ObjectExchange(object):
                 if(self.queue is not None):
                     self.send_message(self.ctx.get_id(), dict(
                         command        = 'write',
-                        text        = io.getvalue(),
+                        text        = '<pre>%s</pre>' % io.getvalue(),
                         is_error    = True,
+                        escape_html = False
                     ))
                     return True
             else:
@@ -700,6 +702,18 @@ class ObjectExchange(object):
         
         return False
     
+    def get_ancestors(self, descendent_id):
+        """
+        Return all ancestors of the provided object.
+        """
+        ancestors = []
+        descendents = [descendent_id]
+        while(descendents):
+            results = self.connection.runQuery(sql.interp("SELECT parent_id FROM object_relation WHERE child_id = %s", descendents.pop()))
+            descendents.extend([result['parent_id'] for result in results])
+            ancestors.extend([result['parent_id'] for result in results])
+        return [self.instantiate('object', id=x) for x in ancestors]
+    
     def get_ancestor_with(self, descendent_id, attribute_type, name):
         """
         Return the ancestor object that provides the given attribute.
@@ -784,7 +798,7 @@ class ObjectExchange(object):
         """
         Get a list of verb id and names dictionaries.
         """
-        query = """SELECT v.id, %s(vn.name) AS names
+        query = """SELECT v.id, v.ability, v.method, %s(vn.name) AS names
             FROM verb v
                 INNER JOIN verb_name vn ON v.id = vn.verb_id
             WHERE v.origin_id = %%s
@@ -793,11 +807,11 @@ class ObjectExchange(object):
         if(self.connection.isType('postgresql')):
             agg_function = "array_agg"
             verbs = self.connection.runQuery(sql.interp(query % agg_function, origin_id))
-            return [dict(id=v['id'], names=','.join(v['names'])) for v in verbs]
+            return [dict(id=v['id'], ability=v['ability'], method=v['method'], names=','.join(v['names'])) for v in verbs]
         else:
             agg_function = "group_concat"
             verbs = self.connection.runQuery(sql.interp(query % agg_function, origin_id))
-            return [dict(id=v['id'], names=v['names']) for v in verbs]
+            return [dict(id=v['id'], ability=v['ability'], method=v['method'], names=v['names']) for v in verbs]
             
     
     def get_property_list(self, origin_id):
@@ -805,11 +819,11 @@ class ObjectExchange(object):
         Get a list of property id and name dictionaries.
         """
         properties = self.connection.runQuery(sql.interp(
-            """SELECT p.id, p.name
+            """SELECT p.id, p.name, p.type
                 FROM property p
                 WHERE p.origin_id = %s
             """, origin_id))
-        return [dict(id=p['id'], name=p['name']) for p in properties]
+        return [dict(id=p['id'], type=p['type'], name=p['name']) for p in properties]
     
     def get_verb_names(self, verb_id):
         """
