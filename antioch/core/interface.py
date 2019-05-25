@@ -929,7 +929,7 @@ class Property(Entity):
         Get the essential details about this property.
         """
         value = self._value
-        value = json.dumps(self._value) if not isinstance(self._value, str) else self._value
+        value = ason.dumps(self._value) if not isinstance(self._value, str) else self._value
         return dict(
             id            = self.get_id(),
             kind        = self.get_type(),
