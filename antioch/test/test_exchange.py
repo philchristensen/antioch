@@ -646,7 +646,7 @@ class ObjectExchangeTestCase(TestCase):
         ]
         
         queries = [
-            'SELECT v.id, array_agg(vn.name) AS names FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE v.origin_id = 1024 GROUP BY v.id',
+            'SELECT v.id, v.ability, v.method, array_agg(vn.name) AS names FROM verb v INNER JOIN verb_name vn ON v.id = vn.verb_id WHERE v.origin_id = 1024 GROUP BY v.id',
         ]
         
         def runQuery(q, *a, **kw):
@@ -833,7 +833,7 @@ class ObjectExchangeTestCase(TestCase):
         ]
         
         queries = [
-            'SELECT p.id, p.name FROM property p WHERE p.origin_id = 1024',
+            'SELECT p.id, p.name, p.type FROM property p WHERE p.origin_id = 1024',
         ]
         
         def runQuery(q, *a, **kw):
