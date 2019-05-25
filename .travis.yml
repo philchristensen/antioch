@@ -10,11 +10,11 @@ script:
   - aws cloudformation validate-template --template-body file://iac/deployment.yaml
   - DJANGO_SETTINGS_MODULE=antioch.settings.unittests python manage.py test --keepdb
 after_success:
+  - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/params.json
+  - aws cloudformation update-stack --cli-input-json file://iac/params.json --template-body file://iac/deployment.yaml
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t philchristensen/antioch:$(git rev-parse --short HEAD) .
   - docker push philchristensen/antioch:$(git rev-parse --short HEAD)
-  - jq --arg tag $(git rev-parse --short HEAD) '.Parameters[2].ParameterValue = $tag' iac/deployment-params.json > iac/params.json
-  - aws cloudformation update-stack --cli-input-json file://iac/params.json --template-body file://iac/deployment.yaml
 deploy:
   provider: script
   script: zappa update prod
