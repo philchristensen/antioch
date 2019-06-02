@@ -296,12 +296,12 @@ if(!window.console){
           })(observations['contents'][index]);
         }
         
-        if(player_list[0].children.length){
+        if(player_list[0] && player_list[0].children.length){
           player_content.append($(settings.people_here_node));
           player_content.append(player_list);
           player_content.append($(settings.clear_both_node))
         }
-        if(contents_list[0].children.length){
+        if(contents_list[0] && contents_list[0].children.length){
           item_content.append($(settings.contents_here_node));
           item_content.append(contents_list);
           item_content.append($(settings.clear_both_node))

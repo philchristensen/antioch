@@ -50,7 +50,7 @@ class Verb(models.Model):
     
     code = models.TextField(blank=True, null=True)
     filename = models.CharField(max_length=255, blank=True, null=True)
-    owner = models.ForeignKey(Object, related_name='+', null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(Object, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
     origin = models.ForeignKey(Object, related_name='verbs', on_delete=models.CASCADE)
     ability = models.BooleanField()
     method = models.BooleanField()

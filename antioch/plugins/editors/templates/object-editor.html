@@ -24,8 +24,8 @@ $(document).ready(function(){
         {% bootstrap_field form.name %}
         {% bootstrap_button "ACL" button_type="button" button_class="btn-secondary" extra_classes="access-button" %}
         {% bootstrap_field form.parents %}
-        {% bootstrap_field form.location size="large" %}
-        {% bootstrap_field form.owner size="md" %}
+        {% bootstrap_field form.location %}
+        {% bootstrap_field form.owner %}
       </div>
       <div class="col-sm-6 attributes">
         <div class="row">
@@ -58,6 +58,9 @@ $(document).ready(function(){
     </div>
     <div class="row footer">
       {% buttons %}
+        <button type="reset" class="btn btn-cancel btn-secondary">
+          Cancel
+        </button>
         <button type="submit" class="btn btn-primary">
           Save changes
         </button>
