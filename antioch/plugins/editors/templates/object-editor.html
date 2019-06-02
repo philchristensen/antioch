@@ -18,13 +18,14 @@ $(document).ready(function(){
 <div class="object editor">
   <form id="object-form" method="POST" action="{{ request.path }}">
     {% csrf_token %}
-    {{ form.errors }}
+    {% bootstrap_form_errors form %}
     <div class="row">
       <div class="col-sm-6 details">
         {% bootstrap_field form.name %}
+        {% bootstrap_button "ACL" button_type="button" button_class="btn-secondary" extra_classes="access-button" %}
         {% bootstrap_field form.parents %}
-        {% bootstrap_field form.location %}
-        {% bootstrap_field form.owner %}
+        {% bootstrap_field form.location size="large" %}
+        {% bootstrap_field form.owner size="md" %}
       </div>
       <div class="col-sm-6 attributes">
         <div class="row">
@@ -36,8 +37,8 @@ $(document).ready(function(){
             {% endfor %}
             </select>
             <div class="btn-group">
-              <button type="button" class="btn btn-light" id="add-verb"><span class="plus">+</span></button>
-              <button type="button" class="btn btn-light" id="remove-verb"><span class="minus">-</span></button>
+              {% bootstrap_button '<span class="plus">+</span>' button_type="button" button_class="btn-light" extra_classes="add-verb" %}
+              {% bootstrap_button '<span class="minus">-</span>' button_type="button" button_class="btn-light" extra_classes="remove-verb" %}
             </div>
           </div>
           <div class="col-sm-6 properties">
@@ -48,8 +49,8 @@ $(document).ready(function(){
             {% endfor %}
             </select>
             <div class="btn-group">
-              <button type="button" class="btn btn-light" id="add-prop"><span class="plus">+</span></button>
-              <button type="button" class="btn btn-light" id="remove-prop"><span class="minus">-</span></button>
+              {% bootstrap_button '<span class="plus">+</span>' button_type="button" button_class="btn-light" extra_classes="add-prop" %}
+              {% bootstrap_button '<span class="minus">-</span>' button_type="button" button_class="btn-light" extra_classes="remove-prop" %}
             </div>
           </div>
         </div>
@@ -57,11 +58,9 @@ $(document).ready(function(){
     </div>
     <div class="row footer">
       {% buttons %}
-      <button type="button" class="btn btn-secondary" id="access-button">access...</button>
-      
-      <button type="submit" class="btn btn-primary">
-        Save changes
-      </button>
+        <button type="submit" class="btn btn-primary">
+          Save changes
+        </button>
       {% endbuttons %}
     </div>
   </form>

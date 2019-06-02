@@ -240,6 +240,10 @@ if(!window.console){
       /*
        * Called by the server to change the main client display.
        */
+      if($('#observations .editor').length){
+        return;
+      }
+      
       $('.window-title').html(observations['name'])
       
       var t = $(settings.observation_template);

@@ -12,10 +12,10 @@ class Object(models.Model):
     
     name = models.CharField(max_length=255)
     unique_name = models.BooleanField()
-    owner = models.ForeignKey('self', related_name='+', null=True, on_delete=models.SET_NULL,)
-    location = models.ForeignKey('self', related_name='contents', null=True, on_delete=models.SET_NULL)
-    parents = models.ManyToManyField('self', related_name='children', symmetrical=False, through='Relationship')
-    observers = models.ManyToManyField('self', related_name='observing', symmetrical=False, through='Observation')
+    owner = models.ForeignKey('self', related_name='+', blank=True, null=True, on_delete=models.SET_NULL,)
+    location = models.ForeignKey('self', related_name='contents', blank=True, null=True, on_delete=models.SET_NULL)
+    parents = models.ManyToManyField('self', related_name='children', blank=True, symmetrical=False, through='Relationship')
+    observers = models.ManyToManyField('self', related_name='observing', blank=True, symmetrical=False, through='Observation')
     
     def __str__(self):
         return "#%s (%s)" % (self.id, self.name)
