@@ -54,6 +54,9 @@ class PropertyForm(AuthenticatedModelForm):
         model = models.Property
         exclude = ('origin',)
         autocomplete_fields = ('owner',)
+        widgets = {
+            'owner': autocomplete.ModelSelect2(url='object-autocomplete'),
+        }
     
     value = forms.CharField(widget=widgets.HiddenInput)
     
@@ -81,6 +84,9 @@ class VerbForm(AuthenticatedModelForm):
         model = models.Verb
         exclude = ('origin',)
         autocomplete_fields = ('owner',)
+        widgets = {
+            'owner': autocomplete.ModelSelect2(url='object-autocomplete'),
+        }
     
     names = forms.CharField()
     code = forms.CharField(widget=widgets.HiddenInput)
@@ -110,3 +116,6 @@ class AccessForm(forms.ModelForm):
         model = models.Access
         exclude = ()
         autocomplete_fields = ('accessor',)
+        widgets = {
+            'accessor': autocomplete.ModelSelect2(url='object-autocomplete'),
+        }
