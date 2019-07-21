@@ -37,6 +37,8 @@ SITE_ID = 1
 
 # antioch additions
 JOB_TIMEOUT = 5
+DEFAULT_GIT_REPO_URL = 'https://github.com/philchristensen/antioch.git'
+DEFAULT_GIT_WORKSPACE = '/tmp/antioch/repositories'
 
 # 3rd-party app config
 BOOTSTRAP4 = {
