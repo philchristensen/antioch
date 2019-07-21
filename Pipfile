@@ -27,6 +27,8 @@ zappa = "*"
 zappa-django-utils = "*"
 zope-interface = "*"
 pygments = "*"
+gitpython = "*"
+readline = "*"
 
 [dev-packages]
 awscli = "*"

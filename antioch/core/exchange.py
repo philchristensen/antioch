@@ -445,10 +445,12 @@ class ObjectExchange(object):
             attribs = dict(
                 code        = obj._code,
                 filename    = obj._filename,
+                repo_id     = obj._repo_id,
+                ref         = obj._ref,
                 owner_id    = obj._owner_id,
-                origin_id    = obj._origin_id,
-                ability        = str(int(obj._ability)),
-                method        = str(int(obj._method)),
+                origin_id   = obj._origin_id,
+                ability     = str(int(obj._ability)),
+                method      = str(int(obj._method)),
             )
         elif(obj_type == 'property'):
             def check(v):
@@ -460,9 +462,9 @@ class ObjectExchange(object):
             
             attribs = dict(
                 name        = obj._name,
-                value        = ason.dumps(obj._value) if check(obj._value) else obj._value,
+                value       = ason.dumps(obj._value) if check(obj._value) else obj._value,
                 owner_id    = obj._owner_id,
-                origin_id    = obj._origin_id,
+                origin_id   = obj._origin_id,
                 type        = obj._type,
             )
         else:

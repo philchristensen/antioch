@@ -716,6 +716,8 @@ class Verb(Entity):
         
         self._code = ''
         self._filename = None
+        self._repo_id = None
+        self._ref = None
         self._owner_id = None
         self._ability = False
         self._method = False

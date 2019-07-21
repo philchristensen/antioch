@@ -4,7 +4,11 @@
 #
 # See LICENSE for details
 
+from django.core import validators
 from django.db import models
+
+class URLField(models.CharField):
+    default_validators = [validators.URLValidator(schemes=['https'])]
 
 class Object(models.Model):
     class Meta:
@@ -44,12 +48,22 @@ class Alias(models.Model):
     object = models.ForeignKey(Object, related_name='aliases', on_delete=models.CASCADE)
     alias = models.CharField(max_length=255)
 
+#TODO: add support for additional URL types and connection details
+class Repository(models.Model):
+    class Meta:
+        db_table = 'repository'
+    
+    slug = models.SlugField()
+    url = URLField(max_length=255)
+    
 class Verb(models.Model):
     class Meta:
         db_table = 'verb'
     
     code = models.TextField(blank=True, null=True)
+    repo = models.ForeignKey(Repository, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
     filename = models.CharField(max_length=255, blank=True, null=True)
+    ref = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey(Object, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
     origin = models.ForeignKey(Object, related_name='verbs', on_delete=models.CASCADE)
     ability = models.BooleanField()
