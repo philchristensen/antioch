@@ -23,7 +23,11 @@ class Command(BaseCommand):
             repo = Repository.objects.get(slug='default')
             # raise RuntimeError("Looks like mkspace has already been run in this database.")
         except Repository.DoesNotExist:
-            repo = Repository(slug='default', url=settings.DEFAULT_GIT_REPO_URL)
+            repo = Repository(
+                slug='default',
+                prefix='antioch/core/bootstrap/default_verbs',
+                url=settings.DEFAULT_GIT_REPO_URL
+            )
             repo.save()
 
         if(bootstrap in builtin_templates):

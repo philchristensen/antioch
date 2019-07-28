@@ -33,6 +33,8 @@ add_verb_kwargs = dict(
     ability        = True,
     method        = True,
     filename    = None,
+    ref         = None,
+    repo        = None,
     owner_id    = None,
     origin_id    = False,
 )
