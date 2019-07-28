@@ -44,7 +44,7 @@ class ObjectExchangeTestCase(TestCase):
         queries = [
             '',
             "INSERT INTO verb_name (name, verb_id) VALUES ('set_default_permissions', 1)",
-            "INSERT INTO verb (ability, code, filename, method, origin_id, owner_id) VALUES ('0', '', '', '0', 1, NULL)",
+            "INSERT INTO verb (ability, code, filename, method, origin_id, owner_id, ref, repo_id) VALUES ('0', '', '', '0', 1, NULL, NULL, NULL)",
             'SELECT * FROM verb WHERE id = 2048',
             "SELECT v.* FROM verb_name vn INNER JOIN verb v ON v.id = vn.verb_id WHERE vn.name = 'set_default_permissions' AND v.origin_id = 1",
             'SELECT * FROM object WHERE id = 1',
@@ -270,7 +270,9 @@ class ObjectExchangeTestCase(TestCase):
                         filename = NULL, 
                         method = '0', 
                         origin_id = 2048, 
-                        owner_id = NULL 
+                        owner_id = NULL,
+                        ref = NULL,
+                        repo_id = NULL 
                     WHERE id = 1024
                     """),
             rmws("""UPDATE verb 
@@ -279,11 +281,13 @@ class ObjectExchangeTestCase(TestCase):
                         filename = NULL, 
                         method = '0', 
                         origin_id = 2048, 
-                        owner_id = NULL 
+                        owner_id = NULL,
+                        ref = NULL,
+                        repo_id = NULL 
                     WHERE id = 1024
                     """),
-            rmws("""INSERT INTO verb (ability, code, filename, method, origin_id, owner_id)
-                    VALUES ('0', '', NULL, '0', 2048, NULL)
+            rmws("""INSERT INTO verb (ability, code, filename, method, origin_id, owner_id, ref, repo_id)
+                    VALUES ('0', '', NULL, '0', 2048, NULL, NULL, NULL)
                     """)
         ]
         pool = test.Anything(
