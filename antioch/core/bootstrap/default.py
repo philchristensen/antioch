@@ -100,83 +100,115 @@ wizard.set_player(True, is_wizard=True, passwd='wizard')
 
 wizard_class.add_verb('reload', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_reload.py'),
+    filename    = 'wizard_class_reload.py',
+    repo        = 'default',
+    ref         = 'master'
 ))
 
 system.add_verb('authenticate', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('system_authenticate.py'),
+    filename    = 'system_authenticate.py',
+    repo        = 'default',
+    ref         = 'master'
 ))
 
 system.add_verb('connect', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('system_connect.py'),
+    filename    = 'system_connect.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 system.add_verb('login', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('system_login.py'),
+    filename    = 'system_login.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 system.add_verb('logout', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('system_logout.py'),
+    filename    = 'system_logout.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 wizard_class.add_verb('edit', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_edit.py'),
+    filename    = 'wizard_class_edit.py',
+    repo        = 'default',
+    ref         = 'master'
 ))
 
 wizard_class.add_verb('exec', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_exec.py'),
+    filename    = 'wizard_class_exec.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('eval', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_eval.py'),
+    filename    = 'wizard_class_eval.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('adduser', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_adduser.py'),
+    filename    = 'wizard_class_adduser.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('wizards', 'execute')
 
 wizard_class.add_verb('passwd', **dict(
     ability        = True,
     method        = True,
-    filename    = bootstrap.get_verb_path('wizard_class_passwd.py'),
+    filename    = 'wizard_class_passwd.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('alias', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_alias.py'),
+    filename    = 'author_class_alias.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('make', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_make.py'),
+    filename    = 'author_class_make.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('inspect', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_inspect.py'),
+    filename    = 'author_class_inspect.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('dig', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_dig.py'),
+    filename    = 'author_class_dig.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('tunnel', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_tunnel.py'),
+    filename    = 'author_class_tunnel.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author_class.add_verb('describe', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('author_class_describe.py'),
+    filename    = 'author_class_describe.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 guest_class.add_verb('passwd', **dict(
@@ -186,38 +218,52 @@ guest_class.add_verb('passwd', **dict(
 
 player_class.add_verb('set', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('player_class_set.py'),
+    filename    = 'player_class_set.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 player_class.add_verb('look', **dict(
     ability        = True,
     method        = True,
-    filename    = bootstrap.get_verb_path('player_class_look.py'),
+    filename    = 'player_class_look.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 player_class.add_verb('go', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('player_class_go.py'),
+    filename    = 'player_class_go.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 player_class.add_verb('say', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('player_class_say.py'),
+    filename    = 'player_class_say.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 player_class.add_verb('hear', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('player_class_hear.py'),
+    filename    = 'player_class_hear.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 player_class.add_verb('passwd', **dict(
     ability        = True,
-    filename    = bootstrap.get_verb_path('player_class_passwd.py'),
+    filename    = 'player_class_passwd.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 room_class.add_verb('hear', **dict(
     method        = True,
-    filename    = bootstrap.get_verb_path('room_class_hear.py'),
+    filename    = 'room_class_hear.py',
+    repo        = 'default',
+    ref         = 'master'
 )).allow('everyone', 'execute')
 
 author = exchange.instantiate('object', name='Author', unique_name=True)

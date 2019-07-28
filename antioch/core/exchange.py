@@ -15,7 +15,7 @@ during a single verb transaction.
 import crypt, string, random, time, logging, collections
 
 from antioch import celery_config
-from antioch.core import interface, errors
+from antioch.core import interface, errors, models
 from antioch.util import sql, ason, hash_password
 
 from django.conf import settings
@@ -348,11 +348,16 @@ class ObjectExchange(object):
         v = interface.Verb(origin)
         
         v._code = record.get('code', '')
-        v._filename = record.get('filename', '')
+        v._filename = record.get('filename', None)
+        v._ref = record.get('ref', None)        
         v._owner_id = record.get('owner_id', None)
         v._ability = record.get('ability', False)
         v._method = record.get('method', False)
         v._origin_id = record['origin_id']
+        
+        if('repo' in record):
+            repo = models.Repository.objects.get(slug=record['repo'])
+            v._repo_id = repo.id
         
         if('name' in record):
             self.save(v)

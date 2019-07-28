@@ -55,6 +55,7 @@ class Repository(models.Model):
     
     slug = models.SlugField()
     url = URLField(max_length=255)
+    prefix = models.CharField(max_length=255)
     
 class Verb(models.Model):
     class Meta:
