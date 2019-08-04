@@ -98,13 +98,6 @@ wizard.set_location(laboratory)
 
 wizard.set_player(True, is_wizard=True, passwd='wizard')
 
-wizard_class.add_verb('reload', **dict(
-    ability        = True,
-    filename    = 'wizard_class_reload.py',
-    repo        = 'default',
-    ref         = 'master'
-))
-
 system.add_verb('authenticate', **dict(
     method        = True,
     filename    = 'system_authenticate.py',

@@ -372,16 +372,6 @@ def create_object(p, name, unique_name=False):
     return p.exchange.instantiate('object', name=name, unique_name=unique_name, owner_id=owner_id)
 
 @api
-def reload_filesystem_verbs(p):
-    """
-    Verb API: Reload the set of verbs initialized from the filesystem.
-    """
-    if not(p.caller.is_wizard()):
-        raise errors.PermissionError("Only wizards can reload filesystem verbs.")
-    
-    p.exchange.reload_filesystem_verbs()
-
-@api
 def get_last_client_ip(p, player):
     """
     Verb API: Get the last IP address used by the given player.

@@ -826,10 +826,6 @@ class Verb(Entity):
         return self._get_code()
     
     def _get_code(self):
-        if self._filename and not self._code:
-            with open(self._filename, 'r') as f:
-                self._code = f.read()
-                self.save()
         return self._code
     
     def set_ability(self, ability):
