@@ -1,4 +1,4 @@
-#!antioch
+#!antioch "author class" --ability --owner "wizard" --allow-group everyone:execute
 
 room_class = get_object('room class')
 direction = get_dobj_str()
