@@ -121,6 +121,7 @@ class ExecutionViewSet(viewsets.ViewSet):
             registertask = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='registertask'))),
             runtask = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='runtask'))),
             iteratetasks = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='iteratetasks'))),
+            deploy = request.build_absolute_uri(reverse('exec-command', kwargs=dict(pk='deploy'))),
         ))
     
     @action(detail=True, methods=['post'])
