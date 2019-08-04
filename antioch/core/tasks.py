@@ -63,6 +63,10 @@ def authenticate(username, password, ip_address):
     return {'user_id': u.get_id()}
 
 @shared_task
+def deploy(user_id, type, **kwargs):
+    pass
+
+@shared_task
 def login(user_id, session_id, ip_address):
     """
     Register a login for the provided user_id.
