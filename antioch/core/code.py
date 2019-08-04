@@ -12,6 +12,8 @@ import time
 import sys
 import os.path
 import logging
+import argparse
+import shlex
 
 from RestrictedPython import compile_restricted
 from RestrictedPython.Guards import safe_builtins
@@ -25,6 +27,25 @@ allowed_modules = (
 )
 
 pylog = logging.getLogger(__name__)
+
+argparser = argparse.ArgumentParser(prog='antioch',
+    description="Configure antioch attribute deployment.")
+argparser.add_argument('type', type=str, choices=['verb', 'property'],
+    help="The kind of attribute being deployed.")
+argparser.add_argument('name', type=str,
+    help="The name of the attribute being deployed.")
+argparser.add_argument('origin', type=str,
+    help="An object reference for the origin of this attribute.")
+argparser.add_argument('--owner', type=str, required=True,
+    help="An object reference for the owner of this object.")
+argparser.add_argument('--ability', action='store_true',
+    help="This is an intrinsic ability of the origin.")
+argparser.add_argument('--method', action='store_true',
+    help="This is a programmable method of the origin.")
+argparser.add_argument('--access-group', type=str, nargs="*",
+    help="Allow or deny a group a certain permission on this attribute.")
+argparser.add_argument('--access-object', type=str, nargs="*",
+    help="Allow or deny a specific object a certain permission on this attribute.")
 
 def is_frame_access_allowed():
     """
@@ -93,6 +114,24 @@ def massage_verb_code(code):
         ['returnValue = verb()']
     )
     return code
+
+def parse_deployment(source):
+    if not source.startswith("#!antioch"):
+        raise ValueError("Source code does not begin with antioch shebang.")
+    shebang = ''
+    for line in source.splitlines():
+        line = line.strip()
+        if line.startswith('#'):
+            line = line[1:]
+        else:
+            break
+        if not line.endswith('\\'):
+            shebang += line
+            break
+        else:
+            shebang += ' '
+            shebang += line[:-1]
+    return argparser.parse_args(shlex.split(shebang[1:])[1:])
 
 def r_eval(caller, src, environment={}, filename='<string>', runtype="eval"):
     """

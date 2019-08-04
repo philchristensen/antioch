@@ -63,8 +63,28 @@ def authenticate(username, password, ip_address):
     return {'user_id': u.get_id()}
 
 @shared_task
-def deploy(user_id, type, **kwargs):
-    pass
+def deploy(user_id, source):
+    with get_exchange(user_id) as x:
+        d = code.parse_deployment(source)
+        origin = x.get_object(d.origin)
+        obj = x.instantiate(d.type, origin_id=origin.id, name=d.name)
+        if(d.type == 'verb'):
+            obj.set_code(source)
+        obj.set_owner(x.get_object(d.owner))
+        obj.set_method(d.method)
+        obj.set_ability(d.ability)
+        for rule in d.access_group:
+            grant, accessor, permission = rule.split(":")
+            if(grant == 'allow'):
+                obj.allow(accessor, permission)
+            elif(grant == 'deny'):
+                obj.deny(accessor, permission)            
+        for rule in d.access_object:
+            grant, accessor, permission = rule.split(":")
+            if(grant == 'allow'):
+                obj.allow(x.get_object(accessor), permission)
+            elif(grant == 'deny'):
+                obj.deny(x.get_object(accessor), permission)            
 
 @shared_task
 def login(user_id, session_id, ip_address):
