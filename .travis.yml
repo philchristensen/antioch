@@ -2,6 +2,7 @@ language: python
 python:
   - "3.6"
 install:
+  - CHANGED_FILES=($(git diff --name-only $TRAVIS_COMMIT_RANGE)) echo $CHANGED_FILES
   - sudo apt-get update
   - sudo apt-get install -y jq
   - pip install -q pipenv
@@ -15,7 +16,6 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t philchristensen/antioch:$(git describe --tags) .
   - docker push philchristensen/antioch:$(git describe --tags)
-  - CHANGED_FILES=($(git diff --name-only $TRAVIS_COMMIT_RANGE)) echo $CHANGED_FILES
 # deploy:
 #   provider: script
 #   script: zappa update prod
