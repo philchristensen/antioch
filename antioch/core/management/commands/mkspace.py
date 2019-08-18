@@ -7,6 +7,7 @@ from django.db import connection
 
 from antioch.core.bootstrap import load_python, initialize_plugins
 from antioch.core.models import Repository
+from antioch.core import source
 
 builtin_templates = ['minimal', 'default']
 
@@ -37,3 +38,4 @@ class Command(BaseCommand):
         
         load_python(connection, bootstrap_path)
         initialize_plugins(connection)
+        source.deploy_all(repo)
