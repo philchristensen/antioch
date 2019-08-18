@@ -68,11 +68,22 @@
     }
 },
 {
+    "model": "core.repository",
+    "pk": 1,
+    "fields": {
+        "slug": "default",
+        "url": "https://github.com/philchristensen/antioch.git",
+        "prefix": "antioch/core/bootstrap/default_verbs"
+    }
+},
+{
     "model": "core.verb",
     "pk": 1,
     "fields": {
         "code": "#!antioch\n\nobj = args[0]\nobj.allow('wizards', 'anything')\nobj.allow('owners', 'anything')\n\nif(obj.get_type() == 'verb'):\n    obj.allow('everyone', 'execute')\nelse:\n    obj.allow('everyone', 'read')",
+        "repo": null,
         "filename": null,
+        "ref": null,
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -84,7 +95,9 @@
     "pk": 2,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_edit.py",
+        "repo": 1,
+        "filename": "wizard_class_edit.py",
+        "ref": "master",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -96,7 +109,9 @@
     "pk": 3,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_exec.py",
+        "repo": 1,
+        "filename": "wizard_class_exec.py",
+        "ref": "master",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -108,7 +123,9 @@
     "pk": 4,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_eval.py",
+        "repo": 1,
+        "filename": "wizard_class_eval.py",
+        "ref": "master",
         "owner": 2,
         "origin": 2,
         "ability": true,
@@ -120,7 +137,9 @@
     "pk": 5,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_set.py",
+        "repo": 1,
+        "filename": "player_class_set.py",
+        "ref": "master",
         "owner": 2,
         "origin": 3,
         "ability": true,
@@ -132,7 +151,9 @@
     "pk": 6,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_look.py",
+        "repo": 1,
+        "filename": "player_class_look.py",
+        "ref": "master",
         "owner": 2,
         "origin": 3,
         "ability": true,
@@ -144,34 +165,12 @@
     "pk": 7,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_passwd.py",
+        "repo": 1,
+        "filename": "player_class_passwd.py",
+        "ref": "master",
         "owner": 2,
         "origin": 3,
         "ability": true,
-        "method": true
-    }
-},
-{
-    "model": "core.verb",
-    "pk": 8,
-    "fields": {
-        "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_add_player.py",
-        "owner": 2,
-        "origin": 1,
-        "ability": false,
-        "method": true
-    }
-},
-{
-    "model": "core.verb",
-    "pk": 9,
-    "fields": {
-        "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_enable_player.py",
-        "owner": 2,
-        "origin": 1,
-        "ability": false,
         "method": true
     }
 },
@@ -229,22 +228,6 @@
     "fields": {
         "verb": 7,
         "name": "passwd"
-    }
-},
-{
-    "model": "core.verbname",
-    "pk": 8,
-    "fields": {
-        "verb": 8,
-        "name": "add_player"
-    }
-},
-{
-    "model": "core.verbname",
-    "pk": 9,
-    "fields": {
-        "verb": 9,
-        "name": "enable_player"
     }
 },
 {
@@ -940,96 +923,6 @@
     }
 },
 {
-    "model": "core.access",
-    "pk": 42,
-    "fields": {
-        "object": null,
-        "verb": 8,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "wizards",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 43,
-    "fields": {
-        "object": null,
-        "verb": 8,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "owners",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 44,
-    "fields": {
-        "object": null,
-        "verb": 8,
-        "property": null,
-        "rule": "allow",
-        "permission": 6,
-        "type": "group",
-        "accessor": null,
-        "group": "everyone",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 45,
-    "fields": {
-        "object": null,
-        "verb": 9,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "wizards",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 46,
-    "fields": {
-        "object": null,
-        "verb": 9,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "owners",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 47,
-    "fields": {
-        "object": null,
-        "verb": 9,
-        "property": null,
-        "rule": "allow",
-        "permission": 6,
-        "type": "group",
-        "accessor": null,
-        "group": "everyone",
-        "weight": 0
-    }
-},
-{
     "model": "core.player",
     "pk": 1,
     "fields": {
@@ -1037,7 +930,7 @@
         "session_id": null,
         "wizard": true,
         "enabled": true,
-        "crypt": "qwra7M0gSOemQ",
+        "crypt": "be7B6B2f6Ud8U",
         "last_login": null,
         "last_logout": null
     }
@@ -1050,7 +943,7 @@
         "session_id": null,
         "wizard": false,
         "enabled": true,
-        "crypt": "pHkBlqCHsHrxA",
+        "crypt": "iP3KFC3kKQtUs",
         "last_login": null,
         "last_logout": null
     }

@@ -7,12 +7,24 @@ from django.test import TestCase
 from django.db import connection
 
 from antioch import test
-from antioch.core import errors, exchange, parser, interface, code
+from antioch.core import errors, exchange, parser, interface, code, models, source
 
 from django.db import connection
 
 class TransactionsTestCase(TestCase):
     fixtures = ['core-minimal.json']
+    
+    def setUp(self):
+        try:
+            repo = models.Repository.objects.get(slug='default')
+        except models.Repository.DoesNotExist:
+            repo = models.Repository(
+                slug='default',
+                prefix='antioch/core/bootstrap/default_verbs',
+                url=settings.DEFAULT_GIT_REPO_URL
+            )
+            repo.save()
+        source.deploy_all(repo)
     
     def test_basic_rollback(self):
         try:
