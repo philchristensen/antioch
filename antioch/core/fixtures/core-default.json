@@ -130,6 +130,16 @@
     }
 },
 {
+    "model": "core.object",
+    "pk": 14,
+    "fields": {
+        "name": "Author",
+        "unique_name": true,
+        "owner": 14,
+        "location": 12
+    }
+},
+{
     "model": "core.relationship",
     "pk": 1,
     "fields": {
@@ -193,11 +203,31 @@
     }
 },
 {
+    "model": "core.relationship",
+    "pk": 8,
+    "fields": {
+        "child": 14,
+        "parent": 8,
+        "weight": 0
+    }
+},
+{
+    "model": "core.repository",
+    "pk": 1,
+    "fields": {
+        "slug": "default",
+        "url": "https://github.com/philchristensen/antioch.git",
+        "prefix": "antioch/core/bootstrap/default_verbs"
+    }
+},
+{
     "model": "core.verb",
     "pk": 1,
     "fields": {
         "code": "#!antioch\n\nobj = args[0]\nobj.allow('wizards', 'anything')\nobj.allow('owners', 'anything')\n\nif(obj.get_type() == 'verb'):\n    obj.allow('everyone', 'execute')\nelse:\n    obj.allow('everyone', 'read')",
+        "repo": null,
         "filename": null,
+        "ref": null,
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -209,11 +239,13 @@
     "pk": 2,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_reload.py",
+        "repo": 1,
+        "filename": "system_authenticate.py",
+        "ref": "master",
         "owner": 2,
-        "origin": 10,
-        "ability": true,
-        "method": false
+        "origin": 1,
+        "ability": false,
+        "method": true
     }
 },
 {
@@ -221,7 +253,9 @@
     "pk": 3,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/system_authenticate.py",
+        "repo": 1,
+        "filename": "system_connect.py",
+        "ref": "master",
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -233,7 +267,9 @@
     "pk": 4,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/system_connect.py",
+        "repo": 1,
+        "filename": "system_login.py",
+        "ref": "master",
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -245,7 +281,9 @@
     "pk": 5,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/system_login.py",
+        "repo": 1,
+        "filename": "system_logout.py",
+        "ref": "master",
         "owner": 2,
         "origin": 1,
         "ability": false,
@@ -257,11 +295,13 @@
     "pk": 6,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/system_logout.py",
+        "repo": 1,
+        "filename": "wizard_class_edit.py",
+        "ref": "master",
         "owner": 2,
-        "origin": 1,
-        "ability": false,
-        "method": true
+        "origin": 10,
+        "ability": true,
+        "method": false
     }
 },
 {
@@ -269,7 +309,9 @@
     "pk": 7,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_edit.py",
+        "repo": 1,
+        "filename": "wizard_class_exec.py",
+        "ref": "master",
         "owner": 2,
         "origin": 10,
         "ability": true,
@@ -281,7 +323,9 @@
     "pk": 8,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_exec.py",
+        "repo": 1,
+        "filename": "wizard_class_eval.py",
+        "ref": "master",
         "owner": 2,
         "origin": 10,
         "ability": true,
@@ -293,11 +337,13 @@
     "pk": 9,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_eval.py",
+        "repo": 1,
+        "filename": "wizard_class_passwd.py",
+        "ref": "master",
         "owner": 2,
         "origin": 10,
         "ability": true,
-        "method": false
+        "method": true
     }
 },
 {
@@ -305,9 +351,11 @@
     "pk": 10,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_adduser.py",
+        "repo": 1,
+        "filename": "author_class_alias.py",
+        "ref": "master",
         "owner": 2,
-        "origin": 10,
+        "origin": 8,
         "ability": true,
         "method": false
     }
@@ -317,11 +365,13 @@
     "pk": 11,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/wizard_class_passwd.py",
+        "repo": 1,
+        "filename": "author_class_make.py",
+        "ref": "master",
         "owner": 2,
-        "origin": 10,
+        "origin": 8,
         "ability": true,
-        "method": true
+        "method": false
     }
 },
 {
@@ -329,7 +379,9 @@
     "pk": 12,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/author_class_alias.py",
+        "repo": 1,
+        "filename": "author_class_inspect.py",
+        "ref": "master",
         "owner": 2,
         "origin": 8,
         "ability": true,
@@ -341,7 +393,9 @@
     "pk": 13,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/author_class_dig.py",
+        "repo": 1,
+        "filename": "author_class_dig.py",
+        "ref": "master",
         "owner": 2,
         "origin": 8,
         "ability": true,
@@ -353,7 +407,9 @@
     "pk": 14,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/author_class_tunnel.py",
+        "repo": 1,
+        "filename": "author_class_tunnel.py",
+        "ref": "master",
         "owner": 2,
         "origin": 8,
         "ability": true,
@@ -365,7 +421,9 @@
     "pk": 15,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/author_class_describe.py",
+        "repo": 1,
+        "filename": "author_class_describe.py",
+        "ref": "master",
         "owner": 2,
         "origin": 8,
         "ability": true,
@@ -377,7 +435,9 @@
     "pk": 16,
     "fields": {
         "code": "write(caller, \"Guests cannot change their passwords.\")",
-        "filename": "",
+        "repo": null,
+        "filename": null,
+        "ref": null,
         "owner": 2,
         "origin": 7,
         "ability": true,
@@ -389,7 +449,9 @@
     "pk": 17,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_set.py",
+        "repo": 1,
+        "filename": "player_class_set.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": true,
@@ -401,7 +463,9 @@
     "pk": 18,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_look.py",
+        "repo": 1,
+        "filename": "player_class_look.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": true,
@@ -413,7 +477,9 @@
     "pk": 19,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_go.py",
+        "repo": 1,
+        "filename": "player_class_go.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": true,
@@ -425,7 +491,9 @@
     "pk": 20,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_say.py",
+        "repo": 1,
+        "filename": "player_class_say.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": true,
@@ -437,7 +505,9 @@
     "pk": 21,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_hear.py",
+        "repo": 1,
+        "filename": "player_class_hear.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": false,
@@ -449,7 +519,9 @@
     "pk": 22,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/player_class_passwd.py",
+        "repo": 1,
+        "filename": "player_class_passwd.py",
+        "ref": "master",
         "owner": 2,
         "origin": 6,
         "ability": true,
@@ -461,33 +533,11 @@
     "pk": 23,
     "fields": {
         "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/core/bootstrap/default_verbs/room_class_hear.py",
+        "repo": 1,
+        "filename": "room_class_hear.py",
+        "ref": "master",
         "owner": 2,
         "origin": 11,
-        "ability": false,
-        "method": true
-    }
-},
-{
-    "model": "core.verb",
-    "pk": 24,
-    "fields": {
-        "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_add_player.py",
-        "owner": 2,
-        "origin": 1,
-        "ability": false,
-        "method": true
-    }
-},
-{
-    "model": "core.verb",
-    "pk": 25,
-    "fields": {
-        "code": "",
-        "filename": "/home/travis/build/philchristensen/antioch/antioch/plugins/signup/verbs/system_enable_player.py",
-        "owner": 2,
-        "origin": 1,
         "ability": false,
         "method": true
     }
@@ -505,7 +555,7 @@
     "pk": 2,
     "fields": {
         "verb": 2,
-        "name": "reload"
+        "name": "authenticate"
     }
 },
 {
@@ -513,7 +563,7 @@
     "pk": 3,
     "fields": {
         "verb": 3,
-        "name": "authenticate"
+        "name": "connect"
     }
 },
 {
@@ -521,7 +571,7 @@
     "pk": 4,
     "fields": {
         "verb": 4,
-        "name": "connect"
+        "name": "login"
     }
 },
 {
@@ -529,7 +579,7 @@
     "pk": 5,
     "fields": {
         "verb": 5,
-        "name": "login"
+        "name": "logout"
     }
 },
 {
@@ -537,7 +587,7 @@
     "pk": 6,
     "fields": {
         "verb": 6,
-        "name": "logout"
+        "name": "edit"
     }
 },
 {
@@ -545,7 +595,7 @@
     "pk": 7,
     "fields": {
         "verb": 7,
-        "name": "edit"
+        "name": "exec"
     }
 },
 {
@@ -553,7 +603,7 @@
     "pk": 8,
     "fields": {
         "verb": 8,
-        "name": "exec"
+        "name": "eval"
     }
 },
 {
@@ -561,7 +611,7 @@
     "pk": 9,
     "fields": {
         "verb": 9,
-        "name": "eval"
+        "name": "passwd"
     }
 },
 {
@@ -569,7 +619,7 @@
     "pk": 10,
     "fields": {
         "verb": 10,
-        "name": "adduser"
+        "name": "alias"
     }
 },
 {
@@ -577,7 +627,7 @@
     "pk": 11,
     "fields": {
         "verb": 11,
-        "name": "passwd"
+        "name": "make"
     }
 },
 {
@@ -585,7 +635,7 @@
     "pk": 12,
     "fields": {
         "verb": 12,
-        "name": "alias"
+        "name": "inspect"
     }
 },
 {
@@ -674,22 +724,6 @@
     "fields": {
         "verb": 23,
         "name": "hear"
-    }
-},
-{
-    "model": "core.verbname",
-    "pk": 24,
-    "fields": {
-        "verb": 24,
-        "name": "add_player"
-    }
-},
-{
-    "model": "core.verbname",
-    "pk": 25,
-    "fields": {
-        "verb": 25,
-        "name": "enable_player"
     }
 },
 {
@@ -1606,13 +1640,13 @@
     "pk": 55,
     "fields": {
         "object": null,
-        "verb": 4,
+        "verb": 3,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1627,7 +1661,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1639,10 +1673,10 @@
         "verb": 4,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -1666,13 +1700,13 @@
     "pk": 59,
     "fields": {
         "object": null,
-        "verb": 5,
+        "verb": 4,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1687,7 +1721,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1699,10 +1733,10 @@
         "verb": 5,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -1726,13 +1760,13 @@
     "pk": 63,
     "fields": {
         "object": null,
-        "verb": 6,
+        "verb": 5,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1747,7 +1781,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1759,10 +1793,10 @@
         "verb": 6,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -1831,10 +1865,10 @@
     "pk": 70,
     "fields": {
         "object": null,
-        "verb": 8,
+        "verb": 7,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
         "group": "wizards",
@@ -1852,7 +1886,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1864,10 +1898,10 @@
         "verb": 8,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -1882,7 +1916,7 @@
         "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1891,10 +1925,10 @@
     "pk": 74,
     "fields": {
         "object": null,
-        "verb": 9,
+        "verb": 8,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
         "group": "wizards",
@@ -1912,7 +1946,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1924,10 +1958,10 @@
         "verb": 9,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -1942,7 +1976,7 @@
         "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1951,13 +1985,13 @@
     "pk": 78,
     "fields": {
         "object": null,
-        "verb": 10,
+        "verb": 9,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -1972,7 +2006,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -1984,10 +2018,10 @@
         "verb": 10,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2002,7 +2036,7 @@
         "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2011,13 +2045,13 @@
     "pk": 82,
     "fields": {
         "object": null,
-        "verb": 11,
+        "verb": 10,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2032,7 +2066,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2044,10 +2078,10 @@
         "verb": 11,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2071,13 +2105,13 @@
     "pk": 86,
     "fields": {
         "object": null,
-        "verb": 12,
+        "verb": 11,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2092,7 +2126,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2104,10 +2138,10 @@
         "verb": 12,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2131,13 +2165,13 @@
     "pk": 90,
     "fields": {
         "object": null,
-        "verb": 13,
+        "verb": 12,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2152,7 +2186,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2164,10 +2198,10 @@
         "verb": 13,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2191,13 +2225,13 @@
     "pk": 94,
     "fields": {
         "object": null,
-        "verb": 14,
+        "verb": 13,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2212,7 +2246,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2224,10 +2258,10 @@
         "verb": 14,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2251,13 +2285,13 @@
     "pk": 98,
     "fields": {
         "object": null,
-        "verb": 15,
+        "verb": 14,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2272,7 +2306,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2284,10 +2318,10 @@
         "verb": 15,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2311,13 +2345,13 @@
     "pk": 102,
     "fields": {
         "object": null,
-        "verb": 16,
+        "verb": 15,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2332,7 +2366,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2344,10 +2378,10 @@
         "verb": 16,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2371,13 +2405,13 @@
     "pk": 106,
     "fields": {
         "object": null,
-        "verb": 17,
+        "verb": 16,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2392,7 +2426,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2404,10 +2438,10 @@
         "verb": 17,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2431,13 +2465,13 @@
     "pk": 110,
     "fields": {
         "object": null,
-        "verb": 18,
+        "verb": 17,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2452,7 +2486,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2464,10 +2498,10 @@
         "verb": 18,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2491,13 +2525,13 @@
     "pk": 114,
     "fields": {
         "object": null,
-        "verb": 19,
+        "verb": 18,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2512,7 +2546,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2524,10 +2558,10 @@
         "verb": 19,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2551,13 +2585,13 @@
     "pk": 118,
     "fields": {
         "object": null,
-        "verb": 20,
+        "verb": 19,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2572,7 +2606,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2584,10 +2618,10 @@
         "verb": 20,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2611,13 +2645,13 @@
     "pk": 122,
     "fields": {
         "object": null,
-        "verb": 21,
+        "verb": 20,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2632,7 +2666,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2644,10 +2678,10 @@
         "verb": 21,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2671,13 +2705,13 @@
     "pk": 126,
     "fields": {
         "object": null,
-        "verb": 22,
+        "verb": 21,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2692,7 +2726,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2704,10 +2738,10 @@
         "verb": 22,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2731,13 +2765,13 @@
     "pk": 130,
     "fields": {
         "object": null,
-        "verb": 23,
+        "verb": 22,
         "property": null,
         "rule": "allow",
-        "permission": 1,
+        "permission": 6,
         "type": "group",
         "accessor": null,
-        "group": "wizards",
+        "group": "everyone",
         "weight": 0
     }
 },
@@ -2752,7 +2786,7 @@
         "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "owners",
+        "group": "wizards",
         "weight": 0
     }
 },
@@ -2764,10 +2798,10 @@
         "verb": 23,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 1,
         "type": "group",
         "accessor": null,
-        "group": "everyone",
+        "group": "owners",
         "weight": 0
     }
 },
@@ -2791,37 +2825,7 @@
     "pk": 134,
     "fields": {
         "object": null,
-        "verb": 24,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "wizards",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 135,
-    "fields": {
-        "object": null,
-        "verb": 24,
-        "property": null,
-        "rule": "allow",
-        "permission": 1,
-        "type": "group",
-        "accessor": null,
-        "group": "owners",
-        "weight": 0
-    }
-},
-{
-    "model": "core.access",
-    "pk": 136,
-    "fields": {
-        "object": null,
-        "verb": 24,
+        "verb": 23,
         "property": null,
         "rule": "allow",
         "permission": 6,
@@ -2833,10 +2837,10 @@
 },
 {
     "model": "core.access",
-    "pk": 137,
+    "pk": 135,
     "fields": {
-        "object": null,
-        "verb": 25,
+        "object": 14,
+        "verb": null,
         "property": null,
         "rule": "allow",
         "permission": 1,
@@ -2848,10 +2852,10 @@
 },
 {
     "model": "core.access",
-    "pk": 138,
+    "pk": 136,
     "fields": {
-        "object": null,
-        "verb": 25,
+        "object": 14,
+        "verb": null,
         "property": null,
         "rule": "allow",
         "permission": 1,
@@ -2863,13 +2867,13 @@
 },
 {
     "model": "core.access",
-    "pk": 139,
+    "pk": 137,
     "fields": {
-        "object": null,
-        "verb": 25,
+        "object": 14,
+        "verb": null,
         "property": null,
         "rule": "allow",
-        "permission": 6,
+        "permission": 2,
         "type": "group",
         "accessor": null,
         "group": "everyone",
@@ -2884,7 +2888,20 @@
         "session_id": null,
         "wizard": true,
         "enabled": true,
-        "crypt": "KnzSkDsxCTzyg",
+        "crypt": "Nkg/bSciFAmt.",
+        "last_login": null,
+        "last_logout": null
+    }
+},
+{
+    "model": "core.player",
+    "pk": 2,
+    "fields": {
+        "avatar": 14,
+        "session_id": null,
+        "wizard": false,
+        "enabled": true,
+        "crypt": "pQoPmfk7zwo.g",
         "last_login": null,
         "last_logout": null
     }
