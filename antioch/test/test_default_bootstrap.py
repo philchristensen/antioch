@@ -5,14 +5,26 @@
 
 from django.test import TestCase
 from django.db import connection
+from django.conf import settings
 
 from antioch import test
-from antioch.core import parser, exchange
+from antioch.core import parser, exchange, source, models
 
 class DefaultBootstrapTestCase(TestCase):
     fixtures = ['core-default.json']
     
     def setUp(self):
+        try:
+            repo = models.Repository.objects.get(slug='default')
+        except models.Repository.DoesNotExist:
+            repo = models.Repository(
+                slug='default',
+                prefix='antioch/core/bootstrap/default_verbs',
+                url=settings.DEFAULT_GIT_REPO_URL
+            )
+            repo.save()
+        source.deploy_all(repo)
+
         self.exchange = exchange.ObjectExchange(connection)
         self.exchange.queue = test.Anything(
             flush    = lambda: None,
@@ -96,35 +108,35 @@ class DefaultBootstrapTestCase(TestCase):
         self.exchange.queue.push = push
         v.execute(p)
     
-    def test_wizard_edit(self):
-        caller = self.exchange.get_object('wizard')
-        
-        l = parser.Lexer('edit me')
-        p = parser.TransactionParser(l, caller, self.exchange)
-        
-        v = p.get_verb()
-        self.assertEqual(p.this, caller)
-        
-        def push(user_id, msg):
-            self.assertEqual(user_id, 2)
-            self.assertEqual(msg['details']['name'], 'Wizard')
-        
-        self.exchange.queue.push = push
-        v.execute(p)
-    
-    def test_wizard_edit_system(self):
-        caller = self.exchange.get_object('wizard')
-        
-        l = parser.Lexer('edit #1')
-        p = parser.TransactionParser(l, caller, self.exchange)
-        
-        v = p.get_verb()
-        self.assertEqual(p.this, caller)
-        
-        def push(user_id, msg):
-            self.assertEqual(user_id, 2)
-            self.assertEqual(msg['details']['id'], 1)
-            self.assertEqual(msg['details']['name'], 'System Object')
-        
-        self.exchange.queue.push = push
-        v.execute(p)
+    # def test_wizard_edit(self):
+    #     caller = self.exchange.get_object('wizard')
+    #
+    #     l = parser.Lexer('edit me')
+    #     p = parser.TransactionParser(l, caller, self.exchange)
+    #
+    #     v = p.get_verb()
+    #     self.assertEqual(p.this, caller)
+    #
+    #     def push(user_id, msg):
+    #         self.assertEqual(user_id, 2)
+    #         self.assertEqual(msg['details']['name'], 'Wizard')
+    #
+    #     self.exchange.queue.push = push
+    #     v.execute(p)
+    #
+    # def test_wizard_edit_system(self):
+    #     caller = self.exchange.get_object('wizard')
+    #
+    #     l = parser.Lexer('edit #1')
+    #     p = parser.TransactionParser(l, caller, self.exchange)
+    #
+    #     v = p.get_verb()
+    #     self.assertEqual(p.this, caller)
+    #
+    #     def push(user_id, msg):
+    #         self.assertEqual(user_id, 2)
+    #         self.assertEqual(msg['details']['id'], 1)
+    #         self.assertEqual(msg['details']['name'], 'System Object')
+    #
+    #     self.exchange.queue.push = push
+    #     v.execute(p)

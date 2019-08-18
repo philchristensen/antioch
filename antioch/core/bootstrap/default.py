@@ -147,12 +147,12 @@ wizard_class.add_verb('eval', **dict(
     ref         = 'master'
 )).allow('wizards', 'execute')
 
-wizard_class.add_verb('adduser', **dict(
-    ability        = True,
-    filename    = 'wizard_class_adduser.py',
-    repo        = 'default',
-    ref         = 'master'
-)).allow('wizards', 'execute')
+# wizard_class.add_verb('adduser', **dict(
+#     ability        = True,
+#     filename    = 'wizard_class_adduser.py',
+#     repo        = 'default',
+#     ref         = 'master'
+# )).allow('wizards', 'execute')
 
 wizard_class.add_verb('passwd', **dict(
     ability        = True,
