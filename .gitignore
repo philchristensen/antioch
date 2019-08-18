@@ -1,5 +1,7 @@
 *.pyc
 *.egg-info
+ssl-cert-snakeoil.key
+ssl-cert-snakeoil.pem
 .DS_Store
 /static
 /reload
