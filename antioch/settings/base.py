@@ -95,9 +95,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'antioch.core',
     'antioch.client',
-    'antioch.plugins.ask',
-    'antioch.plugins.editors',
-    'antioch.plugins.signup'
+    # 'antioch.plugins.ask',
+    # 'antioch.plugins.editors',
+    # 'antioch.plugins.signup'
 ]
 
 MIDDLEWARE = [
@@ -219,6 +219,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'stream': sys.stdout
         },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
         'django.server': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -245,6 +249,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO'
         },
+        'antioch.core.source': {
+            'handlers': ['console'],
+            'level': 'INFO'
+        },
         'celery': {
             'handlers': ['console'],
             'level': 'INFO',
@@ -265,6 +273,10 @@ LOGGING = {
         },
         'django.server': {
             'handlers': ['django.server'],
+            'level': 'INFO'
+        },
+        'git': {
+            'handlers': ['console'],
             'level': 'INFO'
         }
     }
