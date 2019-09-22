@@ -342,6 +342,7 @@ Resources:
       AllocatedStorage: 5
       DBInstanceClass: db.t2.micro
       DBSubnetGroupName: !Ref "databaseSubnetGroup"
+      DBName: antioch
       EnableCloudwatchLogsExports:
         - postgresql
         - upgrade
