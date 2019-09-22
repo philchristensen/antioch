@@ -18,7 +18,7 @@ after_success:
   - docker push philchristensen/antioch:$(git describe --tags)
 deploy:
   provider: script
-  script: zappa deploy prod
+  script: zappa update prod
   on:
     branch: master
 after_deploy:
