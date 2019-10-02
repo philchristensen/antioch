@@ -31,9 +31,9 @@ DATABASES['default'].update({
     "NAME": "antioch",
     "USER": "antioch",
     "PASSWORD": SSM_PARAMS['db-password'],
-    'OPTIONS': {
-        'sslmode': 'require',
-    }
+    # 'OPTIONS': {
+    #     'ssl': {'key': '/map/to/ca-cert.pem'}
+    # }
 })
 
 CACHES['default'].update({
