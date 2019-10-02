@@ -316,15 +316,15 @@ Resources:
       GroupName: !Join ["-", [!Ref "Name", !Ref "Environment", "db-sg"]]
       SecurityGroupIngress:
         - Description: worker and beat
-          FromPort: 5432
+          FromPort: 3306
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "workerSecurityGroup"
-          ToPort: 5432
+          ToPort: 3306
         - Description: webapp on API Gateway
-          FromPort: 5432
+          FromPort: 3306
           IpProtocol: tcp
           SourceSecurityGroupId: !Ref "webappSecurityGroup"
-          ToPort: 5432
+          ToPort: 3306
       VpcId: !GetAtt "vpc.Outputs.VPCID"
   databaseSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -343,11 +343,9 @@ Resources:
       DBInstanceClass: db.t2.micro
       DBSubnetGroupName: !Ref "databaseSubnetGroup"
       DBName: antioch
-      EnableCloudwatchLogsExports:
-        - postgresql
-        - upgrade
-      Engine: postgres
-      EngineVersion: "11.2"
+      EnableCloudwatchLogsExports: ["audit","error","general","slowquery"]
+      Engine: mysql
+      EngineVersion: "5.7"
       MasterUsername: antioch
       MasterUserPassword: !Ref "DBMasterPassword"
       MultiAZ: false
