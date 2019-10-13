@@ -29,7 +29,7 @@
             }
         ],
         "environment_variables": {
-            "DB_HOST": "ad1mnuun3lt2svs.csixt3jsvqja.us-east-2.rds.amazonaws.com",
+            "DB_HOST": "ad1f0oyivagf3kr.csixt3jsvqja.us-east-2.rds.amazonaws.com",
             "DB_PORT": "5432",
             "STATIC_BUCKET": "antioch-prod-staticbucket-1pw9c94t3i2fx"
         },
