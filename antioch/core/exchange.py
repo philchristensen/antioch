@@ -1213,7 +1213,7 @@ class ObjectExchange(object):
             'permission_id' : permission_id,
             'type'            : 'accessor' if isinstance(accessor, int) else 'group',
             'accessor_id'    : accessor if isinstance(accessor, int) else None,
-            '"group"'        : accessor if isinstance(accessor, str) else None,
+            '`group`'        : accessor if isinstance(accessor, str) else None,
             'weight'        : 0,
         }))
     
