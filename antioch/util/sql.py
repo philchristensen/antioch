@@ -408,7 +408,7 @@ class LT(RAW):
     @ivar value: The value to be less-than
     """
 
-string_literal = quoted_string_literal
+string_literal = mysql_string_literal
 
 conversions = {
     int: lambda s,d: str(s),
