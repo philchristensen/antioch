@@ -22,6 +22,7 @@ deploy:
   on:
     branch: master
 after_deploy:
+  - zappa certify --yes
   - zappa manage prod migrate
   - zappa manage prod "collectstatic --noinput"
 cache:
