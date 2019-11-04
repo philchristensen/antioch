@@ -962,6 +962,7 @@ class ObjectExchangeTestCase(TestCase):
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
+            isType          = lambda x: x == 'mysql'
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -1041,6 +1042,7 @@ class ObjectExchangeTestCase(TestCase):
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
+            isType          = lambda x: x == 'mysql'
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
@@ -1068,6 +1070,7 @@ class ObjectExchangeTestCase(TestCase):
         pool = test.Anything(
             runQuery        = runQuery,
             runOperation    = runOperation,
+            isType          = lambda x: x == 'mysql'
         )
         ex = exchange.ObjectExchange(wrapper=pool)
         
