@@ -1116,7 +1116,7 @@ class ObjectExchange(object):
         record['type'] = access
         record['weight'] = weight
         
-        quoted_group = '"group"' if self.isType('mysql') else "`group`"
+        quoted_group = '"group"' if self.connection.isType('mysql') else "`group`"
         record.pop('group', '')
         if(access == 'group'):
             record[quoted_group] = accessor
