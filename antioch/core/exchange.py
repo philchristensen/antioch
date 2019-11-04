@@ -1116,12 +1116,13 @@ class ObjectExchange(object):
         record['type'] = access
         record['weight'] = weight
         
+        quoted_group = '"group"' is self.isType('mysql') else "`group`"
         record.pop('group', '')
         if(access == 'group'):
-            record['"group"'] = accessor
+            record[quoted_group] = accessor
             record['accessor_id'] = None
         else:
-            record['"group"'] = None
+            record[quoted_group] = None
             record['accessor_id'] = accessor.get_id()
         
         if(record.pop('permission', '') != permission):
