@@ -937,7 +937,7 @@ class ObjectExchange(object):
             timestamp_function = "to_timestamp(0)"
         elif(self.connection.isType('sqlite')):
             timestamp_function = "date(0,'unixepoch')"
-        elif(self.isType('mysql')):
+        elif(self.connection.isType('mysql')):
             timestamp_function = "from_unixtime(0)"
         else:
             raise UnsupportedError("Unsupported database type.")
