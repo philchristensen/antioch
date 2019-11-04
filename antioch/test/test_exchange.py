@@ -942,13 +942,13 @@ class ObjectExchangeTestCase(TestCase):
             'SELECT a.*, p.name AS permission FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE a.id = 4096',
             'DELETE FROM access WHERE id = 2048',
             'SELECT a.*, p.name AS permission FROM access a INNER JOIN permission p ON a.permission_id = p.id WHERE a.id = 2048',
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'deny', 'accessor', 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'deny', 'accessor', 0)",
             # "SELECT p.* FROM permission p WHERE p.name = 'write'",
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'allow', 'accessor', 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, rule, type, weight) VALUES (NULL, 1024, 1024, 3, 'allow', 'accessor', 0)",
             # "SELECT p.* FROM permission p WHERE p.name = 'write'",
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'deny', 'group', 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'deny', 'group', 0)",
             # "SELECT p.* FROM permission p WHERE p.name = 'read'",
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'allow', 'group', 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, rule, type, weight) VALUES ('everyone', NULL, 1024, 2, 'allow', 'group', 0)",
             # "SELECT p.* FROM permission p WHERE p.name = 'read'",
         ]
         
@@ -1026,9 +1026,9 @@ class ObjectExchangeTestCase(TestCase):
         ]
 
         queries = [
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES (NULL, 0, 0, 3, NULL, 'allow', 'accessor', NULL, 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES (NULL, 0, 0, 3, NULL, 'allow', 'accessor', NULL, 0)",
             # "SELECT * FROM permission WHERE name = 'write'",
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'allow', 'group', NULL, 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'allow', 'group', NULL, 0)",
             # "SELECT * FROM permission WHERE name = 'anything'",
         ]
         
@@ -1056,7 +1056,7 @@ class ObjectExchangeTestCase(TestCase):
         ]
 
         queries = [
-            "INSERT INTO access (\"group\", accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'deny', 'group', NULL, 0)",
+            "INSERT INTO access (`group`, accessor_id, object_id, permission_id, property_id, rule, type, verb_id, weight) VALUES ('owners', NULL, 0, 1, NULL, 'deny', 'group', NULL, 0)",
             # "SELECT * FROM permission WHERE name = 'anything'",
         ]
         
