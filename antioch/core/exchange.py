@@ -1206,6 +1206,7 @@ class ObjectExchange(object):
         else:
             raise ValueError("No such permission %r" % permission)
         
+        quoted_group = '"group"' if self.connection.isType('mysql') else "`group`"
         self.connection.runOperation(sql.build_insert('access', {
             'object_id'        : subject.get_id() if isinstance(subject, interface.Object) else None,
             'verb_id'        : subject.get_id() if isinstance(subject, interface.Verb) else None,
@@ -1214,7 +1215,7 @@ class ObjectExchange(object):
             'permission_id' : permission_id,
             'type'            : 'accessor' if isinstance(accessor, int) else 'group',
             'accessor_id'    : accessor if isinstance(accessor, int) else None,
-            '`group`'        : accessor if isinstance(accessor, str) else None,
+            quoted_group   : accessor if isinstance(accessor, str) else None,
             'weight'        : 0,
         }))
     
