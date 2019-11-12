@@ -22,14 +22,15 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: antioch.settings.unittests
       run: pipenv run python manage.py test --keepdb
-    - name: Set TAG_NAME var for the next step
-      run: echo ::set-env GIT_TAG_NAME=$(git describe --tags)
+    - name: Get GIT_TAG_NAME var for the next step
+      id: get_git_tag_name
+      run: echo ::set-output tag=$(git describe --tags)
     - name: Build & push to Docker Hub
       uses: opspresso/action-docker@master
       env:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        TAG_NAME: ${{ env.GIT_TAG_NAME }}
+        TAG_NAME: ${{ steps.get_git_tag_name.outputs.tag }}
         IMAGE_NAME: "philchristensen/antioch"
         LATEST: "true"
     # - name: Deploy CloudFormation infrastructure...
