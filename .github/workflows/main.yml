@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source...
+      uses: actions/checkout@v1
+    - name: Setup Python...
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.6'
+    - name: Setup Pipenv...
+      uses: dschep/install-pipenv-action@v1
+    - name: Install development headers...
+      run: sudo apt-get install libmysqlclient-dev libreadline-dev
+    - name: Install Python dependencies...
+      run: PIPENV_VERBOSITY=-1 pipenv --bare install --system --dev --deploy --ignore-pipfile
