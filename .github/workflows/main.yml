@@ -8,8 +8,8 @@ jobs:
     steps:
     - name: Checkout source...
       uses: actions/checkout@v1
-    - name: Get Git version tag
-      run: export GIT_VERSION_TAG=$(git describe --tags)
+    - name: Set Git version tag environment variable...
+      run: echo ::set-env GIT_VERSION_TAG=$(git describe --tags)
     - name: Setup Python...
       uses: actions/setup-python@v1
       with:
@@ -30,7 +30,7 @@ jobs:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         IMAGE_NAME: "philchristensen/antioch"
-        TAG_NAME: "$GIT_VERSION_TAG"
+        TAG_NAME: $GIT_VERSION_TAG
         LATEST: "true"
     # - name: Deploy CloudFormation infrastructure...
     #   uses: mgenteluci/cloudformation-deploy-action@v1.3.0
