@@ -8,6 +8,8 @@ jobs:
     steps:
     - name: Checkout source...
       uses: actions/checkout@v1
+    - name: Get Git version tag
+      run: export GIT_VERSION_TAG=$(git describe --tags)
     - name: Setup Python...
       uses: actions/setup-python@v1
       with:
@@ -22,3 +24,21 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: antioch.settings.unittests
       run: pipenv run python manage.py test --keepdb
+    - name: Build & push to Docker Hub
+      uses: opspresso/action-docker@master
+      env:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_NAME: "philchristensen/antioch"
+        TAG_NAME: "$GIT_VERSION_TAG"
+        LATEST: "true"
+    # - name: Deploy CloudFormation infrastructure...
+    #   uses: mgenteluci/cloudformation-deploy-action@v1.3.0
+    #   env:
+    #     TEMPLATE: iac/deployment.yaml
+    #     CAPABILITIES: CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+    #     PARAMETER_OVERRIDES: ImageTag=$GIT_VERSION_TAG
+    #     AWS_STACK_NAME: antioch-prod
+    #     AWS_REGION: us-east-2
+    #     AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+    #     AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
