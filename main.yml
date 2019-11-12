@@ -1,0 +1,14 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.6'
+    - uses: dschep/install-pipenv-action@v1
+    - run: PIPENV_VERBOSITY=-1 pipenv --bare install --system --dev --deploy --ignore-pipfile
