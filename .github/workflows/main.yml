@@ -8,11 +8,11 @@ jobs:
     steps:
     - name: Checkout source...
       uses: actions/checkout@v1
-    - name: Setup Python...
+    - name: Set up Python...
       uses: actions/setup-python@v1
       with:
         python-version: '3.6'
-    - name: Setup Pipenv...
+    - name: Set up Pipenv...
       uses: dschep/install-pipenv-action@v1
     - name: Install development headers...
       run: sudo apt-get install libmysqlclient-dev libreadline-dev libncurses-dev
@@ -23,12 +23,13 @@ jobs:
         DJANGO_SETTINGS_MODULE: antioch.settings.unittests
       run: pipenv run python manage.py test --keepdb
     - name: Set TAG_NAME var for the next step
-      run: echo ::set-env TAG_NAME=$(git describe --tags)
+      run: echo ::set-env GIT_TAG_NAME=$(git describe --tags)
     - name: Build & push to Docker Hub
       uses: opspresso/action-docker@master
       env:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        TAG_NAME: ${{ env.GIT_TAG_NAME }}
         IMAGE_NAME: "philchristensen/antioch"
         LATEST: "true"
     # - name: Deploy CloudFormation infrastructure...
