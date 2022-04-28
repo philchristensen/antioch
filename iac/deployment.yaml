@@ -21,9 +21,13 @@ Parameters:
     Type: String
     Default: antioch-prod
     Description: The AWS tag value to add to all billable resources.
-  DBMasterPassword:
+  DBMasterPasswordSsmParamName:
     Type: String
-    NoEcho: true
+    Default: /antioch/prod/db-password
+    Description: Master password for the DB instance.
+  DBMasterPasswordSsmParamVersion:
+    Type: Number
+    Default: 2
     Description: Master password for the DB instance.
 Resources:
   vpc:
@@ -347,7 +351,7 @@ Resources:
       Engine: mysql
       EngineVersion: "5.7"
       MasterUsername: antioch
-      MasterUserPassword: !Ref "DBMasterPassword"
+      MasterUserPassword: !Sub "{{resolve:ssm-secure:${DBMasterPasswordSsmParamName}:${DBMasterPasswordSsmParamVersion}}}"
       MultiAZ: false
       PubliclyAccessible: false
       StorageEncrypted: false

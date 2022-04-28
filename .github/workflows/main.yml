@@ -1,0 +1,46 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source...
+      uses: actions/checkout@v1
+    - name: Set up Python...
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.6'
+    - name: Set up Pipenv...
+      uses: dschep/install-pipenv-action@v1
+    - name: Install development headers...
+      run: sudo apt-get install libmysqlclient-dev libreadline-dev libncurses-dev
+    - name: Install Python dependencies...
+      run: pipenv install --dev
+    - name: Run unit tests...
+      env:
+        DJANGO_SETTINGS_MODULE: antioch.settings.unittests
+      run: pipenv run python manage.py test --keepdb
+    - name: Determine release version...
+      id: versioning
+      uses: codfish/semantic-release-action@master
+    - name: Build & push to Docker Hub
+      uses: opspresso/action-docker@master
+      if: steps.versioning.outputs.new-release-published == 'true'
+      env:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        TAG_NAME: v$RELEASE_VERSION
+        IMAGE_NAME: "philchristensen/antioch"
+        LATEST: "true"
+    # - name: Deploy CloudFormation infrastructure...
+    #   uses: mgenteluci/cloudformation-deploy-action@v1.3.0
+    #   env:
+    #     TEMPLATE: iac/deployment.yaml
+    #     CAPABILITIES: CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+    #     PARAMETER_OVERRIDES: ImageTag=$GIT_VERSION_TAG
+    #     AWS_STACK_NAME: antioch-prod
+    #     AWS_REGION: us-east-2
+    #     AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+    #     AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
